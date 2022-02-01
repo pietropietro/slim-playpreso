@@ -14,6 +14,8 @@
 
 //     private string $password;
 
+//this is needed to convert a class into JSON. makes little sense but
+//stackoverflow.com/questions/18576762/php-stdclass-to-array
 //     public function toJson(): object
 //     {
 //         return json_decode((string) json_encode(get_object_vars($this)), false);

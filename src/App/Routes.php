@@ -12,7 +12,7 @@ return function ($app) {
     $app->get('/status', 'App\Controller\DefaultController:getStatus');
     $app->post('/login', \App\Controller\User\Login::class);
 
-    $app->group('/api/v1', function () use ($app): void {
+    // $app->group('/api/v1', function () use ($app): void {
         $app->group('/guesses', function () use ($app): void {
             $app->get('', Task\GetAll::class);
             $app->post('', Task\Create::class);
@@ -35,7 +35,7 @@ return function ($app) {
         //     $app->put('/{id}', Note\Update::class);
         //     // $app->delete('/{id}', Note\Delete::class);
         // });
-    });  
+    // });  
 
     return $app;
 };

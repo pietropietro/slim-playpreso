@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-require_once __DIR__ . '../../vendor/mysqli.php';
-
 
 abstract class BaseRepository
 {
-    public function __construct(protected MysqliDb $db)
+    public function __construct(protected \MysqliDb $db)
     {
     }
 
-    protected function getDb(): MysqliDb
+    protected function getDb(): \MysqliDb
     {
         return $this->db;
     }

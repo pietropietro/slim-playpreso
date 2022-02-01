@@ -54,7 +54,8 @@ abstract class Base extends BaseService
         return $user;
     }
 
-    protected function getUserFromDb(int $userId): User
+    //TODO oo : User
+    protected function getUserFromDb(int $userId)
     {
         return $this->userRepository->getUser($userId);
     }
