@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Entity\Note;
+use App\Entity\Guess;
 
-final class NoteRepository extends BaseRepository
+final class GuessRepository extends BaseRepository
 {
     public function checkAndGetNote(int $noteId): Note
     {

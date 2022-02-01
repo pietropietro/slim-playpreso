@@ -42,37 +42,12 @@ $container['login_user_service'] = static fn (
     $container->get('redis_service')
 );
 
-$container['task_service'] = static fn (
+$container['guess_service'] = static fn (
     ContainerInterface $container
-): TaskService => new TaskService(
-    $container->get('task_repository'),
+): GuessService => new GuessService(
+    $container->get('guess_repository'),
     $container->get('redis_service')
 );
 
-$container['find_note_service'] = static fn (
-    ContainerInterface $container
-): Note\Find => new Note\Find(
-    $container->get('note_repository'),
-    $container->get('redis_service')
-);
 
-$container['create_note_service'] = static fn (
-    ContainerInterface $container
-): Note\Create => new Note\Create(
-    $container->get('note_repository'),
-    $container->get('redis_service')
-);
 
-$container['update_note_service'] = static fn (
-    ContainerInterface $container
-): Note\Update => new Note\Update(
-    $container->get('note_repository'),
-    $container->get('redis_service')
-);
-
-$container['delete_note_service'] = static fn (
-    ContainerInterface $container
-): Note\Delete => new Note\Delete(
-    $container->get('note_repository'),
-    $container->get('redis_service')
-);

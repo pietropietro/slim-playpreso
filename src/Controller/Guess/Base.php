@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Task;
+namespace App\Controller\Guess;
 
 use App\Controller\BaseController;
-use App\Exception\Task;
-use App\Service\Task\TaskService;
+use App\Exception\Guess;
+use App\Service\Guess\GuessService;
 
 abstract class Base extends BaseController
 {
-    protected function getTaskService(): TaskService
+    protected function getGuessService(): GuessService
     {
-        return $this->container->get('task_service');
+        return $this->container->get('guess_service');
     }
 
     protected function getAndValidateUserId(array $input): int
@@ -21,6 +21,6 @@ abstract class Base extends BaseController
             return (int) $input['decoded']->sub;
         }
 
-        throw new Task('Invalid user. Permission failed.', 400);
+        throw new Guess('Invalid user. Permission failed.', 400);
     }
 }
