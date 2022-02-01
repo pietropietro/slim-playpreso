@@ -11,7 +11,6 @@
         "vlucas/phpdotenv": "^5.1"
     },
     "require-dev": {
-        "nunomaduro/phpinsights": "^2.0",
         "pestphp/pest": "^1.7",
         "phpstan/phpstan": "^1.2",
         "phpunit/phpunit": "^9.0",

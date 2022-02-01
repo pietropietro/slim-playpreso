@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Controller\Note;
-use App\Controller\Task;
+use App\Controller\Guess;
+// use App\Controller\Match;
 use App\Controller\User;
 use App\Middleware\Auth;
 
@@ -22,9 +22,8 @@ return function ($app) {
         })->add(new Auth());
 
         $app->group('/users', function () use ($app): void {
-            $app->get('', User\GetAll::class)->add(new Auth());
             $app->post('', User\Create::class);
-            $app->get('/{id}', User\GetOne::class)->add(new Auth());
+            $app->get('/{id}', User\GetOne::class);
             $app->put('/{id}', User\Update::class)->add(new Auth());
             // $app->delete('/{id}', User\Delete::class)->add(new Auth());
         });
@@ -36,7 +35,7 @@ return function ($app) {
         //     $app->put('/{id}', Note\Update::class);
         //     // $app->delete('/{id}', Note\Delete::class);
         // });
-    });
+    });  
 
     return $app;
 };

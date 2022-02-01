@@ -9,34 +9,34 @@ final class Find extends Base
     /**
      * @return array<string>
      */
-    public function getUsersByPage(
-        int $page,
-        int $perPage,
-        ?string $name,
-        ?string $email
-    ): array {
-        if ($page < 1) {
-            $page = 1;
-        }
-        if ($perPage < 1) {
-            $perPage = self::DEFAULT_PER_PAGE_PAGINATION;
-        }
+    // public function getUsersByPage(
+    //     int $page,
+    //     int $perPage,
+    //     ?string $name,
+    //     ?string $email
+    // ): array {
+    //     if ($page < 1) {
+    //         $page = 1;
+    //     }
+    //     if ($perPage < 1) {
+    //         $perPage = self::DEFAULT_PER_PAGE_PAGINATION;
+    //     }
 
-        return $this->userRepository->getUsersByPage(
-            $page,
-            $perPage,
-            $name,
-            $email
-        );
-    }
+    //     return $this->userRepository->getUsersByPage(
+    //         $page,
+    //         $perPage,
+    //         $name,
+    //         $email
+    //     );
+    // }
 
     /**
      * @return array<string>
      */
-    public function getAll(): array
-    {
-        return $this->userRepository->getAll();
-    }
+    // public function getAll(): array
+    // {
+    //     return $this->userRepository->getAll();
+    // }
 
     public function getOne(int $userId): object
     {

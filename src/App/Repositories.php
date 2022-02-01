@@ -11,4 +11,4 @@ $container['user_repository'] = static fn (ContainerInterface $container): UserR
 
 $container['task_repository'] = static fn (ContainerInterface $container): GuessRepository => new GuessRepository($container->get('db'));
 
-$container['note_repository'] = static fn (ContainerInterface $container): MatchRepository => new MatchRepository($container->get('db'));
+// $container['match_repository'] = static fn (ContainerInterface $container): MatchRepository => new MatchRepository($container->get('db'));

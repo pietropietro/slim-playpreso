@@ -6,7 +6,7 @@ use App\Handler\ApiError;
 use App\Service\RedisService;
 use Psr\Container\ContainerInterface;
 
-require_once __DIR__ . '/../vendor/mysqli.php';
+$database = $container->get('settings')['db'];
 $container['db'] = new MysqliDb(
     $database['host'],
     $database['user'],
@@ -14,7 +14,6 @@ $container['db'] = new MysqliDb(
     $database['name'],
     $database['port']
 );
-$database = $container->get('settings')['db'];
 
 $container['errorHandler'] = static fn (): ApiError => new ApiError();
 
