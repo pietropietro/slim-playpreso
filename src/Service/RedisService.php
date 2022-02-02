@@ -8,7 +8,7 @@ use Predis\Client;
 
 final class RedisService
 {
-    public const PROJECT_NAME = 'rest-api-slim-php';
+    public const PROJECT_NAME = 'slim-playpreso';
 
     public function __construct(private Client $redis)
     {
