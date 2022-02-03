@@ -15,6 +15,7 @@ abstract class Base extends BaseController
         return $this->container->get('guess_service');
     }
 
+    //TODO understand what it does
     protected function getAndValidateUserId(array $input): int
     {
         if (isset($input['decoded']) && isset($input['decoded']->sub)) {

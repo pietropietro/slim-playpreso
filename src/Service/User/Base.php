@@ -6,6 +6,11 @@ namespace App\Service\User;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Repository\PresoLeagueRepository;
+use App\Repository\UserInPresoLeaguesRepository;
+use App\Repository\GuessRepository;
+use App\Repository\MatchRepository;
+use App\Repository\TrophyRepository;
 use App\Service\BaseService;
 use App\Service\RedisService;
 use Respect\Validation\Validator as v;
@@ -16,28 +21,33 @@ abstract class Base extends BaseService
 
     public function __construct(
         protected UserRepository $userRepository,
+        protected PresoLeagueRepository $presoLeagueRepository,
+        protected UserInPresoLeaguesRepository $userInPresoLeaguesRepository,
+        protected GuessRepository $guessRepository,
+        protected MatchRepository $matchRepository,
+        protected TrophyRepository $trophyRepository,
         protected RedisService $redisService
     ) {
     }
 
-    protected static function validateUserName(string $name): string
-    {
-        if (! v::alnum('ÁÉÍÓÚÑáéíóúñ.')->length(1, 100)->validate($name)) {
-            throw new \App\Exception\User('Invalid name.', 400);
-        }
+    // protected static function validateUserName(string $name): string
+    // {
+    //     if (! v::alnum('ÁÉÍÓÚÑáéíóúñ.')->length(1, 100)->validate($name)) {
+    //         throw new \App\Exception\User('Invalid name.', 400);
+    //     }
 
-        return $name;
-    }
+    //     return $name;
+    // }
 
-    protected static function validateEmail(string $emailValue): string
-    {
-        $email = filter_var($emailValue, FILTER_SANITIZE_EMAIL);
-        if (! v::email()->validate($email)) {
-            throw new \App\Exception\User('Invalid email', 400);
-        }
+    // protected static function validateEmail(string $emailValue): string
+    // {
+    //     $email = filter_var($emailValue, FILTER_SANITIZE_EMAIL);
+    //     if (! v::email()->validate($email)) {
+    //         throw new \App\Exception\User('Invalid email', 400);
+    //     }
 
-        return (string) $email;
-    }
+    //     return (string) $email;
+    // }
 
     protected function getUserFromCache(int $userId): object
     {
@@ -57,7 +67,8 @@ abstract class Base extends BaseService
     //TODO oo : User
     protected function getUserFromDb(int $userId)
     {
-        return $this->userRepository->getUser($userId);
+        $user =  $this->userRepository->getUser($userId);
+        return $user;
     }
 
     protected function saveInCache(int $id, object $user): void

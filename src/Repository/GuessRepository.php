@@ -8,15 +8,16 @@ use App\Entity\Guess;
 
 final class GuessRepository extends BaseRepository
 {
-    public function getGuessesForUser(id $userId, $verified = true) : array {
+    public function getUserGuesses(int $userId, $verified = true, $limit = 20, string $stringTime = null) : array {
         
-        $this->getDb()->where('user_id', $userid);
+        $this->getDb()->where('user_id', $userId);
         $this->getDb()->where('verified', $verified);
         $this->getDb()->orderBy('created_at', 'DESC');
-        $this->getDb()->where('verified_at', date("Y-m-d H:i:s", strtotime("-3 months")), ">");
-    
-        return $this->getDb()->get('guesses');
-        
+        if($stringTime){
+            //i.e. "-3 months"
+            $this->getDb()->where('verified_at', date("Y-m-d H:i:s", strtotime($stringTime)), ">");
+        }
+        return $this->getDb()->get('guesses', $limit);
     }
 
     //TODO

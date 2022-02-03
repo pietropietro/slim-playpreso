@@ -6,26 +6,38 @@ namespace App\Service\User;
 
 final class Find extends Base
 {
-    public function getOne(int $userId) : obj
+    //TODO add OO : User
+    public function getOne(int $userId) 
     {
         if (self::isRedisEnabled() === true) {
-            $user = $this->getUserFromCache($userId);
-        } else {
-            $user = $this->getUserFromDb($userId);
+            return $this->getUserFromCache($userId);
+        } 
+        
+        $user = $this->getUserFromDb($userId);
 
-            $user['guesses'] = $this->getGuessesForUser($userId);
-            
-            $userPresoLeagueIds =  $this->getUserPresoLeagueIds($userId);
-            $user['presoLeagues'] = $this->getPresoLeagues($userPresoLeagueIds);
-
-            $user['trophies'] = $this->getTrophies($userId);
-
-            // if($user['guesses']){
-            //     // $user['userTopStats'] = getTopStatsForUser($userId);
-            //     $user['leagueTopStats'] = getTopStats($userId);
-            //     $user['average'] = calculateUserAverage($userId,20);
-            // }
+        $guesses = $this->guessRepository->getUserGuesses($userId);
+        $guessesWithMatch = array();
+        foreach ($guesses as $guess) {
+            $match = $this->matchRepository->getMatch($guess['match_id']);
+            $guess['match'] = $match;
+            array_push($guessesWithMatch, $guess);
         }
+        $user['guesses'] = $guessesWithMatch;
+
+        $userPresoLeagueIds =  $this->userInPresoLeaguesRepository->getUserPresoLeagueIds($userId, true);
+        $user['presoLeagues'] = $this->presoLeagueRepository->getPresoLeagues($userPresoLeagueIds);
+
+        $user['trophies'] = $this->trophyRepository->getTrophies($userId);
+        
+        //TODO save in cache
+
+
+        // if($user['guesses']){
+        //     // $user['userTopStats'] = getTopStatsForUser($userId);
+        //     $user['leagueTopStats'] = getTopStats($userId);
+        //     $user['average'] = calculateUserAverage($userId,20);
+        // }
+        
 
         return $user;
     }
