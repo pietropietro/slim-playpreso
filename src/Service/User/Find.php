@@ -9,8 +9,8 @@ final class Find extends Base
     //TODO add OO : User
     public function getOne(int $userId) 
     {
-        if (self::isRedisEnabled() === true) {
-            return $this->getUserFromCache($userId);
+        if (self::isRedisEnabled() === true && $cached = $this->getUserFromCache($userId)) {
+            return $cached;
         } 
         
         $user = $this->getUserFromDb($userId);
@@ -29,8 +29,7 @@ final class Find extends Base
 
         $user['trophies'] = $this->trophyRepository->getTrophies($userId);
         
-        //TODO save in cache
-
+        $this->saveInCache($userId, (object) $user);
 
         // if($user['guesses']){
         //     // $user['userTopStats'] = getTopStatsForUser($userId);

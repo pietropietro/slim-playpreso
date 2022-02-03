@@ -49,19 +49,15 @@ abstract class Base extends BaseService
     //     return (string) $email;
     // }
 
-    protected function getUserFromCache(int $userId): object
+    protected function getUserFromCache(int $userId)
     {
         $redisKey = sprintf(self::REDIS_KEY, $userId);
         $key = $this->redisService->generateKey($redisKey);
         if ($this->redisService->exists($key)) {
             $data = $this->redisService->get($key);
-            $user = json_decode((string) json_encode($data), false);
-        } else {
-            $user = $this->getUserFromDb($userId)->toJson();
-            $this->redisService->setex($key, $user);
-        }
-
-        return $user;
+            return json_decode((string) json_encode($data), false);
+        } 
+        return null;
     }
 
     //TODO oo : User
