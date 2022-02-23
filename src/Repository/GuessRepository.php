@@ -11,7 +11,9 @@ final class GuessRepository extends BaseRepository
     public function getUserGuesses(int $userId, $verified = true, $limit = 20, string $stringTime = null) : array {
         
         $this->getDb()->where('user_id', $userId);
-        $this->getDb()->where('verified', $verified);
+        if($verified){
+            $this->getDb()->where('verified_at', 'NOT NULL');
+        }
         $this->getDb()->orderBy('created_at', 'DESC');
         if($stringTime){
             //i.e. "-3 months"

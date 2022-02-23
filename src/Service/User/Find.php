@@ -24,12 +24,15 @@ final class Find extends Base
         }
         $user['guesses'] = $guessesWithMatch;
 
-        $userPresoLeagueIds =  $this->userInPresoLeaguesRepository->getUserPresoLeagueIds($userId, true);
-        $user['presoLeagues'] = $this->presoLeagueRepository->getPresoLeagues($userPresoLeagueIds);
+        //TODO update w/ new db schema
+        // $userPresoLeagueIds =  $this->userInPresoLeaguesRepository->getUserPresoLeagueIds($userId, true);
+        // $user['presoLeagues'] = $this->presoLeagueRepository->getPresoLeagues($userPresoLeagueIds);
 
         $user['trophies'] = $this->trophyRepository->getTrophies($userId);
         
-        $this->saveInCache($userId, (object) $user);
+        if (self::isRedisEnabled() === true){
+            $this->saveInCache($userId, (object) $user);
+        }
 
         // if($user['guesses']){
         //     // $user['userTopStats'] = getTopStatsForUser($userId);

@@ -11,7 +11,7 @@ final class TrophyRepository extends BaseRepository
 
         //TODO RENAME DB TABLE CAMEL CASE 
         //TODO RENAME COLUMNS NAME -> position, plId
-        $trophies = $this->getDb()->get('usersPLplacements');
+        $trophies = $this->getDb()->get('userPlacements');
         
         return $trophies;
     }

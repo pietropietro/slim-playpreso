@@ -8,7 +8,7 @@ final class PresoLeagueRepository extends BaseRepository
 {
     public function getPresoLeagues(array $ids) {
         $this->getDb()->where('id', $ids, 'IN');
-        $presoLeagues=$this->getDb()->get('presoLeagues');
+        $presoLeagues=$this->getDb()->get('ppLeagues');
         if (! $presoLeagues) {
             throw new \App\Exception\PresoLeague('PresoLeagues not found.', 404);
         }   
