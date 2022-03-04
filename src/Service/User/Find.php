@@ -6,7 +6,6 @@ namespace App\Service\User;
 
 final class Find extends Base
 {
-    //TODO add OO : User
     public function getOne(int $userId) 
     {
         if (self::isRedisEnabled() === true && $cached = $this->getUserFromCache($userId)) {
@@ -14,8 +13,13 @@ final class Find extends Base
         } 
         
         $user = $this->getUserFromDb($userId);
+        
 
         $guesses = $this->guessRepository->getUserGuesses($userId);
+
+        echo("retrieved guesses : ");
+        print_r($guesses);
+
         $guessesWithMatch = array();
         foreach ($guesses as $guess) {
             $match = $this->matchRepository->getMatch($guess['match_id']);
@@ -28,7 +32,7 @@ final class Find extends Base
         // $userPPLeagueIds =  $this->userInPPLeaguesRepository->getUserPPLeagueIds($userId, true);
         // $user['ppLeagues'] = $this->ppLeagueRepository->getPPLeagues($userPPLeagueIds);
 
-        $user['trophies'] = $this->userPlacementsRepository->getTrophies($userId);
+        $user['trophies'] = $this->userPlacementsRepository->getPlacements($userId);
         
         if (self::isRedisEnabled() === true){
             $this->saveInCache($userId, (object) $user);

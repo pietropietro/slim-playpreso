@@ -12,7 +12,7 @@ final class GuessRepository extends BaseRepository
         
         $this->getDb()->where('user_id', $userId);
         if($verified){
-            $this->getDb()->where('verified_at', 'NOT NULL');
+            $this->getDb()->where('verified_at IS NOT NULL');
         }
         $this->getDb()->orderBy('created_at', 'DESC');
         if($stringTime){
