@@ -6,11 +6,11 @@ namespace App\Service\User;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
-use App\Repository\PresoLeagueRepository;
-use App\Repository\UserInPresoLeaguesRepository;
+use App\Repository\PPLeagueRepository;
+use App\Repository\UserParticipationsRepository;
 use App\Repository\GuessRepository;
 use App\Repository\MatchRepository;
-use App\Repository\TrophyRepository;
+use App\Repository\UserPlacementsRepository;
 use App\Service\BaseService;
 use App\Service\RedisService;
 use Respect\Validation\Validator as v;
@@ -21,11 +21,11 @@ abstract class Base extends BaseService
 
     public function __construct(
         protected UserRepository $userRepository,
-        protected PresoLeagueRepository $presoLeagueRepository,
-        protected UserInPresoLeaguesRepository $userInPresoLeaguesRepository,
+        protected PPLeagueRepository $ppLeagueRepository,
+        protected UserParticipationsRepository $userParticipationsRepository,
         protected GuessRepository $guessRepository,
         protected MatchRepository $matchRepository,
-        protected TrophyRepository $trophyRepository,
+        protected UserPlacementsRepository $userPlacementsRepository,
         protected RedisService $redisService
     ) {
     }

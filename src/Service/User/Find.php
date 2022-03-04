@@ -25,10 +25,10 @@ final class Find extends Base
         $user['guesses'] = $guessesWithMatch;
 
         //TODO update w/ new db schema
-        // $userPresoLeagueIds =  $this->userInPresoLeaguesRepository->getUserPresoLeagueIds($userId, true);
-        // $user['presoLeagues'] = $this->presoLeagueRepository->getPresoLeagues($userPresoLeagueIds);
+        // $userPPLeagueIds =  $this->userInPPLeaguesRepository->getUserPPLeagueIds($userId, true);
+        // $user['ppLeagues'] = $this->ppLeagueRepository->getPPLeagues($userPPLeagueIds);
 
-        $user['trophies'] = $this->trophyRepository->getTrophies($userId);
+        $user['trophies'] = $this->userPlacementsRepository->getTrophies($userId);
         
         if (self::isRedisEnabled() === true){
             $this->saveInCache($userId, (object) $user);

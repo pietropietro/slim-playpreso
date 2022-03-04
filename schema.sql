@@ -487,6 +487,8 @@ CREATE TABLE `userParticipations` (
 --
 -- Indexes for table `userParticipations`
 --
+
+--TODO MERGE userParticipations w/ userPlacements
 ALTER TABLE `userParticipations`
     ADD PRIMARY KEY (`id`),
     ADD KEY `user_id` (`user_id`),
