@@ -8,32 +8,33 @@ use App\Controller\User;
 use App\Middleware\Auth;
 
 return function ($app) {
+
+    $app->add(function ($req, $res, $next) {
+        $response = $next($req, $res);
+        return $response
+                ->withHeader('Access-Control-Allow-Origin', $_SERVER['ALLOW_URL_REQUEST'])
+                ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+                ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    });
+
     $app->get('/', 'App\Controller\DefaultController:getHelp');
     $app->get('/status', 'App\Controller\DefaultController:getStatus');
     $app->post('/login', \App\Controller\User\Login::class);
 
-    // $app->group('/api/v1', function () use ($app): void {
-        // $app->group('/guesses', function () use ($app): void {
-        //     $app->post('', Guess\Create::class);
-        //     $app->get('/{id}', Guess\GetOne::class);
-        //     $app->put('/{id}', Guess\Lock::class);
-        // })->add(new Auth());
-
-        $app->group('/users', function () use ($app): void {
-            $app->post('', User\Create::class);
-            $app->get('/{id}', User\GetOne::class)->add(new Auth());
-            $app->put('/{id}', User\Update::class)->add(new Auth());
-            // $app->delete('/{id}', User\Delete::class)->add(new Auth());
-        });
-
-        // $app->group('/matches', function () use ($app): void {
-        //     $app->get('', Match\GetAll::class);
-        //     $app->post('', Match\Create::class);
-        //     $app->get('/{id}', Match\GetOne::class);
-        //     $app->put('/{id}', Match\Update::class);
-        //     // $app->delete('/{id}', Match\Delete::class);
-        // });
+    $app->group('/users', function () use ($app): void {
+        $app->post('', User\Create::class);
+        $app->get('/{id}', User\GetOne::class)->add(new Auth());
+        $app->put('/{id}', User\Update::class)->add(new Auth());
+        // $app->delete('/{id}', User\Delete::class)->add(new Auth());
+    });
     // });  
+    
+    // Catch-all route to serve a 404 Not Found page if none of the routes match
+    // NOTE: make sure this route is defined last
+    $app->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function($req, $res) {
+        $handler = $this->notFoundHandler; // handle using the default Slim page not found handler
+        return $handler($req, $res);
+    });
 
     return $app;
 };
