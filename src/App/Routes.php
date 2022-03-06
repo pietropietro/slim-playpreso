@@ -13,11 +13,11 @@ return function ($app) {
     $app->post('/login', \App\Controller\User\Login::class);
 
     // $app->group('/api/v1', function () use ($app): void {
-        $app->group('/guesses', function () use ($app): void {
-            $app->post('', Guess\Create::class);
-            $app->get('/{id}', Guess\GetOne::class);
-            $app->put('/{id}', Guess\Lock::class);
-        })->add(new Auth());
+        // $app->group('/guesses', function () use ($app): void {
+        //     $app->post('', Guess\Create::class);
+        //     $app->get('/{id}', Guess\GetOne::class);
+        //     $app->put('/{id}', Guess\Lock::class);
+        // })->add(new Auth());
 
         $app->group('/users', function () use ($app): void {
             $app->post('', User\Create::class);

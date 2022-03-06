@@ -13,12 +13,7 @@ final class Find extends Base
         } 
         
         $user = $this->getUserFromDb($userId);
-        
-
         $guesses = $this->guessRepository->getUserGuesses($userId);
-
-        echo("retrieved guesses : ");
-        print_r($guesses);
 
         $guessesWithMatch = array();
         foreach ($guesses as $guess) {

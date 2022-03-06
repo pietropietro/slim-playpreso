@@ -30,24 +30,24 @@ abstract class Base extends BaseService
     ) {
     }
 
-    // protected static function validateUserName(string $name): string
-    // {
-    //     if (! v::alnum('ÁÉÍÓÚÑáéíóúñ.')->length(1, 100)->validate($name)) {
-    //         throw new \App\Exception\User('Invalid name.', 400);
-    //     }
+    protected static function validateUserName(string $username): string
+    {
+        if (! v::alnum('ÁÉÍÓÚÑáéíóúñ.')->length(1, 15)->validate($username)) {
+            throw new \App\Exception\User('Invalid username.', 400);
+        }
 
-    //     return $name;
-    // }
+        return $username;
+    }
 
-    // protected static function validateEmail(string $emailValue): string
-    // {
-    //     $email = filter_var($emailValue, FILTER_SANITIZE_EMAIL);
-    //     if (! v::email()->validate($email)) {
-    //         throw new \App\Exception\User('Invalid email', 400);
-    //     }
+    protected static function validateEmail(string $emailValue): string
+    {
+        $email = filter_var($emailValue, FILTER_SANITIZE_EMAIL);
+        if (! v::email()->validate($email)) {
+            throw new \App\Exception\User('Invalid email', 400);
+        }
 
-    //     return (string) $email;
-    // }
+        return (string) $email;
+    }
 
     protected function getUserFromCache(int $userId)
     {
@@ -60,7 +60,6 @@ abstract class Base extends BaseService
         return null;
     }
 
-    //TODO oo : User
     protected function getUserFromDb(int $userId)
     {
         $user =  $this->userRepository->getUser($userId);
