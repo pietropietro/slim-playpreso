@@ -32,7 +32,7 @@ abstract class Base extends BaseService
 
     protected static function validateUserName(string $username): string
     {
-        if (! v::alnum('ÁÉÍÓÚÑáéíóúñ.')->length(1, 15)->validate($username)) {
+        if (! v::alnum('ÁÉÍÓÚÑáéíóúñ.')->noWhitespace()->length(1, 10)->validate($username)) {
             throw new \App\Exception\User('Invalid username.', 400);
         }
 
