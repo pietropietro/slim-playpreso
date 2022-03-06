@@ -13,10 +13,7 @@ final class Login extends Base
     {
         $input = (array) $request->getParsedBody();
         
-        $jwt = $this->getLoginUserService()->login($input);
-        $message = [
-            'Authorization' => 'Bearer ' . $jwt,
-        ];
+        $message = $this->getLoginUserService()->login($input);
 
         return $this->jsonResponse($response, 'success', $message, 200);
     }

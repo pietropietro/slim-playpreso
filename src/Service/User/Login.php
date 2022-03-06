@@ -12,7 +12,7 @@ final class Login extends Base
     /**
      * @param array<string> $input
      */
-    public function login(array $input): string
+    public function login(array $input)
     {
         $data = json_decode((string) json_encode($input), false);
         if (! isset($data->username)) {
@@ -30,6 +30,11 @@ final class Login extends Base
             'exp' => time() + (7 * 24 * 60 * 60),
         ];
 
-        return JWT::encode($token, $_SERVER['SECRET_KEY']);
+        $jwt = JWT::encode($token, $_SERVER['SECRET_KEY']);
+        
+        return [
+            'authorization' => 'Bearer ' . $jwt,
+            'user' => $user
+        ];
     }
 }
