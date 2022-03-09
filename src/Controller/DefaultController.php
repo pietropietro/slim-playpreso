@@ -9,21 +9,17 @@ use Slim\Http\Response;
 
 final class DefaultController extends BaseController
 {
-    private const API_VERSION = '2.16.0';
+    private const API_VERSION = '1.0';
 
     public function getHelp(Request $request, Response $response): Response
     {
         $url = $this->container->get('settings')['app']['domain'];
-        $endpoints = [
-            'tasks' => $url . '/api/v1/tasks',
-            'users' => $url . '/api/v1/users',
-            'notes' => $url . '/api/v1/notes',
-            'docs' => $url . '/docs/index.html',
-            'status' => $url . '/status',
-            'this help' => $url . '',
-        ];
+        // $endpoints = [
+        //     'users' => $url . '/api/v1/users',
+        //     'status' => $url . '/status',
+        // ];
         $message = [
-            'endpoints' => $endpoints,
+            // 'endpoints' => $endpoints,
             'version' => self::API_VERSION,
             'timestamp' => time(),
         ];
@@ -49,14 +45,10 @@ final class DefaultController extends BaseController
      */
     private function getDbStats(): array
     {
-        $taskService = $this->container->get('task_service');
         $userService = $this->container->get('find_user_service');
-        $noteService = $this->container->get('find_note_service');
 
         return [
-            'tasks' => count($taskService->getAllTasks()),
             'users' => count($userService->getAll()),
-            'notes' => count($noteService->getAll()),
         ];
     }
 

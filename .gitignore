@@ -10,3 +10,4 @@
 /.scannerwork/
 /.phpunit.result.cache
 /dump.rdb
+/.DS_Store

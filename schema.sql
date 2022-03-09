@@ -9,7 +9,8 @@ CREATE TABLE `users` (
   `points` int(11) NOT NULL,
   `password` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `country` varchar(255) NOT NULL,
+  `ip_address` varchar(255) NOT NULL,
+  `country` varchar(255),
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
