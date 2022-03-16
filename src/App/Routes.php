@@ -8,7 +8,7 @@ use App\Controller\User;
 use App\Middleware\Auth;
 
 return function ($app) {
-    $app->group('/v1sp', function () use ($app): void {
+    $app->group('/v1t', function () use ($app): void {
 
         $app->add(function ($req, $res, $next) {
             $response = $next($req, $res);
