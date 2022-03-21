@@ -27,19 +27,30 @@ final class Find extends Base
         // $userPPLeagueIds =  $this->userInPPLeaguesRepository->getUserPPLeagueIds($userId, true);
         // $user['ppLeagues'] = $this->ppLeagueRepository->getPPLeagues($userPPLeagueIds);
 
-        $user['trophies'] = $this->userPlacementsRepository->getPlacements($userId);
+        //TODO  placements merged into userPArticipations
+        $user['trophies'] = $this->UserParticipationRepository->getPlacements($userId);
         
         if (self::isRedisEnabled() === true){
             $this->saveInCache($userId, (object) $user);
         }
 
-        // if($user['guesses']){
-        //     // $user['userTopStats'] = getTopStatsForUser($userId);
-        //     $user['leagueTopStats'] = getTopStats($userId);
-        //     $user['average'] = calculateUserAverage($userId,20);
-        // }
-        
 
+        
         return $user;
     }
+
+    public function getAvailablePPLeagueTypes(int $userId) 
+    {
+        if (self::isRedisEnabled() === true && $cached = $this->getAvailablePPLeagueTypesFromCache($userId)) {
+            return $cached;
+        } 
+
+        //1. get qualified ppLT ids
+        $OkPPLeagueTypeIds = $this->UserParticipationRepository->getOkPPLeagueTypeIdsForUser($userId);
+        //2. get those ppLTs + 1 level  OR  same level if max, and level 1 for others
+        $availablePPLeagueTypes = $this->ppLeagueTypeRepository->getHigherPPLeagueTypes($OkPPLeagueTypeIds);
+
+        return $availablePPLeagueTypes;        
+    }
+
 }

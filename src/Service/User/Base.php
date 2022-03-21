@@ -7,10 +7,10 @@ namespace App\Service\User;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Repository\PPLeagueRepository;
-use App\Repository\UserParticipationsRepository;
+use App\Repository\UserParticipationRepository;
 use App\Repository\GuessRepository;
 use App\Repository\MatchRepository;
-use App\Repository\UserPlacementsRepository;
+use App\Repository\PPLeagueTypeRepository;
 use App\Service\BaseService;
 use App\Service\RedisService;
 use Respect\Validation\Validator as v;
@@ -19,13 +19,15 @@ abstract class Base extends BaseService
 {
     private const REDIS_KEY = 'user:%s';
 
+    //TODO only use shared ones
+    //create specific constructor for other user services
     public function __construct(
         protected UserRepository $userRepository,
         protected PPLeagueRepository $ppLeagueRepository,
-        protected UserParticipationsRepository $userParticipationsRepository,
+        protected UserParticipationRepository $UserParticipationRepository,
         protected GuessRepository $guessRepository,
         protected MatchRepository $matchRepository,
-        protected UserPlacementsRepository $userPlacementsRepository,
+        protected PPLeagueTypeRepository $ppLeagueTypeRepository,
         protected RedisService $redisService
     ) {
     }
@@ -59,6 +61,19 @@ abstract class Base extends BaseService
         } 
         return null;
     }
+
+    protected function getAvailablePPLeagueTypesFromCache(int $userId)
+    {
+        $redisKey = sprintf('ppLeagueTypes-' . self::REDIS_KEY, $userId);
+        $key = $this->redisService->generateKey($redisKey);
+        if ($this->redisService->exists($key)) {
+            $data = $this->redisService->get($key);
+            return json_decode((string) json_encode($data), false);
+        } 
+        return null;
+    }
+
+    
 
     protected function getUserFromDb(int $userId)
     {

@@ -480,9 +480,11 @@ CREATE TABLE `userParticipations` (
   `user_id` int(11) NOT NULL,
   `placement` int(11),
   'placed_at' timestamp,
-  `ppLeague_id` int(11),  
+  `ppLeague_id` int(11),
+  `ppLeagueType_id` int(11),    
   `ppCup_id` int(11),
   `ppCupGroup_id` int(11),
+  `ppCupType_id` int(11),    
   `joined_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -497,6 +499,8 @@ ALTER TABLE `userParticipations`
     ADD KEY `ppCup_id` (`ppCup_id`),
     ADD KEY `ppCupGroup_id` (`ppCupGroup_id`),
     ADD KEY `ppLeague_id` (`ppLeague_id`),
+    ADD KEY `ppLeagueType_id` (`ppLeagueType_id`),
+    ADD KEY `ppCupType_id` (`ppCupType_id`),
     ADD UNIQUE KEY `uq_usersPL` (`user_id`,`ppLeague_id`),
     ADD UNIQUE KEY `uq_usersPCG` (`user_id`,`ppCupGroup_id`);
 
@@ -513,7 +517,9 @@ ALTER TABLE `userParticipations`
     ADD CONSTRAINT `userParticipations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
     ADD CONSTRAINT `userParticipations_ibfk_2` FOREIGN KEY (`ppCup_id`) REFERENCES `ppCups` (`id`),
     ADD CONSTRAINT `userParticipations_ibfk_3` FOREIGN KEY (`ppCupGroup_id`) REFERENCES `ppCupGroups` (`id`),
-    ADD CONSTRAINT `userParticipations_ibfk_4` FOREIGN KEY (`ppLeague_id`) REFERENCES `ppLeagues` (`id`);
+    ADD CONSTRAINT `userParticipations_ibfk_4` FOREIGN KEY (`ppLeague_id`) REFERENCES `ppLeagues` (`id`),
+    ADD CONSTRAINT `userParticipations_ibfk_5` FOREIGN KEY (`ppLeagueType_id`) REFERENCES `ppLeagueTypes` (`id`),
+    ADD CONSTRAINT `userParticipations_ibfk_6` FOREIGN KEY (`ppCupType_id`) REFERENCES `ppCupTypes` (`id`);
     
     --TODO - syntax not working
     ---ADD CONSTRAINT 'cup_or_league' CHECK ((`ppCup_id` IS NULL + `ppLeague_id` IS NOT NULL) OR (`ppCup_id` IS NOT NULL + `ppLeague_id` IS NULL));

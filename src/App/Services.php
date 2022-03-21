@@ -13,8 +13,8 @@ $container['find_user_service'] = static fn (
     $container->get('user_participations_repository'),
     $container->get('guess_repository'),
     $container->get('match_repository'),
-    $container->get('user_placements_repository'),
-    $container->get('redis_service')
+    $container->get('pp_league_type_repository'),
+    $container->get('redis_service'),
 );
 
 $container['create_user_service'] = static fn (
@@ -25,7 +25,6 @@ $container['create_user_service'] = static fn (
     $container->get('user_participations_repository'),
     $container->get('guess_repository'),
     $container->get('match_repository'),
-    $container->get('user_placements_repository'),
     $container->get('redis_service')
 );
 
@@ -51,7 +50,6 @@ $container['login_user_service'] = static fn (
     $container->get('user_participations_repository'),
     $container->get('guess_repository'),
     $container->get('match_repository'),
-    $container->get('user_placements_repository'),
     $container->get('redis_service')
 );
 

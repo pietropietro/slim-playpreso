@@ -18,15 +18,10 @@ final class GetPPLeagueTypes extends Base
         array $args
     ): Response {
         $input = (array) $request->getParsedBody();
-        echo('input: <br><br>');
-        print_r($input);
-
         $userId = $this->getAndValidateUserId($input);
-        echo('userid: <br><br>');
-        echo($userId);
 
-        // $ppLeagueTypes = $this->getFindUserService()->getPPLeagueTypes((int) xx);
+        $ppLeagueTypes = $this->getFindUserService()->getAvailablePPLeagueTypes($userId);
 
-        return $this->jsonResponse($response, 'success', $user, 200);
+        return $this->jsonResponse($response, 'success', $ppLeagueTypes, 200);
     }
 }
