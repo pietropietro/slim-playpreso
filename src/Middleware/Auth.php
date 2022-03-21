@@ -26,7 +26,7 @@ final class Auth extends Base
         }
         $decoded = $this->checkToken($jwt[1]);
         $object = (array) $request->getParsedBody();
-        $object['decoded'] = $decoded;
+        $object['JWT_decoded'] = $decoded;
 
         return $next($request->withParsedBody($object), $response);
     }

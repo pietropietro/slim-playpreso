@@ -15,13 +15,12 @@ abstract class Base extends BaseController
         return $this->container->get('guess_service');
     }
 
-    //TODO understand what it does
     protected function getAndValidateUserId(array $input): int
     {
-        if (isset($input['decoded']) && isset($input['decoded']->sub)) {
-            return (int) $input['decoded']->sub;
+        if (isset($input['JWT_decoded']) && isset($input['JWT_decoded']->id)) {
+            return (int) $input['JWT_decoded']->id;
         }
 
-        throw new Guess('Invalid user. Permission failed.', 400);
+        throw new User('Invalid user. Permission failed.', 400);
     }
 }
