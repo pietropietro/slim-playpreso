@@ -478,6 +478,8 @@ ALTER TABLE `guesses`
 CREATE TABLE `userParticipations` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
+  `placement` int(11),
+  'placed_at' timestamp,
   `ppLeague_id` int(11),  
   `ppCup_id` int(11),
   `ppCupGroup_id` int(11),
@@ -489,7 +491,6 @@ CREATE TABLE `userParticipations` (
 -- Indexes for table `userParticipations`
 --
 
---TODO MERGE userParticipations w/ userPlacements
 ALTER TABLE `userParticipations`
     ADD PRIMARY KEY (`id`),
     ADD KEY `user_id` (`user_id`),
@@ -518,51 +519,5 @@ ALTER TABLE `userParticipations`
     ---ADD CONSTRAINT 'cup_or_league' CHECK ((`ppCup_id` IS NULL + `ppLeague_id` IS NOT NULL) OR (`ppCup_id` IS NOT NULL + `ppLeague_id` IS NULL));
     ---
 
-
-
-
---USERPLACEMENTS
--- added reference to PCtype - PLtype
---this table contains data which shows users best placement in various competitons.
---will be used as source of truth for user trophies
-CREATE TABLE `userPlacements` (
-    `id` int(11) NOT NULL,
-    `user_id` int(11) NOT NULL,
-    `ppLeagueType_id` int(11) DEFAULT NULL,
-    `ppLeague_id` int(11) DEFAULT NULL,
-    `ppCupType_id` int(11) DEFAULT NULL,
-    `ppCup_id` int(11) DEFAULT NULL,
-    `placement` int(11) NOT NULL,
-    `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Indexes for table `userPlacements`
---
-ALTER TABLE `userPlacements`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `uq_userPLTaccess` (`user_id`,`ppLeagueType_id`),
-  ADD UNIQUE KEY `uq_userPCTaccess` (`user_id`,`ppCupType_id`),
-  ADD KEY `ppLeagueType_id` (`ppLeagueType_id`),
-  ADD KEY `ppLeague_id` (`ppLeague_id`),
-  ADD KEY `ppCupType_id` (`ppCupType_id`),
-  ADD KEY `ppCup_id` (`ppCup_id`);
-  
-
---
--- AUTO_INCREMENT for table `userPlacements`
---
-ALTER TABLE `userPlacements`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
-  --
--- Constraints for table `userPlacements`
---
-ALTER TABLE `userPlacements`
-  ADD CONSTRAINT `userPlacements_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `userPlacements_ibfk_2` FOREIGN KEY (`ppLeagueType_id`) REFERENCES `ppLeagueTypes` (`id`),
-  ADD CONSTRAINT `userPlacements_ibfk_3` FOREIGN KEY (`ppLeague_id`) REFERENCES `ppLeagues` (`id`),
-  ADD CONSTRAINT `userPlacements_ibfk_4` FOREIGN KEY (`ppCupType_id`) REFERENCES `ppCupTypes` (`id`),
-  ADD CONSTRAINT `userPlacements_ibfk_5` FOREIGN KEY (`ppCup_id`) REFERENCES `ppCups` (`id`);
 
 COMMIT;
