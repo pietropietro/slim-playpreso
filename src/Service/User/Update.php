@@ -5,9 +5,18 @@ declare(strict_types=1);
 namespace App\Service\User;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
+use App\Service\RedisService;
+
 
 final class Update extends Base
 {
+    public function __construct(
+        protected UserRepository $userRepository,
+        protected RedisService $redisService
+    ) {
+    }
+
     /**
      * @param array<string> $input
      */

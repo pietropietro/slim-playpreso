@@ -6,9 +6,18 @@ namespace App\Service\User;
 
 use App\Exception\User;
 use Firebase\JWT\JWT;
+use App\Repository\UserRepository;
+use App\Service\RedisService;
+
 
 final class Login extends Base
 {
+    public function __construct(
+        protected UserRepository $userRepository,
+        protected RedisService $redisService
+    ) {
+    }
+
     /**
      * @param array<string> $input
      */

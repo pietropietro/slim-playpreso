@@ -6,28 +6,16 @@ namespace App\Service\User;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
-use App\Repository\PPLeagueRepository;
-use App\Repository\UserParticipationRepository;
-use App\Repository\GuessRepository;
-use App\Repository\MatchRepository;
-use App\Repository\PPLeagueTypeRepository;
-use App\Service\BaseService;
 use App\Service\RedisService;
+use App\Service\BaseService;
 use Respect\Validation\Validator as v;
 
 abstract class Base extends BaseService
 {
     private const REDIS_KEY = 'user:%s';
 
-    //TODO only use shared ones
-    //create specific constructor for other user services
     public function __construct(
         protected UserRepository $userRepository,
-        protected PPLeagueRepository $ppLeagueRepository,
-        protected UserParticipationRepository $UserParticipationRepository,
-        protected GuessRepository $guessRepository,
-        protected MatchRepository $matchRepository,
-        protected PPLeagueTypeRepository $ppLeagueTypeRepository,
         protected RedisService $redisService
     ) {
     }

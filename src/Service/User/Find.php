@@ -4,8 +4,27 @@ declare(strict_types=1);
 
 namespace App\Service\User;
 
+use App\Repository\UserRepository;
+use App\Service\RedisService;
+use App\Repository\PPLeagueRepository;
+use App\Repository\GuessRepository;
+use App\Repository\MatchRepository;
+use App\Repository\UserParticipationRepository;
+use App\Repository\PPLeagueTypeRepository;
+
 final class Find extends Base
 {
+    public function __construct(
+        protected UserRepository $userRepository,
+        protected RedisService $redisService,
+        protected UserParticipationRepository $UserParticipationRepository,
+        protected GuessRepository $guessRepository,
+        protected MatchRepository $matchRepository,
+        protected PPLeagueTypeRepository $ppLeagueTypeRepository,
+        protected PPLeagueRepository $ppLeagueRepository,
+    ) {
+    }
+
     public function getOne(int $userId) 
     {
         if (self::isRedisEnabled() === true && $cached = $this->getUserFromCache($userId)) {

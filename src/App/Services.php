@@ -9,22 +9,18 @@ $container['find_user_service'] = static fn (
     ContainerInterface $container
 ): User\Find => new User\Find(
     $container->get('user_repository'),
-    $container->get('pp_league_repository'),
+    $container->get('redis_service'),
     $container->get('user_participations_repository'),
     $container->get('guess_repository'),
     $container->get('match_repository'),
     $container->get('pp_league_type_repository'),
-    $container->get('redis_service'),
+    $container->get('pp_league_repository'),
 );
 
 $container['create_user_service'] = static fn (
     ContainerInterface $container
 ): User\Create => new User\Create(
     $container->get('user_repository'),
-    $container->get('pp_league_repository'),
-    $container->get('user_participations_repository'),
-    $container->get('guess_repository'),
-    $container->get('match_repository'),
     $container->get('redis_service')
 );
 
@@ -46,10 +42,6 @@ $container['login_user_service'] = static fn (
     ContainerInterface $container
 ): User\Login => new User\Login(
     $container->get('user_repository'),
-    $container->get('pp_league_repository'),
-    $container->get('user_participations_repository'),
-    $container->get('guess_repository'),
-    $container->get('match_repository'),
     $container->get('redis_service')
 );
 
