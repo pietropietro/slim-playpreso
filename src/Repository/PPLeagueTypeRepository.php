@@ -7,6 +7,8 @@ namespace App\Repository;
 final class PPLeagueTypeRepository extends BaseRepository
 {
 
+    //TODO atm we are returning all PPLTs level 1
+    //this function should retrieve higher level of those PPLTs available to the user
     function getHigherPPLeagueTypes($ppLTIds){
         // if(!$ppLTIds){
             return $this->getBasePPLTypes();

@@ -17,7 +17,7 @@ final class Find extends Base
     public function __construct(
         protected UserRepository $userRepository,
         protected RedisService $redisService,
-        protected UserParticipationRepository $UserParticipationRepository,
+        protected UserParticipationRepository $userParticipationRepository,
         protected GuessRepository $guessRepository,
         protected MatchRepository $matchRepository,
         protected PPLeagueTypeRepository $ppLeagueTypeRepository,
@@ -42,19 +42,15 @@ final class Find extends Base
         }
         $user['guesses'] = $guessesWithMatch;
 
-        //TODO update w/ new db schema
-        // $userPPLeagueIds =  $this->userInPPLeaguesRepository->getUserPPLeagueIds($userId, true);
-        // $user['ppLeagues'] = $this->ppLeagueRepository->getPPLeagues($userPPLeagueIds);
+        $activePPLeagueIds =  $this->userParticipationRepository->getUserPPLeagueIds($userId, true);
+        $user['ppLeagues'] = $this->ppLeagueRepository->getPPLeagues($activePPLeagueIds);
 
-        //TODO  placements merged into userPArticipations
-        $user['trophies'] = $this->UserParticipationRepository->getPlacements($userId);
+        $user['participations'] = $this->userParticipationRepository->getParticipations($userId);
         
         if (self::isRedisEnabled() === true){
             $this->saveInCache($userId, (object) $user);
         }
 
-
-        
         return $user;
     }
 
@@ -65,7 +61,7 @@ final class Find extends Base
         } 
 
         //1. get qualified ppLT ids
-        $OkPPLeagueTypeIds = $this->UserParticipationRepository->getOkPPLeagueTypeIdsForUser($userId);
+        $OkPPLeagueTypeIds = $this->userParticipationRepository->getOkPPLeagueTypeIdsForUser($userId);
         //2. get those ppLTs + 1 level  OR  same level if max, and level 1 for others
         $availablePPLeagueTypes = $this->ppLeagueTypeRepository->getHigherPPLeagueTypes($OkPPLeagueTypeIds);
 
