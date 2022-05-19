@@ -60,10 +60,25 @@ final class Find extends Base
             return $cached;
         } 
 
-        //1. get qualified ppLT ids
-        $OkPPLeagueTypeIds = $this->userParticipationRepository->getOkPPLeagueTypeIdsForUser($userId);
+        //2. get currently joined ppLTs for user
+        $currentPPLTIds = $this->userParticipationRepository->getCurrentPPLeagueTypeIds($userId);
+
+        $ppLTypesMap = $this->ppLeagueTypeRepository->getPPLTypesMap();
+
+        foreach($ppLTypesMap as $typeKey => $typeItem){
+            $allTypeIds = explode(',', $typeItem['ppLTIds']);
+            if(!empty(array_intersect($currentPPLTIds, $allTypeIds ))){
+                unset($ppLTypesMap[$typeKey]);
+            }
+        }
+        print_r($currentPPLTIds);
+        return  $ppLTypesMap;
+
+        //1. get qualified ppLT ids for user
+        $promotedPPLTIds = $this->userParticipationRepository->getPromotedPPLeagueTypeIds($userId);
+
         //2. get those ppLTs + 1 level  OR  same level if max, and level 1 for others
-        $availablePPLeagueTypes = $this->ppLeagueTypeRepository->getHigherPPLeagueTypes($OkPPLeagueTypeIds);
+        $availablePPLeagueTypes = $this->ppLeagueTypeRepository->getAvailablePPLeagueTypes($promotedPPLTIds,$currentPPLTIds);
 
         return $availablePPLeagueTypes;        
     }
