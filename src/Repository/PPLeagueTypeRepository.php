@@ -19,16 +19,5 @@ final class PPLeagueTypeRepository extends BaseRepository
         FROM ppLeagueTypes GROUP BY type ORDER BY maxLevel ');
     }
 
-    // function getNext
-	// if($PLtypes = $db->get('PLtypes')){
-	// 	$nextLevels = array();
-	// 	foreach ($PLtypes as $PLT) {
-	// 		if($nextLevel = getNextPLLevel($PLT['id'])){
-	// 			array_push($nextLevels, $nextLevel);
-	// 		}	
-	// 	}	
-	// 	return $nextLevels;
-	// }
-// }
 
 }
