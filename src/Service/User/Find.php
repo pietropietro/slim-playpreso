@@ -60,27 +60,24 @@ final class Find extends Base
             return $cached;
         } 
 
-        //2. get currently joined ppLTs for user
-        $currentPPLTIds = $this->userParticipationRepository->getCurrentPPLeagueTypeIds($userId);
-
         $ppLTypesMap = $this->ppLeagueTypeRepository->getPPLTypesMap();
+        $promotedPPLTIds = $this->userParticipationRepository->getPromotedPPLeagueTypeIds($userId);
+
+        $currentPPLTIds = $this->userParticipationRepository->getCurrentPPLeagueTypeIds($userId);
 
         foreach($ppLTypesMap as $typeKey => $typeItem){
             $allTypeIds = explode(',', $typeItem['ppLTIds']);
+            //remove user currently joined ppLTs
             if(!empty(array_intersect($currentPPLTIds, $allTypeIds ))){
                 unset($ppLTypesMap[$typeKey]);
+            }else{
+                //leave next level
+                $difference = array_values(array_diff($allTypeIds, $promotedPPLTIds));
+                $ppLTypesMap[$typeKey]['level'] = count($allTypeIds) - count($difference) +1 ;
+                $ppLTypesMap[$typeKey]['nextId'] = $difference[0];
             }
         }
-        print_r($currentPPLTIds);
-        return  $ppLTypesMap;
-
-        //1. get qualified ppLT ids for user
-        $promotedPPLTIds = $this->userParticipationRepository->getPromotedPPLeagueTypeIds($userId);
-
-        //2. get those ppLTs + 1 level  OR  same level if max, and level 1 for others
-        $availablePPLeagueTypes = $this->ppLeagueTypeRepository->getAvailablePPLeagueTypes($promotedPPLTIds,$currentPPLTIds);
-
-        return $availablePPLeagueTypes;        
+        return  array_values($ppLTypesMap);
     }
 
 }
