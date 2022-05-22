@@ -67,15 +67,17 @@ final class Find extends Base
 
         foreach($ppLTypesMap as $typeKey => $typeItem){
             $allTypeIds = explode(',', $typeItem['ppLTIds']);
+
             //remove user currently joined ppLTs
-            if(!empty(array_intersect($currentPPLTIds, $allTypeIds ))){
+            if(!!$currentPPLTIds && !empty(array_intersect($currentPPLTIds, $allTypeIds ))){
                 unset($ppLTypesMap[$typeKey]);
-            }else{
-                //leave next level
-                $difference = array_values(array_diff($allTypeIds, $promotedPPLTIds));
-                $ppLTypesMap[$typeKey]['level'] = count($allTypeIds) - count($difference) +1 ;
-                $ppLTypesMap[$typeKey]['nextId'] = $difference[0];
+                continue;
             }
+
+            $difference = !!$promotedPPLTIds ? array_values(array_diff($allTypeIds, $promotedPPLTIds)) : $allTypeIds;
+            $ppLTypesMap[$typeKey]['level'] = count($allTypeIds) - count($difference) +1 ;
+            $ppLTypesMap[$typeKey]['nextId'] = $difference[0];
+            
         }
         return  array_values($ppLTypesMap);
     }
