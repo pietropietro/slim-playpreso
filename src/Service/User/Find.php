@@ -56,30 +56,30 @@ final class Find extends Base
 
     public function getAvailablePPLeagueTypes(int $userId) 
     {
+        //TODO REDIS THIS
         if (self::isRedisEnabled() === true && $cached = $this->getAvailablePPLeagueTypesFromCache($userId)) {
             return $cached;
         } 
 
         $ppLTypesMap = $this->ppLeagueTypeRepository->getPPLTypesMap();
         $promotedPPLTIds = $this->userParticipationRepository->getPromotedPPLeagueTypeIds($userId);
-
         $currentPPLTIds = $this->userParticipationRepository->getCurrentPPLeagueTypeIds($userId);
 
-        foreach($ppLTypesMap as $typeKey => $typeItem){
-            $allTypeIds = explode(',', $typeItem['ppLTIds']);
+        $toRetrieveList = [];
 
-            //remove user currently joined ppLTs
-            if(!!$currentPPLTIds && !empty(array_intersect($currentPPLTIds, $allTypeIds ))){
+        foreach($ppLTypesMap as $typeKey => $typeItem){
+            $IdsOfType = explode(',', $typeItem['ppLTIds']);
+
+            if(!!$currentPPLTIds && !empty(array_intersect($currentPPLTIds, $IdsOfType ))){
                 unset($ppLTypesMap[$typeKey]);
                 continue;
             }
 
-            $difference = !!$promotedPPLTIds ? array_values(array_diff($allTypeIds, $promotedPPLTIds)) : $allTypeIds;
-            $ppLTypesMap[$typeKey]['level'] = count($allTypeIds) - count($difference) +1 ;
-            $ppLTypesMap[$typeKey]['nextId'] = $difference[0];
-            
+            $okIds = !!$promotedPPLTIds ? array_values(array_diff($IdsOfType, $promotedPPLTIds)) : $IdsOfType;
+            $difference = count($IdsOfType) - count($okIds);
+            array_push($toRetrieveList, $okIds[0]);
         }
-        return  array_values($ppLTypesMap);
+        return  $this->ppLeagueTypeRepository->getPPLTypes($toRetrieveList);
     }
 
 }

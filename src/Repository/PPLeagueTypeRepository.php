@@ -14,9 +14,14 @@ final class PPLeagueTypeRepository extends BaseRepository
     }
 
     function getPPLTypesMap(){
-        //TODO redis this
-        return $this->getDb()->query('SELECT type, max(level) as maxLevel, GROUP_CONCAT(id) ppLTIds 
-        FROM ppLeagueTypes GROUP BY type ORDER BY maxLevel ');
+        return $this->getDb()->query('SELECT type, max(level) as maxLevel, 
+            GROUP_CONCAT(id) ppLTIds
+            FROM ppLeagueTypes GROUP BY type ORDER BY maxLevel ');
+    }
+
+    function getPPLTypes($ids){
+        $this->getDb()->where('id',$ids,'IN');
+        return $this->getDb()->get('ppLeagueTypes');
     }
 
 
