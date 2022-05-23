@@ -22,6 +22,29 @@ final class GuessRepository extends BaseRepository
         return $this->getDb()->get('guesses', $limit);
     }
 
+    
+    public function userScore($userId,string $column, int $valueId){
+        $ids = $this->getDb()->subQuery();
+        $ids->where($column, $valueId);
+        $ids->get('ppRounds', null, 'id');
+
+        $this->getDb()->where('ppRound_id',$ids,'IN');
+        
+        if($list = $this->getDb()->getValue('ppRoundMatches','id',null)){
+            $this->getDb()->where('user_id',$userId);
+            $this->getDb()->where('ppRoundMatch_id', $list,'in');
+            $this->getDb()->where("score != ".$_SERVER['VIRGIN_GUESS_SCORE']);
+
+            if($score = $this->getDb()->getValue('guesses','sum(score)',null)){
+                if($score[0]== null){
+                    return 0;
+                }
+                return $score[0];
+            }
+        }
+        return 0;
+    }
+
     //TODO
     // public function getGuessesForMatch() : array {
 

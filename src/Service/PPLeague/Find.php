@@ -9,6 +9,7 @@ use App\Repository\PPLeagueRepository;
 use App\Repository\PPLeagueTypeRepository;
 use App\Repository\UserParticipationRepository;
 use App\Repository\UserRepository;
+use App\Repository\GuessRepository;
 use App\Controller\BaseController;
 
 final class Find  extends BaseController{
@@ -18,6 +19,7 @@ final class Find  extends BaseController{
         protected PPLeagueTypeRepository $ppLeagueTypeRepository,
         protected UserParticipationRepository $userParticipationRepository,
         protected UserRepository $userRepository,
+        protected GuessRepository $guessRepository,
     ) {
     }
 
@@ -28,7 +30,7 @@ final class Find  extends BaseController{
         foreach($ppLeagues as $ppLKey => $ppLItem){
             $ppLeagues[$ppLKey]['ppLType'] = $this->ppLeagueTypeRepository->getOne($ppLItem['ppLeagueType_id']);
             //TODO ADD POINTS
-            $ppLeagues[$ppLKey]['standings'] =  $this->calculateStandings($ppLItem['id']);
+            $ppLeagues[$ppLKey]['ppStandings'] =  $this->calculateStandings($ppLItem['id']);
         }
 
         return $ppLeagues;
@@ -37,12 +39,12 @@ final class Find  extends BaseController{
     public function calculateStandings(int $ppLeagueId){
         $ids = $this->userParticipationRepository->getUserIds($ppLeagueId);
         $ppLeaguePositions = array();
-        foreach ($ids as $id) {
-            $userObject['username'] = $this->userRepository->getUsername($id);
-            $userObject['id'] = $id;
+        foreach ($ids as $userId) {
+            $userObject['username'] = $this->userRepository->getUsername($userId);
+            $userObject['id'] = $userId;
 
             $position['user'] = $userObject;
-            // $position['plPoints'] = userScore($presoLeagueID,$id);
+            $position['score'] = $this->guessRepository->userScore($userId,'ppLeague_id',$ppLeagueId);
 
             array_push($ppLeaguePositions, $position);
         }
@@ -54,28 +56,4 @@ final class Find  extends BaseController{
         return $ppLeaguePositions;
     }
 
-    public function userScore($ppLeagueId, $userId){
-
-        //TODO
-
-        $MBids = $db->subQuery();
-        $MBids->where('presoLeague_id',$presoLeagueID);
-        $MBids->get('matchBlocks',null,'id');
-
-        $db->where('matchBlock_id',$MBids,'in');
-        
-        if($MBMids = $db->getValue('matchesMB','id',null)){
-            $db->where('user_id',$userID);
-            $db->where('MBM_id',$MBMids,'in');
-            $db->where("preso_score != 222");
-
-            if($presoScore = $db->getValue('guesses','sum(preso_score)',null)){
-                if($presoScore[0]== null){
-                    return 0;
-                }
-                return $presoScore[0];
-            }
-        }
-        return 0;
-    }
 }
