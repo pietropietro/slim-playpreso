@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Controller\Guess;
-// use App\Controller\Match;
 use App\Controller\User;
+use App\Controller\PPLeague;
 use App\Middleware\Auth;
 
 $cors = function ($req, $res) {
@@ -39,7 +38,6 @@ return function ($app) use ($cors) {
         $res = $cors($req, $res); // before
         $res = $next($req, $res); // route handler
         $res = $res->withHeader('X-Before', $before)->withHeader('X-After', time());
-        
         return $res;
     });
 
@@ -56,6 +54,7 @@ return function ($app) use ($cors) {
     });
     
     $app->get('/ppLeagueTypes', User\GetPPLeagueTypes::class)->add(new Auth());
+    $app->get('/ppLeagues', PPLeague\GetActive::class)->add(new Auth());
 
     
     // Catch-all route to serve a 404 Not Found page if none of the routes match

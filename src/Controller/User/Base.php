@@ -46,12 +46,4 @@ abstract class Base extends BaseController
         }
     }
 
-    protected function getAndValidateUserId(array $input): int
-    {
-        if (isset($input['JWT_decoded']) && isset($input['JWT_decoded']->id)) {
-            return (int) $input['JWT_decoded']->id;
-        }
-
-        throw new User('Invalid user. Permission failed.', 400);
-    }
 }

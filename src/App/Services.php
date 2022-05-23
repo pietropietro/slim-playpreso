@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Service\User;
+use App\Service\PPLeague;
 use Psr\Container\ContainerInterface;
 
 $container['find_user_service'] = static fn (
@@ -13,8 +14,8 @@ $container['find_user_service'] = static fn (
     $container->get('user_participations_repository'),
     $container->get('guess_repository'),
     $container->get('match_repository'),
-    $container->get('pp_league_type_repository'),
-    $container->get('pp_league_repository'),
+    $container->get('ppleaguetype_repository'),
+    $container->get('ppleague_repository'),
 );
 
 $container['create_user_service'] = static fn (
@@ -50,6 +51,18 @@ $container['guess_service'] = static fn (
 ): GuessService => new GuessService(
     $container->get('guess_repository'),
     $container->get('redis_service')
+);
+
+
+//TODO  --- also uniformare pp_ ppL-
+$container['ppLeague_service'] = static fn (
+    ContainerInterface $container
+):  PPLeague\Find => new  PPLeague\Find(
+    $container->get('redis_service'),
+    $container->get('ppleague_repository'),
+    $container->get('ppleaguetype_repository'),
+    $container->get('user_participations_repository'),
+    $container->get('user_repository'),
 );
 
 

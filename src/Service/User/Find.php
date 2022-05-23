@@ -61,7 +61,7 @@ final class Find extends Base
             return $cached;
         } 
 
-        $ppLTypesMap = $this->ppLeagueTypeRepository->getPPLTypesMap();
+        $ppLTypesMap = $this->ppLeagueTypeRepository->getMap();
         $promotedPPLTIds = $this->userParticipationRepository->getPromotedPPLeagueTypeIds($userId);
         $currentPPLTIds = $this->userParticipationRepository->getCurrentPPLeagueTypeIds($userId);
 
@@ -79,7 +79,7 @@ final class Find extends Base
             $difference = count($IdsOfType) - count($okIds);
             array_push($toRetrieveList, $okIds[0]);
         }
-        return  $this->ppLeagueTypeRepository->getPPLTypes($toRetrieveList);
+        return  $this->ppLeagueTypeRepository->get($toRetrieveList);
     }
 
 }

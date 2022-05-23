@@ -1,7 +1,7 @@
 
 LOCAL INSTRUCTIONS
 
-MYSQL
+MYSQL  8.0.28
 start mysql server with
 mysql.server start
 connect

@@ -62,5 +62,12 @@ final class UserRepository extends BaseRepository
             throw new \App\Exception\User('Username already exists.', 400);
         }
     }
+
+    public function getUsername(int $userId){
+        $this->getDb()->where('id',$userId);
+        $columns = Array ('username');
+        $user = $this->getDb()->getOne('users', $columns);
+        return $user['username'];
+    }
    
 }

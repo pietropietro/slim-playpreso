@@ -6,7 +6,7 @@ namespace App\Repository;
 
 final class UserParticipationRepository extends BaseRepository
 {
-    function getParticipations($userId) : array {
+    function getParticipations(int $userId) : array {
         $this->getDb()->where('user_id',$userId);
         $this->getDb()->orderBy('joined_at','desc');
         $placements = $this->getDb()->get('userParticipations');
@@ -14,7 +14,7 @@ final class UserParticipationRepository extends BaseRepository
         return $placements;
     }
 
-    function getUserPPLeagueIds($userId, $active){
+    function getUserPPLeagueIds(int $userId, bool $active){
         $this->getDb()->where('user_id', $userId);
         if($active){
             $this->getDb()->where('placed_at IS NULL');
@@ -25,7 +25,7 @@ final class UserParticipationRepository extends BaseRepository
         return $ids;
     }
 
-    function getPromotedPPLeagueTypeIds($userId){
+    function getPromotedPPLeagueTypeIds(int $userId){
         $this->getDb()->where('user_id',$userId);
         $this->getDb()->where('placement', $_SERVER['PPLEAGUE_QUALIFYING_POSITION'], "<=");
 
@@ -33,12 +33,17 @@ final class UserParticipationRepository extends BaseRepository
         return $promotedPPLeagueTypeIds;
     }
 
-    function getCurrentPPLeagueTypeIds($userId){
+    function getCurrentPPLeagueTypeIds(int $userId){
         $this->getDb()->groupBy('ppLeagueType_id');
         $this->getDb()->where('user_id',$userId);
         $this->getDb()->where('placed_at IS NULL');
         $this->getDb()->where('ppLeagueType_id IS NOT NULL');
         return $this->getDb()->getValue('userParticipations', 'ppLeagueType_id', null);
+    }
+
+    function getUserIds(int $ppLeagueId){
+        $this->getDb()->where('ppLeague_id',$ppLeagueId);
+        return $this->getDb()->getValue('userParticipations','user_id',null);
     }
 
 }

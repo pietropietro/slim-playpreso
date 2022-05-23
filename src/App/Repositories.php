@@ -15,9 +15,9 @@ $container['user_repository'] = static fn (ContainerInterface $container): UserR
 
 $container['user_participations_repository'] = static fn (ContainerInterface $container): UserParticipationRepository => new UserParticipationRepository($container->get('db'));
 
-$container['pp_league_repository'] = static fn (ContainerInterface $container): PPLeagueRepository => new PPLeagueRepository($container->get('db'));
+$container['ppleague_repository'] = static fn (ContainerInterface $container): PPLeagueRepository => new PPLeagueRepository($container->get('db'));
 
-$container['pp_league_type_repository'] = static fn (ContainerInterface $container): PPLeagueTypeRepository => new PPLeagueTypeRepository($container->get('db'));
+$container['ppleaguetype_repository'] = static fn (ContainerInterface $container): PPLeagueTypeRepository => new PPLeagueTypeRepository($container->get('db'));
 
 $container['guess_repository'] = static fn (ContainerInterface $container): GuessRepository => new GuessRepository($container->get('db'));
 
