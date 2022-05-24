@@ -28,15 +28,13 @@ final class Find  extends BaseService{
         protected PPRoundRepository $ppRoundRepository
     ){}
     
-    //TODO change type to ENUM
-    public function getAll(int $userId, string $type, bool $active){
-        $ups = $this->userParticipationRepository->getTypeParticipations($userId, $type.'_id', $active);        
+    //TODO change playMode to ENUM
+    public function getAll(int $userId, string $playMode, bool $active){
+        $ups = $this->userParticipationRepository->getTypeParticipations($userId, $playMode.'_id', $active);        
         foreach($ups as $upKey => $upItem){
-            if($type === 'ppLeague'){
-                $ups[$upKey][$type.'Type'] = $this->ppLeagueTypeRepository->getOne($upItem['ppLeagueType_id']);
-                $ups[$upKey][$type] = $this->ppLeagueRepository->getOne($upItem['ppLeague_id']);
-                $ups[$upKey]['round_count'] = $this->ppRoundRepository->count('ppLeague_id',$upItem['ppLeague_id']);
-                
+            if($playMode === 'ppLeague'){
+                $ups[$upKey][$playMode.'Type'] = $this->ppLeagueTypeRepository->getOne($upItem['ppLeagueType_id']);
+                $ups[$upKey][$playMode] = $this->ppLeagueRepository->getOne($upItem['ppLeague_id']);                
             }
         }
         return $ups;

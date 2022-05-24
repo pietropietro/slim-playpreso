@@ -61,6 +61,7 @@ $container['ppleague_service'] = static fn (
     $container->get('redis_service'),
     $container->get('ppleague_repository'),
     $container->get('ppleaguetype_repository'),
+    $container->get('ppround_repository'),
     $container->get('user_participations_repository'),
     $container->get('user_repository'),
     $container->get('guess_repository')

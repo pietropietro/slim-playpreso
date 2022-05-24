@@ -7,6 +7,7 @@ namespace App\Controller\User;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+//TODO MOVE IN PPLeagueType CONTROLLER FOLDER
 final class GetPPLeagueTypes extends Base
 {
     /**

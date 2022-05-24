@@ -7,6 +7,7 @@ namespace App\Service\PPLeague;
 use App\Service\RedisService;
 use App\Repository\PPLeagueRepository;
 use App\Repository\PPLeagueTypeRepository;
+use App\Repository\PPRoundRepository;
 use App\Repository\UserParticipationRepository;
 use App\Repository\UserRepository;
 use App\Repository\GuessRepository;
@@ -17,6 +18,7 @@ final class Find  extends BaseService{
         protected RedisService $redisService,
         protected PPLeagueRepository $ppLeagueRepository,
         protected PPLeagueTypeRepository $ppLeagueTypeRepository,
+        protected PPRoundRepository $ppRoundRepository,
         protected UserParticipationRepository $userParticipationRepository,
         protected UserRepository $userRepository,
         protected GuessRepository $guessRepository,
@@ -24,10 +26,17 @@ final class Find  extends BaseService{
     }
 
     //FOR THE SAKE OF IT
-    private function updateAllPPLS(){
+    private function updateAllStandings(){
         $ids = $this->ppLeagueRepository->startedIds();
         foreach($ids as $id){
             $this->calculateStandings($id);
+        }
+    }
+    private function countAllPPLRounds(){
+        $ids = $this->ppLeagueRepository->startedIds();
+        foreach($ids as $id){
+            $round_count = $this->ppRoundRepository->count('ppLeague_id',$id);
+            $this->ppLeagueRepository->updateValue($id, 'round_count', $round_count);
         }
     }
 

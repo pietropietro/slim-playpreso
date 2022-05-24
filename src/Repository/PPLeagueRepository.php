@@ -24,4 +24,12 @@ final class PPLeagueRepository extends BaseRepository
         $this->getDb()->where('id',$id);
         return $this->getDb()->getOne('ppLeagues');
     }
+
+    function updateValue(int $id, string $column, $value){
+        $data = array(
+            $column => $value,
+        );
+        $this->getDb()->where('id',$id);
+        $this->getDb()->update('ppLeagues', $data);
+    }
 }
