@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Repository\MatchRepository;
 use App\Repository\PPLeagueRepository;
 use App\Repository\PPLeagueTypeRepository;
+use App\Repository\PPRoundRepository;
 use App\Repository\GuessRepository;
 use App\Repository\UserRepository;
 use App\Repository\UserParticipationRepository;
@@ -23,3 +24,4 @@ $container['guess_repository'] = static fn (ContainerInterface $container): Gues
 
 $container['match_repository'] = static fn (ContainerInterface $container): MatchRepository => new MatchRepository($container->get('db'));
 
+$container['ppround_repository'] = static fn (ContainerInterface $container): PPRoundRepository => new PPRoundRepository($container->get('db'));

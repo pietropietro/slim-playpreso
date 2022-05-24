@@ -9,6 +9,7 @@ use App\Service\BaseService;
 use App\Repository\UserParticipationRepository;
 use App\Repository\PPLeagueTypeRepository;
 use App\Repository\PPLeagueRepository;
+use App\Repository\PPRoundRepository;
 
 // enum Suit{
 //         case Hearts;
@@ -23,7 +24,8 @@ final class Find  extends BaseService{
         protected RedisService $redisService,
         protected UserParticipationRepository $userParticipationRepository,
         protected PPLeagueTypeRepository $ppLeagueTypeRepository,
-        protected PPLeagueRepository $ppLeagueRepository
+        protected PPLeagueRepository $ppLeagueRepository,
+        protected PPRoundRepository $ppRoundRepository
     ){}
     
     //TODO change type to ENUM
@@ -33,6 +35,8 @@ final class Find  extends BaseService{
             if($type === 'ppLeague'){
                 $ups[$upKey][$type.'Type'] = $this->ppLeagueTypeRepository->getOne($upItem['ppLeagueType_id']);
                 $ups[$upKey][$type] = $this->ppLeagueRepository->getOne($upItem['ppLeague_id']);
+                $ups[$upKey]['round_count'] = $this->ppRoundRepository->count('ppLeague_id',$upItem['ppLeague_id']);
+                
             }
         }
         return $ups;

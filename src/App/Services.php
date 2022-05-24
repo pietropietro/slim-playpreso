@@ -74,7 +74,8 @@ $container['user_participation_service'] = static fn (
     $container->get('redis_service'),
     $container->get('user_participations_repository'),
     $container->get('ppleaguetype_repository'),
-    $container->get('ppleague_repository')
+    $container->get('ppleague_repository'),
+    $container->get('ppround_repository')
     // $container->get('user_repository')
 );
 
