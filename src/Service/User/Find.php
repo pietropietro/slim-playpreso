@@ -32,20 +32,20 @@ final class Find extends Base
         } 
         
         $user = $this->getUserFromDb($userId);
-        $guesses = $this->guessRepository->getUserGuesses($userId);
 
-        $guessesWithMatch = array();
-        foreach ($guesses as $guess) {
-            $match = $this->matchRepository->getMatch($guess['match_id']);
-            $guess['match'] = $match;
-            array_push($guessesWithMatch, $guess);
-        }
-        $user['guesses'] = $guessesWithMatch;
+        // $guesses = $this->guessRepository->getUserGuesses($userId);
+        // $guessesWithMatch = array();
+        // foreach ($guesses as $guess) {
+        //     $match = $this->matchRepository->getMatch($guess['match_id']);
+        //     $guess['match'] = $match;
+        //     array_push($guessesWithMatch, $guess);
+        // }
+        // $user['guesses'] = $guessesWithMatch;
 
-        $activePPLeagueIds =  $this->userParticipationRepository->getUserPPLeagueIds($userId, true);
-        $user['ppLeagues'] = $this->ppLeagueRepository->getPPLeagues($activePPLeagueIds);
+        // $activePPLeagueIds =  $this->userParticipationRepository->getUserPPLeagueIds($userId, true);
+        // $user['ppLeagues'] = $this->ppLeagueRepository->getPPLeagues($activePPLeagueIds);
 
-        $user['participations'] = $this->userParticipationRepository->getParticipations($userId);
+        // $user['participations'] = $this->userParticipationRepository->getParticipations($userId);
         
         if (self::isRedisEnabled() === true){
             $this->saveInCache($userId, (object) $user);

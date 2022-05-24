@@ -14,20 +14,21 @@ final class UserParticipationRepository extends BaseRepository
         return $placements;
     }
 
-    function getUserPPLeagueIds(int $userId, bool $active){
+    //TODO change string type to ENUM 'ppLeague_id', 'ppCupGroup_id'
+    function getTypeParticipations(int $userId, string $type, bool $active){
         $this->getDb()->where('user_id', $userId);
         if($active){
-            $this->getDb()->where('placed_at IS NULL');
+            $this->getDb()->where('finished IS NULL');
         }
         $this->getDb()->orderBy('joined_at','desc');
-        $this->getDb()->where('ppLeague_id IS NOT NULL');
-        $ids = $this->getDb()->getValue('userParticipations', 'ppLeague_id', null);
-        return $ids;
+        $this->getDb()->where($type.' IS NOT NULL');
+        return $this->getDb()->get('userParticipations');
     }
 
     function getPromotedPPLeagueTypeIds(int $userId){
         $this->getDb()->where('user_id',$userId);
-        $this->getDb()->where('placement', $_SERVER['PPLEAGUE_QUALIFYING_POSITION'], "<=");
+        $this->getDb()->where('finished',1);
+        $this->getDb()->where('position', $_SERVER['PPLEAGUE_QUALIFYING_POSITION'], "<=");
 
         $promotedPPLeagueTypeIds = $this->getDb()->getValue('userParticipations','ppLeagueType_id',null);
         return $promotedPPLeagueTypeIds;
@@ -36,14 +37,32 @@ final class UserParticipationRepository extends BaseRepository
     function getCurrentPPLeagueTypeIds(int $userId){
         $this->getDb()->groupBy('ppLeagueType_id');
         $this->getDb()->where('user_id',$userId);
-        $this->getDb()->where('placed_at IS NULL');
+        $this->getDb()->where('finished IS NULL');
         $this->getDb()->where('ppLeagueType_id IS NOT NULL');
         return $this->getDb()->getValue('userParticipations', 'ppLeagueType_id', null);
     }
 
-    function getUserIds(int $ppLeagueId){
+    function getLeagueParticipations(int $ppLeagueId){
         $this->getDb()->where('ppLeague_id',$ppLeagueId);
-        return $this->getDb()->getValue('userParticipations','user_id',null);
+        return $this->getDb()->get('userParticipations');
+    }
+
+    function updateScore(int $id, int $score){
+        $data = array(
+			"score" => $score,
+            "updated_at" => date("Y-m-d H:i:s"),
+		);
+        $this->getDb()->where('id',$id);
+        $this->getDb()->update('userParticipations',$data);
+    }
+
+    function updatePosition(int $id, int $position){
+        $data = array(
+			"position" => $position,
+            "updated_at" => date("Y-m-d H:i:s"),
+		);
+        $this->getDb()->where('id',$id);
+        $this->getDb()->update('userParticipations',$data);
     }
 
 }

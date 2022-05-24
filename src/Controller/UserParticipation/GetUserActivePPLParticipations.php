@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\PPLeague;
+namespace App\Controller\UserParticipation;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class GetActive extends Base{
+final class GetUserActivePPLParticipations extends Base{
     /**
      * @param array<string> $args
      */
@@ -19,7 +19,7 @@ final class GetActive extends Base{
         $input = (array) $request->getParsedBody();
         $userId = $this->getAndValidateUserId($input);
 
-        $ppLeagues = $this->getPPLeagueService()->getAll($userId, true);
-        return $this->jsonResponse($response, 'success', $ppLeagues, 200);
+        $ups = $this->getUserParticipationService()->getAll($userId, 'ppLeague_id', true);
+        return $this->jsonResponse($response, 'success', $ups, 200);
     }
 }

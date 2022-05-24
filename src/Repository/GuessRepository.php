@@ -23,7 +23,7 @@ final class GuessRepository extends BaseRepository
     }
 
     
-    public function userScore($userId,string $column, int $valueId){
+    public function userScore($userId,string $column, int $valueId) : int {
         $ids = $this->getDb()->subQuery();
         $ids->where($column, $valueId);
         $ids->get('ppRounds', null, 'id');
@@ -39,14 +39,10 @@ final class GuessRepository extends BaseRepository
                 if($score[0]== null){
                     return 0;
                 }
-                return $score[0];
+                return (int)$score[0];
             }
         }
         return 0;
     }
 
-    //TODO
-    // public function getGuessesForMatch() : array {
-
-    // }
 }

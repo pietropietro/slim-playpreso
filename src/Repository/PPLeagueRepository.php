@@ -14,4 +14,9 @@ final class PPLeagueRepository extends BaseRepository
         }   
         return $ppLeagues;
     }
+
+    public function startedIds(){
+        $this->getDb()->where('started_at IS NOT NULL');
+        return $this->getDb()->getValue('ppLeagues', 'id', null);
+    }
 }

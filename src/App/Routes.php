@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Controller\User;
-use App\Controller\PPLeague;
+use App\Controller\UserParticipation;
 use App\Middleware\Auth;
 
 $cors = function ($req, $res) {
@@ -25,7 +25,7 @@ return function ($app) use ($cors) {
                 'message' => 'Something went wrong',
             ];
             if ($_SERVER['DEBUG'] === 'true') {
-                // $message['message'] = $exception->getTraceAsString();
+                $message['trace'] = $exception->getTraceAsString();
                 $message['message'] = $exception->getMessage();
             }
 
@@ -54,7 +54,7 @@ return function ($app) use ($cors) {
     });
     
     $app->get('/ppLeagueTypes', User\GetPPLeagueTypes::class)->add(new Auth());
-    $app->get('/ppLeagues', PPLeague\GetActive::class)->add(new Auth());
+    $app->get('/activePPLeaguesParticipations', UserParticipation\GetUserActivePPLParticipations::class)->add(new Auth());
 
     
     // Catch-all route to serve a 404 Not Found page if none of the routes match

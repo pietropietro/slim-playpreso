@@ -10,9 +10,9 @@ use App\Repository\PPLeagueTypeRepository;
 use App\Repository\UserParticipationRepository;
 use App\Repository\UserRepository;
 use App\Repository\GuessRepository;
-use App\Controller\BaseController;
+use App\Service\BaseService;
 
-final class Find  extends BaseController{
+final class Find  extends BaseService{
     public function __construct(
         protected RedisService $redisService,
         protected PPLeagueRepository $ppLeagueRepository,
@@ -23,37 +23,30 @@ final class Find  extends BaseController{
     ) {
     }
 
-    public function getAll($userId, $active){
-        $ids = $this->userParticipationRepository->getUserPPLeagueIds($userId, $active);
-        $ppLeagues = $this->ppLeagueRepository->getPPLeagues($ids);
-        
-        foreach($ppLeagues as $ppLKey => $ppLItem){
-            $ppLeagues[$ppLKey]['ppLType'] = $this->ppLeagueTypeRepository->getOne($ppLItem['ppLeagueType_id']);
-            //TODO ADD POINTS
-            $ppLeagues[$ppLKey]['ppStandings'] =  $this->calculateStandings($ppLItem['id']);
+    //FOR THE SAKE OF IT
+    private function updateAllPPLS(){
+        $ids = $this->ppLeagueRepository->startedIds();
+        foreach($ids as $id){
+            $this->calculateStandings($id);
         }
-
-        return $ppLeagues;
     }
 
+
+    //TODO MOVE IN OTHER SERVICE, update i.e,
     public function calculateStandings(int $ppLeagueId){
-        $ids = $this->userParticipationRepository->getUserIds($ppLeagueId);
-        $ppLeaguePositions = array();
-        foreach ($ids as $userId) {
-            $userObject['username'] = $this->userRepository->getUsername($userId);
-            $userObject['id'] = $userId;
-
-            $position['user'] = $userObject;
-            $position['score'] = $this->guessRepository->userScore($userId,'ppLeague_id',$ppLeagueId);
-
-            array_push($ppLeaguePositions, $position);
+        $ups = $this->userParticipationRepository->getLeagueParticipations($ppLeagueId);
+        foreach ($ups as $upKey => $upItem) {
+            $ups[$upKey]['score'] = $this->guessRepository->userScore($upItem['user_id'],'ppLeague_id',$ppLeagueId);
         }
-    
-        //TODO calculate position
-        //sort ppLeaguePositions
-        // $position['position'] = null;
+       
+        ////TODO also sort by number of PRESO!, less MISSED, 1X2, UO, GG
+        usort($ups, fn($a, $b) => $a['score'] < $b['score'] ? 1 : 0);
 
-        return $ppLeaguePositions;
+        foreach($ups as $index => $upItem){
+            $this->userParticipationRepository->updateScore($upItem['id'], $upItem['score']);
+            $this->userParticipationRepository->updatePosition($upItem['id'], $index + 1);
+        }
+        return;
     }
 
 }
