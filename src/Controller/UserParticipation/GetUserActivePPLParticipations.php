@@ -19,7 +19,8 @@ final class GetUserActivePPLParticipations extends Base{
         $input = (array) $request->getParsedBody();
         $userId = $this->getAndValidateUserId($input);
 
-        $ups = $this->getUserParticipationService()->getAll($userId, 'ppLeague_id', true);
+        //TODO change type to enum
+        $ups = $this->getUserParticipationService()->getAll($userId, 'ppLeague', true);
         return $this->jsonResponse($response, 'success', $ups, 200);
     }
 }

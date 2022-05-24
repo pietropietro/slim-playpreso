@@ -19,4 +19,9 @@ final class PPLeagueRepository extends BaseRepository
         $this->getDb()->where('started_at IS NOT NULL');
         return $this->getDb()->getValue('ppLeagues', 'id', null);
     }
+
+    function getOne($id){
+        $this->getDb()->where('id',$id);
+        return $this->getDb()->getOne('ppLeagues');
+    }
 }
