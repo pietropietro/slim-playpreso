@@ -10,6 +10,7 @@ use App\Repository\UserParticipationRepository;
 use App\Repository\PPLeagueTypeRepository;
 use App\Repository\PPLeagueRepository;
 use App\Repository\PPRoundRepository;
+use App\Repository\GuessRepository;
 
 // enum Suit{
 //         case Hearts;
@@ -25,7 +26,9 @@ final class Find  extends BaseService{
         protected UserParticipationRepository $userParticipationRepository,
         protected PPLeagueTypeRepository $ppLeagueTypeRepository,
         protected PPLeagueRepository $ppLeagueRepository,
-        protected PPRoundRepository $ppRoundRepository
+        protected PPRoundRepository $ppRoundRepository,
+        protected GuessRepository $guessRepository
+        
     ){}
     
     //TODO change playMode to ENUM
@@ -35,6 +38,7 @@ final class Find  extends BaseService{
             if($playMode === 'ppLeague'){
                 $ups[$upKey][$playMode.'Type'] = $this->ppLeagueTypeRepository->getOne($upItem['ppLeagueType_id']);
                 $ups[$upKey][$playMode] = $this->ppLeagueRepository->getOne($upItem['ppLeague_id']);                
+                $ups[$upKey]['locked'] = !$this->guessRepository->hasUnlockedGuesses($userId, $playMode.'_id',$upItem['ppLeague_id']);                
             }
         }
         return $ups;

@@ -22,7 +22,7 @@ final class GuessRepository extends BaseRepository
         return $this->getDb()->get('guesses', $limit);
     }
 
-    
+    //TODO CHANGE COLUMN TO ENUM ['cup_id', 'league_id', 'cup_group_id']
     public function userScore($userId,string $column, int $valueId) : int {
         $ids = $this->getDb()->subQuery();
         $ids->where($column, $valueId);
@@ -43,6 +43,25 @@ final class GuessRepository extends BaseRepository
             }
         }
         return 0;
+    }
+
+    //TODO CHANGE COLUMN TO ENUM ['cup_id', 'league_id',]
+    public function hasUnlockedGuesses(int $userId, string $column, int $valueId){
+        $ppRoundIds = $this->getDb()->subQuery();
+        $ppRoundIds->where($column, $valueId);
+        $ppRoundIds->get('ppRounds',null,'id');
+        
+        $ppRoundMatchIds = $this->getDb()->subQuery();
+        $ppRoundMatchIds->where('ppRound_id', $ppRoundIds, 'IN');
+        $ppRoundMatchIds->get('ppRoundMatches',null,'id');
+
+        $this->getDb()->where('ppRoundMatch_id', $ppRoundMatchIds, 'IN');
+        $this->getDb()->where('guessed_at IS NULL');
+        $this->getDb()->where('verified_at IS NULL');
+        
+        $result = $this->getDb()->getOne('guesses');
+        return !!$result;
+
     }
 
 }
