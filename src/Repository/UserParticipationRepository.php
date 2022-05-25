@@ -15,7 +15,7 @@ final class UserParticipationRepository extends BaseRepository
     }
 
     //TODO change string type to ENUM 'ppLeague_id', 'ppCupGroup_id'
-    function getTypeParticipations(int $userId, string $type, bool $active){
+    function getParticipationsForUser(int $userId, string $type, bool $active){
         $this->getDb()->where('user_id', $userId);
         if($active){
             $this->getDb()->where('finished IS NULL');
@@ -43,8 +43,10 @@ final class UserParticipationRepository extends BaseRepository
     }
 
     function getLeagueParticipations(int $ppLeagueId){
+        $this->getDb()->join("users u", "u.id=up.user_id", "INNER");
+        $this->getDb()->orderBy('up.joined_at','desc');
         $this->getDb()->where('ppLeague_id',$ppLeagueId);
-        return $this->getDb()->get('userParticipations');
+        return $this->getDb()->query("SELECT up.*, u.username FROM userParticipations up");
     }
 
     function updateScore(int $id, int $score){

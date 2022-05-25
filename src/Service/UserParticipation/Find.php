@@ -33,7 +33,7 @@ final class Find  extends BaseService{
     
     //TODO change playMode to ENUM
     public function getAll(int $userId, string $playMode, bool $active){
-        $ups = $this->userParticipationRepository->getTypeParticipations($userId, $playMode.'_id', $active);        
+        $ups = $this->userParticipationRepository->getParticipationsForUser($userId, $playMode.'_id', $active);        
         foreach($ups as $upKey => $upItem){
             if($playMode === 'ppLeague'){
                 $ups[$upKey][$playMode.'Type'] = $this->ppLeagueTypeRepository->getOne($upItem['ppLeagueType_id']);
