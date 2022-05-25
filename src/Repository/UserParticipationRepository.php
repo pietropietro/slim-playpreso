@@ -44,7 +44,7 @@ final class UserParticipationRepository extends BaseRepository
 
     function getLeagueParticipations(int $ppLeagueId){
         $this->getDb()->join("users u", "u.id=up.user_id", "INNER");
-        $this->getDb()->orderBy('up.joined_at','desc');
+        $this->getDb()->orderBy('up.position','asc');
         $this->getDb()->where('ppLeague_id',$ppLeagueId);
         return $this->getDb()->query("SELECT up.*, u.username FROM userParticipations up");
     }
