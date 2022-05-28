@@ -30,7 +30,11 @@ final class Find  extends BaseService{
         protected GuessRepository $guessRepository
         
     ){}
-    
+
+    public function getAllForPPL($ppLeagueId){
+        return $this->userParticipationRepository->getLeagueParticipations($ppLeagueId); 
+    }
+
     //TODO change playMode to ENUM
     public function getAll(int $userId, string $playMode, bool $active){
         $ups = $this->userParticipationRepository->getParticipationsForUser($userId, $playMode.'_id', $active);        

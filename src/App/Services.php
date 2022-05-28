@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Service\User;
 use App\Service\PPLeague;
+use App\Service\PPLeagueType;
+use App\Service\PPRound;
 use App\Service\UserParticipation;
 use Psr\Container\ContainerInterface;
 
@@ -68,6 +70,25 @@ $container['ppleague_service'] = static fn (
 );
 
 
+$container['ppleaguetype_service'] = static fn (
+    ContainerInterface $container
+):  PPLeagueType\Find => new  PPLeagueType\Find(
+    $container->get('redis_service'),
+    $container->get('ppleaguetype_repository'),
+);
+
+$container['ppround_service'] = static fn (
+    ContainerInterface $container
+):  PPRound\Find => new  PPRound\Find(
+    $container->get('redis_service'),
+    $container->get('ppround_repository'),
+    $container->get('ppround_match_repository'),
+    $container->get('guess_repository'),
+    $container->get('match_repository')
+);
+
+
+
 
 $container['user_participation_service'] = static fn (
     ContainerInterface $container
@@ -78,7 +99,6 @@ $container['user_participation_service'] = static fn (
     $container->get('ppleague_repository'),
     $container->get('ppround_repository'),
     $container->get('guess_repository')
-
     // $container->get('user_repository')
 );
 

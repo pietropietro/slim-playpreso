@@ -36,7 +36,7 @@ final class Find extends Base
         // $guesses = $this->guessRepository->getUserGuesses($userId);
         // $guessesWithMatch = array();
         // foreach ($guesses as $guess) {
-        //     $match = $this->matchRepository->getMatch($guess['match_id']);
+        //     $match = $this->matchRepository->getOne($guess['match_id']);
         //     $guess['match'] = $match;
         //     array_push($guessesWithMatch, $guess);
         // }

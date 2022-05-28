@@ -25,6 +25,10 @@ final class Find  extends BaseService{
     ) {
     }
 
+    public function getOne($ppLeagueId){
+        return $this->ppLeagueRepository->getOne($ppLeagueId);
+    }
+
     //FOR THE SAKE OF IT
     private function updateAllStandings(){
         $ids = $this->ppLeagueRepository->startedIds();
@@ -58,11 +62,6 @@ final class Find  extends BaseService{
         return;
     }
 
-    public function GetFull(int $ppLeagueId){
-        $ppLeague = $this->ppLeagueRepository->getOne($ppLeagueId);
-        $ppLeague['ppLeagueType'] = $this->ppLeagueTypeRepository->getOne($ppLeague['ppLeagueType_id']);
-        $ppLeague['userParticipations'] = $this->userParticipationRepository->getLeagueParticipations($ppLeagueId); 
-        return $ppLeague; 
-    }
+    
 
 }

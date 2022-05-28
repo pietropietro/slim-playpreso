@@ -8,7 +8,7 @@ use App\Entity\Match;
 
 final class MatchRepository extends BaseRepository
 {   
-    public function getMatch(int $matchId) {
+    public function getOne(int $matchId) {
         $this->getDb()->where('id',$matchId);
         $match = $this->getDb()->getOne('matches');
         if (! $match) {

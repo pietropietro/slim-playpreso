@@ -22,8 +22,14 @@ final class GuessRepository extends BaseRepository
         return $this->getDb()->get('guesses', $limit);
     }
 
+    public function getAllPPRM($ppRMId){
+        $this->getDb()->where('ppRoundMatch_id', $ppRMId);
+        return $this->getDb()->get('guesses');
+    }
+
+    //TODO MOVE TO SERVICE
     //TODO CHANGE COLUMN TO ENUM ['cup_id', 'league_id', 'cup_group_id']
-    public function userScore($userId,string $column, int $valueId) : int {
+    public function userScore($userId, string $column, int $valueId) : int {
         $ids = $this->getDb()->subQuery();
         $ids->where($column, $valueId);
         $ids->get('ppRounds', null, 'id');
@@ -45,6 +51,7 @@ final class GuessRepository extends BaseRepository
         return 0;
     }
 
+    //TODO MOVE TO SERVICE
     //TODO CHANGE COLUMN TO ENUM ['cup_id', 'league_id',]
     public function hasUnlockedGuesses(int $userId, string $column, int $valueId){
         $ppRoundIds = $this->getDb()->subQuery();
