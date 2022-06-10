@@ -6,46 +6,14 @@ use App\Controller\User;
 use App\Controller\UserParticipation;
 use App\Controller\PPLeague;
 use App\Middleware\Auth;
-
-$cors = function ($req, $res) {
-    return $res
-            ->withHeader('Access-Control-Allow-Origin', $_SERVER['ALLOW_URL_REQUEST'])
-            ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
-            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
-            ->withHeader('Access-Control-Allow-Credentials', 'true');
-};
+use App\Middleware\Cors;
 
 
-return function ($app) use ($cors) {
-    $c = $app->getContainer();
-    //TODO MOVE IN HANDLER DIR
-    $c['phpErrorHandler'] = $c['errorHandler'] = function ($c) use ($cors) {
-        return function($request, $response, $exception) use ($cors) {
-            $response = $cors($request, $response);
-
-            $message = [
-                'message' => 'Something went wrong',
-            ];
-            if ($_SERVER['DEBUG'] === 'true') {
-                $message['trace'] = $exception->getTraceAsString();
-                $message['message'] = $exception->getMessage();
-            }
-
-            $statusCode = 500;
-            if (is_int($exception->getCode()) &&
-                $exception->getCode() >= 400 &&
-                $exception->getCode() <= 500
-            ) {
-                $statusCode = $exception->getCode();
-            }
-            
-            return $response->withJson($message, $statusCode);
-        };
-    };
-
-    $app->add(function($req, $res, $next) use ($cors) {
+return function ($app){
+    
+    $app->add(function($req, $res, $next) {
         $before = time();
-        $res = $cors($req, $res); // before
+        $res = (new Cors())($req, $res); // before
         $res = $next($req, $res); // route handler
         $res = $res->withHeader('X-Before', $before)->withHeader('X-After', time());
         return $res;

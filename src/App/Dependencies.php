@@ -15,7 +15,7 @@ $container['db'] = new MysqliDb(
     $database['port']
 );
 
-$container['errorHandler'] = static fn (): ApiError => new ApiError();
+$container['errorHandler'] = $container['phpErrorHandler'] = static fn (): ApiError => new ApiError();
 
 $container['redis_service'] = static function ($container): RedisService {
     $redis = $container->get('settings')['redis'];

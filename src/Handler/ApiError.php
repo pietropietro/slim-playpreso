@@ -6,6 +6,7 @@ namespace App\Handler;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use App\Middleware\Cors;
 
 final class ApiError extends \Slim\Handlers\Error
 {
@@ -16,8 +17,19 @@ final class ApiError extends \Slim\Handlers\Error
     ): Response {
         $statusCode = $this->getStatusCode($exception);
         $className = new \ReflectionClass($exception::class);
+
+        $response = (new Cors())($request, $response);
+
+        $errorMessage = [
+            'message' => 'Something went wrong',
+        ];
+        if ($_SERVER['DEBUG'] === 'true') {
+            $errorMessage['trace'] = $exception->getTraceAsString();
+            $errorMessage['message'] = $exception->getMessage();
+        }
+
         $data = [
-            'message' => $exception->getMessage(),
+            'message' => $errorMessage,
             'class' => $className->getName(),
             'status' => 'error',
             'code' => $statusCode,
@@ -30,7 +42,7 @@ final class ApiError extends \Slim\Handlers\Error
             ->withHeader('Content-type', 'application/problem+json');
     }
 
-    private function getStatusCode(\Exception $exception): int
+    public static function getStatusCode(\Exception $exception): int
     {
         $statusCode = 500;
         if (is_int($exception->getCode()) &&
