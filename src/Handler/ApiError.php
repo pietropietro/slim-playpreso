@@ -10,10 +10,11 @@ use App\Middleware\Cors;
 
 final class ApiError extends \Slim\Handlers\Error
 {
+
     public function __invoke(
         Request $request,
         Response $response,
-        \Exception $exception
+        \Throwable $exception
     ): Response {
         $statusCode = $this->getStatusCode($exception);
         $className = new \ReflectionClass($exception::class);
@@ -42,7 +43,7 @@ final class ApiError extends \Slim\Handlers\Error
             ->withHeader('Content-type', 'application/problem+json');
     }
 
-    public static function getStatusCode(\Exception $exception): int
+    public static function getStatusCode(\Throwable $exception): int
     {
         $statusCode = 500;
         if (is_int($exception->getCode()) &&

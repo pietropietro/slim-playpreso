@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\User;
 
 use App\Exception\User;
-use Firebase\JWT\JWT;
+use App\Middleware\Auth;
 use App\Repository\UserRepository;
 use App\Service\RedisService;
 
@@ -32,17 +32,9 @@ final class Login extends Base
         }
 
         $user = $this->userRepository->loginUser($data->username, $data->password);
-        $token = [
-            'username' => $user['username'],
-            'id' => $user['id'],
-            'iat' => time(),
-            'exp' => time() + (7 * 24 * 60 * 60),
-        ];
-
-        $jwt = JWT::encode($token, $_SERVER['SECRET_KEY']);
         
         return [
-            'authorization' => 'Bearer ' . $jwt,
+            'Authorization' => Auth::createToken($user['username'], $user['id']),
             'user' => $user
         ];
     }
