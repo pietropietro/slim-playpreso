@@ -18,6 +18,7 @@ $cors = function ($req, $res) {
 
 return function ($app) use ($cors) {
     $c = $app->getContainer();
+    //TODO MOVE IN HANDLER DIR
     $c['phpErrorHandler'] = $c['errorHandler'] = function ($c) use ($cors) {
         return function($request, $response, $exception) use ($cors) {
             $response = $cors($request, $response);
@@ -30,7 +31,15 @@ return function ($app) use ($cors) {
                 $message['message'] = $exception->getMessage();
             }
 
-            return $response->withJson($message, 500);
+            $statusCode = 500;
+            if (is_int($exception->getCode()) &&
+                $exception->getCode() >= 400 &&
+                $exception->getCode() <= 500
+            ) {
+                $statusCode = $exception->getCode();
+            }
+            
+            return $response->withJson($message, $statusCode);
         };
     };
 
