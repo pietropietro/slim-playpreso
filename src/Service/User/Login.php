@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service\User;
 
 use App\Exception\User;
-use App\Middleware\Auth;
 use App\Repository\UserRepository;
 use App\Service\RedisService;
 
@@ -31,11 +30,6 @@ final class Login extends Base
             throw new User('The field "password" is required.', 400);
         }
 
-        $user = $this->userRepository->loginUser($data->username, $data->password);
-        
-        return [
-            'Authorization' => Auth::createToken($user['username'], $user['id']),
-            'user' => $user
-        ];
+        return $this->userRepository->loginUser($data->username, $data->password);
     }
 }

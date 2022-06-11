@@ -38,13 +38,13 @@ final class UserRepository extends BaseRepository
     {
         $this->getDb()->where('username',strtolower($username));
         if(!$user=$this->getDb()->getOne('users')){
-            throw new \App\Exception\User('Login failed: username or password incorrect.', 400);
+            throw new \App\Exception\User('Login failed: username or password incorrect.', 401);
         }
         $decodedHash=base64_decode($user['password']);
         if(password_verify($password, $decodedHash)){
             return $user;
         }
-        throw new \App\Exception\User('Login failed: username or password incorrect.', 400);
+        throw new \App\Exception\User('Login failed: username or password incorrect.', 401);
     }
 
     public function checkUserByEmail(string $email): void
