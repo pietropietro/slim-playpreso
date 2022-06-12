@@ -6,22 +6,12 @@ namespace App\Service\User;
 
 use App\Repository\UserRepository;
 use App\Service\RedisService;
-use App\Repository\PPLeagueRepository;
-use App\Repository\GuessRepository;
-use App\Repository\MatchRepository;
-use App\Repository\UserParticipationRepository;
-use App\Repository\PPLeagueTypeRepository;
 
 final class Find extends Base
 {
     public function __construct(
         protected UserRepository $userRepository,
-        protected RedisService $redisService,
-        protected UserParticipationRepository $userParticipationRepository,
-        protected GuessRepository $guessRepository,
-        protected MatchRepository $matchRepository,
-        protected PPLeagueTypeRepository $ppLeagueTypeRepository,
-        protected PPLeagueRepository $ppLeagueRepository,
+        protected RedisService $redisService
     ) {
     }
 
@@ -52,34 +42,6 @@ final class Find extends Base
         }
 
         return $user;
-    }
-
-    public function getAvailablePPLeagueTypes(int $userId) 
-    {
-        //TODO REDIS THIS
-        if (self::isRedisEnabled() === true && $cached = $this->getAvailablePPLeagueTypesFromCache($userId)) {
-            return $cached;
-        } 
-
-        $ppLTypesMap = $this->ppLeagueTypeRepository->getMap();
-        $promotedPPLTIds = $this->userParticipationRepository->getPromotedPPLeagueTypeIds($userId);
-        $currentPPLTIds = $this->userParticipationRepository->getCurrentPPLeagueTypeIds($userId);
-
-        $toRetrieveList = [];
-
-        foreach($ppLTypesMap as $typeKey => $typeItem){
-            $IdsOfType = explode(',', $typeItem['ppLTIds']);
-
-            if(!!$currentPPLTIds && !empty(array_intersect($currentPPLTIds, $IdsOfType ))){
-                unset($ppLTypesMap[$typeKey]);
-                continue;
-            }
-
-            $okIds = !!$promotedPPLTIds ? array_values(array_diff($IdsOfType, $promotedPPLTIds)) : $IdsOfType;
-            $difference = count($IdsOfType) - count($okIds);
-            array_push($toRetrieveList, $okIds[0]);
-        }
-        return  $this->ppLeagueTypeRepository->get($toRetrieveList);
     }
 
 }

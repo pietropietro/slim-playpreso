@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Controller\User;
 use App\Controller\UserParticipation;
 use App\Controller\PPLeague;
+use App\Controller\PPLeagueType;
 use App\Middleware\Auth;
 use App\Middleware\Cors;
 
@@ -31,7 +32,7 @@ return function ($app){
         // $app->delete('/{id}', User\Delete::class)->add(new Auth());
     });
     
-    $app->get('/ppLeagueTypes', User\GetPPLeagueTypes::class)->add(new Auth());
+    $app->get('/ppLeagueTypes', PPLeagueType\GetAvailable::class)->add(new Auth());
     $app->get('/ppLeague/{id}', PPLeague\GetFull::class)->add(new Auth);
     $app->get('/activePPLeaguesParticipations', UserParticipation\GetUserActivePPLParticipations::class)->add(new Auth());
 

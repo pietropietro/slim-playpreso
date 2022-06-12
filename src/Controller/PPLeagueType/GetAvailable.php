@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\User;
+namespace App\Controller\PPLeagueType;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-//TODO MOVE IN PPLeagueType CONTROLLER FOLDER
-final class GetPPLeagueTypes extends Base
+final class GetAvailable extends Base
 {
     /**
      * @param array<string> $args
@@ -21,7 +20,7 @@ final class GetPPLeagueTypes extends Base
         $input = (array) $request->getParsedBody();
         $userId = $this->getAndValidateUserId($input);
 
-        $ppLeagueTypes = $this->getFindUserService()->getAvailablePPLeagueTypes($userId);
+        $ppLeagueTypes = $this->getPPLeagueTypeService()->getAvailable($userId);
 
         return $this->jsonResponse($response, 'success', $ppLeagueTypes, 200);
     }

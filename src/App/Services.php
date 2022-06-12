@@ -14,11 +14,6 @@ $container['find_user_service'] = static fn (
 ): User\Find => new User\Find(
     $container->get('user_repository'),
     $container->get('redis_service'),
-    $container->get('user_participations_repository'),
-    $container->get('guess_repository'),
-    $container->get('match_repository'),
-    $container->get('ppleaguetype_repository'),
-    $container->get('ppleague_repository'),
 );
 
 $container['create_user_service'] = static fn (
@@ -75,6 +70,7 @@ $container['ppleaguetype_service'] = static fn (
 ):  PPLeagueType\Find => new  PPLeagueType\Find(
     $container->get('redis_service'),
     $container->get('ppleaguetype_repository'),
+    $container->get('user_participations_repository'),
 );
 
 $container['ppround_service'] = static fn (

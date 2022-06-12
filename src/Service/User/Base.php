@@ -50,19 +50,7 @@ abstract class Base extends BaseService
         return null;
     }
 
-    protected function getAvailablePPLeagueTypesFromCache(int $userId)
-    {
-        $redisKey = sprintf('ppLeagueTypes-' . self::REDIS_KEY, $userId);
-        $key = $this->redisService->generateKey($redisKey);
-        if ($this->redisService->exists($key)) {
-            $data = $this->redisService->get($key);
-            return json_decode((string) json_encode($data), false);
-        } 
-        return null;
-    }
-
     
-
     protected function getUserFromDb(int $userId)
     {
         $user =  $this->userRepository->getUser($userId);
