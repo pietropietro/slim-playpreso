@@ -14,12 +14,9 @@ final class Create extends Base
     public function create(array $input)
     {
         $data = $this->validateUserData($input);
-        $user = $this->userRepository->create($data);
+        $userId = $this->userRepository->create($data);
 
-        if (self::isRedisEnabled() === true) {
-            $this->saveInCache($user->getId(), $user->toJson());
-        }
-        return $user;
+        return $userId;
     }
 
     /**
@@ -39,8 +36,8 @@ final class Create extends Base
             throw new \App\Exception\User('The field "password" is required.', 400);
         }
 
-        $this->userRepository->checkUserByEmail($user->email);
-        $this->userRepository->checkUserByUsername($user->username);
+        $this->userRepository->checkEmail($user->email);
+        $this->userRepository->checkUsername($user->username);
         
         $user->username = self::validateUserName($user->username);
         $user->email = self::validateEmail($user->email);

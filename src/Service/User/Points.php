@@ -22,5 +22,9 @@ final class Points extends Base
         $cost = $this->ppLeagueTypeRepository->getOne($typeId)['cost'];
         return $this->userRepository->minus($userId, $cost);
     }
+
+    public function get($userId){
+       return $this->userRepository->getPoints($userId);
+    }
 }
 

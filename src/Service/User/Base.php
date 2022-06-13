@@ -53,7 +53,7 @@ abstract class Base extends BaseService
     
     protected function getUserFromDb(int $userId)
     {
-        $user =  $this->userRepository->getUser($userId);
+        $user =  $this->userRepository->getOne($userId);
         return $user;
     }
 

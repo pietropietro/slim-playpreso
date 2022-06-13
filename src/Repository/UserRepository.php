@@ -6,6 +6,8 @@ namespace App\Repository;
 
 final class UserRepository extends BaseRepository
 {
+    public $columns = array("username, id, created_at");
+
     public function create($user){
         $data = array(
             'username' => strtolower($user->username),
@@ -18,15 +20,14 @@ final class UserRepository extends BaseRepository
         if(!$userId = $this->getDb()->insert('users', $data)){
             throw new \App\Exception\User('User not created.', 400);
         }
-        return $this->getUser($userId);
+        return $userId;
     }
 
-    public function getUser(int $userId)
+    public function getOne(int $userId)
     {
         $this->getDb()->where('id',$userId);
         //only retrieve certain columns of user. in order to give back a JSON without password
-        $columns = Array ('username','created_at','points','id');
-        $user = $this->getDb()->getOne('users', $columns);
+        $user = $this->getDb()->getOne('users', $this->columns);
 
         if (! $user) {
             throw new \App\Exception\User('User not found.', 404);
@@ -34,10 +35,12 @@ final class UserRepository extends BaseRepository
         return $user;
     }
 
+    //TODO MOVE LOGIC IN SERVICE
     public function loginUser(string $username, string $password)
     {
         $this->getDb()->where('username',strtolower($username));
-        if(!$user=$this->getDb()->getOne('users')){
+
+        if(!$user=$this->getDb()->getOne('users', $this->columns)){
             throw new \App\Exception\User('Login failed: username or password incorrect.', 401);
         }
         $decodedHash=base64_decode($user['password']);
@@ -47,7 +50,7 @@ final class UserRepository extends BaseRepository
         throw new \App\Exception\User('Login failed: username or password incorrect.', 401);
     }
 
-    public function checkUserByEmail(string $email): void
+    public function checkEmail(string $email): void
     {
         $this->getDb()->where('email', $email);
         if ($user = $this->getDb()->getOne('users')) {
@@ -55,7 +58,7 @@ final class UserRepository extends BaseRepository
         }
     }
 
-    public function checkUserByUsername(string $username): void
+    public function checkUsername(string $username): void
     {
         $this->getDb()->where('username', $username);
         if ($user = $this->getDb()->getOne('users')) {
@@ -86,7 +89,6 @@ final class UserRepository extends BaseRepository
         );
         $this->getDb()->where('id', $userId);
         return $this->getDb()->update('users', $data, 1);
-        // ->query("UPDATE users SET points = points - $points WHERE id = $userId ");
     }
    
 }

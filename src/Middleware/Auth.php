@@ -9,6 +9,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Route;
 use Firebase\JWT\JWT;
+use \App\Service\User\Points;
 
 final class Auth extends Base
 {
@@ -25,20 +26,27 @@ final class Auth extends Base
         if (! isset($jwt[1])) {
             throw new \App\Exception\Auth('JWT Token invalid.', 400);
         }
-        $decoded = $this->checkToken($jwt[1]);
+        $decoded = Auth::checkToken($jwt[1]);
 
         $requestBody = (array) $request->getParsedBody();
         $requestBody['JWT_decoded'] = $decoded;
 
-        $updatedJWT = Auth::createToken($requestBody['JWT_decoded']->username, $requestBody['JWT_decoded']->id);
+        // $user_id = $requestBody['JWT_decoded']->id;
+        // $points = new Points::get($user_id);
+        // $updatedJWT = Auth::createToken(
+        //     $requestBody['JWT_decoded']->username, 
+        //     $user_id,
+        //     $points
+        // );
 
         return $next($request->withParsedBody($requestBody), $response->withHeader('Authorization', $updatedJWT));
     }
 
-    public static function createToken($username, $userId) : string {
+    public static function createToken(string $username, int $userId, int $points) : string {
         $token = [
             'username' => $username,
             'id' => $userId,
+            'points' => $points,
             'iat' => time(),
             'exp' => time() + ($_SERVER['TOKEN_VALIDITY_DAYS'] * 24 * 60 * 60),
         ];
@@ -46,7 +54,7 @@ final class Auth extends Base
         return 'Bearer ' . JWT::encode($token, $_SERVER['SECRET_KEY']);
     }
 
-    protected function checkToken(string $token): object
+    public static function checkToken(string $token): object
     {
         try {
             return JWT::decode($token, $_SERVER['SECRET_KEY'], ['HS256']);

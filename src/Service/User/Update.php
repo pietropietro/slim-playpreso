@@ -46,7 +46,7 @@ final class Update extends Base
             $user->updateName(self::validateUserName($data->name));
         }
         if (isset($data->email) && $data->email !== $user->getEmail()) {
-            $this->userRepository->checkUserByEmail($data->email);
+            $this->userRepository->checkEmail($data->email);
             $user->updateEmail(self::validateEmail($data->email));
         }
 

@@ -7,7 +7,7 @@ namespace App\Service\PPLeagueType;
 use App\Service\RedisService;
 use App\Repository\PPLeagueTypeRepository;
 use App\Repository\UserParticipationRepository;
-use App\Repository\UserRepository;
+use App\Service\User\Points;
 use App\Service\BaseService;
 
 final class Find  extends BaseService{
@@ -15,7 +15,7 @@ final class Find  extends BaseService{
         protected RedisService $redisService,
         protected PPLeagueTypeRepository $ppLeagueTypeRepository,
         protected UserParticipationRepository $userParticipationRepository,
-        protected UserRepository $userRepository,
+        protected Points $pointsService,
     ){}
 
     public function getOne(int $ppLeagueTypeId){
@@ -55,12 +55,12 @@ final class Find  extends BaseService{
     }
 
     public function filterIdsExpensive(int $userId, array $ids){
-        $userPoints = $this->userRepository->getPoints($userId);
+        $userPoints = $this->pointsService->get($userId);
         return $this->ppLeagueTypeRepository->filterIdsExpensive($ids, $userPoints);
     }
 
     public function canAfford(int $userId, int $typeId){
-        $userPoints = $this->userRepository->getPoints($userId);
+        $userPoints = $this->pointsService->get($userId);
         $cost = $this->ppLeagueTypeRepository->getOne($typeId)['cost'];
         return $userPoints >= $cost;
     }

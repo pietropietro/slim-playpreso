@@ -12,8 +12,10 @@ final class Create extends Base
     public function __invoke(Request $request, Response $response): Response
     {
         $input = (array) $request->getParsedBody();
-        $user = $this->getCreateUserService()->create($input);
+        if(!$result = $this->getCreateUserService()->create($input)){
+            throw new \App\Exception\User("could not create", 500);
+        }
 
-        return $this->jsonResponse($response, 'success', $user, 201);
+        return $this->jsonResponse($response, 'success', $result, 201);
     }
 }
