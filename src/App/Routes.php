@@ -32,7 +32,9 @@ return function ($app){
         // $app->delete('/{id}', User\Delete::class)->add(new Auth());
     });
     
-    $app->get('/ppLeagueTypes', PPLeagueType\GetAvailable::class)->add(new Auth());
+    $app->get('/ppLeagueType/available', PPLeagueType\GetAvailable::class)->add(new Auth());
+    $app->post('/ppLeagueType/join/{id}', PPLeagueType\Join::class)->add(new Auth());
+
     $app->get('/ppLeague/{id}', PPLeague\GetFull::class)->add(new Auth);
     $app->get('/activePPLeaguesParticipations', UserParticipation\GetUserActivePPLParticipations::class)->add(new Auth());
 

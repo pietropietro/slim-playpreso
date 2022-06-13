@@ -21,20 +21,19 @@ final class ApiError extends \Slim\Handlers\Error
 
         $response = (new Cors())($request, $response);
 
-        $errorMessage = [
-            'message' => 'Something went wrong',
-        ];
-        if ($_SERVER['DEBUG'] === 'true') {
-            $errorMessage['trace'] = $exception->getTraceAsString();
-            $errorMessage['message'] = $exception->getMessage();
-        }
-
+        $message = 'Something went wrong';
         $data = [
-            'message' => $errorMessage,
+            'message' => $message,
             'class' => $className->getName(),
             'status' => 'error',
             'code' => $statusCode,
         ];
+        
+        if ($_SERVER['DEBUG'] === 'true') {
+            $data['message'] = $exception->getMessage();
+            $data['trace'] = $exception->getTraceAsString();
+        }
+
         $body = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
         $response->getBody()->write((string) $body);
 

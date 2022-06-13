@@ -22,16 +22,16 @@ final class Find  extends BaseService{
 
     public function getAvailable(int $userId) 
     {
-        //TODO REDIS THIS
-        // if (self::isRedisEnabled() === true && $cached = $this->getAvailablePPLeagueTypesFromCache($userId)) {
-        //     return $cached;
-        // } 
+        $ids = $this->getAvailableIds($userId);
+        return  $this->ppLeagueTypeRepository->get($ids);
+    }
 
+    public function getAvailableIds(int $userId){
         $ppLTypesMap = $this->ppLeagueTypeRepository->getMap();
         $promotedPPLTIds = $this->userParticipationRepository->getPromotedPPLeagueTypeIds($userId);
         $currentPPLTIds = $this->userParticipationRepository->getCurrentPPLeagueTypeIds($userId);
 
-        $toRetrieveList = [];
+        $ids = [];
 
         foreach($ppLTypesMap as $typeKey => $typeItem){
             $IdsOfType = explode(',', $typeItem['ppLTIds']);
@@ -43,9 +43,9 @@ final class Find  extends BaseService{
 
             $okIds = !!$promotedPPLTIds ? array_values(array_diff($IdsOfType, $promotedPPLTIds)) : $IdsOfType;
             $difference = count($IdsOfType) - count($okIds);
-            array_push($toRetrieveList, $okIds[0]);
+            array_push($ids, $okIds[0]);
         }
-        return  $this->ppLeagueTypeRepository->get($toRetrieveList);
+        return $ids;
     }
 
 }
