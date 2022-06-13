@@ -22,10 +22,16 @@ final class Join extends Base
         $userId = $this->getAndValidateUserId($input);
         $typeId = (int) $args['id'];
         $okIds = $this->getPPLeagueTypeService()->getAvailableIds($userId);
-        if(in_array($typeId, $okIds)){
-            $ppLeagueType = $this->getJoinService()->join($typeId, $userId);
-            return $this->jsonResponse($response, 'success', $ppLeagueType, 200);
+        
+        if(!in_array($typeId, $okIds)){
+            throw new Exception\User("user can't join", 401);
         }
-        throw new Exception\User("can't join", 401);
+
+        $ppLeague = $this->getPPLeagueService()->getJoinable($typeId, $userId);
+        
+        //TODO REMOVE POINTS FROM USER
+
+        $insert = $this->getParticipationService()->create($userId,["ppLeague_id","ppLeagueType_id"],[$ppLeague['id'],$typeId]);
+        return $this->jsonResponse($response, 'success', $insert, 200);
     }
 }

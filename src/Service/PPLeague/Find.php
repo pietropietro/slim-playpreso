@@ -29,6 +29,15 @@ final class Find  extends BaseService{
         return $this->ppLeagueRepository->getOne($ppLeagueId);
     }
 
+    function getJoinable(int $typeId, int $userId){
+        if($ppLT = $this->ppLeagueRepository->getJoinable($typeId)){
+            return $ppLT;
+        }
+        $id = $this->ppLeagueRepository->create($typeId);
+        return $this->ppLeagueRepository->get($id);
+    }
+
+    //TODO MOVE
     //FOR THE SAKE OF IT
     private function updateAllStandings(){
         $ids = $this->ppLeagueRepository->startedIds();
@@ -36,6 +45,7 @@ final class Find  extends BaseService{
             $this->calculateStandings($id);
         }
     }
+    //TODO MOVE
     private function countAllPPLRounds(){
         $ids = $this->ppLeagueRepository->startedIds();
         foreach($ids as $id){

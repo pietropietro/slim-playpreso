@@ -64,14 +64,6 @@ $container['ppleague_service'] = static fn (
     $container->get('guess_repository')
 );
 
-
-$container['ppleague_join_service'] = static fn (
-    ContainerInterface $container
-):  PPLeague\Join => new  PPLeague\Join(
-    $container->get('redis_service'),
-    $container->get('ppleague_repository'),
-);
-
 $container['ppleaguetype_service'] = static fn (
     ContainerInterface $container
 ):  PPLeagueType\Find => new  PPLeagueType\Find(
@@ -92,8 +84,6 @@ $container['ppround_service'] = static fn (
 );
 
 
-
-
 $container['user_participation_service'] = static fn (
     ContainerInterface $container
 ):  UserParticipation\Find => new  UserParticipation\Find(
@@ -104,6 +94,12 @@ $container['user_participation_service'] = static fn (
     $container->get('ppround_repository'),
     $container->get('guess_repository')
     // $container->get('user_repository')
+);
+
+$container['user_participation_create_service'] = static fn (
+    ContainerInterface $container
+):  UserParticipation\Create => new  UserParticipation\Create(
+    $container->get('user_participations_repository'),
 );
 
 

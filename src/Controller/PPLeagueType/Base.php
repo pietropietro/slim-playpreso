@@ -6,7 +6,8 @@ namespace App\Controller\PPLeagueType;
 
 use App\Controller\BaseController;
 use App\Service\PPLeagueType\Find;
-use App\Service\PPLeague\Join;
+use App\Service\UserParticipation\Create;
+use App\Service\PPLeague;
 
 abstract class Base extends BaseController
 {
@@ -16,9 +17,14 @@ abstract class Base extends BaseController
         return $this->container->get('ppleaguetype_service');
     }
 
-    protected function getJoinService(): Join
+    protected function getPPLeagueService(): PPLeague\Find
     {
-        return $this->container->get('ppleague_join_service');
+        return $this->container->get('ppleague_service');
+    }
+
+    protected function getParticipationService(): Create
+    {
+        return $this->container->get('user_participation_create_service');
     }
 
 

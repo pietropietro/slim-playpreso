@@ -5,11 +5,24 @@ declare(strict_types=1);
 namespace App\Repository;
 
 final class UserParticipationRepository extends BaseRepository
-{
+{   
+    private $tableName = 'userParticipations';
+
+    function create(int $userId, array $columns, array $valueIds){
+        $data = array(
+			"user_id" => $userId,
+			"joined_at" => date("Y-m-d H:i:s"),
+	    );
+        foreach($columns as $ind => $col){
+            $data[$col] = $valueIds[$ind];
+        }
+        return $this->getDb()->insert($this->tableName, $data);
+    }
+
     function getParticipations(int $userId) : array {
         $this->getDb()->where('user_id',$userId);
         $this->getDb()->orderBy('joined_at','desc');
-        $placements = $this->getDb()->get('userParticipations');
+        $placements = $this->getDb()->get($this->tableName) ;
         
         return $placements;
     }
@@ -22,7 +35,7 @@ final class UserParticipationRepository extends BaseRepository
         }
         $this->getDb()->orderBy('joined_at','desc');
         $this->getDb()->where($type.' IS NOT NULL');
-        return $this->getDb()->get('userParticipations');
+        return $this->getDb()->get($this->tableName) ;
     }
 
     function getPromotedPPLeagueTypeIds(int $userId){
@@ -30,7 +43,7 @@ final class UserParticipationRepository extends BaseRepository
         $this->getDb()->where('finished',1);
         $this->getDb()->where('position', $_SERVER['PPLEAGUE_QUALIFYING_POSITION'], "<=");
 
-        $promotedPPLeagueTypeIds = $this->getDb()->getValue('userParticipations','ppLeagueType_id',null);
+        $promotedPPLeagueTypeIds = $this->getDb()->getValue($this->tableName, 'ppLeagueType_id',null);
         return $promotedPPLeagueTypeIds;
     }
 
@@ -39,7 +52,7 @@ final class UserParticipationRepository extends BaseRepository
         $this->getDb()->where('user_id',$userId);
         $this->getDb()->where('finished IS NULL');
         $this->getDb()->where('ppLeagueType_id IS NOT NULL');
-        return $this->getDb()->getValue('userParticipations', 'ppLeagueType_id', null);
+        return $this->getDb()->getValue($this->tableName,  'ppLeagueType_id', null);
     }
 
     function getLeagueParticipations(int $ppLeagueId){
@@ -55,7 +68,7 @@ final class UserParticipationRepository extends BaseRepository
             "updated_at" => date("Y-m-d H:i:s"),
 		);
         $this->getDb()->where('id',$id);
-        $this->getDb()->update('userParticipations',$data);
+        $this->getDb()->update($this->tableName, $data);
     }
 
     function updatePosition(int $id, int $position){
@@ -64,7 +77,7 @@ final class UserParticipationRepository extends BaseRepository
             "updated_at" => date("Y-m-d H:i:s"),
 		);
         $this->getDb()->where('id',$id);
-        $this->getDb()->update('userParticipations',$data);
+        $this->getDb()->update($this->tableName, $data);
     }
 
 }
