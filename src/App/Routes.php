@@ -24,19 +24,22 @@ return function ($app){
     $app->get('/', 'App\Controller\DefaultController:getHelp');
     $app->post('/login', \App\Controller\User\Login::class);
 
+    $container = $app->getContainer();
+    $pointService = $container->get('user_points_service');
+
     $app->group('/users', function () use ($app): void {
         $app->post('', User\Create::class);
-        $app->get('/{id}', User\GetOne::class)->add(new Auth());
+        $app->get('/{id}', User\GetOne::class)->add(new Auth($app->getContainer()->get('user_points_service')));
         //TODO
-        // $app->put('/{id}', User\Update::class)->add(new Auth());
-        // $app->delete('/{id}', User\Delete::class)->add(new Auth());
+        // $app->put('/{id}', User\Update::class)->add(new Auth($pointService));
+        // $app->delete('/{id}', User\Delete::class)->add(new Auth($pointService));
     });
     
-    $app->get('/ppLeagueType/available', PPLeagueType\GetAvailable::class)->add(new Auth());
-    $app->post('/ppLeagueType/join/{id}', PPLeagueType\Join::class)->add(new Auth());
+    $app->get('/ppLeagueType/available', PPLeagueType\GetAvailable::class)->add(new Auth($pointService));
+    $app->post('/ppLeagueType/join/{id}', PPLeagueType\Join::class)->add(new Auth($pointService));
 
-    $app->get('/ppLeague/{id}', PPLeague\GetFull::class)->add(new Auth);
-    $app->get('/activePPLeaguesParticipations', UserParticipation\GetUserActivePPLParticipations::class)->add(new Auth());
+    $app->get('/ppLeague/{id}', PPLeague\GetFull::class)->add(new Auth($pointService));
+    $app->get('/activePPLeaguesParticipations', UserParticipation\GetUserActivePPLParticipations::class)->add(new Auth($pointService));
 
     
     // Catch-all route to serve a 404 Not Found page if none of the routes match

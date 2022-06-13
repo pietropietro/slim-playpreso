@@ -6,8 +6,6 @@ namespace App\Repository;
 
 final class UserRepository extends BaseRepository
 {
-    public $columns = array("username, id, created_at");
-
     public function create($user){
         $data = array(
             'username' => strtolower($user->username),
@@ -26,8 +24,9 @@ final class UserRepository extends BaseRepository
     public function getOne(int $userId)
     {
         $this->getDb()->where('id',$userId);
+        $columns = array("username, id, created_at");
         //only retrieve certain columns of user. in order to give back a JSON without password
-        $user = $this->getDb()->getOne('users', $this->columns);
+        $user = $this->getDb()->getOne('users', $columns);
 
         if (! $user) {
             throw new \App\Exception\User('User not found.', 404);
@@ -40,7 +39,8 @@ final class UserRepository extends BaseRepository
     {
         $this->getDb()->where('username',strtolower($username));
 
-        if(!$user=$this->getDb()->getOne('users', $this->columns)){
+        $columns = array("username, id, created_at, points, password");
+        if(!$user=$this->getDb()->getOne('users', $columns)){
             throw new \App\Exception\User('Login failed: username or password incorrect.', 401);
         }
         $decodedHash=base64_decode($user['password']);

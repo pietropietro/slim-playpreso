@@ -13,6 +13,10 @@ use \App\Service\User\Points;
 
 final class Auth extends Base
 {
+    public function __construct(
+        protected Points $pointService
+    ){}
+
     public function __invoke(
         Request $request,
         Response $response,
@@ -31,13 +35,14 @@ final class Auth extends Base
         $requestBody = (array) $request->getParsedBody();
         $requestBody['JWT_decoded'] = $decoded;
 
-        // $user_id = $requestBody['JWT_decoded']->id;
-        // $points = new Points::get($user_id);
-        // $updatedJWT = Auth::createToken(
-        //     $requestBody['JWT_decoded']->username, 
-        //     $user_id,
-        //     $points
-        // );
+        $user_id = $requestBody['JWT_decoded']->id;
+        $points = $this->pointService->get($user_id);
+        
+        $updatedJWT = Auth::createToken(
+            $requestBody['JWT_decoded']->username, 
+            $user_id,
+            $points
+        );
 
         return $next($request->withParsedBody($requestBody), $response->withHeader('Authorization', $updatedJWT));
     }
