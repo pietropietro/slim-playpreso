@@ -8,6 +8,7 @@ use App\Controller\BaseController;
 use App\Service\PPLeagueType\Find;
 use App\Service\UserParticipation\Create;
 use App\Service\PPLeague;
+use App\Service\User;
 
 abstract class Base extends BaseController
 {
@@ -25,6 +26,11 @@ abstract class Base extends BaseController
     protected function getParticipationService(): Create
     {
         return $this->container->get('user_participation_create_service');
+    }
+
+    protected function getPointsService(): User\Points
+    {
+        return $this->container->get('user_points_service');
     }
 
 

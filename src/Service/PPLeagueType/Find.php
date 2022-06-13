@@ -25,6 +25,7 @@ final class Find  extends BaseService{
     public function getAvailable(int $userId) 
     {
         $ids = $this->getAvailableIds($userId);
+        if(!$ids) return [];
         return  $this->ppLeagueTypeRepository->get($ids);
     }
 
@@ -50,11 +51,18 @@ final class Find  extends BaseService{
         }
         
         return $this->filterIdsExpensive($userId, $ids);
+        return $ids;
     }
 
     public function filterIdsExpensive(int $userId, array $ids){
         $userPoints = $this->userRepository->getPoints($userId);
         return $this->ppLeagueTypeRepository->filterIdsExpensive($ids, $userPoints);
+    }
+
+    public function canAfford(int $userId, int $typeId){
+        $userPoints = $this->userRepository->getPoints($userId);
+        $cost = $this->ppLeagueTypeRepository->getOne($typeId)['cost'];
+        return $userPoints >= $cost;
     }
 
 }

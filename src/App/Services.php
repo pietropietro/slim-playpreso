@@ -103,4 +103,12 @@ $container['user_participation_create_service'] = static fn (
     $container->get('user_participations_repository'),
 );
 
+$container['user_points_service'] = static fn (
+    ContainerInterface $container
+):  User\Points => new  User\Points(
+    $container->get('user_repository'),
+    $container->get('redis_service'),
+    $container->get('ppleaguetype_repository'),
+);
+
 
