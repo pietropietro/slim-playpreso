@@ -69,5 +69,12 @@ final class UserRepository extends BaseRepository
         $user = $this->getDb()->getOne('users', $columns);
         return $user['username'];
     }
+
+    public function getPoints(int $userId){
+        $this->getDb()->where('id',$userId);
+        $columns = Array ('points');
+        $user = $this->getDb()->getOne('users', $columns);
+        return $user['points'];
+    }
    
 }

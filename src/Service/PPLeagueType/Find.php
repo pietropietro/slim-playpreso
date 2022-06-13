@@ -7,6 +7,7 @@ namespace App\Service\PPLeagueType;
 use App\Service\RedisService;
 use App\Repository\PPLeagueTypeRepository;
 use App\Repository\UserParticipationRepository;
+use App\Repository\UserRepository;
 use App\Service\BaseService;
 
 final class Find  extends BaseService{
@@ -14,6 +15,7 @@ final class Find  extends BaseService{
         protected RedisService $redisService,
         protected PPLeagueTypeRepository $ppLeagueTypeRepository,
         protected UserParticipationRepository $userParticipationRepository,
+        protected UserRepository $userRepository,
     ){}
 
     public function getOne(int $ppLeagueTypeId){
@@ -27,6 +29,7 @@ final class Find  extends BaseService{
     }
 
     public function getAvailableIds(int $userId){
+
         $ppLTypesMap = $this->ppLeagueTypeRepository->getMap();
         $promotedPPLTIds = $this->userParticipationRepository->getPromotedPPLeagueTypeIds($userId);
         $currentPPLTIds = $this->userParticipationRepository->getCurrentPPLeagueTypeIds($userId);
@@ -45,7 +48,13 @@ final class Find  extends BaseService{
             $difference = count($IdsOfType) - count($okIds);
             array_push($ids, $okIds[0]);
         }
-        return $ids;
+        
+        return $this->filterIdsExpensive($userId, $ids);
+    }
+
+    public function filterIdsExpensive(int $userId, array $ids){
+        $userPoints = $this->userRepository->getPoints($userId);
+        return $this->ppLeagueTypeRepository->filterIdsExpensive($ids, $userPoints);
     }
 
 }

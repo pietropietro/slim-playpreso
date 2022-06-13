@@ -29,5 +29,17 @@ final class PPLeagueTypeRepository extends BaseRepository
         return $this->getDb()->getOne('ppLeagueTypes');
     }
 
+    function getCost($id){
+        $this->getDb()->where('id',$id);
+        return $this->getDb()->getOne('ppLeagueTypes', 'cost');
+    }
+
+
+    function filterIdsExpensive($ids, $points){
+        $this->getDb()->where('id', $ids, 'IN');
+        $this->getDb()->where('cost', $points, '<=');
+        return $this->getDb()->getValue('ppLeagueTypes', 'id', null);
+
+    }
 
 }

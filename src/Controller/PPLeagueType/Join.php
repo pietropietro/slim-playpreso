@@ -27,9 +27,15 @@ final class Join extends Base
             throw new Exception\User("user can't join", 401);
         }
 
+        //TODO REMOVE POINTS FROM USER
+        $cost = $this->getPPLeagueTypeService()->getCost($typeId);
+        if(!$this->getUserService()->subtractPoints($userId, $cost)){
+            throw new Exception\User("not enough points", 401);
+        }
+
         $ppLeague = $this->getPPLeagueService()->getJoinable($typeId, $userId);
         
-        //TODO REMOVE POINTS FROM USER
+        
 
         $insert = $this->getParticipationService()->create($userId,["ppLeague_id","ppLeagueType_id"],[$ppLeague['id'],$typeId]);
         return $this->jsonResponse($response, 'success', $insert, 200);

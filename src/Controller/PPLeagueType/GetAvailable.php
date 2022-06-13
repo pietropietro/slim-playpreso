@@ -19,7 +19,7 @@ final class GetAvailable extends Base
     ): Response {
         $input = (array) $request->getParsedBody();
         $userId = $this->getAndValidateUserId($input);
-
+        
         $ppLeagueTypes = $this->getPPLeagueTypeService()->getAvailable($userId);
 
         return $this->jsonResponse($response, 'success', $ppLeagueTypes, 200);
