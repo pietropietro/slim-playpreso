@@ -22,9 +22,10 @@ final class Join extends Base
         $userId = $this->getAndValidateUserId($input);
         $typeId = (int) $args['id'];
         $okIds = $this->getPPLeagueTypeService()->getAvailableIds($userId);
-        // if(in_array($typeId, $okIds)){
-        //     return $this->jsonResponse($response, 'success', $typeId, 200);
-        // }
-        throw new Exception\User("user not allowed", 401);
+        if(in_array($typeId, $okIds)){
+            $ppLeagueType = $this->getJoinService()->join($typeId, $userId);
+            return $this->jsonResponse($response, 'success', $ppLeagueType, 200);
+        }
+        throw new Exception\User("can't join", 401);
     }
 }

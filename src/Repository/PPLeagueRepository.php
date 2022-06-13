@@ -8,7 +8,7 @@ use \App\Exception\NotFound;
 
 final class PPLeagueRepository extends BaseRepository
 {
-    public function getPPLeagues(array $ids) {
+    public function get(array $ids) {
         $this->getDb()->where('id', $ids, 'IN');
         $ppLeagues=$this->getDb()->get('ppLeagues');
         if (! $ppLeagues) {
@@ -17,9 +17,12 @@ final class PPLeagueRepository extends BaseRepository
         return $ppLeagues;
     }
 
-    public function startedIds(){
-        $this->getDb()->where('started_at IS NOT NULL');
-        return $this->getDb()->getValue('ppLeagues', 'id', null);
+    function getJoinable($typeId){
+        $this->getDb()->where('ppLeagueType_id', $typeId);
+        $this->getDb()->where('started_at IS NULL');
+        $this->getDb()->where('user_count', 20, "<");
+       
+        return $this->getDb()->getOne('ppLeagues');
     }
 
     function getOne($id){
@@ -27,11 +30,27 @@ final class PPLeagueRepository extends BaseRepository
         return $this->getDb()->getOne('ppLeagues');
     }
 
+
+    public function startedIds(){
+        $this->getDb()->where('started_at IS NOT NULL');
+        return $this->getDb()->getValue('ppLeagues', 'id', null);
+    }
+    
     function updateValue(int $id, string $column, $value){
         $data = array(
             $column => $value,
         );
         $this->getDb()->where('id',$id);
         $this->getDb()->update('ppLeagues', $data);
+    }
+
+    function create($typeId){
+        $data = array(
+			"ppLeagueType_id" => $typeId,
+			"created_at" => date("Y-m-d H:i:s"),
+			"user_count" => 0,
+            "round_count" => 0
+	    );
+        return $this->getDb()->insert('ppLeagues',$data);
     }
 }
