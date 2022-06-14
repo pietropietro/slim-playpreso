@@ -31,13 +31,17 @@ final class Join extends Base
             throw new Exception\User("not enough points", 401);
         }
 
-        $ppLeague = $this->getPPLeagueService()->getJoinable($typeId, $userId);
+        $ppLeague = $this->getFindPPLeagueService()->getJoinable($typeId, $userId);
         
         if(!$this->getPointsService()->payPPLT($userId, $typeId)){
-            throw new Exception\User("couldn't join", 401);
+            throw new Exception\User("couldn't join", 500);
         }
 
-        $insert = $this->getParticipationService()->create($userId,["ppLeague_id","ppLeagueType_id"],[$ppLeague['id'],$typeId]);
+        if(!$insert = $this->getParticipationService()->createPPLeagueParticipation($userId, $ppLeague['id'], $typeId)){
+            throw new Exception\User("something went wrong", 500);
+        };
+
+        //update ppLeague user_count
         return $this->jsonResponse($response, 'success', $ppLeague['id'], 200);
     }
 }

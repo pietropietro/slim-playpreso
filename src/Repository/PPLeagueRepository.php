@@ -53,4 +53,8 @@ final class PPLeagueRepository extends BaseRepository
 	    );
         return $this->getDb()->insert('ppLeagues',$data);
     }
+
+    function incrementUserCounter($id){
+        $this->getDb()->query("UPDATE ppLeagues SET user_count=user_count+1 WHERE id=$id");
+    }
 }

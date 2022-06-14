@@ -34,7 +34,7 @@ final class Find  extends BaseService{
             return $ppLT;
         }
         $id = $this->ppLeagueRepository->create($typeId);
-        return $this->ppLeagueRepository->get($id);
+        return $this->ppLeagueRepository->getOne($id);
     }
 
     //TODO MOVE
