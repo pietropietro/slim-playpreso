@@ -10,12 +10,15 @@ use App\Repository\PPRoundMatchRepository;
 use App\Repository\GuessRepository;
 use App\Repository\UserRepository;
 use App\Repository\UserParticipationRepository;
+use App\Repository\LeagueRepository;
 
 use Psr\Container\ContainerInterface;
 
 $container['user_repository'] = static fn (ContainerInterface $container): UserRepository => new UserRepository($container->get('db'));
 
 $container['user_participations_repository'] = static fn (ContainerInterface $container): UserParticipationRepository => new UserParticipationRepository($container->get('db'));
+
+$container['league_repository'] = static fn (ContainerInterface $container): LeagueRepository => new LeagueRepository($container->get('db'));
 
 $container['ppleague_repository'] = static fn (ContainerInterface $container): PPLeagueRepository => new PPLeagueRepository($container->get('db'));
 

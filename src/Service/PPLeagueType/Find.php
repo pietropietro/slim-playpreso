@@ -8,6 +8,7 @@ use App\Service\RedisService;
 use App\Repository\PPLeagueTypeRepository;
 use App\Repository\UserParticipationRepository;
 use App\Service\User\Points;
+use App\Service\League;
 use App\Service\BaseService;
 
 final class Find  extends BaseService{
@@ -16,10 +17,13 @@ final class Find  extends BaseService{
         protected PPLeagueTypeRepository $ppLeagueTypeRepository,
         protected UserParticipationRepository $userParticipationRepository,
         protected Points $pointsService,
+        protected League\Find $leagueService,
     ){}
 
     public function getOne(int $id){
-        return $this->ppLeagueTypeRepository->getOne($id);
+        $ppLT =  $this->ppLeagueTypeRepository->getOne($id);
+        $ppLT['leagues'] = $this->leagueService->getForPPLT($id);
+        return $ppLT;
     }
 
     public function getAvailable(int $userId) 
@@ -66,7 +70,7 @@ final class Find  extends BaseService{
 
     public function isAllowed($userId, $typeId){
         $okIds = $this->getAvailableIds($userId);
-        return !in_array($typeId, $okIds);
+        return in_array($typeId, $okIds);
     }
 
 }

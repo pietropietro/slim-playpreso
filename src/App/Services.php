@@ -7,6 +7,7 @@ use App\Service\PPLeague;
 use App\Service\PPLeagueType;
 use App\Service\PPRound;
 use App\Service\UserParticipation;
+use App\Service\League;
 use Psr\Container\ContainerInterface;
 
 $container['find_user_service'] = static fn (
@@ -79,6 +80,7 @@ $container['ppleaguetype_service'] = static fn (
     $container->get('ppleaguetype_repository'),
     $container->get('user_participations_repository'),
     $container->get('user_points_service'),
+    $container->get('leagues_service'),
 );
 
 
@@ -118,6 +120,14 @@ $container['user_points_service'] = static fn (
     $container->get('user_repository'),
     $container->get('redis_service'),
     $container->get('ppleaguetype_repository'),
+);
+
+$container['leagues_service'] = static fn (
+    ContainerInterface $container
+):  League\Find => new  League\Find(
+    $container->get('redis_service'),
+    $container->get('ppleaguetype_repository'),
+    $container->get('league_repository'),
 );
 
 
