@@ -34,12 +34,11 @@ return function ($app){
         // $app->delete('/{id}', User\Delete::class)->add(new Auth($pointService));
     });
     
-    $app->group('/ppLeagueType', function () use ($app, $pointService): void {
-        $app->get('/{id}', PPLeagueType\Find::class)->add(new Auth($pointService));
-        $app->get('/ppLeagueType/available', PPLeagueType\GetAvailable::class)->add(new Auth($pointService));
-        $app->post('/ppLeagueType/join/{id}', PPLeagueType\Join::class)->add(new Auth($pointService));
-    });
-
+    $app->group('/ppLeagueType', function () use ($app): void {
+        $app->get('/available', PPLeagueType\GetAvailable::class);
+        $app->post('/join/{id}', PPLeagueType\Join::class);
+        $app->get('/{id}', PPLeagueType\Find::class);
+    })->add(new Auth($pointService));
 
     $app->get('/ppLeague/{id}', PPLeague\GetFull::class)->add(new Auth($pointService));
     
