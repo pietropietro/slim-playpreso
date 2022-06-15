@@ -20,25 +20,29 @@ return function ($app){
         return $res;
     });
 
-
     $app->get('/', 'App\Controller\DefaultController:getHelp');
     $app->post('/login', \App\Controller\User\Login::class);
 
     $container = $app->getContainer();
     $pointService = $container->get('user_points_service');
 
-    $app->group('/user', function () use ($app): void {
+    $app->group('/user', function () use ($app, $pointService): void {
         $app->post('', User\Create::class);
-        $app->get('/{id}', User\GetOne::class)->add(new Auth($app->getContainer()->get('user_points_service')));
+        $app->get('/{id}', User\GetOne::class)->add(new Auth($pointService));
         //TODO
         // $app->put('/{id}', User\Update::class)->add(new Auth($pointService));
         // $app->delete('/{id}', User\Delete::class)->add(new Auth($pointService));
     });
     
-    $app->get('/ppLeagueType/available', PPLeagueType\GetAvailable::class)->add(new Auth($pointService));
-    $app->post('/ppLeagueType/join/{id}', PPLeagueType\Join::class)->add(new Auth($pointService));
+    $app->group('/ppLeagueType', function () use ($app, $pointService): void {
+        $app->get('/{id}', PPLeagueType\Find::class)->add(new Auth($pointService));
+        $app->get('/ppLeagueType/available', PPLeagueType\GetAvailable::class)->add(new Auth($pointService));
+        $app->post('/ppLeagueType/join/{id}', PPLeagueType\Join::class)->add(new Auth($pointService));
+    });
+
 
     $app->get('/ppLeague/{id}', PPLeague\GetFull::class)->add(new Auth($pointService));
+    
     $app->get('/userParticipation/ppLeagues', UserParticipation\PPLeagues::class)->add(new Auth($pointService));
 
     

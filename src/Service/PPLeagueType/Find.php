@@ -18,8 +18,8 @@ final class Find  extends BaseService{
         protected Points $pointsService,
     ){}
 
-    public function getOne(int $ppLeagueTypeId){
-        return $this->ppLeagueTypeRepository->getOne($ppLeagueTypeId);
+    public function getOne(int $id){
+        return $this->ppLeagueTypeRepository->getOne($id);
     }
 
     public function getAvailable(int $userId) 
@@ -38,20 +38,19 @@ final class Find  extends BaseService{
         $ids = [];
 
         foreach($ppLTypesMap as $typeKey => $typeItem){
-            $IdsOfType = explode(',', $typeItem['ppLTIds']);
+            $idsOfType = explode(',', $typeItem['ppLTIds']);
 
-            if(!!$currentPPLTIds && !empty(array_intersect($currentPPLTIds, $IdsOfType ))){
+            if(!!$currentPPLTIds && !empty(array_intersect($currentPPLTIds, $idsOfType ))){
                 unset($ppLTypesMap[$typeKey]);
                 continue;
             }
 
-            $okIds = !!$promotedPPLTIds ? array_values(array_diff($IdsOfType, $promotedPPLTIds)) : $IdsOfType;
-            $difference = count($IdsOfType) - count($okIds);
+            $okIds = !!$promotedPPLTIds ? array_values(array_diff($idsOfType, $promotedPPLTIds)) : $idsOfType;
+            $difference = count($idsOfType) - count($okIds);
             array_push($ids, $okIds[0]);
         }
         
         return $this->filterIdsExpensive($userId, $ids);
-        return $ids;
     }
 
     public function filterIdsExpensive(int $userId, array $ids){
@@ -63,6 +62,11 @@ final class Find  extends BaseService{
         $userPoints = $this->pointsService->get($userId);
         $cost = $this->ppLeagueTypeRepository->getOne($typeId)['cost'];
         return $userPoints >= $cost;
+    }
+
+    public function isAllowed($userId, $typeId){
+        $okIds = $this->getAvailableIds($userId);
+        return !in_array($typeId, $okIds);
     }
 
 }
