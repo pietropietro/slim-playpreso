@@ -7,7 +7,7 @@ namespace App\Controller\UserParticipation;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class GetUserActivePPLParticipations extends Base{
+final class PPLeagues extends Base{
     /**
      * @param array<string> $args
      */
@@ -19,7 +19,7 @@ final class GetUserActivePPLParticipations extends Base{
         $input = (array) $request->getParsedBody();
         $userId = $this->getAndValidateUserId($input);
 
-        //TODO UNCOMMENT + change type to enum
+        //TODO change type to enum
         $ups = $this->getUserParticipationService()->getAll($userId, 'ppLeague', true);
 
         return $this->jsonResponse($response, 'success', $ups, 200);

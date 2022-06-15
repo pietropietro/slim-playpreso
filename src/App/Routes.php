@@ -27,7 +27,7 @@ return function ($app){
     $container = $app->getContainer();
     $pointService = $container->get('user_points_service');
 
-    $app->group('/users', function () use ($app): void {
+    $app->group('/user', function () use ($app): void {
         $app->post('', User\Create::class);
         $app->get('/{id}', User\GetOne::class)->add(new Auth($app->getContainer()->get('user_points_service')));
         //TODO
@@ -39,7 +39,7 @@ return function ($app){
     $app->post('/ppLeagueType/join/{id}', PPLeagueType\Join::class)->add(new Auth($pointService));
 
     $app->get('/ppLeague/{id}', PPLeague\GetFull::class)->add(new Auth($pointService));
-    $app->get('/activePPLeaguesParticipations', UserParticipation\GetUserActivePPLParticipations::class)->add(new Auth($pointService));
+    $app->get('/userParticipation/ppLeagues', UserParticipation\PPLeagues::class)->add(new Auth($pointService));
 
     
     // Catch-all route to serve a 404 Not Found page if none of the routes match
