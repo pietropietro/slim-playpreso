@@ -13,7 +13,7 @@ mysqladmin -u root -p status
 
 WEB SERVER - needs php8
 start php server with – you need to cd public
-php -S localhost:8080
+php -S localhost:8080  OR vscode debug
 
 REDIS
 once you have redis installed, run

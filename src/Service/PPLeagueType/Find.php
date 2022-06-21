@@ -58,6 +58,7 @@ final class Find  extends BaseService{
     }
 
     public function filterIdsExpensive(int $userId, array $ids){
+        if(!$ids)return null;
         $userPoints = $this->pointsService->get($userId);
         return $this->ppLeagueTypeRepository->filterIdsExpensive($ids, $userPoints);
     }
