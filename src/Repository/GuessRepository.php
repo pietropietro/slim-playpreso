@@ -25,6 +25,7 @@ final class GuessRepository extends BaseRepository
     public function getAllPPRM($ppRMId){
         $this->getDb()->join("users u", "u.id=g.user_id", "INNER");
         $this->getDb()->orderBy('g.score','desc');
+        $this->getDb()->orderBy('g.guess_home','asc');
         $this->getDb()->where('ppRoundMatch_id', $ppRMId);
         return $this->getDb()->query("SELECT g.*, u.username FROM guesses g");
     }
