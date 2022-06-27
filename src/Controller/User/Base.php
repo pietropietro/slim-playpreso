@@ -11,6 +11,7 @@ use App\Service\User\Delete;
 use App\Service\User\Find;
 use App\Service\User\Login;
 use App\Service\User\Update;
+use App\Service\UserParticipation;
 
 abstract class Base extends BaseController
 {
@@ -37,6 +38,11 @@ abstract class Base extends BaseController
     protected function getLoginUserService(): Login
     {
         return $this->container->get('login_user_service');
+    }
+
+    protected function getUserParticipationService(): UserParticipation\Find
+    {
+        return $this->container->get('user_participation_service');
     }
 
     protected function checkUserPermissions(int $userId, int $userIdLogged): void

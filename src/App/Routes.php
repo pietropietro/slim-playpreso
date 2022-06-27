@@ -28,7 +28,7 @@ return function ($app){
 
     $app->group('/user', function () use ($app, $pointService): void {
         $app->post('', User\Create::class);
-        $app->get('/{id}', User\GetOne::class)->add(new Auth($pointService));
+        $app->get('/{username}', User\GetOne::class)->add(new Auth($pointService));
         //TODO
         // $app->put('/{id}', User\Update::class)->add(new Auth($pointService));
         // $app->delete('/{id}', User\Delete::class)->add(new Auth($pointService));

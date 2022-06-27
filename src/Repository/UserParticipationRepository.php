@@ -28,10 +28,13 @@ final class UserParticipationRepository extends BaseRepository
     }
 
     //TODO change string type to ENUM 'ppLeague_id', 'ppCupGroup_id'
-    function getParticipationsForUser(int $userId, string $type, bool $active){
+    function getParticipationsForUser(int $userId, string $type, bool $active, ?int $minPosition){
         $this->getDb()->where('user_id', $userId);
         if($active){
             $this->getDb()->where('finished IS NULL');
+        }
+        if($minPosition){
+            $this->getDb()->where('position', $minPosition, '<=');
         }
         $this->getDb()->orderBy('joined_at','desc');
         $this->getDb()->where($type.' IS NOT NULL');
@@ -41,7 +44,7 @@ final class UserParticipationRepository extends BaseRepository
     function getPromotedPPLeagueTypeIds(int $userId){
         $this->getDb()->where('user_id',$userId);
         $this->getDb()->where('finished',1);
-        $this->getDb()->where('position', $_SERVER['PPLEAGUE_QUALIFYING_POSITION'], "<=");
+        $this->getDb()->where('position', $_SERVER['PPLEAGUE_TROPHY_POSITION'], "<=");
 
         $promotedPPLeagueTypeIds = $this->getDb()->getValue($this->tableName, 'ppLeagueType_id',null);
         return $promotedPPLeagueTypeIds;

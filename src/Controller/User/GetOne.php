@@ -17,7 +17,12 @@ final class GetOne extends Base
         Response $response,
         array $args
     ): Response {
-        $user = $this->getFindUserService()->getOne((int) $args['id']);
+        $id = $this->getFindUserService()->idFromUsername((string) $args['username']);
+        if(!$id){
+            throw new \App\Exception\User('User not found.', 404);
+        }
+        $user = $this->getFindUserService()->getOne($id);
+        $user['top-participations'] = $this->getUserParticipationService()->getTrophies($id, 'ppLeague');
 
         return $this->jsonResponse($response, 'success', $user, 200);
     }

@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Service\UserParticipation;
 
 use App\Service\RedisService;
-use App\Service\BaseService;
 use App\Repository\UserParticipationRepository;
 use App\Repository\PPLeagueTypeRepository;
 use App\Repository\PPLeagueRepository;
 use App\Repository\PPRoundRepository;
 use App\Repository\GuessRepository;
 
-final class Find  extends BaseService{
+
+final class Find  extends Base {
 
     
     public function __construct(
@@ -31,12 +31,20 @@ final class Find  extends BaseService{
 
     //TODO change playMode to ENUM
     public function getAll(int $userId, string $playMode, bool $active){
-        $ups = $this->userParticipationRepository->getParticipationsForUser($userId, $playMode.'_id', $active);        
+        $ups = $this->userParticipationRepository->getParticipationsForUser($userId, $playMode.'_id', $active, null);        
         foreach($ups as $upKey => $upItem){
             if($playMode === 'ppLeague'){
-                $ups[$upKey][$playMode.'Type'] = $this->ppLeagueTypeRepository->getOne($upItem['ppLeagueType_id']);
-                $ups[$upKey][$playMode] = $this->ppLeagueRepository->getOne($upItem['ppLeague_id']);                
-                $ups[$upKey]['locked'] = !$this->guessRepository->hasUnlockedGuesses($userId, $playMode.'_id',$upItem['ppLeague_id']);                
+                $ups[$upKey] = $this->addPPLeagueData($ups[$upKey]);
+            }
+        }
+        return $ups;
+    }
+
+    public function getTrophies(int $userId, string $playMode){
+        $ups = $this->userParticipationRepository->getParticipationsForUser($userId, $playMode.'_id', false, (int)$_SERVER['PPLEAGUE_TROPHY_POSITION']);        
+        foreach($ups as $upKey => $upItem){
+            if($playMode === 'ppLeague'){
+                $ups[$upKey] = $this->addPPLeagueData($ups[$upKey]);
             }
         }
         return $ups;

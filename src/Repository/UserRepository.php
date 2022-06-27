@@ -34,6 +34,12 @@ final class UserRepository extends BaseRepository
         return $user;
     }
 
+    public function getId(string $username){
+        $this->getDb()->where('username',$username);
+        $user = $this->getDb()->getOne('users');
+        return $user ? $user['id'] : null;
+    }
+
     //TODO MOVE LOGIC IN SERVICE
     public function loginUser(string $username, string $password)
     {
