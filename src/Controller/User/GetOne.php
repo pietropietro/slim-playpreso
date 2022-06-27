@@ -22,7 +22,7 @@ final class GetOne extends Base
             throw new \App\Exception\User('User not found.', 404);
         }
         $user = $this->getFindUserService()->getOne($id);
-        $user['top-participations'] = $this->getUserParticipationService()->getTrophies($id, 'ppLeague');
+        $user['trophies'] = $this->getUserParticipationService()->getTrophies($id, 'ppLeague');
 
         return $this->jsonResponse($response, 'success', $user, 200);
     }
