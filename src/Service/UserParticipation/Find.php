@@ -25,12 +25,12 @@ final class Find  extends Base {
         
     ){}
 
-    public function getAllForPPL($ppLeagueId){
-        return $this->userParticipationRepository->getLeagueParticipations($ppLeagueId); 
+    public function getTournamentParticipations(string $type, int $valueId){
+        return $this->userParticipationRepository->getTournamentParticipations($type, $valueId); 
     }
 
     //TODO change playMode to ENUM
-    public function getAll(int $userId, string $playMode, bool $active){
+    public function getUserParticipations(int $userId, string $playMode, bool $active){
         $ups = $this->userParticipationRepository->getUserParticipations($userId, $playMode.'_id', $active, null);        
         foreach($ups as $upKey => $upItem){
             if($playMode === 'ppLeague'){

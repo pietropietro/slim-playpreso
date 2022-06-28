@@ -40,7 +40,7 @@ abstract class Base extends BaseController
         return $this->container->get('login_user_service');
     }
 
-    protected function getUserParticipationService(): UserParticipation\Find
+    protected function getParticipationService(): UserParticipation\Find
     {
         return $this->container->get('user_participation_service');
     }

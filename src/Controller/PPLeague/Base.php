@@ -22,7 +22,7 @@ abstract class Base extends BaseController
         return $this->container->get('ppleaguetype_service');
     }
 
-    protected function getUserParticipationService(): Service\UserParticipation\Find
+    protected function getParticipationService(): Service\UserParticipation\Find
     {
         return $this->container->get('user_participation_service');
     }

@@ -20,7 +20,7 @@ final class GetFull extends Base
         $ppLeagueId = (int) $args['id'];
         $ppLeague = $this->getPPLeagueService()->getOne($ppLeagueId);
         $ppLeague['ppLeagueType'] = $this->getPPLeagueTypeService()->getOne($ppLeague['ppLeagueType_id']);
-        $ppLeague['userParticipations'] = $this->getUserParticipationService()->getAllForPPL($ppLeagueId);
+        $ppLeague['userParticipations'] = $this->getParticipationService()->getTournamentParticipations('ppLeague_id', $ppLeagueId);
         $ppLeague['ppRounds'] = $this->getPPRoundService()->getAllForPPL($ppLeagueId);
          
         return $this->jsonResponse($response, 'success', $ppLeague, 200);

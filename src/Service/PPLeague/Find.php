@@ -12,12 +12,7 @@ final class Find  extends BaseService{
     public function __construct(
         protected RedisService $redisService,
         protected PPLeagueRepository $ppLeagueRepository,
-        protected PPLeagueTypeRepository $ppLeagueTypeRepository,
-        protected PPRoundRepository $ppRoundRepository,
-        protected UserRepository $userRepository,
-        protected GuessRepository $guessRepository,
-    ) {
-    }
+    ) {}
 
     public function getOne($ppLeagueId){
         return $this->ppLeagueRepository->getOne($ppLeagueId);

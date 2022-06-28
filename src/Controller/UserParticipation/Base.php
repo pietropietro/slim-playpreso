@@ -9,7 +9,7 @@ use App\Service\UserParticipation\Find;
 
 abstract class Base extends BaseController
 {
-    protected function getUserParticipationService(): Find
+    protected function getParticipationService(): Find
     {
         return $this->container->get('user_participation_service');
     }
