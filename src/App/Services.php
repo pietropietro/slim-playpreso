@@ -58,6 +58,13 @@ $container['ppleague_service'] = static fn (
 ):  PPLeague\Find => new  PPLeague\Find(
     $container->get('redis_service'),
     $container->get('ppleague_repository'),
+);
+
+$container['ppleague_update_service'] = static fn (
+    ContainerInterface $container
+):  PPLeague\Update => new  PPLeague\Update(
+    $container->get('redis_service'),
+    $container->get('ppleague_repository'),
     $container->get('ppleaguetype_repository'),
     $container->get('ppround_repository'),
     $container->get('user_participations_repository'),

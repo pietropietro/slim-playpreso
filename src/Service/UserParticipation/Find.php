@@ -31,7 +31,7 @@ final class Find  extends Base {
 
     //TODO change playMode to ENUM
     public function getAll(int $userId, string $playMode, bool $active){
-        $ups = $this->userParticipationRepository->getParticipationsForUser($userId, $playMode.'_id', $active, null);        
+        $ups = $this->userParticipationRepository->getUserParticipations($userId, $playMode.'_id', $active, null);        
         foreach($ups as $upKey => $upItem){
             if($playMode === 'ppLeague'){
                 $ups[$upKey] = $this->addPPLeagueData($ups[$upKey]);
@@ -40,13 +40,24 @@ final class Find  extends Base {
         return $ups;
     }
 
-    public function getTrophies(int $userId, string $playMode){
-        $ups = $this->userParticipationRepository->getParticipationsForUser($userId, $playMode.'_id', false, (int)$_SERVER['PPLEAGUE_TROPHY_POSITION']);        
-        foreach($ups as $upKey => $upItem){
-            if($playMode === 'ppLeague'){
-                $ups[$upKey] = $this->addPPLeagueData($ups[$upKey]);
-            }
+    public function getTrophies(int $userId){
+        $ppLeagueUps = $this->userParticipationRepository->getUserParticipations(
+            $userId, 'ppLeague_id', false, (int)$_SERVER['PPLEAGUE_TROPHY_POSITION']
+        );  
+
+        $ppCupUps = $this->userParticipationRepository->getUserParticipations(
+            $userId, 'ppCup_id', false, (int)$_SERVER['PPLEAGUE_TROPHY_POSITION']
+        );  
+        
+        if(!$ppLeagueUps && !$ppCupUps) return null;
+
+        foreach($ppLeagueUps as $upKey => $upItem){
+            $ppLeagueUps[$upKey] = $this->addPPLeagueData($ppLeagueUps[$upKey]);
         }
-        return $ups;
+
+        //also add data to cup trophies
+
+        $trophies['ppLeagues'] = $ppLeagueUps;
+        return $trophies;
     }
 }

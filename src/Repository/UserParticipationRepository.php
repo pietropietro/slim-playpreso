@@ -19,16 +19,8 @@ final class UserParticipationRepository extends BaseRepository
         return $this->getDb()->insert($this->tableName, $data);
     }
 
-    function getParticipations(int $userId) : array {
-        $this->getDb()->where('user_id',$userId);
-        $this->getDb()->orderBy('joined_at','desc');
-        $placements = $this->getDb()->get($this->tableName) ;
-        
-        return $placements;
-    }
-
     //TODO change string type to ENUM 'ppLeague_id', 'ppCupGroup_id'
-    function getParticipationsForUser(int $userId, string $type, bool $active, ?int $minPosition){
+    function getUserParticipations(int $userId, ?string $type, ?bool $active, ?int $minPosition){
         $this->getDb()->where('user_id', $userId);
         if($active){
             $this->getDb()->where('finished IS NULL');
@@ -36,10 +28,20 @@ final class UserParticipationRepository extends BaseRepository
         if($minPosition){
             $this->getDb()->where('position', $minPosition, '<=');
         }
+        if($type){
+            $this->getDb()->where($type.' IS NOT NULL');
+        }
         $this->getDb()->orderBy('joined_at','desc');
-        $this->getDb()->where($type.' IS NOT NULL');
         return $this->getDb()->get($this->tableName) ;
     }
+
+    function getTournamentParticipations(string $type, int $valueId){
+        $this->getDb()->join("users u", "u.id=up.user_id", "INNER");
+        $this->getDb()->orderBy('up.position','asc');
+        $this->getDb()->where($type, $valueId);
+        return $this->getDb()->query("SELECT up.*, u.username FROM userParticipations up");
+    }
+
 
     function getPromotedPPLeagueTypeIds(int $userId){
         $this->getDb()->where('user_id',$userId);
@@ -58,13 +60,7 @@ final class UserParticipationRepository extends BaseRepository
         return $this->getDb()->getValue($this->tableName,  'ppLeagueType_id', null);
     }
 
-    function getLeagueParticipations(int $ppLeagueId){
-        $this->getDb()->join("users u", "u.id=up.user_id", "INNER");
-        $this->getDb()->orderBy('up.position','asc');
-        $this->getDb()->where('ppLeague_id',$ppLeagueId);
-        return $this->getDb()->query("SELECT up.*, u.username FROM userParticipations up");
-    }
-
+    
     function updateScore(int $id, int $score){
         $data = array(
 			"score" => $score,
