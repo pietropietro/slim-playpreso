@@ -20,9 +20,11 @@ final class Find  extends BaseService{
         protected guessRepository $guessRepository,
         protected matchRepository $matchRepository
     ){}
-
-    public function getAllForPPL($ppLeagueId){
-        $ppRounds = $this->ppRoundRepository->getAllFor('ppLeague_id', $ppLeagueId);
+    
+    //change to ENUM 
+    //type can be ppCupGroup_id OR ppLeague_id
+    public function getAll($type, $typeId){
+        $ppRounds = $this->ppRoundRepository->getAllFor($type, $typeId);
         foreach($ppRounds as $roundKey => $roundItem){
             $ppRounds[$roundKey]['ppRoundMatches'] = $this->ppRoundMatchRepository->getAllRound($roundItem['id']);
             foreach($ppRounds[$roundKey]['ppRoundMatches'] as $ppRMKey => $ppRMItem){        

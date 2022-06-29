@@ -32,7 +32,7 @@ final class GuessRepository extends BaseRepository
 
     //TODO MOVE TO SERVICE
     //TODO CHANGE COLUMN TO ENUM ['cup_id', 'league_id', 'cup_group_id']
-    public function userScore($userId, string $column, int $valueId) : int {
+    public function userScore(int $userId, string $column, int $valueId) : int {
         $ids = $this->getDb()->subQuery();
         $ids->where($column, $valueId);
         $ids->get('ppRounds', null, 'id');

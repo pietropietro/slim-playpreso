@@ -6,6 +6,7 @@ use App\Service\User;
 use App\Service\PPLeague;
 use App\Service\PPLeagueType;
 use App\Service\PPRound;
+use App\Service\PPCup;
 use App\Service\UserParticipation;
 use App\Service\League;
 use Psr\Container\ContainerInterface;
@@ -138,3 +139,14 @@ $container['leagues_service'] = static fn (
 );
 
 
+$container['ppcup_count_service'] = static fn (
+    ContainerInterface $container
+):  PPCup\Count => new  PPCup\Count(
+    $container->get('redis_service'),
+    $container->get('ppcup_repository'),
+    $container->get('ppcupgroup_repository'),
+    $container->get('ppround_repository'),
+    $container->get('user_participations_repository'),
+    $container->get('user_repository'),
+    $container->get('guess_repository')
+);

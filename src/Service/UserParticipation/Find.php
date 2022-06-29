@@ -4,26 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\UserParticipation;
 
-use App\Service\RedisService;
-use App\Repository\UserParticipationRepository;
-use App\Repository\PPLeagueTypeRepository;
-use App\Repository\PPLeagueRepository;
-use App\Repository\PPRoundRepository;
-use App\Repository\GuessRepository;
-
-
 final class Find  extends Base {
-
-    
-    public function __construct(
-        protected RedisService $redisService,
-        protected UserParticipationRepository $userParticipationRepository,
-        protected PPLeagueTypeRepository $ppLeagueTypeRepository,
-        protected PPLeagueRepository $ppLeagueRepository,
-        protected PPRoundRepository $ppRoundRepository,
-        protected GuessRepository $guessRepository
-        
-    ){}
 
     public function getTournamentParticipations(string $type, int $valueId){
         return $this->userParticipationRepository->getTournamentParticipations($type, $valueId); 

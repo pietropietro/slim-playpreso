@@ -17,7 +17,7 @@ final class PPLeagueRepository extends BaseRepository
         return $ppLeagues;
     }
 
-    function getJoinable($typeId){
+    function getJoinable(int $typeId){
         $this->getDb()->where('ppLeagueType_id', $typeId);
         $this->getDb()->where('started_at IS NULL');
         $this->getDb()->where('user_count', 20, "<");
@@ -25,7 +25,7 @@ final class PPLeagueRepository extends BaseRepository
         return $this->getDb()->getOne('ppLeagues');
     }
 
-    function getOne($id){
+    function getOne(int $id){
         $this->getDb()->where('id',$id);
         return $this->getDb()->getOne('ppLeagues');
     }
@@ -44,7 +44,7 @@ final class PPLeagueRepository extends BaseRepository
         $this->getDb()->update('ppLeagues', $data);
     }
 
-    function create($typeId){
+    function create(int $typeId){
         $data = array(
 			"ppLeagueType_id" => $typeId,
 			"created_at" => date("Y-m-d H:i:s"),
@@ -54,7 +54,7 @@ final class PPLeagueRepository extends BaseRepository
         return $this->getDb()->insert('ppLeagues',$data);
     }
 
-    function incrementUserCounter($id){
+    function incrementUserCounter(int $id){
         $this->getDb()->query("UPDATE ppLeagues SET user_count=user_count+1 WHERE id=$id");
     }
 }
