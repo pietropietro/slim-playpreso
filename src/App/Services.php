@@ -103,6 +103,9 @@ $container['ppround_service'] = static fn (
 );
 
 
+
+//TODO understand how to remove duplicates 
+//different constructros in base services vs detailed?
 $container['user_participation_service'] = static fn (
     ContainerInterface $container
 ):  UserParticipation\Find => new  UserParticipation\Find(
@@ -120,6 +123,17 @@ $container['user_participation_create_service'] = static fn (
 ):  UserParticipation\Create => new  UserParticipation\Create(
     $container->get('user_participations_repository'),
     $container->get('ppleague_repository'),
+);
+
+$container['user_participation_update_service'] = static fn (
+    ContainerInterface $container
+):  UserParticipation\Update => new  UserParticipation\Update(
+    $container->get('redis_service'),
+    $container->get('user_participations_repository'),
+    $container->get('ppleaguetype_repository'),
+    $container->get('ppleague_repository'),
+    $container->get('ppround_repository'),
+    $container->get('guess_repository')
 );
 
 $container['user_points_service'] = static fn (
@@ -143,10 +157,7 @@ $container['ppcup_count_service'] = static fn (
     ContainerInterface $container
 ):  PPCup\Count => new  PPCup\Count(
     $container->get('redis_service'),
+    $container->get('user_participation_update_service'),
     $container->get('ppcup_repository'),
     $container->get('ppcupgroup_repository'),
-    $container->get('ppround_repository'),
-    $container->get('user_participations_repository'),
-    $container->get('user_repository'),
-    $container->get('guess_repository')
 );

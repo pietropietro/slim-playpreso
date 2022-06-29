@@ -31,17 +31,17 @@ final class GuessRepository extends BaseRepository
     }
 
     //TODO MOVE TO SERVICE
-    //TODO CHANGE COLUMN TO ENUM ['cup_id', 'league_id', 'cup_group_id']
-    public function userScore(int $userId, string $column, int $valueId) : int {
+    //TODO CHANGE COLUMN TO ENUM ['league_id', 'cup_group_id']
+    public function getUpScore(int $userId, string $column, int $valueId) : int {
         $ids = $this->getDb()->subQuery();
         $ids->where($column, $valueId);
         $ids->get('ppRounds', null, 'id');
 
         $this->getDb()->where('ppRound_id',$ids,'IN');
         
-        if($list = $this->getDb()->getValue('ppRoundMatches','id',null)){
+        if($matchList = $this->getDb()->getValue('ppRoundMatches','id',null)){
             $this->getDb()->where('user_id',$userId);
-            $this->getDb()->where('ppRoundMatch_id', $list,'in');
+            $this->getDb()->where('ppRoundMatch_id', $matchList,'in');
             $this->getDb()->where("score != ".$_SERVER['VIRGIN_GUESS_SCORE']);
 
             if($score = $this->getDb()->getValue('guesses','sum(score)',null)){

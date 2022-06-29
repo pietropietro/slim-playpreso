@@ -20,6 +20,7 @@ final class Update extends Base
         $input = (array) $request->getParsedBody();
         $id = (int) $args['id'];
         $userIdLogged = $this->getAndValidateUserId($input);
+        
         // $this->checkUserPermissions($id, $userIdLogged);
         if(!$this->getCupCountService()->updateGroups($id)){
             throw new Exception("Error Processing Request", 1);
