@@ -7,14 +7,12 @@ namespace App\Service\PPCup;
 use App\Service\RedisService;
 use App\Service\UserParticipation;
 use App\Service\BaseService;
-use App\Repository\PPCupRepository;
 use App\Repository\PPCupGroupRepository;
 
 final class Count extends BaseService{
     public function __construct(
         protected RedisService $redisService,
         protected UserParticipation\Update $upService,
-        protected PPCupRepository $ppCupRepository,
         protected PPCupGroupRepository $ppCupGroupRepository,
     ) {}
 

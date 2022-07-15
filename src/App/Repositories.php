@@ -9,6 +9,7 @@ use App\Repository\PPRoundRepository;
 use App\Repository\PPRoundMatchRepository;
 use App\Repository\PPCupRepository;
 use App\Repository\PPCupGroupRepository;
+use App\Repository\PPCupTypeRepository;
 use App\Repository\GuessRepository;
 use App\Repository\UserRepository;
 use App\Repository\UserParticipationRepository;
@@ -37,3 +38,5 @@ $container['ppround_match_repository'] = static fn (ContainerInterface $containe
 $container['ppcup_repository'] = static fn (ContainerInterface $container): PPCupRepository => new PPCupRepository($container->get('db'));
 
 $container['ppcupgroup_repository'] = static fn (ContainerInterface $container): PPCupGroupRepository => new PPCupGroupRepository($container->get('db'));
+
+$container['ppcuptype_repository'] = static fn (ContainerInterface $container): PPCupTypeRepository => new PPCupTypeRepository($container->get('db'));

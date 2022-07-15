@@ -42,11 +42,11 @@ return function ($app){
     })->add(new Auth($pointService));
 
     $app->get('/ppLeague/{id}', PPLeague\GetFull::class)->add(new Auth($pointService));
-    
     $app->get('/userParticipation/ppLeagues', UserParticipation\PPLeagues::class)->add(new Auth($pointService));
 
     
     $app->group('/ppCup', function () use ($app): void {
+        $app->get('/{id}', PPCup\GetOne::class);
         $app->put('/{id}', PPCup\Update::class);
     })->add(new Auth($pointService));
 
