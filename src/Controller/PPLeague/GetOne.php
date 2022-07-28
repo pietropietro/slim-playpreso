@@ -7,7 +7,7 @@ namespace App\Controller\PPLeague;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class GetFull extends Base
+final class GetOne extends Base
 {
     /**
      * @param array<string> $args

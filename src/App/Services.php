@@ -7,6 +7,7 @@ use App\Service\PPLeague;
 use App\Service\PPLeagueType;
 use App\Service\PPRound;
 use App\Service\PPCup;
+use App\Service\PPCupGroup;
 use App\Service\PPCupType;
 use App\Service\UserParticipation;
 use App\Service\League;
@@ -176,4 +177,11 @@ $container['ppcuptype_service'] = static fn (
 ):  PPCupType\Find => new  PPCupType\Find(
     $container->get('redis_service'),
     $container->get('ppcuptype_repository'),
+);
+
+$container['ppcupgroup_service'] = static fn (
+    ContainerInterface $container
+):  PPCupGroup\Find => new  PPCupGroup\Find(
+    $container->get('redis_service'),
+    $container->get('ppcupgroup_repository'),
 );

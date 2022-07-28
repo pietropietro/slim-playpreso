@@ -11,3 +11,6 @@ ALTER TABLE ppLeagues ADD COLUMN round_count INT AFTER user_count;
 ALTER TABLE leagues RENAME COLUMN league_level TO country_level;
 ALTER TABLE leagues RENAME COLUMN league_name TO name;
 ALTER TABLE leagues RENAME COLUMN league_tag TO tag;
+
+ALTER TABLE ppCupGroups ADD COLUMN round_count INT AFTER rounds;
+ALTER TABLE ppCupGroups ADD COLUMN user_count INT AFTER round_count;

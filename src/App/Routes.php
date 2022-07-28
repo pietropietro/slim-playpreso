@@ -7,6 +7,7 @@ use App\Controller\UserParticipation;
 use App\Controller\PPLeague;
 use App\Controller\PPLeagueType;
 use App\Controller\PPCup;
+use App\Controller\PPCupGroup;
 use App\Middleware\Auth;
 use App\Middleware\Cors;
 
@@ -41,7 +42,7 @@ return function ($app){
         $app->get('/{id}', PPLeagueType\Find::class);
     })->add(new Auth($pointService));
 
-    $app->get('/ppLeague/{id}', PPLeague\GetFull::class)->add(new Auth($pointService));
+    $app->get('/ppLeague/{id}', PPLeague\GetOne::class)->add(new Auth($pointService));
     $app->get('/userParticipation/ppLeagues', UserParticipation\PPLeagues::class)->add(new Auth($pointService));
 
     
@@ -49,6 +50,9 @@ return function ($app){
         $app->get('/{id}', PPCup\GetOne::class);
         $app->put('/{id}', PPCup\Update::class);
     })->add(new Auth($pointService));
+
+    $app->get('/ppCupGroup/{id}', PPCupGroup\GetOne::class)->add(new Auth($pointService));
+
 
 
     // Catch-all route to serve a 404 Not Found page if none of the routes match
