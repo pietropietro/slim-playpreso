@@ -60,6 +60,13 @@ final class UserParticipationRepository extends BaseRepository
         return $this->getDb()->getValue($this->tableName,  'ppLeagueType_id', null);
     }
 
+    function getCupScoreTotal(int $userId, int $cupId, ?string $joinedAt) : ?int{
+        $this->getDb()->where('user_id',$userId);
+        $this->getDb()->where('ppCup_id',$cupId);
+        if($joinedAt)$this->getDb()->where('joined_at', $joinedAt, '<=');
+        return (int)$this->getDb()->getOne($this->tableName, 'sum(score) as score_total')['score_total'];
+    }
+
     
     function updateScore(int $id, int $score){
         $data = array(

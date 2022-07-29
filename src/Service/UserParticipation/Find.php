@@ -7,8 +7,16 @@ namespace App\Service\UserParticipation;
 final class Find  extends Base {
 
     public function getTournamentParticipations(string $type, int $valueId){
-        return $this->userParticipationRepository->getTournamentParticipations($type, $valueId); 
+        $ups = $this->userParticipationRepository->getTournamentParticipations($type, $valueId); 
+        if($type === 'ppCupGroup_id'){
+            $ups = array_map(function ($up){
+                $up['score_total'] = $this->userParticipationRepository->getCupScoreTotal($up['user_id'], $up['ppCup_id'], $up['joined_at']);
+                return $up;
+            }, $ups);
+        }
+        return $ups;
     }
+
 
     //TODO change playMode to ENUM
     public function getUserParticipations(int $userId, string $playMode, bool $active){
