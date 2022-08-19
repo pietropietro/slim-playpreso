@@ -14,6 +14,7 @@ use App\Repository\GuessRepository;
 use App\Repository\UserRepository;
 use App\Repository\UserParticipationRepository;
 use App\Repository\LeagueRepository;
+use App\Repository\TeamRepository;
 
 use Psr\Container\ContainerInterface;
 
@@ -40,3 +41,5 @@ $container['ppcup_repository'] = static fn (ContainerInterface $container): PPCu
 $container['ppcupgroup_repository'] = static fn (ContainerInterface $container): PPCupGroupRepository => new PPCupGroupRepository($container->get('db'));
 
 $container['ppcuptype_repository'] = static fn (ContainerInterface $container): PPCupTypeRepository => new PPCupTypeRepository($container->get('db'));
+
+$container['team_repository'] = static fn (ContainerInterface $container): TeamRepository => new TeamRepository($container->get('db'));

@@ -11,6 +11,8 @@ use App\Service\PPCupGroup;
 use App\Service\PPCupType;
 use App\Service\UserParticipation;
 use App\Service\League;
+use App\Service\ExternalAPI;
+use App\Service\Match;
 use Psr\Container\ContainerInterface;
 
 $container['find_user_service'] = static fn (
@@ -90,7 +92,7 @@ $container['ppleaguetype_service'] = static fn (
     $container->get('ppleaguetype_repository'),
     $container->get('user_participations_repository'),
     $container->get('user_points_service'),
-    $container->get('leagues_service'),
+    $container->get('league_service'),
 );
 
 
@@ -146,7 +148,7 @@ $container['user_points_service'] = static fn (
     $container->get('ppleaguetype_repository'),
 );
 
-$container['leagues_service'] = static fn (
+$container['league_service'] = static fn (
     ContainerInterface $container
 ):  League\Find => new  League\Find(
     $container->get('redis_service'),
@@ -184,4 +186,17 @@ $container['ppcupgroup_service'] = static fn (
 ):  PPCupGroup\Find => new  PPCupGroup\Find(
     $container->get('redis_service'),
     $container->get('ppcupgroup_repository'),
+);
+
+$container['external_api_service'] = static fn (
+    ContainerInterface $container
+):  ExternalAPI\Call => new  ExternalAPI\Call(
+    $container->get('match_elaborate_service'),
+);
+
+$container['match_elaborate_service'] = static fn (
+    ContainerInterface $container
+):  Match\Elaborate => new  Match\Elaborate(
+    $container->get('match_repository'),
+    $container->get('team_repository')
 );

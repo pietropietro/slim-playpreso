@@ -8,13 +8,24 @@ use App\Entity\Match;
 
 final class MatchRepository extends BaseRepository
 {   
-    public function getOne(int $matchId) {
-        $this->getDb()->where('id',$matchId);
-        $match = $this->getDb()->getOne('matches');
-        if (! $match) {
-            throw new \App\Exception\Match('Match not found.', 404);
-        }                           
+    public function getOne(int $matchId, bool $is_external_id) {
+        $column = !!$is_external_id ? 'ls_id' : 'id';
+        $this->getDb()->where($column, $matchId);
+        return $this->getDb()->getOne('matches');
+    }
 
-        return $match;
+    public function create(int $ls_id, int $league_id, int $home_id, int $away_id, int $round, string $date_start){
+        $data = array(
+			"ls_id" => $ls_id,
+			"league_id" => $league_id,
+			"home_id" => $home_id,
+			"away_id" => $away_id,
+			"round" => $round,
+			"date_start" => $date_start,
+	    );
+        if(!$this->getDb()->insert('matches',$data)){
+            throw new \App\Exception\Mysql($this->getDb()->getLastError(), 500);
+        };
+        return true;
     }
 }

@@ -42,7 +42,7 @@ final class GuessRepository extends BaseRepository
         if($matchList = $this->getDb()->getValue('ppRoundMatches','id',null)){
             $this->getDb()->where('user_id',$userId);
             $this->getDb()->where('ppRoundMatch_id', $matchList,'in');
-            $this->getDb()->where("score != ".$_SERVER['VIRGIN_GUESS_SCORE']);
+            $this->getDb()->where("score IS NOT NULL");
 
             if($score = $this->getDb()->getValue('guesses','sum(score)',null)){
                 if($score[0]== null){

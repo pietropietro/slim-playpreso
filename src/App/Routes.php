@@ -8,6 +8,7 @@ use App\Controller\PPLeague;
 use App\Controller\PPLeagueType;
 use App\Controller\PPCup;
 use App\Controller\PPCupGroup;
+use App\Controller\ExternalAPI;
 use App\Middleware\Auth;
 use App\Middleware\Cors;
 
@@ -53,7 +54,7 @@ return function ($app){
 
     $app->get('/ppCupGroup/{id}', PPCupGroup\GetOne::class)->add(new Auth($pointService));
 
-
+    $app->get('/externalAPI/call', ExternalAPI\Update::class);
 
     // Catch-all route to serve a 404 Not Found page if none of the routes match
     // NOTE: make sure this route is defined last

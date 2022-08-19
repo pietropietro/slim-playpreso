@@ -6,6 +6,11 @@ namespace App\Repository;
 
 final class LeagueRepository extends BaseRepository
 {
+    public function getOne(int $id){
+        $this->getDb()->where('id', $id);
+        return $this->getDb()->getOne('leagues');
+    }
+
     public function getForArea(string $area, int $level)
     {
         $this->getDb()->where('area', $area);
@@ -37,4 +42,5 @@ final class LeagueRepository extends BaseRepository
         $this->getDb()->where('country_level', $level, '<=');
         return $this->getDb()->get('leagues');
     }
+
 }

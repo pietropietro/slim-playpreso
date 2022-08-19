@@ -19,23 +19,23 @@ final class PPLeagueTypeRepository extends BaseRepository
             FROM ppLeagueTypes GROUP BY type ORDER BY maxLevel ');
     }
 
-    function get($ids){
+    function get(array $ids){
         $this->getDb()->where('id',$ids,'IN');
         return $this->getDb()->get('ppLeagueTypes');
     }
 
-    function getOne($id){
+    function getOne(int $id){
         $this->getDb()->where('id',$id);
         return $this->getDb()->getOne('ppLeagueTypes');
     }
 
-    function getCost($id){
+    function getCost(int $id){
         $this->getDb()->where('id',$id);
         return $this->getDb()->getOne('ppLeagueTypes', 'cost');
     }
 
 
-    function filterIdsExpensive($ids, $points){
+    function filterIdsExpensive(array $ids, int $points){
         $this->getDb()->where('id', $ids, 'IN');
         $this->getDb()->where('cost', $points, '<=');
         return $this->getDb()->getValue('ppLeagueTypes', 'id', null);
