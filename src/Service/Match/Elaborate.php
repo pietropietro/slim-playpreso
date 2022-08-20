@@ -18,10 +18,9 @@ final class Elaborate extends BaseService{
         $counts = ["created" => 0, "verified" => 0 , "rescheduled" => 0];
         
         foreach ($lsEvents as $key => $eventObj) {
-            $event_finished = $eventObj->Eps === 'FT';
             $match = $this->matchRepository->getOne((int) $eventObj->Eid, true);
             
-            if(!$match && $event_finished) continue;
+            if(!$match && $eventObj->Eps === 'FT') continue;
             
             if(!$match){
                 $this->create($eventObj, $league_id);
@@ -31,7 +30,7 @@ final class Elaborate extends BaseService{
            
             if($match['verified_at'])continue;
             
-            if($event_finished){
+            if($eventObj->Eps === 'FT'){
                 $this->verify($eventObj);
                 $counts['verified']++;
                 continue;
@@ -40,8 +39,7 @@ final class Elaborate extends BaseService{
             if(new \DateTime($match['date_start']) != new \DateTime((string)$eventObj->Esd)){
                 $this->matchRepository->updateDateStart($match['id'], $eventObj->Esd);
                 $counts['rescheduled']++;
-            }
-            
+            }   
         }
         return $counts;
     }
@@ -55,6 +53,9 @@ final class Elaborate extends BaseService{
 
     private function verify(Object $eventObj){
         //TODO
+        //matchrepo-> verify updatematch;
+        //guessService -> verify guesses; -> pointsService addPoints
+        //tournamentService-> check started, finished, finished round
     }
 
 }

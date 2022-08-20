@@ -32,9 +32,9 @@ final class MatchRepository extends BaseRepository
     public function updateDateStart(int $id, string $date_start){
         $data = array(
 			"date_start" => $date_start,
-            "rescheduled_at" => date("Y-m-d H:i:s")
+            "rescheduled_at" => $this->getDb()->now()
 	    );
-        
+
         $this->getDb()->where('id', $id);
         $this->getDb()->update('matches', $data);
     }
