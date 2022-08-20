@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-
-require __DIR__ . '/../MysqliDb.php';
 require __DIR__ . '/../../vendor/autoload.php';
 $baseDir = __DIR__ . '/../../';
 $dotenv = Dotenv\Dotenv::createImmutable($baseDir);
