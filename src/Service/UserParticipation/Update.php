@@ -7,7 +7,7 @@ namespace App\Service\UserParticipation;
 final class Update  extends Base {
 
     public function update(string $type, int $typeId){
-        $ups = $this->userParticipationRepository->getTournamentParticipations($type, $typeId);
+        $ups = $this->userParticipationRepository->getForTournament($type, $typeId);
 
         foreach ($ups as $upKey => $upItem) {
             //TODO put in ppRound service

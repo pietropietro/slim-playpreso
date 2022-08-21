@@ -29,7 +29,7 @@ final class Find  extends BaseService{
         $groups = $this->ppCupGroupRepository->getGroupsForCup($ppCupId);
 
         foreach($groups as $group){
-            $group['userParticipations'] = $this->userParticipationService->getTournamentParticipations('ppCupGroup_id', $group['id']);
+            $group['userParticipations'] = $this->userParticipationService->getForTournament('ppCupGroup_id', $group['id']);
             $currentLevel = $group['level'];
             if(!in_array($currentLevel, array_keys($levels))){
                 $levels[$currentLevel] = [];

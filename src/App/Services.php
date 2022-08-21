@@ -109,6 +109,13 @@ $container['ppround_service'] = static fn (
 );
 
 
+$container['ppround_verify_service'] = static fn (
+    ContainerInterface $container
+):  PPRound\Verify => new  PPRound\Verify(
+    $container->get('ppround_repository'),
+    $container->get('ppround_match_repository'),
+);
+
 
 //TODO understand how to remove duplicates 
 //different constructros in base services vs detailed?
@@ -200,7 +207,8 @@ $container['match_elaborate_service'] = static fn (
 ):  Match\Elaborate => new  Match\Elaborate(
     $container->get('match_repository'),
     $container->get('team_repository'),
-    $container->get('guess_verify_service')
+    $container->get('guess_verify_service'),
+    $container->get('ppround_verify_service')
 );
 
 $container['guess_verify_service'] = static fn (

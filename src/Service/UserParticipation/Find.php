@@ -6,8 +6,8 @@ namespace App\Service\UserParticipation;
 
 final class Find  extends Base {
 
-    public function getTournamentParticipations(string $type, int $valueId){
-        $ups = $this->userParticipationRepository->getTournamentParticipations($type, $valueId); 
+    public function getForTournament(string $type, int $valueId){
+        $ups = $this->userParticipationRepository->getForTournament($type, $valueId); 
         if($type === 'ppCupGroup_id'){
             $ups = array_map(function ($up){
                 $up['score_total'] = $this->userParticipationRepository->getCupScoreTotal($up['user_id'], $up['ppCup_id'], $up['joined_at']);

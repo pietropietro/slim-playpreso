@@ -21,8 +21,8 @@ final class GetOne extends Base
         $ppCup = $this->getFindCupService()->getOne($ppCupId);
         $ppCup['ppCupType'] = $this->getCupTypeService()->getOne($ppCup['ppCupType_id']);
         $ppCup['levels'] = $this->getFindCupService()->getLevels($ppCupId);
-        // $ppLeague['userParticipations'] = $this->getParticipationService()->getTournamentParticipations('ppLeague_id', $ppLeagueId);
-        // $ppLeague['ppRounds'] = $this->getPPRoundService()->getAll('ppLeague_id', $ppLeagueId);
+        // $ppLeague['userParticipations'] = $this->getParticipationService()->getForTournament('ppLeague_id', $ppLeagueId);
+        // $ppLeague['ppRounds'] = $this->getPPRoundService()->getForTournament('ppLeague_id', $ppLeagueId);
          
         return $this->jsonResponse($response, 'success', $ppCup, 200);
     }

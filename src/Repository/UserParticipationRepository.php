@@ -35,7 +35,7 @@ final class UserParticipationRepository extends BaseRepository
         return $this->getDb()->get($this->tableName) ;
     }
 
-    function getTournamentParticipations(string $type, int $valueId){
+    function getForTournament(string $type, int $valueId){
         $this->getDb()->join("users u", "u.id=up.user_id", "INNER");
         $this->getDb()->orderBy('up.position','asc');
         $this->getDb()->where($type, $valueId);

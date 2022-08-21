@@ -6,6 +6,7 @@ namespace App\Service\Match;
 
 use App\Service\BaseService;
 use App\Service\Guess;
+use App\Service\PPRound;
 use App\Repository\MatchRepository;
 use App\Repository\TeamRepository;
 
@@ -14,6 +15,7 @@ final class Elaborate extends BaseService{
         protected MatchRepository $matchRepository,
         protected TeamRepository $teamRepository,
         protected Guess\Verify $guessVerifyService,
+        protected PPRound\Verify $ppRoundVerifyService,
     ) {}
 
     public function elaborateLsEvents(array $lsEvents, int $league_id){
@@ -56,7 +58,7 @@ final class Elaborate extends BaseService{
     private function verify(Object $eventObj, int $matchId){
         $this->matchRepository->verify($matchId, (int)$eventObj->Tr1, (int)$eventObj->Tr2);
         $this->guessVerifyService->verify($matchId, (int)$eventObj->Tr1, (int)$eventObj->Tr2);
-        //guessService -> verify guesses; -> pointsService addPoints
+        $this->ppRoundVerifyService->verify($matchId);
         //tournamentService-> check started, finished, finished round
     }
 
