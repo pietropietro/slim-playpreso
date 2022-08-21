@@ -9,8 +9,8 @@ use \App\Exception\NotFound;
 final class PPLeagueRepository extends BaseRepository
 {
     public function get(array $ids) {
-        $this->getDb()->where('id', $ids, 'IN');
-        $ppLeagues=$this->getDb()->get('ppLeagues');
+        $this->db->where('id', $ids, 'IN');
+        $ppLeagues=$this->db->get('ppLeagues');
         if (! $ppLeagues) {
             throw new NotFound('ppLeagues not found.', 404);
         }   
@@ -18,30 +18,30 @@ final class PPLeagueRepository extends BaseRepository
     }
 
     function getJoinable(int $typeId){
-        $this->getDb()->where('ppLeagueType_id', $typeId);
-        $this->getDb()->where('started_at IS NULL');
-        $this->getDb()->where('user_count', 20, "<");
+        $this->db->where('ppLeagueType_id', $typeId);
+        $this->db->where('started_at IS NULL');
+        $this->db->where('user_count', 20, "<");
        
-        return $this->getDb()->getOne('ppLeagues');
+        return $this->db->getOne('ppLeagues');
     }
 
     function getOne(int $id){
-        $this->getDb()->where('id',$id);
-        return $this->getDb()->getOne('ppLeagues');
+        $this->db->where('id',$id);
+        return $this->db->getOne('ppLeagues');
     }
 
 
     public function startedIds(){
-        $this->getDb()->where('started_at IS NOT NULL');
-        return $this->getDb()->getValue('ppLeagues', 'id', null);
+        $this->db->where('started_at IS NOT NULL');
+        return $this->db->getValue('ppLeagues', 'id', null);
     }
     
     function updateValue(int $id, string $column, $value){
         $data = array(
             $column => $value,
         );
-        $this->getDb()->where('id',$id);
-        $this->getDb()->update('ppLeagues', $data);
+        $this->db->where('id',$id);
+        $this->db->update('ppLeagues', $data);
     }
 
     function create(int $typeId){
@@ -51,10 +51,10 @@ final class PPLeagueRepository extends BaseRepository
 			"user_count" => 0,
             "round_count" => 0
 	    );
-        return $this->getDb()->insert('ppLeagues',$data);
+        return $this->db->insert('ppLeagues',$data);
     }
 
     function incrementUserCounter(int $id){
-        $this->getDb()->query("UPDATE ppLeagues SET user_count=user_count+1 WHERE id=$id");
+        $this->db->query("UPDATE ppLeagues SET user_count=user_count+1 WHERE id=$id");
     }
 }

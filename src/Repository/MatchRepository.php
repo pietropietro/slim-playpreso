@@ -8,8 +8,8 @@ final class MatchRepository extends BaseRepository
 {   
     public function getOne(int $matchId, bool $is_external_id) {
         $column = !!$is_external_id ? 'ls_id' : 'id';
-        $this->getDb()->where($column, $matchId);
-        return $this->getDb()->getOne('matches');
+        $this->db->where($column, $matchId);
+        return $this->db->getOne('matches');
     }
 
     public function create(int $ls_id, int $league_id, int $home_id, int $away_id, int $round, string $date_start){
@@ -21,8 +21,8 @@ final class MatchRepository extends BaseRepository
 			"round" => $round,
 			"date_start" => $date_start,
 	    );
-        if(!$this->getDb()->insert('matches',$data)){
-            throw new \App\Exception\Mysql($this->getDb()->getLastError(), 500);
+        if(!$this->db->insert('matches',$data)){
+            throw new \App\Exception\Mysql($this->db->getLastError(), 500);
         };
         return true;
     }
@@ -30,21 +30,21 @@ final class MatchRepository extends BaseRepository
     public function updateDateStart(int $id, string $date_start){
         $data = array(
 			"date_start" => $date_start,
-            "rescheduled_at" => $this->getDb()->now()
+            "rescheduled_at" => $this->db->now()
 	    );
 
-        $this->getDb()->where('id', $id);
-        $this->getDb()->update('matches', $data, 1);
+        $this->db->where('id', $id);
+        $this->db->update('matches', $data, 1);
     }
 
     public function verify(int $id, int $score_home, int $score_away){
         $data = array(
 			"score_home" => $score_home,
 			"score_away" => $score_away,
-            "verified_at" => $this->getDb()->now()
+            "verified_at" => $this->db->now()
 	    );
-        $this->getDb()->where('id', $id);
-        $this->getDb()->update('matches', $data, 1);
+        $this->db->where('id', $id);
+        $this->db->update('matches', $data, 1);
     }
 
 

@@ -7,40 +7,40 @@ namespace App\Repository;
 final class LeagueRepository extends BaseRepository
 {
     public function getOne(int $id){
-        $this->getDb()->where('id', $id);
-        return $this->getDb()->getOne('leagues');
+        $this->db->where('id', $id);
+        return $this->db->getOne('leagues');
     }
 
     public function getForArea(string $area, int $level)
     {
-        $this->getDb()->where('area', $area);
+        $this->db->where('area', $area);
 
         switch ($level) {
 			case 1:
 			case 2:
 			case 3:
-                $this->getDb()->where('area_level',$level);
-                $this->getDb()->where('country_level',1);
+                $this->db->where('area_level',$level);
+                $this->db->where('country_level',1);
 				break;
 			case 4:
-                $this->getDb()->where('country_level',2);
+                $this->db->where('country_level',2);
 				break;
 		}
 
-        return $this->getDb()->get('leagues');
+        return $this->db->get('leagues');
     }
 
     public function getUefa(){
-		$this->getDb()->where('country','AAA');
-		return $this->getDb()->get('leagues');
+		$this->db->where('country','AAA');
+		return $this->db->get('leagues');
     }
 
     public function getForCountry(?string $country, int $level){
         if($country){
-            $this->getDb()->where('country',$country);
+            $this->db->where('country',$country);
         }
-        $this->getDb()->where('country_level', $level, '<=');
-        return $this->getDb()->get('leagues');
+        $this->db->where('country_level', $level, '<=');
+        return $this->db->get('leagues');
     }
 
 }

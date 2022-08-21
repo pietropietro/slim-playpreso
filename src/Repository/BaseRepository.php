@@ -11,8 +11,4 @@ abstract class BaseRepository
     {
     }
 
-    protected function getDb(): \MysqliDb
-    {
-        return $this->db;
-    }
 }

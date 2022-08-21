@@ -9,8 +9,8 @@ use \App\Exception\NotFound;
 final class PPCupRepository extends BaseRepository
 {
     public function get(array $ids) {
-        $this->getDb()->where('id', $ids, 'IN');
-        $ppCups=$this->getDb()->get('ppCups');
+        $this->db->where('id', $ids, 'IN');
+        $ppCups=$this->db->get('ppCups');
         if (! $ppCups) {
             throw new NotFound('ppCups not found.', 404);
         }   
@@ -18,7 +18,7 @@ final class PPCupRepository extends BaseRepository
     }
 
     function getOne(int $id){
-        $this->getDb()->where('id', $id);
-        return $this->getDb()->getOne('ppCups');
+        $this->db->where('id', $id);
+        return $this->db->getOne('ppCups');
     }
 }

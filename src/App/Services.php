@@ -6,6 +6,7 @@ use App\Service\User;
 use App\Service\PPLeague;
 use App\Service\PPLeagueType;
 use App\Service\PPRound;
+use App\Service\PPRoundMatch;
 use App\Service\PPCup;
 use App\Service\PPCupGroup;
 use App\Service\PPCupType;
@@ -102,7 +103,14 @@ $container['ppround_service'] = static fn (
     ContainerInterface $container
 ):  PPRound\Find => new  PPRound\Find(
     $container->get('redis_service'),
+    $container->get('pproundmatch_service'),
     $container->get('ppround_repository'),
+);
+
+$container['pproundmatch_service'] = static fn (
+    ContainerInterface $container
+):  PPRoundMatch\Find => new  PPRoundMatch\Find(
+    $container->get('redis_service'),
     $container->get('ppround_match_repository'),
     $container->get('guess_repository'),
     $container->get('match_repository')

@@ -21,6 +21,6 @@ final class Verify  extends BaseService{
             //check if tournament needs more rounds 
             //if yes create
             //if no END tournament (if cupgroup -> )
-        }
+        
     }
 }

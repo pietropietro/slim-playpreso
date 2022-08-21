@@ -9,8 +9,8 @@ final class PPCupTypeRepository extends BaseRepository
 {
 
     function getOne($id){
-        $this->getDb()->where('id',$id);
-        return $this->getDb()->getOne('ppCupTypes');
+        $this->db->where('id',$id);
+        return $this->db->getOne('ppCupTypes');
     }
 
 }

@@ -5,42 +5,38 @@ declare(strict_types=1);
 namespace App\Service\PPRound;
 
 use App\Service\RedisService;
-use App\Repository\PPRoundRepository;
-use App\Repository\PPRoundMatchRepository;
-use App\Repository\GuessRepository;
-use App\Repository\MatchRepository;
-
 use App\Service\BaseService;
+use App\Service\PPRoundMatch;
+use App\Repository\PPRoundRepository;
 
 final class Find  extends BaseService{
+    
     public function __construct(
         protected RedisService $redisService,
-        protected PPRoundRepository $ppRoundRepository,
-        protected PPRoundMatchRepository $ppRoundMatchRepository,
-        protected guessRepository $guessRepository,
-        protected matchRepository $matchRepository
+        protected PPRoundMatch\Find $ppRoundMatchService,
+        protected PPRoundRepository $ppRoundRepository
     ){}
+
+    public function getOne(int $id, bool $withGuesses){
+        $ppRound = $this->ppRoundRepository->getOne($id);
+        $ppRound['ppRoundMatches'] = $this->ppRoundMatchService->getForRound($id, $withGuesses);
+        return $ppRound;
+    }
 
     public function getForMatch(int $matchId) : array {
         $ppRounds = [];
-        $ids = $this->ppRoundMatchRepository->getRoundIdsWithMatch($matchId);
+        $ids = $this->ppRoundMatchService->getRoundIdsForMatch($matchId);
         foreach ($ids as $key => $id) {
-            $ppRound = $this->ppRoundRepository->getOne($id);
-            $ppRound['ppRoundMatches'] = $this->ppRoundMatchRepository->get($id);
-            //pproundmatch service get w/match TODO
+            array_push($ppRounds, $this->getOne($id));
         }
         return $ppRounds;
     }
     
     //TODO change to ENUM type can be ppCupGroup_id OR ppLeague_id
-    public function getForTournament(string $type, int $typeId){
+    public function getForTournament(string $type, int $typeId) : ?array {
         $ppRounds = $this->ppRoundRepository->getForTournament($type, $typeId);
         foreach($ppRounds as $roundKey => $roundItem){
-            $ppRounds[$roundKey]['ppRoundMatches'] = $this->ppRoundMatchRepository->get($roundItem['id']);
-            foreach($ppRounds[$roundKey]['ppRoundMatches'] as $ppRMKey => $ppRMItem){        
-                $ppRounds[$roundKey]['ppRoundMatches'][$ppRMKey]['match'] = $this->matchRepository->getOne($ppRMItem['match_id']);
-                $ppRounds[$roundKey]['ppRoundMatches'][$ppRMKey]['guesses'] = $this->guessRepository->getForPPRoundMatch($ppRMItem['id']);
-            }
+            $ppRounds[$roundKey]['ppRoundMatches'] = $this->ppRoundMatchService->getForRound($roundItem['id'], true);
         }
         return $ppRounds;
     }

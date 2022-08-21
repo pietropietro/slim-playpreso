@@ -15,7 +15,7 @@ final class UserRepository extends BaseRepository
             'points' => $_SERVER['STARTING_POINTS']
         );
     
-        if(!$userId = $this->getDb()->insert('users', $data)){
+        if(!$userId = $this->db->insert('users', $data)){
             throw new \App\Exception\User('User not created.', 400);
         }
         return $userId;
@@ -23,10 +23,10 @@ final class UserRepository extends BaseRepository
 
     public function getOne(int $userId)
     {
-        $this->getDb()->where('id',$userId);
+        $this->db->where('id',$userId);
         $columns = array("username, id, created_at");
         //only retrieve certain columns of user. in order to give back a JSON without password
-        $user = $this->getDb()->getOne('users', $columns);
+        $user = $this->db->getOne('users', $columns);
 
         if (! $user) {
             throw new \App\Exception\User('User not found.', 404);
@@ -35,17 +35,17 @@ final class UserRepository extends BaseRepository
     }
 
     public function getId(string $username){
-        $this->getDb()->where('username',$username);
-        $user = $this->getDb()->getOne('users');
+        $this->db->where('username',$username);
+        $user = $this->db->getOne('users');
         return $user ? $user['id'] : null;
     }
 
     //TODO MOVE LOGIC IN SERVICE
     public function loginUser(string $username, string $password)
     {
-        $this->getDb()->where('username',strtolower($username));
+        $this->db->where('username',strtolower($username));
         $columns = array("username, id, created_at, points, password");
-        if(!$user=$this->getDb()->getOne('users', $columns)){
+        if(!$user=$this->db->getOne('users', $columns)){
             throw new \App\Exception\User('Login failed: username or password incorrect.', 401);
         }
         
@@ -62,31 +62,31 @@ final class UserRepository extends BaseRepository
 
     public function checkEmail(string $email): void
     {
-        $this->getDb()->where('email', $email);
-        if ($user = $this->getDb()->getOne('users')) {
+        $this->db->where('email', $email);
+        if ($user = $this->db->getOne('users')) {
             throw new \App\Exception\User('Email already exists.', 400);
         }
     }
 
     public function checkUsername(string $username): void
     {
-        $this->getDb()->where('username', $username);
-        if ($user = $this->getDb()->getOne('users')) {
+        $this->db->where('username', $username);
+        if ($user = $this->db->getOne('users')) {
             throw new \App\Exception\User('Username already exists.', 400);
         }
     }
 
     public function getUsername(int $userId){
-        $this->getDb()->where('id',$userId);
+        $this->db->where('id',$userId);
         $columns = Array ('username');
-        $user = $this->getDb()->getOne('users', $columns);
+        $user = $this->db->getOne('users', $columns);
         return $user['username'];
     }
 
     public function getPoints(int $userId){
-        $this->getDb()->where('id',$userId);
+        $this->db->where('id',$userId);
         $columns = Array ('points');
-        return $this->getDb()->getOne('users', $columns)['points'];
+        return $this->db->getOne('users', $columns)['points'];
     }
 
     public function minus(int $userId, int $points) : bool {
@@ -98,16 +98,16 @@ final class UserRepository extends BaseRepository
         $data = array(
             "points" => $db->dec($points)
         );
-        $this->getDb()->where('id', $userId);
-        return $this->getDb()->update('users', $data, 1);
+        $this->db->where('id', $userId);
+        return $this->db->update('users', $data, 1);
     }
 
     public function plus(int $userId, int $points) : bool { 
         $data = array(
             "points" => $db->inc($points)
         );
-        $this->getDb()->where('id', $userId);
-        return $this->getDb()->update('users', $data, 1);
+        $this->db->where('id', $userId);
+        return $this->db->update('users', $data, 1);
     }
    
 }

@@ -7,19 +7,19 @@ namespace App\Repository;
 final class PPRoundRepository extends BaseRepository
 {
     public function count(string $column, int $valueId) : int {
-        $this->getDb()->where($column,$valueId);
+        $this->db->where($column,$valueId);
         $sql = "SELECT COUNT(*) as round_count FROM ppRounds";
-        $result = $this->getDb()->query($sql);
+        $result = $this->db->query($sql);
         return $result[0]['round_count'];
     }
 
     public function getForTournament($column, $valueId){
-        $this->getDb()->where($column, $valueId);
-        return $this->getDb()->get('ppRounds');
+        $this->db->where($column, $valueId);
+        return $this->db->get('ppRounds');
     }
 
     public function getOne(int $id){
-        $this->getDb()->where('id', $id);
-        return $this->getDb()->getOne('ppRounds');
+        $this->db->where('id', $id);
+        return $this->db->getOne('ppRounds');
     }
 }
