@@ -6,7 +6,6 @@ namespace App\Service\User;
 
 use App\Exception\User;
 use App\Repository\UserRepository;
-use App\Repository\PPLeagueTypeRepository;
 use App\Service\RedisService;
 
 
@@ -15,15 +14,17 @@ final class Points extends Base
     public function __construct(
         protected UserRepository $userRepository,
         protected RedisService $redisService,
-        protected PPLeagueTypeRepository $ppLeagueTypeRepository
     ) {}
 
-    public function payPPLT($userId, $typeId){
-        $cost = $this->ppLeagueTypeRepository->getOne($typeId)['cost'];
-        return $this->userRepository->minus($userId, $cost);
+    public function minus(int $userId, int $points){
+        return $this->userRepository->minus($userId, $points);
     }
 
-    public function get($userId){
+    public function plus(int $userId, int $points){
+        return $this->userRepository->plus($userId, $points);
+    }
+
+    public function get(int $userId){
        return $this->userRepository->getPoints($userId);
     }
 }

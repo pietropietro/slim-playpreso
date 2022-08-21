@@ -29,7 +29,7 @@ final class Find  extends BaseService{
             $ppRounds[$roundKey]['ppRoundMatches'] = $this->ppRoundMatchRepository->getAllRound($roundItem['id']);
             foreach($ppRounds[$roundKey]['ppRoundMatches'] as $ppRMKey => $ppRMItem){        
                 $ppRounds[$roundKey]['ppRoundMatches'][$ppRMKey]['match'] = $this->matchRepository->getOne($ppRMItem['match_id']);
-                $ppRounds[$roundKey]['ppRoundMatches'][$ppRMKey]['guesses'] = $this->guessRepository->getAllPPRM($ppRMItem['id']);
+                $ppRounds[$roundKey]['ppRoundMatches'][$ppRMKey]['guesses'] = $this->guessRepository->getForPPRoundMatch($ppRMItem['id']);
             }
         }
         return $ppRounds;

@@ -32,7 +32,8 @@ final class Join extends Base
 
         $ppLeague = $this->getFindPPLeagueService()->getJoinable($typeId, $userId);
         
-        if(!$this->getPointsService()->payPPLT($userId, $typeId)){
+        $cost = $this->getPPLeagueTypeService()->getOne($typeId)['cost'];
+        if(!$this->getPointsService()->minus($userId, $cost)){
             throw new Exception\User("couldn't join", 500);
         }
 

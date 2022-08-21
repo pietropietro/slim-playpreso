@@ -13,6 +13,8 @@ use App\Service\UserParticipation;
 use App\Service\League;
 use App\Service\ExternalAPI;
 use App\Service\Match;
+use App\Service\Guess;
+use App\Service\Score;
 use Psr\Container\ContainerInterface;
 
 $container['find_user_service'] = static fn (
@@ -145,7 +147,6 @@ $container['user_points_service'] = static fn (
 ):  User\Points => new  User\Points(
     $container->get('user_repository'),
     $container->get('redis_service'),
-    $container->get('ppleaguetype_repository'),
 );
 
 $container['league_service'] = static fn (
@@ -198,5 +199,18 @@ $container['match_elaborate_service'] = static fn (
     ContainerInterface $container
 ):  Match\Elaborate => new  Match\Elaborate(
     $container->get('match_repository'),
-    $container->get('team_repository')
+    $container->get('team_repository'),
+    $container->get('guess_verify_service')
 );
+
+$container['guess_verify_service'] = static fn (
+    ContainerInterface $container
+):  Guess\Verify => new  Guess\Verify(
+    $container->get('guess_repository'),
+    $container->get('score_service'),
+    $container->get('user_points_service')
+);
+
+$container['score_service'] = static fn (
+    ContainerInterface $container
+):  Score\Calculate => new  Score\Calculate();

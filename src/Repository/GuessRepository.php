@@ -15,19 +15,42 @@ final class GuessRepository extends BaseRepository
             $this->getDb()->where('verified_at IS NOT NULL');
         }
         $this->getDb()->orderBy('created_at', 'DESC');
+        
+        //i.e. "-3 months"
         if($stringTime){
-            //i.e. "-3 months"
             $this->getDb()->where('verified_at', date("Y-m-d H:i:s", strtotime($stringTime)), ">");
         }
         return $this->getDb()->get('guesses', $limit);
     }
 
-    public function getAllPPRM($ppRMId){
+    public function getForPPRoundMatch($ppRMId){
         $this->getDb()->join("users u", "u.id=g.user_id", "INNER");
         $this->getDb()->orderBy('g.score','desc');
         $this->getDb()->orderBy('g.guess_home','asc');
         $this->getDb()->where('ppRoundMatch_id', $ppRMId);
         return $this->getDb()->query("SELECT g.*, u.username FROM guesses g");
+    }
+
+    public function getForMatch(int $matchId, bool $not_verified){
+        $this->getDb()->where('match_id', $matchId);
+        if($not_verified){
+            $this->getDb()->where('verified_at IS NULL');
+        }
+        return $this->getDb()->get('guesses');
+    }
+
+    public function verify(int $id, bool $unox2, bool $uo25, bool $ggng, bool $preso, int $score){
+        $data = array(
+            "UNOX2" => $unox2,
+            "GGNG" => $ggng,
+            "UO25" => $uo25,
+            "PRESO" => $preso,
+            "score" => $score,
+            "verified_at" => $this->getDb()->now()
+        );
+
+        $db->where('id', $id);
+        $this->getDb()->update('guesses', $data, 1);        
     }
 
     //TODO MOVE TO SERVICE

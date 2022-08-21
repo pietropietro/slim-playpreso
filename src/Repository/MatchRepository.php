@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Entity\Match;
-
 final class MatchRepository extends BaseRepository
 {   
     public function getOne(int $matchId, bool $is_external_id) {
@@ -36,6 +34,19 @@ final class MatchRepository extends BaseRepository
 	    );
 
         $this->getDb()->where('id', $id);
-        $this->getDb()->update('matches', $data);
+        $this->getDb()->update('matches', $data, 1);
     }
+
+    public function verify(int $id, int $score_home, int $score_away){
+        $data = array(
+			"score_home" => $score_home,
+			"score_away" => $score_away,
+            "verified_at" => $this->getDb()->now()
+	    );
+        $this->getDb()->where('id', $id);
+        $this->getDb()->update('matches', $data, 1);
+    }
+
+
+    
 }

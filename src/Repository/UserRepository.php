@@ -89,13 +89,22 @@ final class UserRepository extends BaseRepository
         return $this->getDb()->getOne('users', $columns)['points'];
     }
 
-    public function minus(int $userId, int $points){
+    public function minus(int $userId, int $points) : bool {
         $initial = $this->getPoints($userId);
         if($initial < $points ){
             throw new \App\Exception\User('Not enough points.', 401);
         }
+
         $data = array(
-            "points" => $initial - $points
+            "points" => $db->dec($points)
+        );
+        $this->getDb()->where('id', $userId);
+        return $this->getDb()->update('users', $data, 1);
+    }
+
+    public function plus(int $userId, int $points) : bool { 
+        $data = array(
+            "points" => $db->inc($points)
         );
         $this->getDb()->where('id', $userId);
         return $this->getDb()->update('users', $data, 1);
