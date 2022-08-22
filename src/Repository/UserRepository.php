@@ -96,7 +96,7 @@ final class UserRepository extends BaseRepository
         }
 
         $data = array(
-            "points" => $db->dec($points)
+            "points" => $this->db->dec($points)
         );
         $this->db->where('id', $userId);
         return $this->db->update('users', $data, 1);
@@ -104,7 +104,7 @@ final class UserRepository extends BaseRepository
 
     public function plus(int $userId, int $points) : bool { 
         $data = array(
-            "points" => $db->inc($points)
+            "points" => $this->db->inc($points)
         );
         $this->db->where('id', $userId);
         return $this->db->update('users', $data, 1);

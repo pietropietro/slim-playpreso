@@ -22,4 +22,16 @@ final class PPRoundRepository extends BaseRepository
         $this->db->where('id', $id);
         return $this->db->getOne('ppRounds');
     }
+
+    public function create(string $column, int $valueId, int $round){
+        $data = array(
+			$column => $valueId,
+			"round" => $round,
+            "created_at" => $this->db->now()
+	    );
+        if(!$this->db->insert('ppRounds',$data)){
+            throw new \App\Exception\Mysql($this->db->getLastError(), 500);
+        };
+        return $this->db->getInsertId();
+    }
 }

@@ -54,7 +54,15 @@ final class PPLeagueRepository extends BaseRepository
         return $this->db->insert('ppLeagues',$data);
     }
 
-    function incrementUserCounter(int $id){
+    function incUserCount(int $id){
         $this->db->query("UPDATE ppLeagues SET user_count=user_count+1 WHERE id=$id");
+    }
+
+    function incRoundCount(int $id) {
+        $data = array(
+            "round_count" => $this->db->inc()
+        );
+        $this->db->where('id', $id);
+        $this->db->update('ppLeagues', $data, 1);
     }
 }

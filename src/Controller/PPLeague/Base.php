@@ -17,11 +17,6 @@ abstract class Base extends BaseController
         return $this->container->get('ppleague_service');
     }
 
-    protected function getPPLeagueTypeService(): Service\PPLeagueType\Find
-    {
-        return $this->container->get('ppleaguetype_service');
-    }
-
     protected function getParticipationService(): Service\UserParticipation\Find
     {
         return $this->container->get('user_participation_service');

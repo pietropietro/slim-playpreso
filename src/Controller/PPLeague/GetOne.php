@@ -19,7 +19,6 @@ final class GetOne extends Base
     ): Response {
         $ppLeagueId = (int) $args['id'];
         $ppLeague = $this->getPPLeagueService()->getOne($ppLeagueId);
-        $ppLeague['ppLeagueType'] = $this->getPPLeagueTypeService()->getOne($ppLeague['ppLeagueType_id']);
         $ppLeague['userParticipations'] = $this->getParticipationService()->getForTournament('ppLeague_id', $ppLeagueId);
         $ppLeague['ppRounds'] = $this->getPPRoundService()->getForTournament('ppLeague_id', $ppLeagueId);
          

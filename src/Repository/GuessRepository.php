@@ -49,7 +49,7 @@ final class GuessRepository extends BaseRepository
             "verified_at" => $this->db->now()
         );
 
-        $db->where('id', $id);
+        $this->db->where('id', $id);
         $this->db->update('guesses', $data, 1);        
     }
 

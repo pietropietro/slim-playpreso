@@ -22,7 +22,7 @@ final class Find  extends BaseService{
 
     public function getOne(int $id){
         $ppLT =  $this->ppLeagueTypeRepository->getOne($id);
-        $ppLT['leagues'] = $this->leagueService->getForPPLT($id);
+        $ppLT['leagues'] = $this->leagueService->getForPPLeagueType($id);
         return $ppLT;
     }
 

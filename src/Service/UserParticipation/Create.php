@@ -27,7 +27,7 @@ final class Create extends BaseService
             throw new \App\Exception\User('cant join',500);
         }
 
-        $this->ppLeagueRepository->incrementUserCounter($ppLeagueId);
+        $this->ppLeagueRepository->incUserCount($ppLeagueId);
 
         return $participation;
 
