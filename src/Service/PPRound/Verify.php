@@ -16,11 +16,13 @@ final class Verify  extends BaseService{
     ){}
     
     public function verify(int $matchId){
-        $rounds = $this->findService->getForMatch($matchId);
+        $ppRounds = $this->findService->getForMatch($matchId);
+        foreach ($ppRounds as $key => $round) {
             //check if other pproundmatches are also over
             //check if tournament needs more rounds 
             //if yes create
             //if no END tournament (if cupgroup -> )
-        
+        }
+    
     }
 }
