@@ -6,7 +6,7 @@ namespace App\Repository;
 
 final class MatchRepository extends BaseRepository
 {   
-    public function getOne(int $matchId, bool $is_external_id) {
+    public function getOne(int $matchId, bool $is_external_id) : ?array {
         $column = !!$is_external_id ? 'ls_id' : 'id';
         $this->db->where($column, $matchId);
         return $this->db->getOne('matches');
@@ -45,6 +45,16 @@ final class MatchRepository extends BaseRepository
 	    );
         $this->db->where('id', $id);
         $this->db->update('matches', $data, 1);
+    }
+
+    public function getNextMatchesForLeagues(array $league_ids) : ?array{
+        //TODO add where league_id + round not distinc 
+        //i.e serie a only round 4, 
+        $this->db->where('league_id', $league_ids, 'IN');
+        $this->db->where('date_start', strtotime('+ 9 days'), '<');
+        $this->db->where('date_start', strtotime('+ 1 day'), '>');
+        $this->db->orderBy('date_start', 'ASC');
+        return $this->db->get('matches', 50);
     }
 
 

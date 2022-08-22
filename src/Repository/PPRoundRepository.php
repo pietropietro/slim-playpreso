@@ -23,7 +23,7 @@ final class PPRoundRepository extends BaseRepository
         return $this->db->getOne('ppRounds');
     }
 
-    public function create(string $column, int $valueId, int $round){
+    public function create(string $column, int $valueId, int $round) : int{
         $data = array(
 			$column => $valueId,
 			"round" => $round,

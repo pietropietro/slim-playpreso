@@ -17,7 +17,7 @@ abstract class Base extends BaseController
 
     protected function getUserParticipationService(): Service\UserParticipation\Find
     {
-        return $this->container->get('user_participation_service');
+        return $this->container->get('userparticipation_service');
     }    
 
     protected function getCupTypeService(): Service\PPCupType\Find

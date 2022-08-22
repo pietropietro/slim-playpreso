@@ -61,7 +61,7 @@ $container['guess_service'] = static fn (
 );
 
 //TODO REMOVE UNUSED SERVICES REPO
-$container['ppleague_service'] = static fn (
+$container['ppleague_find_service'] = static fn (
     ContainerInterface $container
 ):  PPLeague\Find => new  PPLeague\Find(
     $container->get('redis_service'),
@@ -76,7 +76,7 @@ $container['ppleague_update_service'] = static fn (
     $container->get('ppleague_repository'),
     $container->get('ppleaguetype_repository'),
     $container->get('ppround_repository'),
-    $container->get('user_participations_repository'),
+    $container->get('userparticipation_repository'),
     $container->get('user_repository'),
     $container->get('guess_repository')
 );
@@ -94,7 +94,7 @@ $container['ppleaguetype_service'] = static fn (
 ):  PPLeagueType\Find => new  PPLeagueType\Find(
     $container->get('redis_service'),
     $container->get('ppleaguetype_repository'),
-    $container->get('user_participations_repository'),
+    $container->get('userparticipation_repository'),
     $container->get('user_points_service'),
     $container->get('league_service'),
 );
@@ -112,7 +112,7 @@ $container['pproundmatch_service'] = static fn (
     ContainerInterface $container
 ):  PPRoundMatch\Find => new  PPRoundMatch\Find(
     $container->get('redis_service'),
-    $container->get('ppround_match_repository'),
+    $container->get('pproundmatch_repository'),
     $container->get('guess_repository'),
     $container->get('match_repository')
 );
@@ -122,17 +122,19 @@ $container['ppround_verify_service'] = static fn (
     ContainerInterface $container
 ):  PPRound\Verify => new  PPRound\Verify(
     $container->get('ppround_repository'),
-    $container->get('ppround_match_repository'),
+    $container->get('pproundmatch_repository'),
+    $container->get('ppleague_verify_service'),
+    $container->get('userparticipation_update_service'),
 );
 
 
 //TODO understand how to remove duplicates 
 //different constructros in base services vs detailed?
-$container['user_participation_service'] = static fn (
+$container['userparticipation_service'] = static fn (
     ContainerInterface $container
 ):  UserParticipation\Find => new  UserParticipation\Find(
     $container->get('redis_service'),
-    $container->get('user_participations_repository'),
+    $container->get('userparticipation_repository'),
     $container->get('ppleaguetype_repository'),
     $container->get('ppleague_repository'),
     $container->get('ppround_repository'),
@@ -140,18 +142,18 @@ $container['user_participation_service'] = static fn (
     // $container->get('user_repository')
 );
 
-$container['user_participation_create_service'] = static fn (
+$container['userparticipation_create_service'] = static fn (
     ContainerInterface $container
 ):  UserParticipation\Create => new  UserParticipation\Create(
-    $container->get('user_participations_repository'),
+    $container->get('userparticipation_repository'),
     $container->get('ppleague_repository'),
 );
 
-$container['user_participation_update_service'] = static fn (
+$container['userparticipation_update_service'] = static fn (
     ContainerInterface $container
 ):  UserParticipation\Update => new  UserParticipation\Update(
     $container->get('redis_service'),
-    $container->get('user_participations_repository'),
+    $container->get('userparticipation_repository'),
     $container->get('ppleaguetype_repository'),
     $container->get('ppleague_repository'),
     $container->get('ppround_repository'),
@@ -178,7 +180,7 @@ $container['ppcup_count_service'] = static fn (
     ContainerInterface $container
 ):  PPCup\Count => new  PPCup\Count(
     $container->get('redis_service'),
-    $container->get('user_participation_update_service'),
+    $container->get('userparticipation_update_service'),
     $container->get('ppcupgroup_repository'),
 );
 
@@ -186,7 +188,7 @@ $container['ppcup_find_service'] = static fn (
     ContainerInterface $container
 ):  PPCup\Find => new  PPCup\Find(
     $container->get('redis_service'),
-    $container->get('user_participation_service'),
+    $container->get('userparticipation_service'),
     $container->get('ppcup_repository'),
     $container->get('ppcupgroup_repository'),
 );
@@ -231,3 +233,41 @@ $container['guess_verify_service'] = static fn (
 $container['score_service'] = static fn (
     ContainerInterface $container
 ):  Score\Calculate => new  Score\Calculate();
+
+$container['ppleague_verify_service'] = static fn (
+    ContainerInterface $container
+):  PPLeague\Verify => new  PPLeague\Verify(
+    $container->get('ppleague_repository'),
+    $container->get('ppleague_find_service'),
+    $container->get('ppround_create_service'),
+    $container->get('userparticipation_update_service')
+);
+
+$container['match_picker_service'] = static fn (
+    ContainerInterface $container
+):  Match\Picker => new Match\Picker(
+    $container->get('match_repository'),
+    $container->get('ppleague_find_service'),
+);
+
+$container['ppround_create_service'] = static fn (
+    ContainerInterface $container
+):  PPRound\Create => new  PPRound\Create(
+    $container->get('match_picker_service'),
+    $container->get('ppround_repository'),
+    $container->get('pproundmatch_repository'),
+);
+
+$container['pproundmatch_create_service'] = static fn (
+    ContainerInterface $container
+):  PPRoundMatch\Create => new  PPRoundMatch\Create(
+    $container->get('pproundmatch_repository'),
+    $container->get('guess_create_repository'),
+);
+
+$container['guess_create_service'] = static fn (
+    ContainerInterface $container
+):  Guess\Create => new  Guess\Create(
+    $container->get('guess_repository'),
+    $container->get('userparticipation_repository'),
+);

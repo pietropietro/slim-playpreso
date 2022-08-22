@@ -4,28 +4,26 @@ declare(strict_types=1);
 
 namespace App\Service\PPRound;
 
+use App\Service\Match;
+use App\Service\PPRoundMatch;
 use App\Repository\PPRoundRepository;
-use App\Repository\LeagueRepository;
-use App\Repository\PPRoundMatchRepository;
-use App\Repository\MatchRepository;
-use App\Repository\GuessRepository;
-
 
 final class Verify  extends BaseService{
     public function __construct(
-        protected LeagueRepository $leagueRepository,
+        protected Match\Picker $matchPickerService,
+        protected PPRoundRepository $ppRoundRepository,
+        protected PPRoundMatch\Create $ppRMcreateService,
     ){}
     
-    public function create(string $tournamentColumn, int $tournamentId, int $tournamentTypeId, int $newRound){
-        //get league ids 
-        //leagueservice->getForPPLeagueType(tournamentTypeId)
-        //$picked = matchpicker->pick();
-        // if($picked.length !== 3) return
-        //$newRoundId = pproundrepo->create($tournamentColumn, $tournamentId, $newRound);
-        //foreach picked
-        //$newRoundMatchId =RoundId pproundmatchrepo->create($newRoundId, $match['id]);
-        //guessservicecreate->createForPPRoundMatch($match['id'], $newRoundMatchId);
-
+    public function create(string $tournamentColumn, int $tournamentId, int $tournamentTypeId, int $newRound) : bool{
+        $picked = $this->matchPickerService->pick($tournamentTypeId);
+        if(!$picked) throw new \App\Exception\NotFound("no matches for new round", 500);
+        if(!$newRoundId = $this->ppRoundRepository->create($tournamentColumn, $tournamentId, $newRound))return false;
+        
+        foreach ($picked as $key => $match) {
+            $this->ppRMcreateService->create($newRoundId, $match['id'], $tournamentColumn, $tournamentId);
+        }
+        return true;
     }
 
 }

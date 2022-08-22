@@ -58,8 +58,7 @@ final class Elaborate extends BaseService{
     private function verify(Object $eventObj, int $matchId){
         $this->matchRepository->verify($matchId, (int)$eventObj->Tr1, (int)$eventObj->Tr2);
         $this->guessVerifyService->verify($matchId, (int)$eventObj->Tr1, (int)$eventObj->Tr2);
-        //userparticipations--> calculate new  score, positions
-        // $this->ppRoundVerifyService->verify($matchId);
+        $this->ppRoundVerifyService->verify($matchId);
     }
 
 }

@@ -35,10 +35,10 @@ final class UserParticipationRepository extends BaseRepository
         return $this->db->get($this->tableName) ;
     }
 
-    function getForTournament(string $type, int $valueId){
+    function getForTournament(string $tournamentColumn, int $tournamentId){
         $this->db->join("users u", "u.id=up.user_id", "INNER");
         $this->db->orderBy('up.position','asc');
-        $this->db->where($type, $valueId);
+        $this->db->where($tournamentColumn, $tournamentId);
         return $this->db->query("SELECT up.*, u.username FROM userParticipations up");
     }
 
@@ -71,7 +71,7 @@ final class UserParticipationRepository extends BaseRepository
     function updateScore(int $id, int $score){
         $data = array(
 			"score" => $score,
-            "updated_at" => date("Y-m-d H:i:s"),
+            "updated_at" => $this->db->now(),
 		);
         $this->db->where('id',$id);
         $this->db->update($this->tableName, $data);
@@ -80,10 +80,20 @@ final class UserParticipationRepository extends BaseRepository
     function updatePosition(int $id, int $position){
         $data = array(
 			"position" => $position,
-            "updated_at" => date("Y-m-d H:i:s"),
+            "updated_at" => $this->db->now(),
 		);
         $this->db->where('id',$id);
         $this->db->update($this->tableName, $data);
     }
+
+    public function setFinished(string $tournamentColumn, int $tournamentId){
+        $data = array(
+			"finished" => 1,
+            "updated_at" => $this->db->now(),
+		);
+        $this->db->where($tournamentColumn, $id);
+        $this->db->update($this->tableName, $data);
+    }
+
 
 }

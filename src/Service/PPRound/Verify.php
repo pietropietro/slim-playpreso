@@ -6,28 +6,30 @@ namespace App\Service\PPRound;
 
 use App\Repository\PPRoundRepository;
 use App\Repository\PPRoundMatchRepository;
-
 use App\Service\BaseService;
 use App\Service\PPLeague;
+use App\Service\UserParticipation;
 
 final class Verify  extends BaseService{
     public function __construct(
         protected PPRoundRepository $ppRoundRepository,
         protected PPRoundMatchRepository $ppRoundMatchRepository,
-        protected PPLeague\Verify $ppLeagueVerifyService
+        protected PPLeague\Verify $ppLeagueVerifyService,
+        protected UserParticipation $updateUpService
     ){}
     
     public function verify(int $matchId){
         $ppRounds = $this->findService->getForMatch($matchId);
-        foreach ($ppRounds as $key => $round) {
-            if(!$isFinished = $this->isFinished($ppRounds)) continue;
-            
+        
+        foreach ($ppRounds as $key => $round) {    
             if($round['ppLeague_id']){
-                $this->$ppLeagueVerifyService->verify($round['ppLeague_id'], $round['round']);
-                //TODO
-                continue;
+                $this->updateUpService->update('ppLeague_id', $round['ppLeague_id']);
+                if($this->isRoundFinished($ppRounds)){
+                    $this->$ppLeagueVerifyService->verify($round['ppLeague_id'], $round['round']);
+                }
             }
-            //CUP
+
+            //CUP TODO
             //$ppcupGroup = getppcupGroupservice->getOne(id)
             //check if tournament needs more rounds 
             //if yes create
@@ -36,7 +38,7 @@ final class Verify  extends BaseService{
     
     }
 
-    public function isFinished(array $ppRound) : bool {
+    public function isRoundFinished(array $ppRound) : bool {
         foreach ($ppRound['ppRoundMatches'] as $key => $ppRM) {
             if(!$ppRM['match']['verified_at']) return false;
         }

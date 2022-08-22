@@ -20,7 +20,7 @@ use Psr\Container\ContainerInterface;
 
 $container['user_repository'] = static fn (ContainerInterface $container): UserRepository => new UserRepository($container->get('db'));
 
-$container['user_participations_repository'] = static fn (ContainerInterface $container): UserParticipationRepository => new UserParticipationRepository($container->get('db'));
+$container['userparticipation_repository'] = static fn (ContainerInterface $container): UserParticipationRepository => new UserParticipationRepository($container->get('db'));
 
 $container['league_repository'] = static fn (ContainerInterface $container): LeagueRepository => new LeagueRepository($container->get('db'));
 
@@ -34,7 +34,7 @@ $container['match_repository'] = static fn (ContainerInterface $container): Matc
 
 $container['ppround_repository'] = static fn (ContainerInterface $container): PPRoundRepository => new PPRoundRepository($container->get('db'));
 
-$container['ppround_match_repository'] = static fn (ContainerInterface $container): PPRoundMatchRepository => new PPRoundMatchRepository($container->get('db'));
+$container['pproundmatch_repository'] = static fn (ContainerInterface $container): PPRoundMatchRepository => new PPRoundMatchRepository($container->get('db'));
 
 $container['ppcup_repository'] = static fn (ContainerInterface $container): PPCupRepository => new PPCupRepository($container->get('db'));
 

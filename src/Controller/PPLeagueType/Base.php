@@ -20,12 +20,12 @@ abstract class Base extends BaseController
 
     protected function getFindPPLeagueService(): PPLeague\Find
     {
-        return $this->container->get('ppleague_service');
+        return $this->container->get('ppleague_find_service');
     }
 
     protected function getParticipationService(): Create
     {
-        return $this->container->get('user_participation_create_service');
+        return $this->container->get('userparticipation_create_service');
     }
 
     protected function getPointsService(): User\Points

@@ -14,12 +14,12 @@ abstract class Base extends BaseController
 {
     protected function getPPLeagueService(): Service\PPLeague\Find
     {
-        return $this->container->get('ppleague_service');
+        return $this->container->get('ppleague_find_service');
     }
 
     protected function getParticipationService(): Service\UserParticipation\Find
     {
-        return $this->container->get('user_participation_service');
+        return $this->container->get('userparticipation_service');
     }
 
     protected function getPPRoundService(): Service\PPRound\Find

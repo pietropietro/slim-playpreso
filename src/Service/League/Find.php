@@ -20,8 +20,9 @@ final class Find  extends BaseService{
         return $this->leagueRepository->getOne($id);
     }
 
-    public function getForPPLeagueType(int $ppLTId){
+    public function getForPPLeagueType(int $ppLTId, bool $id_only){
         $ppLT =  $this->ppLeagueTypeRepository->getOne($ppLTId);
+        
         if($ppLT['type'] === 'Europe'){
             $leagues = $this->leagueRepository->getForArea(strtolower($ppLT['type']), $ppLT['level']);
             $uefaLeagues =  $this->leagueRepository->getUefa();
@@ -29,6 +30,6 @@ final class Find  extends BaseService{
         }       
 
         $country = $ppLT['type'] === 'Random' ? null : strtolower($ppLT['type']);
-        return $this->leagueRepository->getForCountry($country, $ppLT['level']);
+        return $this->leagueRepository->getForCountry($country, $ppLT['level'], $id_only);
     }
 }

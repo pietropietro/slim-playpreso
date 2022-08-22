@@ -53,6 +53,17 @@ final class GuessRepository extends BaseRepository
         $this->db->update('guesses', $data, 1);        
     }
 
+    public function create($userId, $matchId, $ppRoundMatchId) : int {
+        $data = array(
+            "user_id" => $userId,
+            "match_id" => $matchId,
+            "ppRoundMatch_id" => $ppRoundMatchId,
+            "created_at" => $this->db->now()
+        );
+        return $this->db->insert('guesses', $data);
+    }
+
+
     //TODO MOVE TO SERVICE
     //TODO CHANGE COLUMN TO ENUM ['league_id', 'cup_group_id']
     public function getUpScore(int $userId, string $column, int $valueId) : int {

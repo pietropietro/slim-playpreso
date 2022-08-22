@@ -25,6 +25,7 @@ abstract class Base extends BaseService
         protected GuessRepository $guessRepository
     ){}
 
+    //for trophies?
     public function addPPLeagueData($up){
         $up['ppLeagueType'] = $this->ppLeagueTypeRepository->getOne($up['ppLeagueType_id']);
         $up['ppLeague'] = $this->ppLeagueRepository->getOne($up['ppLeague_id']);        
