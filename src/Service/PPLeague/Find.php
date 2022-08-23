@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\PPLeague;
 
 use App\Service\RedisService;
-use App\Service\PPLeagueType;
+use App\Service\PPTournamentType;
 use App\Repository\PPLeagueRepository;
 use App\Service\BaseService;
 
@@ -13,12 +13,12 @@ final class Find  extends BaseService{
     public function __construct(
         protected RedisService $redisService,
         protected PPLeagueRepository $ppLeagueRepository,
-        protected PPLeagueType\Find $ppLTService
+        protected PPTournamentType\Find $findTournamentType
     ) {}
 
     public function getOne(int $ppLeagueId){
         $ppLeague = $this->ppLeagueRepository->getOne($ppLeagueId);
-        $ppLeague['ppLeagueType'] = $this->ppLTService->getOne($ppLeague['ppLeagueType_id']);
+        $ppLeague['ppTournamentType'] = $this->findTournamentType->getOne($ppLeague['ppTournamentType_id']);
         return $ppLeague;
 
     }

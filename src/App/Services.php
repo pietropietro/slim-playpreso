@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 use App\Service\User;
 use App\Service\PPLeague;
-use App\Service\PPLeagueType;
+use App\Service\PPTournamentType;
 use App\Service\PPRound;
 use App\Service\PPRoundMatch;
 use App\Service\PPCup;
 use App\Service\PPCupGroup;
-use App\Service\PPCupType;
 use App\Service\UserParticipation;
 use App\Service\League;
 use App\Service\ExternalAPI;
@@ -66,7 +65,7 @@ $container['ppleague_find_service'] = static fn (
 ):  PPLeague\Find => new  PPLeague\Find(
     $container->get('redis_service'),
     $container->get('ppleague_repository'),
-    $container->get('ppleaguetype_find_service'),
+    $container->get('pptournamenttype_find_service'),
 );
 
 $container['ppleague_update_service'] = static fn (
@@ -74,7 +73,7 @@ $container['ppleague_update_service'] = static fn (
 ):  PPLeague\Update => new  PPLeague\Update(
     $container->get('redis_service'),
     $container->get('ppleague_repository'),
-    $container->get('ppleaguetype_repository'),
+    $container->get('pptournamenttype_repository'),
     $container->get('ppround_repository'),
     $container->get('userparticipation_repository'),
     $container->get('user_repository'),
@@ -89,11 +88,11 @@ $container['ppleague_update_service'] = static fn (
 );
 
 
-$container['ppleaguetype_find_service'] = static fn (
+$container['pptournamenttype_find_service'] = static fn (
     ContainerInterface $container
-):  PPLeagueType\Find => new  PPLeagueType\Find(
+):  PPTournamentType\Find => new  PPTournamentType\Find(
     $container->get('redis_service'),
-    $container->get('ppleaguetype_repository'),
+    $container->get('pptournamenttype_repository'),
     $container->get('userparticipation_repository'),
     $container->get('user_points_service'),
     $container->get('league_find_service'),
@@ -134,7 +133,7 @@ $container['userparticipation_find_service'] = static fn (
 ):  UserParticipation\Find => new  UserParticipation\Find(
     $container->get('redis_service'),
     $container->get('userparticipation_repository'),
-    $container->get('ppleaguetype_repository'),
+    $container->get('pptournamenttype_repository'),
     $container->get('ppleague_repository'),
     $container->get('ppround_repository'),
     $container->get('guess_repository')
@@ -153,7 +152,7 @@ $container['userparticipation_update_service'] = static fn (
 ):  UserParticipation\Update => new  UserParticipation\Update(
     $container->get('redis_service'),
     $container->get('userparticipation_repository'),
-    $container->get('ppleaguetype_repository'),
+    $container->get('pptournamenttype_repository'),
     $container->get('ppleague_repository'),
     $container->get('ppround_repository'),
     $container->get('guess_repository')
@@ -170,7 +169,7 @@ $container['league_find_service'] = static fn (
     ContainerInterface $container
 ):  League\Find => new  League\Find(
     $container->get('redis_service'),
-    $container->get('ppleaguetype_repository'),
+    $container->get('pptournamenttype_repository'),
     $container->get('league_repository'),
 );
 
@@ -192,12 +191,6 @@ $container['ppcup_find_service'] = static fn (
     $container->get('ppcupgroup_repository'),
 );
 
-$container['ppcuptype_service'] = static fn (
-    ContainerInterface $container
-):  PPCupType\Find => new  PPCupType\Find(
-    $container->get('redis_service'),
-    $container->get('ppcuptype_repository'),
-);
 
 $container['ppcupgroup_service'] = static fn (
     ContainerInterface $container

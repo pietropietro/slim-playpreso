@@ -6,13 +6,13 @@ namespace App\Service\League;
 
 use App\Service\RedisService;
 use App\Repository\LeagueRepository;
-use App\Repository\PPLeagueTypeRepository;
+use App\Repository\PPTournamentTypeRepository;
 use App\Service\BaseService;
 
 final class Find  extends BaseService{
     public function __construct(
         protected RedisService $redisService,
-        protected PPLeagueTypeRepository $ppLeagueTypeRepository,
+        protected PPTournamentTypeRepository $ppTournamentTypeRepository,
         protected LeagueRepository $leagueRepository,
     ){}
 
@@ -20,16 +20,19 @@ final class Find  extends BaseService{
         return $this->leagueRepository->getOne($id);
     }
 
-    public function getForPPLeagueType(int $ppLTId, bool $id_only = false){
-        $ppLT =  $this->ppLeagueTypeRepository->getOne($ppLTId);
+    public function getForPPTournamentType(int $ppTTid, bool $id_only = false){
+        $ppTT =  $this->PPTournamentTypeRepository->getOne($ppTTid);
+
+        //TODO ppcup leagues
+        if($ppTT['is_ppCup']) return;
         
-        if($ppLT['type'] === 'Europe'){
-            $leagues = $this->leagueRepository->getForArea(strtolower($ppLT['type']), $ppLT['level']);
+        if($ppTT['name'] === 'Europe'){
+            $leagues = $this->leagueRepository->getForArea(strtolower($ppTT['name']), $ppTT['level']);
             $uefaLeagues =  $this->leagueRepository->getUefa();
             return array_merge($leagues,$uefaLeagues);
         }       
 
-        $country = $ppLT['type'] === 'Random' ? null : strtolower($ppLT['type']);
-        return $this->leagueRepository->getForCountry($country, $ppLT['level'], $id_only);
+        $country = $ppTT['name'] === 'Random' ? null : strtolower($ppTT['name']);
+        return $this->leagueRepository->getForCountry($country, $ppTT['level'], $id_only);
     }
 }

@@ -20,12 +20,12 @@ final class Verify extends BaseService{
 
     private function verify(int $id, int $round_finished){
         $ppLeague = $this->findService->getOne($id);
-        if($ppleague['ppLeagueType']['rounds'] > $round_finished){
+        if($ppleague['ppTournamentType']['rounds'] > $round_finished){
             $this->createRoundService->create('ppLeague_id', $id, $round_finished + 1);
             $this->ppLeagueRepository->incRoundCount();
             return;
         }
-        if($ppleague['ppLeagueType']['rounds'] === $round_finished){
+        if($ppleague['ppTournamentType']['rounds'] === $round_finished){
             $this->ppLeagueRepository->setFinished($id);
             $this->updateUpService->setFinished('ppLeague_id', $id);
         }

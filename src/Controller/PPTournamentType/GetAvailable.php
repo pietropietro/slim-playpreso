@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\PPLeagueType;
+namespace App\Controller\PPTournamentType;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -20,8 +20,9 @@ final class GetAvailable extends Base
         $input = (array) $request->getParsedBody();
         $userId = $this->getAndValidateUserId($input);
         
-        $ppLeagueTypes = $this->getPPLeagueTypeService()->getAvailable($userId);
+        //TODO integrate cups
+        $ppTournamentTypes = $this->getPPTournamentTypeService()->getAvailableForUser($userId, false, false);
 
-        return $this->jsonResponse($response, 'success', $ppLeagueTypes, 200);
+        return $this->jsonResponse($response, 'success', $ppTournamentTypes, 200);
     }
 }

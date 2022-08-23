@@ -6,7 +6,7 @@ namespace App\Service\UserParticipation;
 
 use App\Service\RedisService;
 use App\Repository\UserParticipationRepository;
-use App\Repository\PPLeagueTypeRepository;
+use App\Repository\PPTournamentTypeRepository;
 use App\Repository\PPLeagueRepository;
 use App\Repository\PPRoundRepository;
 use App\Repository\GuessRepository;
@@ -19,7 +19,7 @@ abstract class Base extends BaseService
     public function __construct(
         protected RedisService $redisService,
         protected UserParticipationRepository $userParticipationRepository,
-        protected PPLeagueTypeRepository $ppLeagueTypeRepository,
+        protected PPTournamentTypeRepository $ppTournamentTypeRepository,
         protected PPLeagueRepository $ppLeagueRepository,
         protected PPRoundRepository $ppRoundRepository,
         protected GuessRepository $guessRepository
@@ -27,7 +27,7 @@ abstract class Base extends BaseService
 
     //for trophies?
     public function addPPLeagueData($up){
-        $up['ppLeagueType'] = $this->ppLeagueTypeRepository->getOne($up['ppLeagueType_id']);
+        $up['ppTournamentType'] = $this->PPTournamentTypeRepository->getOne($up['ppTournamentType_id']);
         $up['ppLeague'] = $this->ppLeagueRepository->getOne($up['ppLeague_id']);        
         if($up['ppLeague']['started_at'] && !$up['ppLeague']['finished_at']){
             $up['locked'] = !$this->guessRepository->hasUnlockedGuesses($up['user_id'], 'ppLeague_id',$up['ppLeague_id']); 

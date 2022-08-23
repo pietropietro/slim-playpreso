@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\PPLeagueType;
+namespace App\Controller\PPTournamentType;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -21,12 +21,12 @@ final class Find extends Base
         $userId = $this->getAndValidateUserId($input);
         $typeId = (int) $args['id'];
 
-        if(!$this->getPPLeagueTypeService()->isAllowed($userId, $typeId)){
+        if(!$this->getPPTournamentTypeService()->isAllowed($userId, $typeId)){
             throw new Exception\User("user not allowed", 401);
         }
         
-        $ppLT = $this->getPPLeagueTypeService()->getOne($typeId);
+        $ppTT = $this->getPPTournamentTypeService()->getOne($typeId);
 
-        return $this->jsonResponse($response, 'success', $ppLT, 200);
+        return $this->jsonResponse($response, 'success', $ppTT, 200);
     }
 }

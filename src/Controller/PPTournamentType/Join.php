@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\PPLeagueType;
+namespace App\Controller\PPTournamentType;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -22,17 +22,17 @@ final class Join extends Base
         $userId = $this->getAndValidateUserId($input);
         $typeId = (int) $args['id'];
         
-        if(!$this->getPPLeagueTypeService()->isAllowed($userId, $typeId)){
+        if(!$this->getPPTournamentTypeService()->isAllowed($userId, $typeId)){
             throw new Exception\User("user not allowed", 401);
         }
 
-        if(!$this->getPPLeagueTypeService()->canAfford($userId, $typeId)){
+        if(!$this->getPPTournamentTypeService()->canAfford($userId, $typeId)){
             throw new Exception\User("not enough points", 401);
         }
 
         $ppLeague = $this->getFindPPLeagueService()->getJoinable($typeId, $userId);
         
-        $cost = $this->getPPLeagueTypeService()->getOne($typeId)['cost'];
+        $cost = $this->getPPTournamentTypeService()->getOne($typeId)['cost'];
         if(!$this->getPointsService()->minus($userId, $cost)){
             throw new Exception\User("couldn't join", 500);
         }

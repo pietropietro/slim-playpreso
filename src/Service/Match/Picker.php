@@ -14,9 +14,9 @@ final class Picker extends BaseService{
         protected League\Find $leagueService,
     ) {}
     
-    //TODO update with ppleaguetype + ppcuptype id merging
+    //TODO update with tournamentType merging
     private function pick(int $tournamentTypeId) : ?array{
-        $leagueIDs = $this->leagueService->getForPPLeagueType($tournamentTypeId, true);
+        $leagueIDs = $this->leagueService->getForPPTournamentType($tournamentTypeId, true);
         $matches = $matchRepository->getNextMatchesForLeagues($leagueIDs);
         if(count($matches)<3)return null;
         shuffle($matches);

@@ -18,7 +18,7 @@ final class PPLeagueRepository extends BaseRepository
     }
 
     function getJoinable(int $typeId){
-        $this->db->where('ppLeagueType_id', $typeId);
+        $this->db->where('ppTournamentType_id', $typeId);
         $this->db->where('started_at IS NULL');
         $this->db->where('user_count', 20, "<");
        
@@ -46,7 +46,7 @@ final class PPLeagueRepository extends BaseRepository
 
     function create(int $typeId){
         $data = array(
-			"ppLeagueType_id" => $typeId,
+			"ppTournamentType_id" => $typeId,
 			"created_at" => date("Y-m-d H:i:s"),
 			"user_count" => 0,
             "round_count" => 0

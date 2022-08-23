@@ -20,7 +20,7 @@ final class Create extends BaseService
     public function createPPLeagueParticipation(int $userId, int $ppLeagueId, int $ppLeagueTypeId)
     {
 
-        $columns = array("ppLeague_id", "ppLeagueType_id");
+        $columns = array("ppLeague_id", "ppTournamentType_id");
         $valueIds = array($ppLeagueId, $ppLeagueTypeId);
 
         if(!$participation = $this->userParticipationRepository->create($userId, $columns, $valueIds)){

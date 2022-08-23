@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\PPLeagueType;
+namespace App\Service\PPTournamentType;
 
 use App\Service\RedisService;
 use App\Repository\PPTournamentTypeRepository;
@@ -21,21 +21,13 @@ final class Find  extends BaseService{
     ){}
 
     public function getOne(int $id){
-        $ppLT =  $this->ppTournamentTypeRepository->getOne($id);
-        $ppLT['leagues'] = $this->leagueService->getForPPLeagueType($id);
-        return $ppLT;
+        $ppTT =  $this->ppTournamentTypeRepository->getOne($id);
+        $ppTT['leagues'] = $this->leagueService->getForPPTournamentType($id);
+        return $ppTT;
     }
 
-    public function getAvailable(int $userId) 
-    {
-        $ids = $this->getAvailableTournamentsForUser($userId, true);
-        if(!$ids) return [];
-        return  $this->ppTournamentTypeRepository->get($ids);
-    }
-
-    //TODO integrate cups
-    public function getAvailableTournamentsForUser(int $userId, bool $only_ids = true, bool $get_cups){
-
+    //TODO integrate cups e refactor
+    public function getAvailableForUser(int $userId, bool $only_ids = true, bool $get_cups){
 
         $tournamentTypesMap = $this->ppTournamentTypeRepository->getPPLeaguesMap();
         $promotedTTids = $this->userParticipationRepository->getPromotedTournamentTypesForUser($userId, false, true);
@@ -44,7 +36,7 @@ final class Find  extends BaseService{
         $ids = [];
 
         foreach($tournamentTypesMap as $typeKey => $typeItem){
-            $sameNameTournamentIds = explode(',', $typeItem['ppLTIds']);
+            $sameNameTournamentIds = explode(',', $typeItem['ppTTids']);
 
             if(!!$currentTTids && !empty(array_intersect($currentTTids, $sameNameTournamentIds ))){
                 unset($tournamentTypesMap[$typeKey]);
@@ -56,7 +48,9 @@ final class Find  extends BaseService{
             array_push($ids, $okIds[0]);
         }
         
-        return $this->filterIdsExpensive($userId, $ids);
+        $ids = $this->filterIdsExpensive($userId, $ids);
+        if($only_ids) return $ids;
+        return  $this->ppTournamentTypeRepository->get($ids);
     }
 
     public function filterIdsExpensive(int $userId, array $ids){
@@ -72,7 +66,7 @@ final class Find  extends BaseService{
     }
 
     public function isAllowed($userId, $typeId){
-        $okIds = $this->getAvailableTournamentsForUser($userId, true);
+        $okIds = $this->getAvailableForUser($userId, true);
         return in_array($typeId, $okIds);
     }
 

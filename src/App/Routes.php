@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Controller\User;
 use App\Controller\UserParticipation;
 use App\Controller\PPLeague;
-use App\Controller\PPLeagueType;
+use App\Controller\PPTournamentType;
 use App\Controller\PPCup;
 use App\Controller\PPCupGroup;
 use App\Controller\ExternalAPI;
@@ -37,10 +37,10 @@ return function ($app){
         // $app->delete('/{id}', User\Delete::class)->add(new Auth($pointService));
     });
     
-    $app->group('/ppLeagueType', function () use ($app): void {
-        $app->get('/available', PPLeagueType\GetAvailable::class);
-        $app->post('/join/{id}', PPLeagueType\Join::class);
-        $app->get('/{id}', PPLeagueType\Find::class);
+    $app->group('/ppTournamentType', function () use ($app): void {
+        $app->get('/available', PPTournamentType\GetAvailable::class);
+        $app->post('/join/{id}', PPTournamentType\Join::class);
+        $app->get('/{id}', PPTournamentType\Find::class);
     })->add(new Auth($pointService));
 
     $app->get('/ppLeague/{id}', PPLeague\GetOne::class)->add(new Auth($pointService));

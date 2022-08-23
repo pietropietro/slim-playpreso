@@ -6,7 +6,7 @@ namespace App\Controller\PPLeague;
 
 use App\Controller\BaseController;
 use App\Service;
-// use App\Service\PPLeagueType\FindPPT;
+// use App\Service\PPTournamentType\FindPPT;
 // use App\Service\UserParticipation\FindUP;
 // use App\Service\PPRound\FindPPR;
 
