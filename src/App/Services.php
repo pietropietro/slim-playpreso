@@ -114,7 +114,7 @@ $container['pproundmatch_find_service'] = static fn (
     $container->get('redis_service'),
     $container->get('pproundmatch_repository'),
     $container->get('guess_repository'),
-    $container->get('match_repository')
+    $container->get('match_find_service')
 );
 
 
@@ -246,6 +246,14 @@ $container['match_picker_service'] = static fn (
     ContainerInterface $container
 ):  Match\Picker => new Match\Picker(
     $container->get('match_repository'),
+    $container->get('league_find_service'),
+);
+
+$container['match_find_service'] = static fn (
+    ContainerInterface $container
+):  Match\Find => new Match\Find(
+    $container->get('match_repository'),
+    $container->get('team_repository'),
     $container->get('league_find_service'),
 );
 
