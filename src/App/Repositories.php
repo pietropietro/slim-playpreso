@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 use App\Repository\MatchRepository;
 use App\Repository\PPLeagueRepository;
-use App\Repository\PPLeagueTypeRepository;
+use App\Repository\PPTournamentTypeRepository;
 use App\Repository\PPRoundRepository;
 use App\Repository\PPRoundMatchRepository;
 use App\Repository\PPCupRepository;
 use App\Repository\PPCupGroupRepository;
-use App\Repository\PPCupTypeRepository;
 use App\Repository\GuessRepository;
 use App\Repository\UserRepository;
 use App\Repository\UserParticipationRepository;
@@ -26,7 +25,7 @@ $container['league_repository'] = static fn (ContainerInterface $container): Lea
 
 $container['ppleague_repository'] = static fn (ContainerInterface $container): PPLeagueRepository => new PPLeagueRepository($container->get('db'));
 
-$container['ppleaguetype_repository'] = static fn (ContainerInterface $container): PPLeagueTypeRepository => new PPLeagueTypeRepository($container->get('db'));
+$container['pptournamenttype_repository'] = static fn (ContainerInterface $container): PPTournamentTypeRepository => new PPTournamentTypeRepository($container->get('db'));
 
 $container['guess_repository'] = static fn (ContainerInterface $container): GuessRepository => new GuessRepository($container->get('db'));
 
@@ -39,7 +38,5 @@ $container['pproundmatch_repository'] = static fn (ContainerInterface $container
 $container['ppcup_repository'] = static fn (ContainerInterface $container): PPCupRepository => new PPCupRepository($container->get('db'));
 
 $container['ppcupgroup_repository'] = static fn (ContainerInterface $container): PPCupGroupRepository => new PPCupGroupRepository($container->get('db'));
-
-$container['ppcuptype_repository'] = static fn (ContainerInterface $container): PPCupTypeRepository => new PPCupTypeRepository($container->get('db'));
 
 $container['team_repository'] = static fn (ContainerInterface $container): TeamRepository => new TeamRepository($container->get('db'));

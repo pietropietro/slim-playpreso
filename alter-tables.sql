@@ -1,7 +1,11 @@
 ALTER TABLE userParticipations RENAME COLUMN placement TO position;
 ALTER TABLE userParticipations RENAME COLUMN placed_at TO updated_at;
 ALTER TABLE userParticipations ADD COLUMN score INT AFTER updated_at;
-ALTER TABLE userParticipations ADD COLUMN finished tinyint AFTER updated_at;
+ALTER TABLE userParticipations ADD COLUMlN finished tinyint AFTER updated_at;
+ALTER TABLE userParticipations RENAME COLUMN ppLeagueType_id TO ppTournamentType_id;
+ALTER TABLE userParticipations MODIFY COLUMN ppTournamentType_id int AFTER user_id;
+ALTER TABLE userParticipations DROP COLUMN ppCupType_id;
+ALTER TABLE userParticipations DROP FOREIGN KEY userParticipations_ibfk_6;
 
 ALTER TABLE ppLeagues RENAME COLUMN users_count TO user_count;
 ALTER TABLE ppLeagues ADD COLUMN round_count INT AFTER user_count;
@@ -10,6 +14,12 @@ ALTER TABLE leagues RENAME COLUMN league_level TO country_level;
 ALTER TABLE leagues RENAME COLUMN league_name TO name;
 ALTER TABLE leagues RENAME COLUMN league_tag TO tag;
 ALTER TABLE leagues ADD COLUMN ls_suffix varchar(255) AFTER id;
+
+ALTER TABLE ppCups DROP FOREIGN KEY presoCups_ibfk_1;
+ALTER TABLE ppCups RENAME COLUMN ppCupType_id TO ppTournamentType_id;
+ALTER TABLE ppCups ADD FOREIGN KEY (ppTournamentType_id) REFERENCES ppTournamentTypes(id);
+-- make it not nullabe 
+ALTER TABLE ppCups MODIFY COLUMN ppTournamentType_id int NOT NULL;
 
 
 ALTER TABLE ppCupGroups ADD COLUMN round_count INT AFTER rounds;
@@ -38,6 +48,25 @@ ALTER TABLE guesses MODIFY COLUMN guess_home int;
 ALTER TABLE guesses MODIFY COLUMN guess_away int;
 
 
+RENAME table ppLeagueTypes to ppTournamentTypes;
+ALTER TABLE ppTournamentTypes ADD COLUMN participants INT AFTER cost;
+ALTER TABLE ppTournamentTypes ADD COLUMN is_ppCup tinyint AFTER id;
+ALTER TABLE ppTournamentTypes RENAME COLUMN type TO name;
+
+-- to make it nullable
+ALTER TABLE ppTournamentTypes MODIFY COLUMN rounds int;
+ALTER TABLE ppTournamentTypes MODIFY COLUMN level int;
+
+drop table ppCupTypes;
+
+mysqldump presodump2 ppTournamentTypes > ppTournamentTypesDump.sql
+INSERT INTO `ppTournamentTypes`(is_ppCup,name,level,rounds,cost,participants,image_url,red,green,blue) VALUES (1,'EUROS',NULL,NULL,500,NULL,NULL,0,0,255);
 
 
+-- TO disbale foreign key constraints
+SET FOREIGN_KEY_CHECKS = 0;
 
+
+SELECT *
+FROM information_schema.REFERENTIAL_CONSTRAINTS
+WHERE constraint_schema = 'presodump2' AND table_name = 'userParticipations';

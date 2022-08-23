@@ -43,21 +43,23 @@ final class UserParticipationRepository extends BaseRepository
     }
 
 
-    function getPromotedPPLeagueTypeIds(int $userId){
+    function getPromotedTournamentTypesForUser(int $userId, bool $include_ppCups = false, bool $return_id_only = true){
         $this->db->where('user_id',$userId);
         $this->db->where('finished',1);
         $this->db->where('position', $_SERVER['PPLEAGUE_TROPHY_POSITION'], "<=");
-
-        $promotedPPLeagueTypeIds = $this->db->getValue($this->tableName, 'ppLeagueType_id',null);
-        return $promotedPPLeagueTypeIds;
+        if(!$include_ppCups) $this->db->where('ppLeague_id IS NOT NULL');
+        if($return_id_only) return $this->db->getValue($this->tableName, 'ppTournament_id', null);
+        return $this->db->get($this->tableName);
     }
 
-    function getCurrentPPLeagueTypeIds(int $userId){
-        $this->db->groupBy('ppLeagueType_id');
+    function getCurrentTournamentTypesForUser(int $userId, bool $include_ppCups = false, bool $return_id_only = true){
+        $this->db->groupBy('ppTournamentType_id');
         $this->db->where('user_id',$userId);
         $this->db->where('finished IS NULL');
-        $this->db->where('ppLeagueType_id IS NOT NULL');
-        return $this->db->getValue($this->tableName,  'ppLeagueType_id', null);
+        if(!$include_ppCups) $this->db->where('ppLeague_id IS NOT NULL');
+       
+        if($return_id_only)return $this->db->getValue($this->tableName,  'ppTournament_id', null);
+        return $this->db->get($this->tableName);
     }
 
     function getCupScoreTotal(int $userId, int $cupId, ?string $joinedAt) : ?int{
