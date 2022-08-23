@@ -20,7 +20,7 @@ final class Find  extends BaseService{
         return $this->leagueRepository->getOne($id);
     }
 
-    public function getForPPLeagueType(int $ppLTId, bool $id_only){
+    public function getForPPLeagueType(int $ppLTId, bool $id_only = false){
         $ppLT =  $this->ppLeagueTypeRepository->getOne($ppLTId);
         
         if($ppLT['type'] === 'Europe'){

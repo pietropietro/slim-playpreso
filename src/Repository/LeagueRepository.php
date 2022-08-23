@@ -35,7 +35,7 @@ final class LeagueRepository extends BaseRepository
 		return $this->db->get('leagues');
     }
 
-    public function getForCountry(?string $country, int $level, bool $id_only){
+    public function getForCountry(?string $country, int $level, bool $id_only = false){
         if($country){
             $this->db->where('country',$country);
         }

@@ -18,7 +18,7 @@ final class Find  extends BaseService{
 
     public function getOne(int $ppLeagueId){
         $ppLeague = $this->ppLeagueRepository->getOne($ppLeagueId);
-        $ppLeague['ppLeagueType'] = $this->$ppLTService->getOne($ppLeague['ppLeagueType_id']);
+        $ppLeague['ppLeagueType'] = $this->ppLTService->getOne($ppLeague['ppLeagueType_id']);
         return $ppLeague;
 
     }

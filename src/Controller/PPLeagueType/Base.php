@@ -15,7 +15,7 @@ abstract class Base extends BaseController
 
     protected function getPPLeagueTypeService(): Find
     {
-        return $this->container->get('ppleaguetype_service');
+        return $this->container->get('ppleaguetype_find_service');
     }
 
     protected function getFindPPLeagueService(): PPLeague\Find

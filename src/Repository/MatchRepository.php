@@ -6,7 +6,7 @@ namespace App\Repository;
 
 final class MatchRepository extends BaseRepository
 {   
-    public function getOne(int $matchId, bool $is_external_id) : ?array {
+    public function getOne(int $matchId, bool $is_external_id = false) : ?array {
         $column = !!$is_external_id ? 'ls_id' : 'id';
         $this->db->where($column, $matchId);
         return $this->db->getOne('matches');
