@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Service\PPRound;
 
+use App\Service\BaseService;
 use App\Service\Match;
 use App\Service\PPRoundMatch;
 use App\Repository\PPRoundRepository;
 
-final class Verify  extends BaseService{
+final class Create extends BaseService{
     public function __construct(
         protected Match\Picker $matchPickerService,
         protected PPRoundRepository $ppRoundRepository,

@@ -17,7 +17,7 @@ abstract class Base extends BaseController
 
     protected function getUserParticipationService(): Service\UserParticipation\Find
     {
-        return $this->container->get('userparticipation_service');
+        return $this->container->get('userparticipation_find_service');
     }    
 
     protected function getCupTypeService(): Service\PPCupType\Find
@@ -30,7 +30,7 @@ abstract class Base extends BaseController
     }  
     protected function getPPRoundService(): Service\PPRound\Find
     {
-        return $this->container->get('ppround_service');
+        return $this->container->get('ppround_find_service');
     }
 
 }

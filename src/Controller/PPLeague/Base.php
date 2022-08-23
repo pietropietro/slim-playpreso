@@ -19,12 +19,12 @@ abstract class Base extends BaseController
 
     protected function getParticipationService(): Service\UserParticipation\Find
     {
-        return $this->container->get('userparticipation_service');
+        return $this->container->get('userparticipation_find_service');
     }
 
     protected function getPPRoundService(): Service\PPRound\Find
     {
-        return $this->container->get('ppround_service');
+        return $this->container->get('ppround_find_service');
     }
 
 }

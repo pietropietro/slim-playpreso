@@ -10,7 +10,7 @@ use App\Service\PPRound;
 use App\Service\UserParticipation;
 use App\Repository\PPLeagueRepository;
 
-final class Update  extends BaseService{
+final class Verify extends BaseService{
     public function __construct(
         protected PPLeagueRepository $ppLeagueRepository,
         protected PPLeague\Find $findService,

@@ -17,7 +17,7 @@ abstract class Base extends BaseController
 
     protected function getLeaguesService(): League\Find
     {
-        return $this->container->get('league_service');
+        return $this->container->get('league_find_service');
     }
 
 }

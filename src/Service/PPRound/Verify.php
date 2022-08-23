@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace App\Service\PPRound;
 
-use App\Repository\PPRoundRepository;
-use App\Repository\PPRoundMatchRepository;
 use App\Service\BaseService;
 use App\Service\PPLeague;
 use App\Service\UserParticipation;
+use App\Service\PPRound;
 
-final class Verify  extends BaseService{
+
+final class Verify extends BaseService{
     public function __construct(
-        protected PPRoundRepository $ppRoundRepository,
-        protected PPRoundMatchRepository $ppRoundMatchRepository,
+        protected PPRound\Find $findService,
         protected PPLeague\Verify $ppLeagueVerifyService,
-        protected UserParticipation $updateUpService
+        protected UserParticipation\Update $updateUpService
     ){}
     
     public function verify(int $matchId){
