@@ -48,7 +48,7 @@ final class UserParticipationRepository extends BaseRepository
         $this->db->where('finished',1);
         $this->db->where('position', $_SERVER['PPLEAGUE_TROPHY_POSITION'], "<=");
         if(!$include_ppCups) $this->db->where('ppLeague_id IS NOT NULL');
-        if($return_id_only) return $this->db->getValue($this->tableName, 'ppTournament_id', null);
+        if($return_id_only) return $this->db->getValue($this->tableName, 'ppTournamentType_id', null);
         return $this->db->get($this->tableName);
     }
 
@@ -58,7 +58,7 @@ final class UserParticipationRepository extends BaseRepository
         $this->db->where('finished IS NULL');
         if(!$include_ppCups) $this->db->where('ppLeague_id IS NOT NULL');
        
-        if($return_id_only)return $this->db->getValue($this->tableName,  'ppTournament_id', null);
+        if($return_id_only)return $this->db->getValue($this->tableName,  'ppTournamentType_id', null);
         return $this->db->get($this->tableName);
     }
 

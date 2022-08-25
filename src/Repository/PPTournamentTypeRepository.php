@@ -7,11 +7,11 @@ namespace App\Repository;
 
 final class PPTournamentTypeRepository extends BaseRepository
 {
-
+    //returns an array like (0: [name: 'america', maxLevel: 2, ppTTids: '21,23'])
     function getPPLeaguesMap(){
         return $this->db->query('SELECT name, max(level) as maxLevel, 
-            GROUP_CONCAT(id) ppTTids where is_ppCup IS FALSE
-            FROM ppTournamentTypes GROUP BY name ORDER BY maxLevel ');
+            GROUP_CONCAT(id) as ppTTids
+            FROM ppTournamentTypes where is_ppCup = false GROUP BY name ORDER BY maxLevel ');
     }
 
     function get(array $ids){
