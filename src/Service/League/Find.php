@@ -21,7 +21,7 @@ final class Find  extends BaseService{
     }
 
     public function getForPPTournamentType(int $ppTTid, bool $id_only = false){
-        $ppTT =  $this->PPTournamentTypeRepository->getOne($ppTTid);
+        $ppTT =  $this->ppTournamentTypeRepository->getOne($ppTTid);
 
         //TODO ppcup leagues
         if($ppTT['is_ppCup']) return;

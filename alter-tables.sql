@@ -9,6 +9,8 @@ ALTER TABLE userParticipations DROP FOREIGN KEY userParticipations_ibfk_6;
 
 ALTER TABLE ppLeagues RENAME COLUMN users_count TO user_count;
 ALTER TABLE ppLeagues ADD COLUMN round_count INT AFTER user_count;
+ALTER TABLE ppLeagues RENAME COLUMN ppLeagueType_id TO ppTournamentType_id;
+
 
 ALTER TABLE leagues RENAME COLUMN league_level TO country_level;
 ALTER TABLE leagues RENAME COLUMN league_name TO name;

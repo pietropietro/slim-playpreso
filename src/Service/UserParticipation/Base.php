@@ -27,7 +27,7 @@ abstract class Base extends BaseService
 
     //for trophies?
     public function addPPLeagueData($up){
-        $up['ppTournamentType'] = $this->PPTournamentTypeRepository->getOne($up['ppTournamentType_id']);
+        $up['ppTournamentType'] = $this->ppTournamentTypeRepository->getOne($up['ppTournamentType_id']);
         $up['ppLeague'] = $this->ppLeagueRepository->getOne($up['ppLeague_id']);        
         if($up['ppLeague']['started_at'] && !$up['ppLeague']['finished_at']){
             $up['locked'] = !$this->guessRepository->hasUnlockedGuesses($up['user_id'], 'ppLeague_id',$up['ppLeague_id']); 

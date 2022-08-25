@@ -22,7 +22,7 @@ abstract class Base extends BaseController
 
     protected function getTournamentTypeService(): Service\PPTournamentType\Find
     {
-        return $this->container->get('pptournamenttype_service');
+        return $this->container->get('pptournamenttype_find_service');
     }  
     protected function getFindCupService(): Service\PPCup\Find
     {

@@ -9,9 +9,9 @@ final class PPTournamentTypeRepository extends BaseRepository
 {
 
     function getPPLeaguesMap(){
-        return $this->db->query('SELECT type, max(level) as maxLevel, 
+        return $this->db->query('SELECT name, max(level) as maxLevel, 
             GROUP_CONCAT(id) ppTTids where is_ppCup IS FALSE
-            FROM ppTournamentTypes GROUP BY type ORDER BY maxLevel ');
+            FROM ppTournamentTypes GROUP BY name ORDER BY maxLevel ');
     }
 
     function get(array $ids){
