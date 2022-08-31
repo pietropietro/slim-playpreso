@@ -16,6 +16,8 @@ ALTER TABLE leagues RENAME COLUMN league_level TO country_level;
 ALTER TABLE leagues RENAME COLUMN league_name TO name;
 ALTER TABLE leagues RENAME COLUMN league_tag TO tag;
 ALTER TABLE leagues ADD COLUMN ls_suffix varchar(255) AFTER id;
+ALTER TABLE leagues ADD COLUMN standings json AFTER country_level;
+ALTER TABLE leagues ADD COLUMN updated_at timestamp AFTER created_at;
 
 ALTER TABLE ppCups DROP FOREIGN KEY presoCups_ibfk_1;
 ALTER TABLE ppCups RENAME COLUMN ppCupType_id TO ppTournamentType_id;

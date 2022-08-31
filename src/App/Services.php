@@ -173,6 +173,13 @@ $container['league_find_service'] = static fn (
     $container->get('league_repository'),
 );
 
+$container['league_elaborate_service'] = static fn (
+    ContainerInterface $container
+):  League\Elaborate => new  League\Elaborate(
+    $container->get('league_repository'),
+    $container->get('team_repository'),
+);
+
 
 $container['ppcup_count_service'] = static fn (
     ContainerInterface $container
@@ -203,6 +210,7 @@ $container['external_api_service'] = static fn (
     ContainerInterface $container
 ):  ExternalAPI\Call => new  ExternalAPI\Call(
     $container->get('match_elaborate_service'),
+    $container->get('league_elaborate_service'),
 );
 
 $container['match_elaborate_service'] = static fn (
@@ -211,7 +219,24 @@ $container['match_elaborate_service'] = static fn (
     $container->get('match_repository'),
     $container->get('team_repository'),
     $container->get('guess_verify_service'),
-    $container->get('ppround_verify_service')
+    $container->get('ppround_verify_service'),
+    $container->get('match_create_service'),
+    $container->get('match_verify_service'),
+);
+
+$container['match_create_service'] = static fn (
+    ContainerInterface $container
+):  Match\Create => new  Match\Create(
+    $container->get('match_repository'),
+    $container->get('team_repository'),
+);
+
+$container['match_verify_service'] = static fn (
+    ContainerInterface $container
+):  Match\Verify => new  Match\Verify(
+    $container->get('match_repository'),
+    $container->get('guess_verify_service'),
+    $container->get('ppround_verify_service'),
 );
 
 $container['guess_verify_service'] = static fn (

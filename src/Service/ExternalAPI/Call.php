@@ -7,10 +7,12 @@ namespace App\Service\ExternalAPI;
 use GuzzleHttp\Client;
 use App\Service\BaseService;
 use App\Service\Match;
+use App\Service\League;
 
 final class Call extends BaseService{
     public function __construct(
         protected Match\Elaborate $matchService,
+        protected League\Elaborate $leagueService,
     ){}
 
     public function fetchExternalLeagueData($ls_suffix, $league_id){
@@ -28,13 +30,19 @@ final class Call extends BaseService{
         // $str = file_get_contents('/Users/pietromini/Dev/playpreso/slim-playpreso/external-api-sample.json');
         // $decoded = json_decode($str); // decode the JSON into an associative array
 
-        $received_events = $decoded->Stages[0]->Events ?? null;
+        $ls_data = $decoded->Stages[0];
+        $ls_events = $ls_data->Events ?? null;
+        $ls_league_table = $ls_data->LeagueTable->L[0]->Tables[0]->team;
 
-        if(!$received_events){
+        if(!$ls_events){
             throw new \App\Exception\ExternalAPI('something went wrong', 500);
         }
 
-        return $this->matchService->elaborateLsEvents($received_events, $league_id);
+        $match_import_result = $this->matchService->elaborateLsEvents($ls_events, $league_id);
+        $this->leagueService->elaborateLsLeagueTable($ls_league_table, $league_id);
+        
+        return $match_import_result;
+
     }
     
 }
