@@ -26,7 +26,15 @@ final class Find  extends BaseService{
         return $ppTT;
     }
 
-    //TODO integrate cups e refactor
+    public function get(array $ids){
+        $ppTTs =  $this->ppTournamentTypeRepository->get($ids);
+        foreach ($ppTTs as $key => $tt) {
+            $ppTTs[$key]['leagues'] = $this->leagueService->getForPPTournamentType($tt['id']);
+        }
+        return $ppTTs;
+    }
+
+    //TODO integrate cups
     public function getAvailableForUser(int $userId, bool $only_ids = true, bool $get_cups = false){
 
         $tournamentTypesMap = $this->ppTournamentTypeRepository->getPPLeaguesMap();
@@ -50,7 +58,7 @@ final class Find  extends BaseService{
         
         $ids = $this->filterIdsExpensive($userId, $ids);
         if($only_ids) return $ids;
-        return $ids ? $this->ppTournamentTypeRepository->get($ids) : [];
+        return $ids ? $this->get($ids) : [];
     }
 
     public function filterIdsExpensive(int $userId, array $ids){

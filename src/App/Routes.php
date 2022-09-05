@@ -32,20 +32,16 @@ return function ($app){
     $app->group('/user', function () use ($app, $pointService): void {
         $app->post('', User\Create::class);
         $app->get('/{username}', User\GetOne::class)->add(new Auth($pointService));
-        //TODO
-        // $app->put('/{id}', User\Update::class)->add(new Auth($pointService));
-        // $app->delete('/{id}', User\Delete::class)->add(new Auth($pointService));
     });
     
     $app->group('/ppTournamentType', function () use ($app): void {
         $app->get('/available', PPTournamentType\GetAvailable::class);
         $app->post('/join/{id}', PPTournamentType\Join::class);
-        $app->get('/{id}', PPTournamentType\Find::class);
     })->add(new Auth($pointService));
 
     $app->get('/ppLeague/{id}', PPLeague\GetOne::class)->add(new Auth($pointService));
+    
     $app->get('/userParticipation/ppLeagues', UserParticipation\PPLeagues::class)->add(new Auth($pointService));
-
     
     $app->group('/ppCup', function () use ($app): void {
         $app->get('/{id}', PPCup\GetOne::class);

@@ -24,11 +24,12 @@ final class Find  extends BaseService{
     }
 
     function getJoinable(int $typeId, int $userId){
-        if($ppLeague = $this->ppLeagueRepository->getJoinable($typeId)){
-            return $ppLeague;
+        if(!$ppLeague = $this->ppLeagueRepository->getJoinable($typeId)){
+            $id = $this->ppLeagueRepository->create($typeId);
+            $ppLeague = $this->ppLeagueRepository->getOne($id);
         }
-        $id = $this->ppLeagueRepository->create($typeId);
-        return $this->ppLeagueRepository->getOne($id);
+        $ppLeague['ppTournamentType'] = $this->findTournamentType->getOne($ppLeague['ppTournamentType_id']);
+        return $ppLeague;
     }
     
 
