@@ -26,7 +26,7 @@ final class Join extends Base
             throw new Exception\User("user not allowed", 401);
         }
         
-        if(!$id = $this->getJoinPPTournamentService()->joinAvailable($userId, $typeId)){
+        if(!$id = $this->getJoinPPTournamentTypeService()->joinAvailable($userId, $typeId)){
             throw new Exception\NotFound("could not join", 500);
         }
 

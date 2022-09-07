@@ -17,11 +17,11 @@ final class Check  extends BaseService{
     public function check($userId, $typeId) :bool {
 
         if(!$this->isAllowed($userId, $typeId)){
-            throw new Exception\User("user not allowed", 401);
+            throw new \App\Exception\User("user not allowed", 401);
         }
 
         if(!$this->canAfford($userId, $typeId)){
-            throw new Exception\User("not enough points", 401);
+            throw new \App\Exception\User("not enough points", 401);
         }
 
         return true;

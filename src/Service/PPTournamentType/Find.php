@@ -35,7 +35,7 @@ final class Find  extends BaseService{
     }
 
     //TODO integrate cups
-    public function getAvailableForUser(int $userId, bool $only_ids = true, bool $get_cups = false){
+    public function getAvailableForUser(int $userId, bool $only_ids = true, bool $get_cups = false): array{
 
         $tournamentTypesMap = $this->ppTournamentTypeRepository->getPPLeaguesMap();
         $promotedTTids = $this->userParticipationRepository->getPromotedTournamentTypesForUser($userId, false, true);
@@ -57,7 +57,7 @@ final class Find  extends BaseService{
         }
         
         $ids = $this->filterIdsExpensive($userId, $ids);
-        if($only_ids) return $ids;
+        if($only_ids) return $ids ?? [];
         return $ids ? $this->get($ids) : [];
     }
 

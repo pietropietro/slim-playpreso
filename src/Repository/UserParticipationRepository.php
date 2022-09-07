@@ -16,7 +16,10 @@ final class UserParticipationRepository extends BaseRepository
         foreach($columns as $ind => $col){
             $data[$col] = $valueIds[$ind];
         }
-        return $this->db->insert($this->tableName, $data);
+        if(!$this->db->insert($this->tableName, $data)){
+            throw new \App\Exception\Mysql($this->db->getLastError(), 500);
+        }
+        return true;
     }
 
     //TODO change string type to ENUM 'ppLeague_id', 'ppCupGroup_id'
