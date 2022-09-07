@@ -6,7 +6,7 @@ namespace App\Service\UserParticipation;
 
 final class Find  extends Base {
 
-    public function getForTournament(string $tournamentColumn, int $tournamentId){
+    public function getForTournament(string $tournamentColumn, int $tournamentId) :array{
         $ups = $this->userParticipationRepository->getForTournament($tournamentColumn, $tournamentId); 
         if($tournamentColumn === 'ppCupGroup_id'){
             //TODO refactor

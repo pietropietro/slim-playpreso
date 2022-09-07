@@ -14,15 +14,15 @@ final class Verify extends BaseService{
     public function __construct(
         protected PPLeagueRepository $ppLeagueRepository,
         protected PPLeague\Find $findService,
-        protected PPRound\Create $createRoundService,
+        protected PPRound\Create $createPPRoundService,
         protected UserParticipation\Update $updateUpService,
     ) {}
 
     private function verify(int $id, int $round_finished){
         $ppLeague = $this->findService->getOne($id);
         if($ppleague['ppTournamentType']['rounds'] > $round_finished){
-            $this->createRoundService->create('ppLeague_id', $id, $round_finished + 1);
-            $this->ppLeagueRepository->incRoundCount();
+            $this->createPPRoundService->create('ppLeague_id', $id, $round_finished + 1);
+            $this->ppLeagueRepository->incRoundCount($id);
             return;
         }
         if($ppleague['ppTournamentType']['rounds'] === $round_finished){

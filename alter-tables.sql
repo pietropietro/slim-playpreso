@@ -74,3 +74,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 SELECT *
 FROM information_schema.REFERENTIAL_CONSTRAINTS
 WHERE constraint_schema = 'presodump2' AND table_name = 'userParticipations';
+
+
+-- create user
+INSERT INTO `users`(username, points, password, email, country) VALUES ("test3" , 100, "JDJ5JDEwJEcueFRJUWVBQmdmcThDNldKbEU2ZWUyQmwvTVVwVWV1Mm1YYkRqT2JVbS5rZDB4WTZDNjV1", "test3@test.it", "test");

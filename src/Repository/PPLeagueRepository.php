@@ -17,6 +17,43 @@ final class PPLeagueRepository extends BaseRepository
         return $ppLeagues;
     }
 
+    function getOne(int $id){
+        $this->db->where('id',$id);
+        return $this->db->getOne('ppLeagues');
+    }
+
+    function create(int $typeId){
+        $data = array(
+			"ppTournamentType_id" => $typeId,
+			"created_at" => $this->db->now(),
+			"user_count" => 0,
+            "round_count" => 0
+	    );
+        return $this->db->insert('ppLeagues',$data);
+    }
+
+    function start(int $id) {
+        $data = array(
+            "started_at" => $this->db->now(),
+            "round_count" => 1
+        );
+        $this->db->where('id', $id);
+        $this->db->update('ppLeagues', $data, 1);
+    }
+
+
+    function incUserCount(int $id){
+        $this->db->query("UPDATE ppLeagues SET user_count=user_count+1 WHERE id=$id");
+    }
+
+    function incRoundCount(int $id) {
+        $data = array(
+            "round_count" => $this->db->inc()
+        );
+        $this->db->where('id', $id);
+        $this->db->update('ppLeagues', $data, 1);
+    }
+
     function getJoinable(int $typeId){
         $this->db->where('ppTournamentType_id', $typeId);
         $this->db->where('started_at IS NULL');
@@ -24,12 +61,6 @@ final class PPLeagueRepository extends BaseRepository
        
         return $this->db->getOne('ppLeagues');
     }
-
-    function getOne(int $id){
-        $this->db->where('id',$id);
-        return $this->db->getOne('ppLeagues');
-    }
-
 
     public function startedIds(){
         $this->db->where('started_at IS NOT NULL');
@@ -44,25 +75,4 @@ final class PPLeagueRepository extends BaseRepository
         $this->db->update('ppLeagues', $data);
     }
 
-    function create(int $typeId){
-        $data = array(
-			"ppTournamentType_id" => $typeId,
-			"created_at" => date("Y-m-d H:i:s"),
-			"user_count" => 0,
-            "round_count" => 0
-	    );
-        return $this->db->insert('ppLeagues',$data);
-    }
-
-    function incUserCount(int $id){
-        $this->db->query("UPDATE ppLeagues SET user_count=user_count+1 WHERE id=$id");
-    }
-
-    function incRoundCount(int $id) {
-        $data = array(
-            "round_count" => $this->db->inc()
-        );
-        $this->db->where('id', $id);
-        $this->db->update('ppLeagues', $data, 1);
-    }
 }

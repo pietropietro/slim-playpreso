@@ -67,15 +67,4 @@ final class Find  extends BaseService{
         return $this->ppTournamentTypeRepository->filterIdsExpensive($ids, $userPoints);
     }
 
-    public function canAfford(int $userId, int $typeId){
-        $userPoints = $this->pointsService->get($userId);
-        $cost = $this->ppTournamentTypeRepository->getOne($typeId)['cost'];
-        return $userPoints >= $cost;
-    }
-
-    public function isAllowed($userId, $typeId){
-        $okIds = $this->getAvailableForUser($userId, true);
-        return in_array($typeId, $okIds);
-    }
-
 }

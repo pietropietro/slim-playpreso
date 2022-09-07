@@ -21,26 +21,15 @@ final class Join extends Base
         $input = (array) $request->getParsedBody();
         $userId = $this->getAndValidateUserId($input);
         $typeId = (int) $args['id'];
-        
-        if(!$this->getPPTournamentTypeService()->isAllowed($userId, $typeId)){
+
+        if(!$this->getCheckPPTournamentService()->check($userId, $typeId)){
             throw new Exception\User("user not allowed", 401);
         }
-
-        if(!$this->getPPTournamentTypeService()->canAfford($userId, $typeId)){
-            throw new Exception\User("not enough points", 401);
-        }
-
-        $ppLeague = $this->getFindPPLeagueService()->getJoinable($typeId, $userId);
         
-        if(!$this->getPointsService()->minus($userId, $ppLeague['ppTournamentType']['cost'])){
-            throw new Exception\User("couldn't join", 500);
+        if(!$id = $this->getJoinPPTournamentService()->joinAvailable($userId, $typeId)){
+            throw new Exception\NotFound("could not join", 500);
         }
 
-        if(!$insert = $this->getParticipationService()->createPPLeagueParticipation($userId, $ppLeague['id'], $typeId)){
-            throw new Exception\User("something went wrong", 500);
-        };
-
-        //update ppLeague user_count
-        return $this->jsonResponse($response, 'success', $ppLeague['id'], 200);
+        return $this->jsonResponse($response, 'success', $id, 200);
     }
 }

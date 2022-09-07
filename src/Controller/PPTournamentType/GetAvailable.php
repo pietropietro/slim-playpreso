@@ -20,7 +20,6 @@ final class GetAvailable extends Base
         $input = (array) $request->getParsedBody();
         $userId = $this->getAndValidateUserId($input);
         
-        //TODO integrate cups
         $ppTournamentTypes = $this->getPPTournamentTypeService()->getAvailableForUser($userId, false, false);
 
         return $this->jsonResponse($response, 'success', $ppTournamentTypes, 200);

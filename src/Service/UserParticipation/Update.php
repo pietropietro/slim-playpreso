@@ -25,4 +25,8 @@ final class Update  extends Base {
     public function setFinished(string $tournamentColumn, int $tournamentId){
         $this->userParticipationRepository->setFinished($tournamentColumn, $tournamentId);
     }
+
+    public function setStarted(string $tournamentColumn, int $tournamentId){
+        $this->userParticipationRepository->setStarted($tournamentColumn, $tournamentId);
+    }
 }
