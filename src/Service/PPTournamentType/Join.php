@@ -42,7 +42,7 @@ final class Join  extends BaseService{
 
         if($ppTournamentType['participants'] === count($this->findUPservice->getForTournament($column, $ppTournament['id']))){
             //todo startppcupservice
-            $started = $ppTournamentType['is_ppCup'] ? null : $this->startPPLeagueService->start($ppTournament['id']);
+            $started = $ppTournamentType['is_ppCup'] ? null : $this->startPPLeagueService->start($ppTournament['id'], $ppTournamentType['id']);
         }
 
         return $ppTournament['id'];
