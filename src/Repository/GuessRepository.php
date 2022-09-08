@@ -26,7 +26,7 @@ final class GuessRepository extends BaseRepository
     public function getForPPRoundMatch($ppRMId){
         $this->db->join("users u", "u.id=g.user_id", "INNER");
         $this->db->orderBy('g.score','desc');
-        $this->db->orderBy('g.guess_home','asc');
+        $this->db->orderBy('g.home','asc');
         $this->db->where('ppRoundMatch_id', $ppRMId);
         return $this->db->query("SELECT g.*, u.username FROM guesses g");
     }
@@ -71,8 +71,8 @@ final class GuessRepository extends BaseRepository
             "match_id" => $matchId,
             "ppRoundMatch_id" => $ppRoundMatchId,
             "guessed_at" => $missed ? null : $this->db->now(),
-            "guess_home" => $missed ? null : rand(0,3),
-            "guess_away" => $missed ? null : rand(0,3),
+            "home" => $missed ? null : rand(0,3),
+            "away" => $missed ? null : rand(0,3),
             "created_at" => $this->db->now()
         );
         return $this->db->insert('guesses', $data);
