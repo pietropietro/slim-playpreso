@@ -78,3 +78,12 @@ WHERE constraint_schema = 'presodump2' AND table_name = 'userParticipations';
 
 -- create user
 INSERT INTO `users`(username, points, password, email, country) VALUES ("test3" , 100, "JDJ5JDEwJEcueFRJUWVBQmdmcThDNldKbEU2ZWUyQmwvTVVwVWV1Mm1YYkRqT2JVbS5rZDB4WTZDNjV1", "test3@test.it", "test");
+
+
+---test delete user to start ppleague
+delete from userparticipations where user_id=260;
+update ppleagues set started_at = NULL, user_count=19 where id=53;
+update users set points=100 where id=260;
+delete from guesses where created_at > "2022-09-07";
+delete from pproundmatches where created_at > "2022-09-07";
+delete from pprounds where created_at > "2022-09-07";

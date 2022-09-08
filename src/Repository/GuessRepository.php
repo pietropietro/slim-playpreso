@@ -63,6 +63,20 @@ final class GuessRepository extends BaseRepository
         return $this->db->insert('guesses', $data);
     }
 
+    public function createdebug($userId, $matchId, $ppRoundMatchId) {
+        //MISS SOME
+        $missed = rand(0,6) === 6;
+        $data = array(
+            "user_id" => $userId,
+            "match_id" => $matchId,
+            "ppRoundMatch_id" => $ppRoundMatchId,
+            "guessed_at" => $missed ? null : $this->db->now(),
+            "guess_home" => $missed ? null : rand(0,3),
+            "guess_away" => $missed ? null : rand(0,3),
+            "created_at" => $this->db->now()
+        );
+        return $this->db->insert('guesses', $data);
+    }
 
     //TODO MOVE TO SERVICE
     //TODO CHANGE COLUMN TO ENUM ['league_id', 'cup_group_id']
