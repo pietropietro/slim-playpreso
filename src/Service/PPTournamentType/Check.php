@@ -24,6 +24,8 @@ final class Check  extends BaseService{
             throw new \App\Exception\User("not enough points", 401);
         }
 
+        //TODO ALSO CHECK PPTOURNAMENT CAN START i.e. has matches
+
         return true;
     }
 

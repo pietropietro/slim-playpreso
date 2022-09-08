@@ -17,7 +17,7 @@ final class Picker extends BaseService{
     public function pick(int $tournamentTypeId) : ?array{
         $leagueIDs = $this->leagueService->getForPPTournamentType($tournamentTypeId, true);
         $matches = $this->matchRepository->getNextMatchesForLeagues($leagueIDs);
-        if(count($matches)<3)return null;
+        if(count($matches)<3) return null;
         shuffle($matches);
         return array_slice($matches, 0, 3);
     }

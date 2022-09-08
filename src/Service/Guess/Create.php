@@ -14,7 +14,7 @@ final class Create extends BaseService{
         protected UserParticipationRepository $upRepository,
     ) {}
     
-    public function createForParticipants(int $ppRoundMatchId, int $matchId, string $tournamentColumn, int $tournamentId) : int{
+    public function createForParticipants(int $ppRoundMatchId, int $matchId, string $tournamentColumn, int $tournamentId){
         $ups = $this->upRepository->getForTournament($tournamentColumn, $tournamentId);
         foreach ($ups as $key => $up) {
             $this->guessRepository->create($up['user_id'], $matchId, $ppRoundMatchId);

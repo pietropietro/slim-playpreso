@@ -48,12 +48,15 @@ final class MatchRepository extends BaseRepository
     }
 
     public function getNextMatchesForLeagues(array $league_ids) : ?array{
-        //TODO add where league_id + round not distinc 
-        //i.e serie a only round 4, 
+
+        $start = date("Y-m-d H:i:s", strtotime('+1 days'));
+        $finish = date("Y-m-d H:i:s", strtotime('+9 days'));
+
+        //TODO add where league_id + round not distinc  i.e serie a only round 4, 
         $this->db->where('league_id', $league_ids, 'IN');
-        $this->db->where('date_start', strtotime('+ 9 days'), '<');
-        $this->db->where('date_start', strtotime('+ 1 day'), '>');
+        $this->db->where('date_start', array($start, $finish), 'BETWEEN');
         $this->db->orderBy('date_start', 'ASC');
+        
         return $this->db->get('matches', 50);
     }
 

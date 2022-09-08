@@ -18,7 +18,7 @@ final class Create  extends BaseService{
         if(!$id = $this->ppRoundMatchRepository->create($ppRoundId, $matchId)){
             throw new \App\Exception\Mysql("could not create ppRoundMatch", 500);
         }
-        $this->guessServiceCreate->createForParticipants($id, $matchId, $tournamentColumn, $tournamentId);
+        $this->guessCreateService->createForParticipants($id, $matchId, $tournamentColumn, $tournamentId);
         return $id;
     }
     

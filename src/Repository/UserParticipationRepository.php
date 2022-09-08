@@ -11,7 +11,7 @@ final class UserParticipationRepository extends BaseRepository
     function create(int $userId, array $columns, array $valueIds){
         $data = array(
 			"user_id" => $userId,
-			"joined_at" => date("Y-m-d H:i:s"),
+			"joined_at" => $this->db->now(),
 	    );
         foreach($columns as $ind => $col){
             $data[$col] = $valueIds[$ind];
