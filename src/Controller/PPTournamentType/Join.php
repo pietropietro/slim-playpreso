@@ -18,8 +18,7 @@ final class Join extends Base
         Response $response,
         array $args
     ): Response {
-        $input = (array) $request->getParsedBody();
-        $userId = $this->getAndValidateUserId($input);
+        $userId = $this->getAndValidateUserId($request);
         $typeId = (int) $args['id'];
 
         if(!$this->getCheckPPTournamentService()->check($userId, $typeId)){

@@ -8,6 +8,11 @@ use App\Entity\Guess;
 
 final class GuessRepository extends BaseRepository
 {
+    public function getOne(int $id){
+        $this->db->where('id', $id);
+        return $this->db->getOne('guesses');
+    }
+
     public function getUserGuesses(int $userId, $verified = true, $limit = 20, string $stringTime = null) : array {
         
         $this->db->where('user_id', $userId);
@@ -37,6 +42,16 @@ final class GuessRepository extends BaseRepository
             $this->db->where('verified_at IS NULL');
         }
         return $this->db->get('guesses');
+    }
+
+    public function lock(int $id, int $home, int $away){
+        $data = array(
+            "home" => $home,
+            "away" => $away,
+            "guessed_at" => $this->db->now()
+        );
+        $this->db->where('id', $id);
+        $this->db->update('guesses', $data, 1);  
     }
 
     public function verify(int $id, bool $unox2, bool $uo25, bool $ggng, bool $preso, int $score){

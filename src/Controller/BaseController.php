@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use Slim\Container;
 use Slim\Http\Response;
+use Slim\Http\Request;
 
 abstract class BaseController
 {
@@ -36,8 +37,9 @@ abstract class BaseController
         return filter_var($_SERVER['REDIS_ENABLED'], FILTER_VALIDATE_BOOLEAN);
     }
 
-    protected function getAndValidateUserId(array $input): int
+    protected function getAndValidateUserId(Request $request): int    
     {
+        $input = (array) $request->getParsedBody();
         if (isset($input['JWT_decoded']) && isset($input['JWT_decoded']->id)) {
             return (int) $input['JWT_decoded']->id;
         }

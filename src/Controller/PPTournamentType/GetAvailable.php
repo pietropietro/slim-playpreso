@@ -17,9 +17,8 @@ final class GetAvailable extends Base
         Response $response,
         array $args
     ): Response {
-        $input = (array) $request->getParsedBody();
-        $userId = $this->getAndValidateUserId($input);
         
+        $userId = $this->getAndValidateUserId($request);
         $ppTournamentTypes = $this->getPPTournamentTypeService()->getAvailableForUser($userId, false, false);
 
         return $this->jsonResponse($response, 'success', $ppTournamentTypes, 200);

@@ -17,9 +17,8 @@ final class Update extends Base
         Response $response,
         array $args
     ): Response {
-        $input = (array) $request->getParsedBody();
         $id = (int) $args['id'];
-        $userIdLogged = $this->getAndValidateUserId($input);
+        $userIdLogged = $this->getAndValidateUserId($request);
         
         // $this->checkUserPermissions($id, $userIdLogged);
         if(!$this->getCupCountService()->updateGroups($id)){

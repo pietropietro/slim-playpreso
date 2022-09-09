@@ -17,8 +17,7 @@ final class Delete extends Base
         Response $response,
         array $args
     ): Response {
-        $input = (array) $request->getParsedBody();
-        $userIdLogged = $this->getAndValidateUserId($input);
+        $userIdLogged = $this->getAndValidateUserId($request);
         $id = (int) $args['id'];
         $this->checkUserPermissions($id, $userIdLogged);
         $this->getDeleteUserService()->delete($id);

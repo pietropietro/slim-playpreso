@@ -52,13 +52,6 @@ $container['login_user_service'] = static fn (
     $container->get('redis_service')
 );
 
-$container['guess_service'] = static fn (
-    ContainerInterface $container
-): GuessService => new GuessService(
-    $container->get('guess_repository'),
-    $container->get('redis_service')
-);
-
 //TODO REMOVE UNUSED SERVICES REPO
 $container['ppleague_find_service'] = static fn (
     ContainerInterface $container
@@ -319,4 +312,10 @@ $container['guess_create_service'] = static fn (
 ):  Guess\Create => new  Guess\Create(
     $container->get('guess_repository'),
     $container->get('userparticipation_repository'),
+);
+
+$container['guess_lock_service'] = static fn (
+    ContainerInterface $container
+):  Guess\Lock => new  Guess\Lock(
+    $container->get('guess_repository'),
 );

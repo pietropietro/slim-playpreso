@@ -57,6 +57,9 @@ ALTER TABLE ppTournamentTypes ADD COLUMN participants INT AFTER cost;
 ALTER TABLE ppTournamentTypes ADD COLUMN is_ppCup tinyint AFTER id;
 ALTER TABLE ppTournamentTypes RENAME COLUMN type TO name;
 
+ALTER TABLE pproundmatches drop COLUMN created_at;
+
+
 -- to make it nullable
 ALTER TABLE ppTournamentTypes MODIFY COLUMN rounds int;
 ALTER TABLE ppTournamentTypes MODIFY COLUMN level int;

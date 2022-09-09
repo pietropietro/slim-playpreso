@@ -27,7 +27,6 @@ final class PPRoundRepository extends BaseRepository
         $data = array(
 			$column => $valueId,
 			"round" => $round,
-            "created_at" => $this->db->now()
 	    );
         if(!$this->db->insert('ppRounds',$data)){
             throw new \App\Exception\Mysql($this->db->getLastError(), 500);

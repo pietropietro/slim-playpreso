@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Controller\User;
 use App\Controller\UserParticipation;
 use App\Controller\PPLeague;
+use App\Controller\Guess;
 use App\Controller\PPTournamentType;
 use App\Controller\PPCup;
 use App\Controller\PPCupGroup;
@@ -33,6 +34,8 @@ return function ($app){
         $app->post('', User\Create::class);
         $app->get('/{username}', User\GetOne::class)->add(new Auth($pointService));
     });
+
+    $app->post('/guess/lock/{id}', Guess\Lock::class)->add(new Auth($pointService));
     
     $app->group('/ppTournamentType', function () use ($app): void {
         $app->get('/available', PPTournamentType\GetAvailable::class);

@@ -16,8 +16,7 @@ final class PPLeagues extends Base{
         Response $response,
         array $args
     ): Response {
-        $input = (array) $request->getParsedBody();
-        $userId = $this->getAndValidateUserId($input);
+        $userId = $this->getAndValidateUserId($request);
 
         //TODO change type to enum
         $ups = $this->getParticipationService()->getUserParticipations($userId, 'ppLeague', true);
