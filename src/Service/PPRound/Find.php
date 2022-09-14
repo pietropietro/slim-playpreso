@@ -33,6 +33,10 @@ final class Find  extends BaseService{
         }
         return $ppRounds;
     }
+
+    public function has(string $type, int $typeId, int $round): bool{
+        return $this->ppRoundRepository->has($type, $typeId, $round);
+    }
     
     //TODO change to ENUM type can be ppCupGroup_id OR ppLeague_id
     public function getForTournament(string $type, int $typeId) : ?array {

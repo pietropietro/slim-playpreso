@@ -86,6 +86,7 @@ $container['ppleague_verify_service'] = static fn (
     $container->get('ppleague_repository'),
     $container->get('ppleague_find_service'),
     $container->get('ppround_create_service'),
+    $container->get('ppround_find_service'),
     $container->get('userparticipation_update_service')
 );
 

@@ -23,6 +23,12 @@ final class PPRoundRepository extends BaseRepository
         return $this->db->getOne('ppRounds');
     }
 
+    public function has(string $column, int $valueId, int $round) : bool{
+        $this->db->where($column, $valueId);
+        $this->db->where('round', $round);
+        return $this->db->has('ppRounds');
+    }
+
     public function create(string $column, int $valueId, int $round) : int{
         $data = array(
 			$column => $valueId,

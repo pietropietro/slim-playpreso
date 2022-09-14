@@ -6,8 +6,9 @@ namespace App\Service\Points;
 
 use App\Exception\User;
 use App\Repository\UserRepository;
+use App\Service\BaseService;
 
-final class Update extends Base
+final class Update extends BaseService
 {
     public function __construct(
         protected UserRepository $userRepository,
