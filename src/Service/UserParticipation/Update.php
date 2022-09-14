@@ -13,11 +13,10 @@ final class Update  extends Base {
         }
 
         ////TODO also sort by number of PRESO!, less MISSED, 1X2, UO, GG
-        usort($ups, fn($a, $b) => $a['score'] < $b['score'] ? 1 : 0);
+        usort($ups, fn($a, $b) => $b['score'] <=> $a['score']);
         
         foreach($ups as $index => $upItem){
-            $this->userParticipationRepository->updateScore($upItem['id'], $upItem['score']);
-            $this->userParticipationRepository->updatePosition($upItem['id'], $index + 1);
+            $this->userParticipationRepository->update($upItem['id'], $upItem['score'], $index + 1);
         }
         return true;
     }

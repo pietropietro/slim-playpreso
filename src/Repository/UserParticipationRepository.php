@@ -73,22 +73,14 @@ final class UserParticipationRepository extends BaseRepository
     }
 
     
-    function updateScore(int $id, int $score){
+    function update(int $id, int $score, int $position){
         $data = array(
 			"score" => $score,
+            "position" => $position,
             "updated_at" => $this->db->now(),
 		);
         $this->db->where('id',$id);
-        $this->db->update($this->tableName, $data);
-    }
-
-    function updatePosition(int $id, int $position){
-        $data = array(
-			"position" => $position,
-            "updated_at" => $this->db->now(),
-		);
-        $this->db->where('id',$id);
-        $this->db->update($this->tableName, $data);
+        $this->db->update($this->tableName, $data, 1);
     }
 
     public function setFinished(string $tournamentColumn, int $tournamentId){

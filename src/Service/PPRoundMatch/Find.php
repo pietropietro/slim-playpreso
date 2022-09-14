@@ -28,8 +28,8 @@ final class Find  extends BaseService{
         return $ppRoundMatches;
     }
     
-    public function getRoundIdsForMatch(int $matchId){
-        return $this->ppRoundMatchRepository->getRoundIdsForMatch($matchId);
+    public function getRoundIdsForMatches(array $matchIds){
+        return $this->ppRoundMatchRepository->getRoundIdsForMatches($matchIds);
     }
     
 }

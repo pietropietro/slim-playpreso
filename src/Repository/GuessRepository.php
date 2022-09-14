@@ -54,7 +54,7 @@ final class GuessRepository extends BaseRepository
         $this->db->update('guesses', $data, 1);  
     }
 
-    public function verify(int $id, bool $unox2, bool $uo25, bool $ggng, bool $preso, int $score){
+    public function verify(int $id, ?bool $unox2, ?bool $uo25, ?bool $ggng, ?bool $preso, ?int $score){
         $data = array(
             "UNOX2" => $unox2,
             "GGNG" => $ggng,

@@ -17,14 +17,14 @@ final class Verify extends BaseService{
         protected UserParticipation\Update $updateUpService
     ){}
     
-    public function verify(int $matchId){
-        $ppRounds = $this->findService->getForMatch($matchId);
+    public function verify(array $matchIds){
+        $ppRounds = $this->findService->getForMatches($matchIds);
         
         foreach ($ppRounds as $key => $round) {    
             if($round['ppLeague_id']){
                 $this->updateUpService->update('ppLeague_id', $round['ppLeague_id']);
-                if($this->isRoundFinished($ppRounds)){
-                    $this->$ppLeagueVerifyService->verify($round['ppLeague_id'], $round['round']);
+                if($this->isRoundFinished($round)){
+                    $this->ppLeagueVerifyService->verify($round['ppLeague_id'], $round['round']);
                 }
             }
 

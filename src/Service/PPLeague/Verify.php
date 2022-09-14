@@ -18,14 +18,22 @@ final class Verify extends BaseService{
         protected UserParticipation\Update $updateUpService,
     ) {}
 
-    private function verify(int $id, int $round_finished){
+    public function verify(int $id, int $round_just_finished){
         $ppLeague = $this->findService->getOne($id);
-        if($ppleague['ppTournamentType']['rounds'] > $round_finished){
-            $this->createPPRoundService->create('ppLeague_id', $id, $round_finished + 1);
+        if($ppLeague['ppTournamentType']['rounds'] > $round_just_finished){
+            
+            $this->createPPRoundService->create(
+                'ppLeague_id', 
+                $id, 
+                $ppLeague['ppTournamentType_id'], 
+                $round_just_finished + 1
+            );
+            
+            //TODO DELETE counter
             $this->ppLeagueRepository->incRoundCount($id);
             return;
         }
-        if($ppleague['ppTournamentType']['rounds'] === $round_finished){
+        if($ppLeague['ppTournamentType']['rounds'] === $round_just_finished){
             $this->ppLeagueRepository->setFinished($id);
             $this->updateUpService->setFinished('ppLeague_id', $id);
         }

@@ -20,7 +20,8 @@ final class Points extends Base
         return $this->userRepository->minus($userId, $points);
     }
 
-    public function plus(int $userId, int $points){
+    public function plus(int $userId, ?int $points){
+        if(!$points)return;
         return $this->userRepository->plus($userId, $points);
     }
 

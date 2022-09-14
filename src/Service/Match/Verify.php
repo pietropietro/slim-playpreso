@@ -19,7 +19,6 @@ final class Verify extends BaseService{
     public function verify(Object $eventObj, int $matchId){
         $this->matchRepository->verify($matchId, (int)$eventObj->Tr1, (int)$eventObj->Tr2);
         $this->guessVerifyService->verify($matchId, (int)$eventObj->Tr1, (int)$eventObj->Tr2);
-        $this->ppRoundVerifyService->verify($matchId);
     }
 
 }

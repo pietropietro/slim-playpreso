@@ -5,26 +5,23 @@ declare(strict_types=1);
 namespace App\Service\Match;
 
 use App\Service\BaseService;
-use App\Service\Guess;
 use App\Service\PPRound;
 use App\Repository\MatchRepository;
-use App\Repository\TeamRepository;
 use App\Service\Match;
 
 
 final class Elaborate extends BaseService{
     public function __construct(
         protected MatchRepository $matchRepository,
-        protected TeamRepository $teamRepository,
-        protected Guess\Verify $guessVerifyService,
         protected PPRound\Verify $ppRoundVerifyService,
         protected Match\Create $matchCreateService,
         protected Match\Verify $matchVerifyService,
     ) {}
 
     public function elaborateLsEvents(array $lsEvents, int $league_id){
-        $counts = ["created" => 0, "verified" => 0 , "rescheduled" => 0];
+        $counts = ["created" => 0, "rescheduled" => 0];
         
+        $match_verified_ids = [];
         foreach ($lsEvents as $key => $eventObj) {
             $match = $this->matchRepository->getOne((int) $eventObj->Eid, true);
             
@@ -40,7 +37,7 @@ final class Elaborate extends BaseService{
             
             if($eventObj->Eps === 'FT'){
                 $this->matchVerifyService->verify($eventObj, $match['id']);
-                $counts['verified']++;
+                array_push($match_verified_ids, $match['id']);
                 continue;
             }
 
@@ -49,6 +46,12 @@ final class Elaborate extends BaseService{
                 $counts['rescheduled']++;
             }   
         }
+
+        $counts['verified'] = count($match_verified_ids);
+        if($counts['verified'] > 0){
+            $this->ppRoundVerifyService->verify($match_verified_ids);
+        }
+
         return $counts;
     }
 

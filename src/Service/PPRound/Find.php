@@ -23,9 +23,9 @@ final class Find  extends BaseService{
         return $ppRound;
     }
 
-    public function getForMatch(int $matchId) : array {
+    public function getForMatches(array $matchIds) : array {
         $ppRounds = [];
-        $ids = $this->ppRoundMatchService->getRoundIdsForMatch($matchId);
+        $ids = $this->ppRoundMatchService->getRoundIdsForMatches($matchIds);
         if(is_array($ids)){
             foreach ($ids as $key => $id) {
                 array_push($ppRounds, $this->getOne($id, false));

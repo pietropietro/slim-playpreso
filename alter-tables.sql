@@ -90,3 +90,6 @@ update users set points=100 where id=260;
 delete from guesses where created_at > "2022-09-07";
 delete from pproundmatches where created_at > "2022-09-07";
 delete from pprounds where created_at > "2022-09-07";
+
+
+update matches set verified_at=null where round=6 and created_at>'2022-07-07';
