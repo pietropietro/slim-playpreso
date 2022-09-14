@@ -7,7 +7,7 @@ namespace App\Service\PPTournamentType;
 use App\Service\BaseService;
 use App\Service\PPLeague;
 use App\Service\PPTournamentType;
-use App\Service\User\Points;
+use App\Service\Points;
 use App\Service\UserParticipation;
 
 final class Join  extends BaseService{
@@ -15,7 +15,7 @@ final class Join  extends BaseService{
         protected PPLeague\Find $findPPleagueService,
         protected PPLeague\Start $startPPLeagueService,
         protected PPTournamentType\Find $findPPTournamentTypeService,
-        protected Points $pointsService,
+        protected Points\Update $pointsService,
         protected UserParticipation\Create $createUpService,
         protected UserParticipation\Find $findUPservice,
     ) {}

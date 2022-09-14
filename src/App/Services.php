@@ -14,7 +14,7 @@ use App\Service\League;
 use App\Service\ExternalAPI;
 use App\Service\Match;
 use App\Service\Guess;
-use App\Service\Score;
+use App\Service\Points;
 use Psr\Container\ContainerInterface;
 
 $container['find_user_service'] = static fn (
@@ -103,7 +103,7 @@ $container['pptournamenttype_find_service'] = static fn (
     $container->get('redis_service'),
     $container->get('pptournamenttype_repository'),
     $container->get('userparticipation_repository'),
-    $container->get('user_points_service'),
+    $container->get('points_find_service'),
     $container->get('league_find_service'),
 );
 
@@ -113,7 +113,7 @@ $container['pptournamenttype_join_service'] = static fn (
     $container->get('ppleague_find_service'),
     $container->get('ppleague_start_service'),
     $container->get('pptournamenttype_find_service'),
-    $container->get('user_points_service'),
+    $container->get('points_update_service'),
     $container->get('userparticipation_create_service'),
     $container->get('userparticipation_find_service'),
 );
@@ -122,7 +122,7 @@ $container['pptournamenttype_check_service'] = static fn (
     ContainerInterface $container
 ):  PPTournamentType\Check => new  PPTournamentType\Check(
     $container->get('pptournamenttype_find_service'),
-    $container->get('user_points_service'),
+    $container->get('points_find_service'),
 );
 
 
@@ -185,11 +185,16 @@ $container['userparticipation_update_service'] = static fn (
     $container->get('guess_repository')
 );
 
-$container['user_points_service'] = static fn (
+$container['points_update_service'] = static fn (
     ContainerInterface $container
-):  User\Points => new  User\Points(
-    $container->get('user_repository'),
-    $container->get('redis_service'),
+):  Points\Update => new  Points\Update(
+    $container->get('user_repository')
+);
+
+$container['points_find_service'] = static fn (
+    ContainerInterface $container
+):  Points\Find => new  Points\Find(
+    $container->get('user_repository')
 );
 
 $container['league_find_service'] = static fn (
@@ -267,13 +272,13 @@ $container['guess_verify_service'] = static fn (
     ContainerInterface $container
 ):  Guess\Verify => new  Guess\Verify(
     $container->get('guess_repository'),
-    $container->get('score_service'),
-    $container->get('user_points_service')
+    $container->get('points_calculate_service'),
+    $container->get('points_update_service')
 );
 
-$container['score_service'] = static fn (
+$container['points_calculate_service'] = static fn (
     ContainerInterface $container
-):  Score\Calculate => new  Score\Calculate();
+):  Points\Calculate => new  Points\Calculate();
 
 $container['match_picker_service'] = static fn (
     ContainerInterface $container

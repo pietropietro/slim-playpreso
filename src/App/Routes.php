@@ -28,30 +28,30 @@ return function ($app){
     $app->post('/login', \App\Controller\User\Login::class);
 
     $container = $app->getContainer();
-    $pointService = $container->get('user_points_service');
+    $pointsService = $container->get('points_find_service');
 
-    $app->group('/user', function () use ($app, $pointService): void {
+    $app->group('/user', function () use ($app, $pointsService): void {
         $app->post('', User\Create::class);
-        $app->get('/{username}', User\GetOne::class)->add(new Auth($pointService));
+        $app->get('/{username}', User\GetOne::class)->add(new Auth($pointsService));
     });
 
-    $app->post('/guess/lock/{id}', Guess\Lock::class)->add(new Auth($pointService));
+    $app->post('/guess/lock/{id}', Guess\Lock::class)->add(new Auth($pointsService));
     
     $app->group('/ppTournamentType', function () use ($app): void {
         $app->get('/available', PPTournamentType\GetAvailable::class);
         $app->post('/join/{id}', PPTournamentType\Join::class);
-    })->add(new Auth($pointService));
+    })->add(new Auth($pointsService));
 
-    $app->get('/ppLeague/{id}', PPLeague\GetOne::class)->add(new Auth($pointService));
+    $app->get('/ppLeague/{id}', PPLeague\GetOne::class)->add(new Auth($pointsService));
     
-    $app->get('/userParticipation/ppLeagues', UserParticipation\PPLeagues::class)->add(new Auth($pointService));
+    $app->get('/userParticipation/ppLeagues', UserParticipation\PPLeagues::class)->add(new Auth($pointsService));
     
     $app->group('/ppCup', function () use ($app): void {
         $app->get('/{id}', PPCup\GetOne::class);
         $app->put('/{id}', PPCup\Update::class);
-    })->add(new Auth($pointService));
+    })->add(new Auth($pointsService));
 
-    $app->get('/ppCupGroup/{id}', PPCupGroup\GetOne::class)->add(new Auth($pointService));
+    $app->get('/ppCupGroup/{id}', PPCupGroup\GetOne::class)->add(new Auth($pointsService));
 
     $app->get('/externalAPI/call', ExternalAPI\Update::class);
 

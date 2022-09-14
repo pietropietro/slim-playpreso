@@ -30,7 +30,7 @@ final class GuessRepository extends BaseRepository
 
     public function getForPPRoundMatch($ppRMId){
         $this->db->join("users u", "u.id=g.user_id", "INNER");
-        $this->db->orderBy('g.score','desc');
+        $this->db->orderBy('g.points','desc');
         $this->db->orderBy('g.home','asc');
         $this->db->where('ppRoundMatch_id', $ppRMId);
         return $this->db->query("SELECT g.*, u.username FROM guesses g");
@@ -54,13 +54,13 @@ final class GuessRepository extends BaseRepository
         $this->db->update('guesses', $data, 1);  
     }
 
-    public function verify(int $id, ?bool $unox2, ?bool $uo25, ?bool $ggng, ?bool $preso, ?int $score){
+    public function verify(int $id, ?bool $unox2, ?bool $uo25, ?bool $ggng, ?bool $preso, ?int $points){
         $data = array(
             "UNOX2" => $unox2,
             "GGNG" => $ggng,
             "UO25" => $uo25,
             "PRESO" => $preso,
-            "score" => $score,
+            "points" => $points,
             "verified_at" => $this->db->now()
         );
 
@@ -95,7 +95,7 @@ final class GuessRepository extends BaseRepository
 
     //TODO MOVE TO SERVICE
     //TODO CHANGE COLUMN TO ENUM ['league_id', 'cup_group_id']
-    public function getUpScore(int $userId, string $column, int $valueId) : int {
+    public function getUpPoints(int $userId, string $column, int $valueId) : int {
         $ids = $this->db->subQuery();
         $ids->where($column, $valueId);
         $ids->get('ppRounds', null, 'id');
@@ -105,13 +105,13 @@ final class GuessRepository extends BaseRepository
         if($matchList = $this->db->getValue('ppRoundMatches','id',null)){
             $this->db->where('user_id',$userId);
             $this->db->where('ppRoundMatch_id', $matchList,'in');
-            $this->db->where("score IS NOT NULL");
+            $this->db->where("points IS NOT NULL");
 
-            if($score = $this->db->getValue('guesses','sum(score)',null)){
-                if($score[0]== null){
+            if($points = $this->db->getValue('guesses','sum(points)',null)){
+                if($points[0]== null){
                     return 0;
                 }
-                return (int)$score[0];
+                return (int)$points[0];
             }
         }
         return 0;

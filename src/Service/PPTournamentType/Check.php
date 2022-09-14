@@ -6,12 +6,12 @@ namespace App\Service\PPTournamentType;
 
 use App\Service\BaseService;
 use App\Service\PPTournamentType;
-use App\Service\User\Points;
+use App\Service\Points;
 
 final class Check  extends BaseService{
     public function __construct(
         protected PPTournamentType\Find $findTournamentService,
-        protected Points $pointsService,
+        protected Points\Find $pointsService,
     ) {}
     
     public function check($userId, $typeId) :bool {

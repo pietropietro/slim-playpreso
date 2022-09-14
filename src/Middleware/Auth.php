@@ -9,12 +9,12 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Route;
 use Firebase\JWT\JWT;
-use \App\Service\User\Points;
+use \App\Service\Points;
 
 final class Auth extends Base
 {
     public function __construct(
-        protected Points $pointService
+        protected Points\Find $pointsService
     ){}
 
     public function __invoke(
@@ -36,7 +36,7 @@ final class Auth extends Base
         $requestBody['JWT_decoded'] = $decoded;
 
         $user_id = $requestBody['JWT_decoded']->id;
-        $points = $this->pointService->get($user_id);
+        $points = $this->pointsService->get($user_id);
         
         $updatedJWT = Auth::createToken(
             $requestBody['JWT_decoded']->username, 

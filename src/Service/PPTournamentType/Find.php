@@ -7,7 +7,7 @@ namespace App\Service\PPTournamentType;
 use App\Service\RedisService;
 use App\Repository\PPTournamentTypeRepository;
 use App\Repository\UserParticipationRepository;
-use App\Service\User\Points;
+use App\Service\Points;
 use App\Service\League;
 use App\Service\BaseService;
 
@@ -16,7 +16,7 @@ final class Find  extends BaseService{
         protected RedisService $redisService,
         protected PPTournamentTypeRepository $ppTournamentTypeRepository,
         protected UserParticipationRepository $userParticipationRepository,
-        protected Points $pointsService,
+        protected Points\Find $pointsService,
         protected League\Find $leagueService,
     ){}
 
@@ -61,6 +61,7 @@ final class Find  extends BaseService{
         return $ids ? $this->get($ids) : [];
     }
 
+    //TODO add to check service
     public function filterIdsExpensive(int $userId, array $ids){
         if(!$ids)return null;
         $userPoints = $this->pointsService->get($userId);

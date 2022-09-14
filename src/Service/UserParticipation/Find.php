@@ -11,8 +11,8 @@ final class Find  extends Base {
         if($tournamentColumn === 'ppCupGroup_id'){
             //TODO refactor
             $ups = array_map(function ($up){
-                $up['score_total'] = $this->userParticipationRepository
-                    ->getCupScoreTotal($up['user_id'], $up['ppCup_id'], $up['joined_at']);
+                $up['points_total'] = $this->userParticipationRepository
+                    ->getCupPointsTotal($up['user_id'], $up['ppCup_id'], $up['joined_at']);
                 return $up;
             }, $ups);
         }
