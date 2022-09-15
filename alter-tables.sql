@@ -52,6 +52,11 @@ ALTER TABLE matches MODIFY id INT AUTO_INCREMENT;
 ALTER TABLE guesses MODIFY COLUMN guess_home int;
 ALTER TABLE guesses MODIFY COLUMN guess_away int;
 ALTER TABLE guesses RENAME COLUMN score TO points;
+-- make columns nullable
+ALTER TABLE guesses MODIFY COLUMN UNOX2 int;
+ALTER TABLE guesses MODIFY COLUMN GGNG int;
+ALTER TABLE guesses MODIFY COLUMN UO25 int;
+ALTER TABLE guesses MODIFY COLUMN PRESO int;
 
 
 RENAME table ppLeagueTypes to ppTournamentTypes;

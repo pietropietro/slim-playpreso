@@ -17,7 +17,9 @@ final class Find  extends BaseService{
     ){}
 
     public function getOne(int $id){
-        return $this->leagueRepository->getOne($id);
+        $league = $this->leagueRepository->getOne($id);
+        $league['standings'] = json_decode($league['standings']) ?? null;
+        return $league;
     }
 
     public function getForPPTournamentType(int $ppTTid, bool $id_only = false){
