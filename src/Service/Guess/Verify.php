@@ -17,7 +17,7 @@ final class Verify extends BaseService{
     ){}
 
     public function verify(int $matchId, int $scoreHome, int $scoreAway){
-        $guesses = $this->guessRepository->getForMatch($matchId, true);
+        $guesses = $this->guessRepository->getForMatch($matchId, not_verified: false);
 
         foreach ($guesses as $key => $guess) {
             $result = $this->pointsCalculateService->calculate($scoreHome,$scoreAway,$guess['home'],$guess['away']);
