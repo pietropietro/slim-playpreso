@@ -18,7 +18,7 @@ final class Find  extends BaseService{
 
     public function getOne(int $id){
         $league = $this->leagueRepository->getOne($id);
-        $league['standings'] = json_decode($league['standings']) ?? null;
+        $league['standings'] = $league['standings'] ? json_decode($league['standings']) : null;
         return $league;
     }
 

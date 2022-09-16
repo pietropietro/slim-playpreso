@@ -63,6 +63,13 @@ RENAME table ppLeagueTypes to ppTournamentTypes;
 ALTER TABLE ppTournamentTypes ADD COLUMN participants INT AFTER cost;
 ALTER TABLE ppTournamentTypes ADD COLUMN is_ppCup tinyint AFTER id;
 ALTER TABLE ppTournamentTypes RENAME COLUMN type TO name;
+ALTER TABLE ppTournamentTypes ADD COLUMN rgb varchar(255) AFTER participants;
+Update ppTournamentTypes set rgb=CONCAT_WS(", ", red, green, blue);
+ALTER TABLE ppTournamentTypes DROP COLUMN red;
+ALTER TABLE ppTournamentTypes DROP COLUMN green;
+ALTER TABLE ppTournamentTypes DROP COLUMN blue;
+
+
 
 ALTER TABLE pproundmatches drop COLUMN created_at;
 
