@@ -23,6 +23,6 @@ final class Find extends BaseService{
         $match['league'] = $this->leagueService->getOne($match['league_id']);
         return $match;
     }
-
+    
 }
 

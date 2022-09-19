@@ -22,6 +22,10 @@ final class Find  extends BaseService{
         return $league;
     }
 
+    public function getNeedData(): array{
+        return $this->leagueRepository->getNeedData() ?? [];
+    }
+
     public function getForPPTournamentType(int $ppTTid, bool $id_only = false){
         $ppTT =  $this->ppTournamentTypeRepository->getOne($ppTTid);
 

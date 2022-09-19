@@ -107,3 +107,16 @@ delete from pprounds where created_at > "2022-09-07";
 
 
 update matches set verified_at=null where round=6 and created_at>'2022-07-07';
+
+
+select distinct l.id, l.ls_suffix from leagues l join matches m on m.league_id=l.id where m.date_start between '2022-09-18' and '2022-09-19' and verified_at is null;
+
+$this->db->join("matches m", "m.league_id=l.id", "INNER");
+        $this->db->where('m.verified_at IS NULL');
+        $start = date("Y-m-d H:i:s");
+        $finish = date("Y-m-d H:i:s", strtotime('-1 days'));
+        $this->db->where('m.date_start', array($start, $finish), 'BETWEEN');
+        return $this->db->query("select distinct l.id, l.ls_suffix from leagues l");
+    }
+
+    update matches set verified_At=null where league_id=6 and date_Start between '2022-09-17' and '2022-09-20';

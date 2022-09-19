@@ -15,7 +15,7 @@ final class Call extends BaseService{
         protected League\Elaborate $leagueService,
     ){}
 
-    public function fetchExternalLeagueData($ls_suffix, $league_id){
+    public function fetchExternalData($ls_suffix, $league_id){
 
         //REAL FETCH
         $client = new Client(

@@ -18,9 +18,7 @@ final class Elaborate extends BaseService{
         protected Match\Verify $matchVerifyService,
     ) {}
 
-    public function elaborateLsEvents(array $lsEvents, int $league_id){
-        $counts = ["created" => 0, "rescheduled" => 0];
-        
+    public function elaborateLsEvents(array $lsEvents, int $league_id){        
         $match_verified_ids = [];
         foreach ($lsEvents as $key => $eventObj) {
             $match = $this->matchRepository->getOne((int) $eventObj->Eid, true);
@@ -29,7 +27,6 @@ final class Elaborate extends BaseService{
             
             if(!$match){
                 $this->matchCreateService->create($eventObj, $league_id);
-                $counts["created"]++;
                 continue;
             }
            
@@ -43,12 +40,10 @@ final class Elaborate extends BaseService{
 
             if(new \DateTime($match['date_start']) != new \DateTime((string)$eventObj->Esd)){
                 $this->matchRepository->updateDateStart($match['id'], (string)$eventObj->Esd);
-                $counts['rescheduled']++;
             }   
         }
 
-        $counts['verified'] = count($match_verified_ids);
-        if($counts['verified'] > 0){
+        if(count($match_verified_ids) > 0){
             $this->ppRoundVerifyService->verify($match_verified_ids);
         }
 

@@ -17,10 +17,11 @@ final class Update extends Base
         Response $response,
     ): Response {
 
-        //serie a
-        $league = $this->getLeaguesService()->getOne(6);
-        $created_count = $this->getExternalApiService()->fetchExternalLeagueData($league['ls_suffix'], $league['id']);
-        
-        return $this->jsonResponse($response, 'success', $created_count, 200);
+        $leagues = $this->getLeaguesService()->getNeedData();
+        foreach ($leagues as $key => $league) {
+            $this->getExternalApiService()->fetchExternalData($league['ls_suffix'], $league['id']);
+        }
+
+        return $this->jsonResponse($response, 'success', date('H:i:s').': '.count($leagues), 200);
     }
 }

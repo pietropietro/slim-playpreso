@@ -56,4 +56,13 @@ final class LeagueRepository extends BaseRepository
         $this->db->update('leagues', $data, 1);        
     }
 
+    public function getNeedData(){
+        $this->db->join("matches m", "m.league_id=l.id", "INNER");
+        $this->db->where('m.verified_at IS NULL');
+        $start = date("Y-m-d H:i:s", strtotime('-1 days'));
+        $finish = date("Y-m-d H:i:s");
+        $this->db->where('m.date_start', array($start, $finish), 'BETWEEN');
+        return $this->db->query("select distinct l.id, l.ls_suffix from leagues l");
+    }
+
 }
