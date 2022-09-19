@@ -17,10 +17,10 @@ final class Picker extends BaseService{
     public function pick(int $tournamentTypeId) : ?array{
         $leagueIDs = $this->leagueService->getForPPTournamentType($tournamentTypeId, true);
         
-        $plus_days = 9;
+        $plus_days = 8;
         $matches = $this->matchRepository->getNextMatchesForLeagues($leagueIDs, $plus_days);
         while(count($matches)<3 && $plus_days < 30){
-            $plus_days += 5;
+            $plus_days += 4;
             $matches = $this->matchRepository->getNextMatchesForLeagues($leagueIDs,  $plus_days);
         }
 
