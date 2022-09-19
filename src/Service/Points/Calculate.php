@@ -30,9 +30,6 @@ final class Calculate extends BaseService
             if($uo25 = $realUO25 === $guessUO25) $points += $this->uo25Points;
 
             $maxGoals = (int)$_SERVER['MAX_GUESS_GOALS'];
-            if($scoreHome>$maxGoals || $scoreAway > $maxGoals){
-                echo('ciao');
-            }
 
             $scoreHome = $scoreHome > $maxGoals ? $maxGoals : $scoreHome;
             $scoreAway = $scoreAway > $maxGoals ? $maxGoals : $scoreAway;

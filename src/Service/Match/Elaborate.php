@@ -46,8 +46,5 @@ final class Elaborate extends BaseService{
         if(count($match_verified_ids) > 0){
             $this->ppRoundVerifyService->verify($match_verified_ids);
         }
-
-        return $counts;
     }
-
 }
