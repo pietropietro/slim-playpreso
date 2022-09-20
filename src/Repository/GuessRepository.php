@@ -93,9 +93,8 @@ final class GuessRepository extends BaseRepository
         return $this->db->insert('guesses', $data);
     }
 
-    //TODO MOVE TO SERVICE
     //TODO CHANGE COLUMN TO ENUM ['league_id', 'cup_group_id']
-    public function getUpPoints(int $userId, string $column, int $valueId) : int {
+    public function countUpNumbers(int $userId, string $column, int $valueId) {
         $ids = $this->db->subQuery();
         $ids->where($column, $valueId);
         $ids->get('ppRounds', null, 'id');
@@ -105,16 +104,14 @@ final class GuessRepository extends BaseRepository
         if($matchList = $this->db->getValue('ppRoundMatches','id',null)){
             $this->db->where('user_id',$userId);
             $this->db->where('ppRoundMatch_id', $matchList,'in');
-            $this->db->where("points IS NOT NULL");
+            $this->db->where("verified_at IS NOT NULL");
+            $this->db->where("guessed_at IS NOT NULL");
+            $columns = array('sum(points) as tot_points', 'sum(preso) as tot_preso', 'sum(UNOX2) as tot_unox2', 'count(id) as tot_locked');
 
-            if($points = $this->db->getValue('guesses','sum(points)',null)){
-                if($points[0]== null){
-                    return 0;
-                }
-                return (int)$points[0];
+            if($upResult = $this->db->getOne('guesses', $columns)){
+                return $upResult;
             }
         }
-        return 0;
     }
 
     //TODO MOVE TO SERVICE

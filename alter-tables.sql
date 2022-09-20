@@ -1,12 +1,17 @@
 ALTER TABLE userParticipations RENAME COLUMN placement TO position;
 ALTER TABLE userParticipations RENAME COLUMN placed_at TO updated_at;
 ALTER TABLE userParticipations ADD COLUMN score INT AFTER updated_at;
+ALTER TABLE userParticipations ADD COLUMN tot_preso INT AFTER points;
+ALTER TABLE userParticipations ADD COLUMN tot_unox2 INT AFTER points;
+ALTER TABLE userParticipations ADD COLUMN tot_locked INT AFTER points;
 ALTER TABLE userParticipations ADD COLUMlN finished tinyint AFTER updated_at;
 ALTER TABLE userParticipations RENAME COLUMN ppLeagueType_id TO ppTournamentType_id;
+ALTER TABLE userParticipations RENAME COLUMN points TO tot_points;
 ALTER TABLE userParticipations MODIFY COLUMN ppTournamentType_id int AFTER user_id;
 ALTER TABLE userParticipations DROP COLUMN ppCupType_id;
 ALTER TABLE userParticipations DROP FOREIGN KEY userParticipations_ibfk_6;
 ALTER TABLE userParticipations RENAME COLUMN score TO points;
+
 
 ALTER TABLE ppLeagues RENAME COLUMN users_count TO user_count;
 ALTER TABLE ppLeagues ADD COLUMN round_count INT AFTER user_count;

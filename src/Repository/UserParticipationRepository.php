@@ -69,13 +69,16 @@ final class UserParticipationRepository extends BaseRepository
         $this->db->where('user_id',$userId);
         $this->db->where('ppCup_id',$cupId);
         if($joinedAt)$this->db->where('joined_at', $joinedAt, '<=');
-        return (int)$this->db->getOne($this->tableName, 'sum(points) as points_total')['points_total'];
+        return (int)$this->db->getOne($this->tableName, 'sum(tot_points) as points_total')['points_total'];
     }
 
     
-    function update(int $id, int $points, int $position){
+    function update(int $id, int $tot_points, int $tot_unox2, int $tot_locked, int $tot_preso, int $position){
         $data = array(
-			"points" => $points,
+			"tot_points" => $tot_points,
+			"tot_locked" => $tot_locked,
+			"tot_preso" => $tot_preso,
+			"tot_unox2" => $tot_unox2,
             "position" => $position,
             "updated_at" => $this->db->now(),
 		);
@@ -94,7 +97,7 @@ final class UserParticipationRepository extends BaseRepository
 
     public function setStarted(string $tournamentColumn, int $tournamentId){
         $data = array(
-			"points" => 0,
+			"tot_points" => 0,
             "updated_at" => $this->db->now(),
 		);
         $this->db->where($tournamentColumn, $id);

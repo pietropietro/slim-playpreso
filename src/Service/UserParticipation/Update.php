@@ -9,14 +9,29 @@ final class Update  extends Base {
     public function update(string $type, int $typeId) : bool{
         $ups = $this->userParticipationRepository->getForTournament($type, $typeId);
         foreach ($ups as $upKey => $upItem) {
-            $ups[$upKey]['points'] = $this->guessRepository->getUpPoints($upItem['user_id'], $type, $typeId);
+            $user_participation_result = $this->guessRepository->countUpNumbers($upItem['user_id'], $type, $typeId);
+            $ups[$upKey]['tot_points'] = $user_participation_result['tot_points'];
+            $ups[$upKey]['tot_locked'] = $user_participation_result['tot_locked'] ?? 0;
+            $ups[$upKey]['tot_preso'] = $user_participation_result['tot_preso'] ?? 0;
+            $ups[$upKey]['tot_unox2'] = $user_participation_result['tot_unox2'] ?? 0;
         }
+       
 
-        ////TODO also sort by number of PRESO!, less MISSED, 1X2, UO, GG
-        usort($ups, fn($a, $b) => $b['points'] <=> $a['points']);
-        
+        usort($ups, fn($a, $b) =>
+            [$b['tot_points'], $b['tot_locked'], $b['tot_preso'], $b['tot_unox2']] 
+                <=> 
+            [$a['tot_points'], $a['tot_locked'], $a['tot_preso'], $a['tot_unox2']]
+        );
+
         foreach($ups as $index => $upItem){
-            $this->userParticipationRepository->update($upItem['id'], $upItem['points'], $index + 1);
+            $this->userParticipationRepository->update(
+                id: $upItem['id'], 
+                tot_points: (int)$upItem['tot_points'],
+                tot_unox2:  (int)$upItem['tot_unox2'],
+                tot_locked:  (int)$upItem['tot_locked'],
+                tot_preso:  (int)$upItem['tot_preso'],
+                position: $index + 1
+            );
         }
         return true;
     }
