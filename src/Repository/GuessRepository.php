@@ -134,4 +134,19 @@ final class GuessRepository extends BaseRepository
 
     }
 
+    public function verifyMissed(){
+        $data = array(
+            "g.verified_at" => $this->db->now()
+        );
+
+        $before = date("Y-m-d H:i:s", strtotime('+2 hours'));
+
+        $this->db->join("matches m", "m.id=g.match_id", "INNER");
+        $this->db->where('m.date_start', $before, '<');
+        $this->db->where('g.guessed_at IS NULL');
+        $this->db->where('g.verified_at IS NULL');
+
+        $this->db->update('guesses g', $data);      
+    }
+
 }

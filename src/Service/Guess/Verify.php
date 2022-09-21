@@ -26,4 +26,8 @@ final class Verify extends BaseService{
         }
     }
 
+    public function setMissed(){
+        $this->guessRepository->verifyMissed();
+    }
+
 }

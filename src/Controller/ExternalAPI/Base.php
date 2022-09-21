@@ -7,6 +7,7 @@ namespace App\Controller\ExternalAPI;
 use App\Controller\BaseController;
 use App\Service\ExternalAPI\Call;
 use App\Service\League;
+use App\Service\Guess;
 
 abstract class Base extends BaseController
 {
@@ -18,6 +19,11 @@ abstract class Base extends BaseController
     protected function getLeaguesService(): League\Find
     {
         return $this->container->get('league_find_service');
+    }
+
+    protected function getGuessService(): Guess\Verify
+    {
+        return $this->container->get('guess_verify_service');
     }
 
 }
