@@ -15,6 +15,7 @@ use App\Service\ExternalAPI;
 use App\Service\Match;
 use App\Service\Guess;
 use App\Service\Points;
+use App\Service\Team;
 use Psr\Container\ContainerInterface;
 
 $container['find_user_service'] = static fn (
@@ -243,6 +244,8 @@ $container['external_api_service'] = static fn (
 ):  ExternalAPI\Call => new  ExternalAPI\Call(
     $container->get('match_elaborate_service'),
     $container->get('league_elaborate_service'),
+    $container->get('team_elaborate_service'),
+    
 );
 
 $container['match_elaborate_service'] = static fn (
@@ -252,6 +255,12 @@ $container['match_elaborate_service'] = static fn (
     $container->get('ppround_verify_service'),
     $container->get('match_create_service'),
     $container->get('match_verify_service'),
+);
+
+$container['team_elaborate_service'] = static fn (
+    ContainerInterface $container
+):  Team\Elaborate => new  Team\Elaborate(
+    $container->get('team_repository'),
 );
 
 $container['match_create_service'] = static fn (

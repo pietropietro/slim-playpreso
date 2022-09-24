@@ -39,6 +39,7 @@ ALTER TABLE teams DROP COLUMN last_five;
 ALTER TABLE teams ADD COLUMN ls_id INT AFTER id;
 ALTER TABLE teams RENAME COLUMN team_name TO name;
 ALTER TABLE teams DROP COLUMN team_tag;
+ALTER TABLE teams MODIFY id INT AUTO_INCREMENT;
 
 ALTER TABLE matches DROP COLUMN league_name;
 ALTER TABLE matches DROP COLUMN external_api_name;

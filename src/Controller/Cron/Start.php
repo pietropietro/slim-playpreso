@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\ExternalAPI;
+namespace App\Controller\Cron;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class Update extends Base
+final class Start extends Base
 {
     /**
      * @param array<string> $args
@@ -17,10 +17,20 @@ final class Update extends Base
         Response $response,
     ): Response {
 
-        $this->getGuessService()->setMissed();
 
+        $this->getGuessService()->setMissed();
         $leagues = $this->getLeaguesService()->getNeedData();
+
+        //when adding new league
+        // array_push($leagues, 
+        //     [
+        //         'id'=>13,
+        //         'ls_suffix'=>'turkey/super-lig'
+        //     ],
+        // );
+
         foreach ($leagues as $key => $league) {
+            if(!$league['ls_suffix'])continue;
             $this->getExternalApiService()->fetchExternalData($league['ls_suffix'], $league['id']);
         }
 

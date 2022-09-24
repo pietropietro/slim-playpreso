@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\ExternalAPI;
+namespace App\Controller\Cron;
 
 use App\Controller\BaseController;
 use App\Service\ExternalAPI\Call;
