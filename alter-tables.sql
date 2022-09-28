@@ -126,3 +126,24 @@ $this->db->join("matches m", "m.league_id=l.id", "INNER");
     }
 
     update matches set verified_At=null where league_id=6 and date_Start between '2022-09-17' and '2022-09-20';
+
+
+INSERT INTO `userParticipations`(user_id, ppTournamentType_id,ppLeague_id) VALUES (80, 16, 67);
+INSERT INTO `userParticipations`(user_id, ppTournamentType_id,ppLeague_id) VALUES (81, 16, 67);
+INSERT INTO `userParticipations`(user_id, ppTournamentType_id,ppLeague_id) VALUES (82, 16, 67);
+INSERT INTO `userParticipations`(user_id, ppTournamentType_id,ppLeague_id) VALUES (83, 16, 67);
+INSERT INTO `userParticipations`(user_id, ppTournamentType_id,ppLeague_id) VALUES (84, 16, 67);
+INSERT INTO `userParticipations`(user_id, ppTournamentType_id,ppLeague_id) VALUES (85, 16, 67);
+INSERT INTO `userParticipations`(user_id, ppTournamentType_id,ppLeague_id) VALUES (86, 16, 67);
+INSERT INTO `userParticipations`(user_id, ppTournamentType_id,ppLeague_id) VALUES (87, 16, 67);
+INSERT INTO `userParticipations`(user_id, ppTournamentType_id,ppLeague_id) VALUES (88, 16, 67);
+INSERT INTO `userParticipations`(user_id, ppTournamentType_id,ppLeague_id) VALUES (89, 16, 67);
+INSERT INTO `userParticipations`(user_id, ppTournamentType_id,ppLeague_id) VALUES (90, 16, 67);
+INSERT INTO `userParticipations`(user_id, ppTournamentType_id,ppLeague_id) VALUES (91, 16, 67);
+INSERT INTO `userParticipations`(user_id, ppTournamentType_id,ppLeague_id) VALUES (92, 16, 67);
+INSERT INTO `userParticipations`(user_id, ppTournamentType_id,ppLeague_id) VALUES (93, 16, 67);
+INSERT INTO `userParticipations`(user_id, ppTournamentType_id,ppLeague_id) VALUES (94, 16, 67);
+INSERT INTO `userParticipations`(user_id, ppTournamentType_id,ppLeague_id) VALUES (95, 16, 67);
+INSERT INTO `userParticipations`(user_id, ppTournamentType_id,ppLeague_id) VALUES (96, 16, 67);
+INSERT INTO `userParticipations`(user_id, ppTournamentType_id,ppLeague_id) VALUES (97, 16, 67);
+

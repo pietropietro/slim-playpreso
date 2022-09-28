@@ -23,6 +23,9 @@ final class Find  extends BaseService{
     public function getOne(int $id){
         $ppTT =  $this->ppTournamentTypeRepository->getOne($id);
         $ppTT['leagues'] = $this->leagueService->getForPPTournamentType($id);
+        if(!$ppTT['is_ppCup']){
+            $ppTT['next'] = $this->ppTournamentTypeRepository->getByNameAndLevel(name: $ppTT['name'], level: $ppTT['level']+1);
+        }
         return $ppTT;
     }
 

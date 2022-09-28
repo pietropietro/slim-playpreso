@@ -24,6 +24,12 @@ final class PPTournamentTypeRepository extends BaseRepository
         return $this->db->getOne('ppTournamentTypes');
     }
 
+    function getByNameAndLevel(string $name, int $level){
+        $this->db->where('name',$name);
+        $this->db->where('level',$level);
+        return $this->db->getOne('ppTournamentTypes');
+    }
+
     function getCost(int $id){
         $this->db->where('id',$id);
         return $this->db->getOne('ppTournamentTypes', 'cost');
