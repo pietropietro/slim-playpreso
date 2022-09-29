@@ -134,6 +134,7 @@ $container['ppround_find_service'] = static fn (
     $container->get('redis_service'),
     $container->get('pproundmatch_find_service'),
     $container->get('ppround_repository'),
+    $container->get('guess_repository'),
 );
 
 $container['pproundmatch_find_service'] = static fn (
