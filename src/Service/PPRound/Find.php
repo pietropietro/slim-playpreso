@@ -40,14 +40,12 @@ final class Find  extends BaseService{
         return $this->ppRoundRepository->has($type, $typeId, $round);
     }
     
-    //TODO change to ENUM type can be ppCupGroup_id OR ppLeague_id
     public function getForTournament(string $type, int $typeId) : ?array {
         $ppRounds = $this->ppRoundRepository->getForTournament($type, $typeId);
         foreach($ppRounds as $roundKey => $roundItem){
             $ppRounds[$roundKey]['ppRoundMatches'] = $this->ppRoundMatchService->getForRound($roundItem['id'], withGuesses: true);
             $ppRounds[$roundKey]['best'] = $this->guessRepository->bestUsersInRound(
                 ppRMids: array_column($ppRounds[$roundKey]['ppRoundMatches'], 'id'), 
-                limit: 3
             );
         }
         return $ppRounds;

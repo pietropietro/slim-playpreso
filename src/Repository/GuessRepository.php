@@ -150,11 +150,12 @@ final class GuessRepository extends BaseRepository
     }
 
     public function bestUsersInRound(array $ppRMids, int $limit=3){
-        $this->db->join("users u", "u.id=g.user_id", "INNER");
-        $this->db->groupBy('g.user_id');
+        $this->db->join("users u", "u.id=guesses.user_id", "INNER");
+        $this->db->groupBy('guesses.user_id');
         $this->db->orderBy('sum_points','desc');
         $this->db->where('ppRoundMatch_id', $ppRMids, 'IN');
-        return $this->db->query("SELECT sum(g.points) as sum_points, u.username FROM guesses g");
+        $columns = ['sum(guesses.points) as sum_points', 'u.username'];
+        return $this->db->get('guesses', $limit, $columns);
     }
 
 }
