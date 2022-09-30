@@ -11,22 +11,27 @@ final class Find  extends Base {
         if($tournamentColumn === 'ppCupGroup_id'){
             //TODO refactor
             $ups = array_map(function ($up){
-                $up['points_total'] = $this->userParticipationRepository
-                    ->getCupPointsTotal($up['user_id'], $up['ppCup_id'], $up['joined_at']);
+                $up['score_total'] = $this->userParticipationRepository
+                    ->getCupScoreTotal($up['user_id'], $up['ppCup_id'], $up['joined_at']);
                 return $up;
             }, $ups);
         }
         return $ups;
     }
 
-
-    //TODO change playMode to ENUM
     public function getUserParticipations(int $userId, string $playMode, bool $active){
         $ups = $this->userParticipationRepository->getUserParticipations($userId, $playMode.'_id', $active, null);        
         foreach($ups as $upKey => $upItem){
             if($playMode === 'ppLeague'){
                 $ups[$upKey] = $this->addPPLeagueData($ups[$upKey]);
             }
+        }
+        if($playMode === 'ppLeague'){
+            usort($ups, fn($a, $b) =>
+                [$b['ppLeague']['round_count']] 
+                    <=> 
+                [$a['ppLeague']['round_count']] 
+            );
         }
         return $ups;
     }
