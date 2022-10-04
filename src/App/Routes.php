@@ -44,7 +44,7 @@ return function ($app){
 
     $app->get('/ppLeague/{id}', PPLeague\GetOne::class)->add(new Auth($pointsService));
     
-    $app->get('/userParticipation/ppLeagues', UserParticipation\PPLeagues::class)->add(new Auth($pointsService));
+    $app->get('/userParticipations/ppLeagues', UserParticipation\PPLeagues::class)->add(new Auth($pointsService));
     
     $app->group('/ppCup', function () use ($app): void {
         $app->get('/{id}', PPCup\GetOne::class);
