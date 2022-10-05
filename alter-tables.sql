@@ -13,6 +13,9 @@ ALTER TABLE userParticipations DROP FOREIGN KEY userParticipations_ibfk_6;
 ALTER TABLE userParticipations RENAME COLUMN score TO points;
 
 
+ALTER TABLE users ADD COLUMN admin tinyint AFTER username;
+
+
 ALTER TABLE ppLeagues RENAME COLUMN users_count TO user_count;
 ALTER TABLE ppLeagues ADD COLUMN round_count INT AFTER user_count;
 ALTER TABLE ppLeagues RENAME COLUMN ppLeagueType_id TO ppTournamentType_id;

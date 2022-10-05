@@ -44,7 +44,7 @@ final class UserRepository extends BaseRepository
     public function loginUser(string $username, string $password)
     {
         $this->db->where('username',strtolower($username));
-        $columns = array("username, id, created_at, points, password");
+        $columns = array("username, id, created_at, points, password, admin");
         if(!$user=$this->db->getOne('users', $columns)){
             throw new \App\Exception\User('Login failed: username or password incorrect.', 401);
         }
