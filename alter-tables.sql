@@ -30,6 +30,9 @@ ALTER TABLE ppCups RENAME COLUMN ppCupType_id TO ppTournamentType_id;
 ALTER TABLE ppCups ADD FOREIGN KEY (ppTournamentType_id) REFERENCES ppTournamentTypes(id);
 -- make it not nullabe 
 ALTER TABLE ppCups MODIFY COLUMN ppTournamentType_id int NOT NULL;
+ALTER TABLE ppCups ADD COLUMN slug varchar(255) AFTER id;
+ALTER TABLE ppCups ADD UNIQUE (slug);
+
 
 
 ALTER TABLE ppCupGroups ADD COLUMN round_count INT AFTER rounds;
@@ -68,12 +71,18 @@ ALTER TABLE guesses MODIFY COLUMN PRESO int;
 RENAME table ppLeagueTypes to ppTournamentTypes;
 ALTER TABLE ppTournamentTypes ADD COLUMN participants INT AFTER cost;
 ALTER TABLE ppTournamentTypes ADD COLUMN is_ppCup tinyint AFTER id;
+ALTER TABLE ppTournamentTypes ADD COLUMN can_join tinyint AFTER participants;
+ALTER TABLE ppTournamentTypes RENAME COLUMN is_ppCup TO cup_format;
+
 ALTER TABLE ppTournamentTypes RENAME COLUMN type TO name;
 ALTER TABLE ppTournamentTypes ADD COLUMN rgb varchar(255) AFTER participants;
 Update ppTournamentTypes set rgb=CONCAT_WS(", ", red, green, blue);
 ALTER TABLE ppTournamentTypes DROP COLUMN red;
 ALTER TABLE ppTournamentTypes DROP COLUMN green;
 ALTER TABLE ppTournamentTypes DROP COLUMN blue;
+
+ALTER TABLE ppTournamentTypes MODIFY COLUMN name varchar(255) NOT NULL;
+
 
 
 

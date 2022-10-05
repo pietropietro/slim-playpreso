@@ -23,7 +23,7 @@ final class Find  extends BaseService{
     public function getOne(int $id){
         $ppTT =  $this->ppTournamentTypeRepository->getOne($id);
         $ppTT['leagues'] = $this->leagueService->getForPPTournamentType($id);
-        if(!$ppTT['is_ppCup']){
+        if(!$ppTT['cup_format']){
             $ppTT['next'] = $this->ppTournamentTypeRepository->getByNameAndLevel(name: $ppTT['name'], level: $ppTT['level']+1);
         }
         return $ppTT;
@@ -37,8 +37,11 @@ final class Find  extends BaseService{
         return $ppTTs;
     }
 
-    //TODO integrate cups
-    public function getAvailableForUser(int $userId, bool $only_ids = true, bool $get_cups = false): array{
+    public function getAvailablePPCupsForUser(int $userId): array{
+        return $this->ppTournamentTypeRepository->availablePPCupsForUser($userId);
+    }
+
+    public function getAvailablePPLeaguesForUser(int $userId, bool $only_ids = true): array{
 
         $tournamentTypesMap = $this->ppTournamentTypeRepository->getPPLeaguesMap();
         $promotedTTids = $this->userParticipationRepository->getPromotedTournamentTypesForUser($userId, false, true);

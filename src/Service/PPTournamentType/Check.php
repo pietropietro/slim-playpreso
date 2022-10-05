@@ -36,7 +36,7 @@ final class Check  extends BaseService{
     }
 
     public function isAllowed($userId, $typeId){
-        $okIds = $this->findTournamentService->getAvailableForUser($userId, true);
+        $okIds = $this->findTournamentService->getAvailablePPLeaguesForUser($userId, only_ids: true);
         return in_array($typeId, $okIds);
     }
 }

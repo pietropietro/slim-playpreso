@@ -19,7 +19,7 @@ final class Find  extends Base {
         return $ups;
     }
 
-    public function getUserParticipations(int $userId, string $playMode, bool $active){
+    public function getUserParticipations(int $userId, string $playMode, bool $active = true){
         $ups = $this->userParticipationRepository->getUserParticipations($userId, $playMode.'_id', $active, null);        
         foreach($ups as $upKey => $upItem){
             if($playMode === 'ppLeague'){

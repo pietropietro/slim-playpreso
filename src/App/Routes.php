@@ -25,30 +25,36 @@ return function ($app){
     });
 
     $app->get('/', 'App\Controller\DefaultController:getHelp');
-    $app->post('/login', \App\Controller\User\Login::class);
 
     $container = $app->getContainer();
     $pointsService = $container->get('points_find_service');
 
     $app->group('/user', function () use ($app, $pointsService): void {
         $app->post('', User\Create::class);
+        $app->post('/login', User\Login::class);
         $app->get('/{username}', User\GetOne::class)->add(new Auth($pointsService));
     });
 
     $app->post('/guess/lock/{id}', Guess\Lock::class)->add(new Auth($pointsService));
     
-    $app->group('/ppTournamentType', function () use ($app): void {
-        $app->get('/available', PPTournamentType\GetAvailable::class);
+    $app->group('/p-tournamentType', function () use ($app): void {
         $app->post('/join/{id}', PPTournamentType\Join::class);
     })->add(new Auth($pointsService));
 
-    $app->get('/ppLeague/{id}', PPLeague\GetOne::class)->add(new Auth($pointsService));
-    
-    $app->get('/userParticipations/ppLeagues', UserParticipation\PPLeagues::class)->add(new Auth($pointsService));
-    
-    $app->group('/ppCup', function () use ($app): void {
+    $app->group('/p-league', function () use ($app): void {
+        $app->get('/available', PPTournamentType\GetAvailablePPLeagues::class);
+        $app->get('/{id}', PPLeague\GetOne::class);
+    })->add(new Auth($pointsService));
+
+    $app->group('/p-cup', function () use ($app): void {
+        $app->get('/available', PPTournamentType\GetAvailablePPCups::class);
         $app->get('/{id}', PPCup\GetOne::class);
         $app->put('/{id}', PPCup\Update::class);
+    })->add(new Auth($pointsService));
+
+    $app->group('/userParticipation', function () use ($app): void {
+        $app->get('/p-leagues', UserParticipation\PPLeagues::class);
+        $app->get('/p-cups', UserParticipation\PPCups::class);
     })->add(new Auth($pointsService));
 
     $app->get('/ppCupGroup/{id}', PPCupGroup\GetOne::class)->add(new Auth($pointsService));

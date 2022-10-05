@@ -23,7 +23,7 @@ final class Join  extends BaseService{
     public function joinAvailable($userId, $typeId){
         $ppTournamentType = $this->findPPTournamentTypeService->getOne($typeId);
 
-        if(!$ppTournamentType['is_ppCup']){
+        if(!$ppTournamentType['cup_format']){
             $ppTournament = $this->findPPleagueService->getJoinable($typeId, $userId);
             $column = 'ppLeague_id';
         }else{
@@ -42,7 +42,7 @@ final class Join  extends BaseService{
 
         if($ppTournamentType['participants'] === count($this->findUPservice->getForTournament($column, $ppTournament['id']))){
             //todo startppcupservice
-            $started = $ppTournamentType['is_ppCup'] ? null : $this->startPPLeagueService->start($ppTournament['id'], $ppTournamentType['id']);
+            $started = $ppTournamentType['cup_format'] ? null : $this->startPPLeagueService->start($ppTournament['id'], $ppTournamentType['id']);
         }
 
         return $ppTournament['id'];

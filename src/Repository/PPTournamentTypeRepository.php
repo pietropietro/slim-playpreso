@@ -11,7 +11,7 @@ final class PPTournamentTypeRepository extends BaseRepository
     function getPPLeaguesMap(){
         return $this->db->query('SELECT name, max(level) as maxLevel, 
             GROUP_CONCAT(id) as ppTTids
-            FROM ppTournamentTypes where is_ppCup = false GROUP BY name ORDER BY maxLevel ');
+            FROM ppTournamentTypes where cup_format = false GROUP BY name ORDER BY maxLevel ');
     }
 
     function get(array $ids){
@@ -35,12 +35,25 @@ final class PPTournamentTypeRepository extends BaseRepository
         return $this->db->getOne('ppTournamentTypes', 'cost');
     }
 
+    function availablePPCupsForUser(int $userId){
+        $activeCupIds = $this->db->subQuery();
+        $activeCupIds->join("ppTournamentTypes pptt", "userParticipations.ppTournamentType_id = pptt.id", "INNER");
+        $activeCupIds->where('userParticipations.user_id', $userId);
+        $activeCupIds->where('userParticipations.finished', 0);
+        $activeCupIds->where('pptt.cup_format', 1);
+        $activeCupIds->get('userParticipations', null, 'ppTournamentType_id');
+
+        $this->db->where('id', $activeCupIds, 'NOT IN');
+        $this->db->where('cup_format', 1);
+        $this->db->where('can_join', 1);
+        return $this->db->get("ppTournamentTypes");
+    }
+
 
     function filterIdsExpensive(array $ids, int $points){
         $this->db->where('id', $ids, 'IN');
         $this->db->where('cost', $points, '<=');
         return $this->db->getValue('ppTournamentTypes', 'id', null);
-
     }
 
 }

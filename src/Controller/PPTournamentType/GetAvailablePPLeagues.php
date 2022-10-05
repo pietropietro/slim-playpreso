@@ -7,7 +7,7 @@ namespace App\Controller\PPTournamentType;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class GetAvailable extends Base
+final class GetAvailablePPLeagues extends Base
 {
     /**
      * @param array<string> $args
@@ -19,7 +19,7 @@ final class GetAvailable extends Base
     ): Response {
         
         $userId = $this->getAndValidateUserId($request);
-        $ppTournamentTypes = $this->getPPTournamentTypeService()->getAvailableForUser($userId, false, false);
+        $ppTournamentTypes = $this->getPPTournamentTypeService()->getAvailablePPLeaguesForUser($userId, only_ids: false);
 
         return $this->jsonResponse($response, 'success', $ppTournamentTypes, 200);
     }
