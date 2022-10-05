@@ -40,9 +40,12 @@ final class Join  extends BaseService{
             throw new Exception\User("something went wrong", 500);
         };
 
-        if($ppTournamentType['participants'] === count($this->findUPservice->getForTournament($column, $ppTournament['id']))){
+        if($ppTournamentType['participants'] === 
+            count($this->findUPservice->getForTournament($column, $ppTournament['id']))
+        ){
             //todo startppcupservice
-            $started = $ppTournamentType['cup_format'] ? null : $this->startPPLeagueService->start($ppTournament['id'], $ppTournamentType['id']);
+            $started = $ppTournamentType['cup_format'] ? null 
+                : $this->startPPLeagueService->start($ppTournament['id'], $ppTournamentType['id']);
         }
 
         return $ppTournament['id'];

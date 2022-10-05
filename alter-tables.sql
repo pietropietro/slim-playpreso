@@ -35,8 +35,8 @@ ALTER TABLE ppCups ADD UNIQUE (slug);
 
 
 
-ALTER TABLE ppCupGroups ADD COLUMN round_count INT AFTER rounds;
-ALTER TABLE ppCupGroups ADD COLUMN user_count INT AFTER round_count;
+ALTER TABLE ppCupGroups DROP COLUMN round_count;
+ALTER TABLE ppCupGroups DROP COLUMN user_count;
 
 ALTER TABLE teams DROP COLUMN last_five;
 ALTER TABLE teams ADD COLUMN ls_id INT AFTER id;
@@ -80,6 +80,8 @@ Update ppTournamentTypes set rgb=CONCAT_WS(", ", red, green, blue);
 ALTER TABLE ppTournamentTypes DROP COLUMN red;
 ALTER TABLE ppTournamentTypes DROP COLUMN green;
 ALTER TABLE ppTournamentTypes DROP COLUMN blue;
+
+ALTER TABLE ppTournamentTypes ADD COLUMN cup_format json AFTER participants;
 
 ALTER TABLE ppTournamentTypes MODIFY COLUMN name varchar(255) NOT NULL;
 

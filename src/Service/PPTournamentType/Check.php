@@ -7,11 +7,13 @@ namespace App\Service\PPTournamentType;
 use App\Service\BaseService;
 use App\Service\PPTournamentType;
 use App\Service\Points;
+use App\Repository\PPCupRepository;
 
 final class Check  extends BaseService{
     public function __construct(
         protected PPTournamentType\Find $findTournamentService,
         protected Points\Find $pointsService,
+        protected PPCupRepository $ppCupRepository
     ) {}
     
     public function check($userId, $typeId) :bool {
@@ -38,5 +40,12 @@ final class Check  extends BaseService{
     public function isAllowed($userId, $typeId){
         $okIds = $this->findTournamentService->getAvailablePPLeaguesForUser($userId, only_ids: true);
         return in_array($typeId, $okIds);
+    }
+
+    public function canCreateCup(int $ppTournamentType_id){
+        if($this->ppCupRepository->getOneForType()){
+            throw new \App\Exception\User("cannot create p-cup", 401);
+        }
+        return true;
     }
 }

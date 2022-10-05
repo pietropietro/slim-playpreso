@@ -57,9 +57,12 @@ return function ($app){
         $app->get('/p-cups', UserParticipation\PPCups::class);
     })->add(new Auth($pointsService));
 
-    $app->get('/ppCupGroup/{id}', PPCupGroup\GetOne::class)->add(new Auth($pointsService));
+    $app->get('/p-cupGroup/{id}', PPCupGroup\GetOne::class)->add(new Auth($pointsService));
 
     $app->get('/externalAPI/call', Cron\Start::class);
+
+    //TODO add ADMIN security
+    $app->post('/admin/ppCup', PPCup\Create::class);
 
     // Catch-all route to serve a 404 Not Found page if none of the routes match
     // NOTE: make sure this route is defined last

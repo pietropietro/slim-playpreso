@@ -1,0 +1,32 @@
+[
+    {
+        "name": "GROUP_STAGE",
+        "level": 1,
+        "rounds": 3,
+        "groupTags": ["A","B","C","D","E","F","G","H"]
+    },
+    {
+        "name": "ROUND_OF_16",
+        "level": 2,
+        "rounds": 1,
+        "groupTags": ["BA","AB","DC","CD","HG","GH","FE","EF"]
+    },
+    {
+        "name": "QUARTER_FINALS",
+        "level": 3,
+        "rounds": 1,
+        "groupTags": ["BADC","FEHG", "ABCD", "EFGH"]
+    },
+    {
+        "name": "SEMI_FINALS",
+        "level": 4,
+        "rounds": 1,
+        "groupTags": ["BADCFEHG", "ABCDEFGH"]
+    },
+    {
+        "name": "FINAL",
+        "level": 5,
+        "rounds": 1,
+        "groupTags": ["BADCFEHGABCDEFGH"]
+    }
+]

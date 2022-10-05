@@ -125,6 +125,7 @@ $container['pptournamenttype_check_service'] = static fn (
 ):  PPTournamentType\Check => new  PPTournamentType\Check(
     $container->get('pptournamenttype_find_service'),
     $container->get('points_find_service'),
+    $container->get('ppcup_repository')
 );
 
 
@@ -230,6 +231,15 @@ $container['ppcup_find_service'] = static fn (
     $container->get('userparticipation_find_service'),
     $container->get('ppcup_repository'),
     $container->get('ppcupgroup_repository'),
+);
+
+$container['ppcup_create_service'] = static fn (
+    ContainerInterface $container
+):  PPCup\Create => new  PPCup\Create(
+    $container->get('ppcup_repository'),
+    $container->get('ppcupgroup_repository'),
+    $container->get('pptournamenttype_check_service'),
+    $container->get('pptournamenttype_find_service'),
 );
 
 

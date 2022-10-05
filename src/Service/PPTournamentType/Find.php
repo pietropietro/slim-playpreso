@@ -26,6 +26,9 @@ final class Find  extends BaseService{
         if(!$ppTT['cup_format']){
             $ppTT['next'] = $this->ppTournamentTypeRepository->getByNameAndLevel(name: $ppTT['name'], level: $ppTT['level']+1);
         }
+        else{
+            $ppTT['cup_format'] = json_decode($ppTT['cup_format']);
+        }
         return $ppTT;
     }
 
