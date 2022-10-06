@@ -17,12 +17,12 @@ abstract class Base extends BaseController
 {
     protected function getFindUserService(): Find
     {
-        return $this->container->get('find_user_service');
+        return $this->container->get('user_find_service');
     }
 
     protected function getCreateUserService(): Create
     {
-        return $this->container->get('create_user_service');
+        return $this->container->get('user_create_service');
     }
 
     protected function getUpdateUserService(): Update

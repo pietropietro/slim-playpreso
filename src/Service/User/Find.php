@@ -15,6 +15,10 @@ final class Find extends Base
     ) {
     }
 
+    public function isAdmin(int $userId){
+        return $this->userRepository->isAdmin($userId);
+    }
+
     public function getOne(int $userId) 
     {
         if (self::isRedisEnabled() === true && $cached = $this->getUserFromCache($userId)) {
@@ -29,5 +33,6 @@ final class Find extends Base
 
         return $user;
     }
+
 
 }

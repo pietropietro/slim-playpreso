@@ -10,11 +10,13 @@ use Slim\Http\Response;
 use Slim\Route;
 use Firebase\JWT\JWT;
 use \App\Service\Points;
+use \App\Service\User;
 
 final class Auth extends Base
 {
     public function __construct(
-        protected Points\Find $pointsService
+        protected Points\Find $pointsService,
+        protected ?User\Find $findUserService = null
     ){}
 
     public function __invoke(
@@ -37,6 +39,10 @@ final class Auth extends Base
 
         $user_id = $requestBody['JWT_decoded']->id;
         $points = $this->pointsService->get($user_id);
+
+        if(!!$this->findUserService && !$this->findUserService->isAdmin($user_id)){
+            throw new \App\Exception\Auth('NOT AN ADMIN.', 401);
+        }
         
         $updatedJWT = Auth::createToken(
             $requestBody['JWT_decoded']->username, 

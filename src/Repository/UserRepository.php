@@ -34,6 +34,12 @@ final class UserRepository extends BaseRepository
         return $user;
     }
 
+    public function isAdmin(int $userId){
+        $this->db->where('id',$userId);
+        $this->db->where('admin', 1);
+        return !!$this->db->getOne('users') ? true : false;
+    }
+
     public function getId(string $username){
         $this->db->where('username',$username);
         $user = $this->db->getOne('users');
