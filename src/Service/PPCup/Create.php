@@ -24,7 +24,7 @@ final class Create extends BaseService{
         $id = $this->ppCupRepository->create($ppTournamentType_id, $slug); 
 
         foreach ($format as $key => $cup_level) {
-            $this->createGroups($id, $format->level, $format->rounds, $format->groupTags);
+            $this->createGroups($id, $cup_level->level, $cup_level->rounds, $cup_level->groupTags);
         }
     }
 

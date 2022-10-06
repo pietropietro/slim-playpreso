@@ -228,9 +228,9 @@ $container['ppcup_find_service'] = static fn (
     ContainerInterface $container
 ):  PPCup\Find => new  PPCup\Find(
     $container->get('redis_service'),
-    $container->get('userparticipation_find_service'),
     $container->get('ppcup_repository'),
-    $container->get('ppcupgroup_repository'),
+    $container->get('ppcupgroup_find_service'),
+    $container->get('pptournamenttype_find_service'),
 );
 
 $container['ppcup_create_service'] = static fn (
@@ -243,11 +243,12 @@ $container['ppcup_create_service'] = static fn (
 );
 
 
-$container['ppcupgroup_service'] = static fn (
+$container['ppcupgroup_find_service'] = static fn (
     ContainerInterface $container
 ):  PPCupGroup\Find => new  PPCupGroup\Find(
     $container->get('redis_service'),
     $container->get('ppcupgroup_repository'),
+    $container->get('userparticipation_find_service')
 );
 
 $container['external_api_service'] = static fn (

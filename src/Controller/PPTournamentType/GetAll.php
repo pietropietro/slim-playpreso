@@ -18,9 +18,6 @@ final class GetAll extends Base
         array $args
     ): Response {
         
-        $input = (array) $request->getParsedBody();
-        $data = json_decode((string) json_encode($input), false);
-
         $onlyCups = $request->getQueryParams()['onlyCups'] ?? null;
         $ppTournamentTypes = $this->getPPTournamentTypeService()->get(null, onlyCups: !!$onlyCups);
 

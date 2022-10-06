@@ -43,7 +43,7 @@ final class Check  extends BaseService{
     }
 
     public function canCreateCup(int $ppTournamentType_id){
-        if($this->ppCupRepository->getOneForType()){
+        if($this->ppCupRepository->hasOneUnfinished($ppTournamentType_id)){
             throw new \App\Exception\User("cannot create p-cup", 401);
         }
         return true;

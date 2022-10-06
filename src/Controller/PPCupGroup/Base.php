@@ -12,7 +12,7 @@ abstract class Base extends BaseController
 {
     protected function getCupGroupService(): Service\PPCupGroup\Find
     {
-        return $this->container->get('ppcupgroup_service');
+        return $this->container->get('ppcupgroup_find_service');
     } 
 
     protected function getUserParticipationService(): Service\UserParticipation\Find

@@ -19,8 +19,10 @@ final class Create extends Base
     ): Response {
         $input = (array) $request->getParsedBody();
         $data = json_decode((string) json_encode($input), false);
-
-        $ppCup = $this->getCreateCupService()->create($data->ppTournamentType_id, $data->slug);
+        
+        $ppTournamentTypeId = (int) $args['id'];
+        
+        $ppCup = $this->getCreateCupService()->create($ppTournamentTypeId, $data->slug);
         return $this->jsonResponse($response, 'success', $ppCup, 200);
     }
 }

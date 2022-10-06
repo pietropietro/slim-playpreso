@@ -22,7 +22,20 @@ final class Find  extends BaseService{
 
     public function getOne(int $id){
         $ppTT =  $this->ppTournamentTypeRepository->getOne($id);
-        $ppTT['leagues'] = $this->leagueService->getForPPTournamentType($id);
+        $ppTT = $this->enrich($ppTT);
+        return $ppTT;
+    }
+
+    public function get(?array $ids, ?bool $onlyCups){
+        $ppTTs =  $this->ppTournamentTypeRepository->get($ids, $onlyCups);
+        foreach ($ppTTs as $key => $tt) {
+            $ppTTs[$key] = $this->enrich($tt);
+        }
+        return $ppTTs;
+    }
+
+    private function enrich($ppTT){
+        $ppTT['leagues'] = $this->leagueService->getForPPTournamentType($ppTT['id']);
         if(!$ppTT['cup_format']){
             $ppTT['next'] = $this->ppTournamentTypeRepository->getByNameAndLevel(name: $ppTT['name'], level: $ppTT['level']+1);
         }
@@ -30,15 +43,6 @@ final class Find  extends BaseService{
             $ppTT['cup_format'] = json_decode($ppTT['cup_format']);
         }
         return $ppTT;
-    }
-
-
-    public function get(?array $ids, ?bool $onlyCups){
-        $ppTTs =  $this->ppTournamentTypeRepository->get($ids, $onlyCups);
-        foreach ($ppTTs as $key => $tt) {
-            $ppTTs[$key]['leagues'] = $this->leagueService->getForPPTournamentType($tt['id']);
-        }
-        return $ppTTs;
     }
 
     public function getAvailablePPCupsForUser(int $userId): array{

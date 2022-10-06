@@ -40,6 +40,7 @@ ALTER TABLE ppCups ADD UNIQUE (slug);
 
 ALTER TABLE ppCupGroups DROP COLUMN round_count;
 ALTER TABLE ppCupGroups DROP COLUMN user_count;
+ALTER TABLE ppCupGroups RENAME COLUMN groupTag TO tag;
 
 ALTER TABLE teams DROP COLUMN last_five;
 ALTER TABLE teams ADD COLUMN ls_id INT AFTER id;

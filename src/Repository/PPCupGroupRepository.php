@@ -38,7 +38,7 @@ final class PPCupGroupRepository extends BaseRepository
             "level" => $level,
             "rounds" => $rounds,
             "created_at" => $this->db->now(),
-            "group_tag" => $tag,
+            "tag" => $tag,
         );
         return $this->db->insert('ppCupGroups',$data);
     }

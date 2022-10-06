@@ -19,8 +19,6 @@ final class GetOne extends Base
     ): Response {
         $ppCupId = (int) $args['id'];
         $ppCup = $this->getFindCupService()->getOne($ppCupId);
-        $ppCup['ppTournamentType'] = $this->getTournamentTypeService()->getOne($ppCup['ppTournamentType_id']);
-        $ppCup['levels'] = $this->getFindCupService()->getLevels($ppCupId);
                  
         return $this->jsonResponse($response, 'success', $ppCup, 200);
     }
