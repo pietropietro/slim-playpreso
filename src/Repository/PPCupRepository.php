@@ -15,8 +15,9 @@ final class PPCupRepository extends BaseRepository
         return $this->db->get('ppCups');
     }
 
-    function getOne(int $id){
-        $this->db->where('id', $id);
+    function getOne($uniqueVal, bool $is_slug = false){
+        $column = $is_slug ? 'slug' : 'id';
+        $this->db->where($column, $uniqueVal);
         return $this->db->getOne('ppCups');
     }
 

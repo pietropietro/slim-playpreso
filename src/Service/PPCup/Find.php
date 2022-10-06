@@ -18,8 +18,8 @@ final class Find  extends BaseService{
         protected PPTournamentType\Find $ppTournamentTypeFindService
     ) {}
 
-    public function getOne($ppCupId){
-        $ppCup = $this->ppCupRepository->getOne($ppCupId);
+    public function getOne($uniqueVal, bool $is_slug = false){
+        $ppCup = $this->ppCupRepository->getOne($uniqueVal, $is_slug);
         return $this->enrich($ppCup, with_levels: true);
     }
 

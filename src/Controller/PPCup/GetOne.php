@@ -17,8 +17,11 @@ final class GetOne extends Base
         Response $response,
         array $args
     ): Response {
-        $ppCupId = (int) $args['id'];
-        $ppCup = $this->getFindCupService()->getOne($ppCupId);
+
+        $is_slug = !is_int($args['id']);
+        $ppCupId = $is_slug ? $args['id'] : (int) $args['id'];
+
+        $ppCup = $this->getFindCupService()->getOne($ppCupId, $is_slug);
                  
         return $this->jsonResponse($response, 'success', $ppCup, 200);
     }
