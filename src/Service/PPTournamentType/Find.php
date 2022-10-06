@@ -32,8 +32,9 @@ final class Find  extends BaseService{
         return $ppTT;
     }
 
-    public function get(array $ids){
-        $ppTTs =  $this->ppTournamentTypeRepository->get($ids);
+
+    public function get(?array $ids, ?bool $onlyCups){
+        $ppTTs =  $this->ppTournamentTypeRepository->get($ids, $onlyCups);
         foreach ($ppTTs as $key => $tt) {
             $ppTTs[$key]['leagues'] = $this->leagueService->getForPPTournamentType($tt['id']);
         }

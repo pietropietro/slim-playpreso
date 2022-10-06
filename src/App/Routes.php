@@ -63,6 +63,7 @@ return function ($app){
 
     //TODO add ADMIN security
     $app->post('/admin/ppCup', PPCup\Create::class);
+    $app->get('/admin/p-tournamentTypes', PPTournamentType\GetAll::class)->add(new Auth($pointsService));
 
     // Catch-all route to serve a 404 Not Found page if none of the routes match
     // NOTE: make sure this route is defined last

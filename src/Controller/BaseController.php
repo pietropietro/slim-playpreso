@@ -44,6 +44,6 @@ abstract class BaseController
             return (int) $input['JWT_decoded']->id;
         }
 
-        throw new User('Invalid user. Permission failed.', 400);
+        throw new \App\Exception\User('Invalid user. Permission failed.', 400);
     }
 }
