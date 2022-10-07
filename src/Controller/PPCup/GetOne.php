@@ -18,7 +18,7 @@ final class GetOne extends Base
         array $args
     ): Response {
 
-        $is_slug = !is_int($args['id']);
+        $is_slug = !is_numeric($args['id']);
         $ppCupId = $is_slug ? $args['id'] : (int) $args['id'];
 
         $ppCup = $this->getFindCupService()->getOne($ppCupId, $is_slug);
