@@ -24,13 +24,18 @@ final class Create extends BaseService{
         $id = $this->ppCupRepository->create($ppTournamentType_id, $slug); 
 
         foreach ($format as $key => $cup_level) {
-            $this->createGroups($id, $cup_level->level, $cup_level->rounds, $cup_level->groupTags);
+            $this->createLevelGroups(
+                $id, 
+                $cup_level->level, 
+                $cup_level->rounds, 
+                $cup_level->group_tags, 
+                $cup_level->group_participants);
         }
     }
 
-    private function createGroups(int $ppCupId, int $level, int $rounds, array $tags){
+    private function createLevelGroups(int $ppCupId, int $level, int $rounds, array $tags, int $participants){
         foreach ($tags as $key => $tag) {
-            $this->ppCupGroupRepository->create($ppCupId, $level, $rounds, $tag);
+            $this->ppCupGroupRepository->create($ppCupId, $level, $rounds, $tag, $participants);
         }
     }
 
