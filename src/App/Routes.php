@@ -37,7 +37,7 @@ return function ($app){
 
     $app->post('/guess/lock/{id}', Guess\Lock::class)->add(new Auth($pointsService));
     
-    $app->group('/p-tournamentType', function () use ($app): void {
+    $app->group('/p-tournament-type', function () use ($app): void {
         $app->post('/join/{id}', PPTournamentType\Join::class);
     })->add(new Auth($pointsService));
 
@@ -52,12 +52,12 @@ return function ($app){
         $app->put('/{id}', PPCup\Update::class);
     })->add(new Auth($pointsService));
 
-    $app->group('/userParticipation', function () use ($app): void {
+    $app->group('/user-participation', function () use ($app): void {
         $app->get('/p-leagues', UserParticipation\PPLeagues::class);
         $app->get('/p-cups', UserParticipation\PPCups::class);
     })->add(new Auth($pointsService));
 
-    $app->get('/p-cupGroup/{id}', PPCupGroup\GetOne::class)->add(new Auth($pointsService));
+    $app->get('/p-cup-group/{id}', PPCupGroup\GetOne::class)->add(new Auth($pointsService));
 
     $app->get('/externalAPI/call', Cron\Start::class);
 
@@ -66,7 +66,7 @@ return function ($app){
     $app->group('/admin', function () use ($app): void {
         $app->post('/p-cup/{id}', PPCup\Create::class);
         $app->get('/p-cup', PPCup\GetAll::class);
-        $app->get('/p-tournamentTypes', PPTournamentType\GetAll::class);
+        $app->get('/p-tournament-types', PPTournamentType\GetAll::class);
     })->add(new Auth($pointsService, $admin));
 
     // Catch-all route to serve a 404 Not Found page if none of the routes match
