@@ -8,6 +8,7 @@ use App\Service\RedisService;
 use App\Service\BaseService;
 use App\Service\PPCupGroup;
 use App\Service\PPTournamentType;
+use App\Service\UserParticipation;
 use App\Repository\PPCupRepository;
 
 final class Find  extends BaseService{
@@ -15,7 +16,8 @@ final class Find  extends BaseService{
         protected RedisService $redisService,
         protected PPCupRepository $ppCupRepository,
         protected PPCupGroup\Find $ppCupGroupFindService,
-        protected PPTournamentType\Find $ppTournamentTypeFindService
+        protected PPTournamentType\Find $ppTournamentTypeFindService,
+        protected UserParticipation\Find $upFindService
     ) {}
 
     public function getOne($uniqueVal, bool $is_slug = false){
@@ -34,6 +36,7 @@ final class Find  extends BaseService{
     private function enrich($ppCup, bool $with_levels){
         $ppCup['ppTournamentType'] = $this->ppTournamentTypeFindService->getOne($ppCup['ppTournamentType_id']);
         if($with_levels)$ppCup['levels'] = $this->ppCupGroupFindService->getLevels($ppCup['id']);
+        $ppCup['user_count'] = $this->upFindService->countParticipations('ppCup_id', $ppCup['id']);
         return $ppCup;
     }
 

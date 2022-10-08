@@ -231,6 +231,7 @@ $container['ppcup_find_service'] = static fn (
     $container->get('ppcup_repository'),
     $container->get('ppcupgroup_find_service'),
     $container->get('pptournamenttype_find_service'),
+    $container->get('userparticipation_find_service'),
 );
 
 $container['ppcup_create_service'] = static fn (

@@ -91,7 +91,7 @@ final class UserParticipationRepository extends BaseRepository
 			"finished" => 1,
             "updated_at" => $this->db->now(),
 		);
-        $this->db->where($tournamentColumn, $id);
+        $this->db->where($tournamentColumn, $tournamentId);
         $this->db->update($this->tableName, $data);
     }
 
@@ -100,8 +100,13 @@ final class UserParticipationRepository extends BaseRepository
 			"tot_points" => 0,
             "updated_at" => $this->db->now(),
 		);
-        $this->db->where($tournamentColumn, $id);
+        $this->db->where($tournamentColumn, $tournamentId);
         $this->db->update($this->tableName, $data);
+    }
+
+    public function count(string $tournamentColumn, int $tournamentId){
+        $this->db->where($tournamentColumn, $tournamentId);
+        return $this->db->getValue($this->tableName, "count(*)");
     }
 
 }

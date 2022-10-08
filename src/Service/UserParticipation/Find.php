@@ -56,4 +56,8 @@ final class Find  extends Base {
         $trophies['ppLeagues'] = $ppLeagueUps;
         return $trophies;
     }
+
+    public function countParticipations(string $tournamentColumn, int $tournamentId){
+        return $this->userParticipationRepository->count($tournamentColumn, $tournamentId);
+    }
 }

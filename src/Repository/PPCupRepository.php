@@ -35,4 +35,5 @@ final class PPCupRepository extends BaseRepository
         $this->db->where('finished_at IS NULL');
         return $this->db->has('ppCups');
     }
+
 }
