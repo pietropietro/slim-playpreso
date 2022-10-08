@@ -1,27 +1,27 @@
 [
     {
-        "name": "GROUP_STAGE",
+        "name": "GROUP STAGE",
         "level": 1,
         "rounds": 3,
         "group_participants": 4,
         "group_tags": ["A","B","C","D","E","F","G","H"]
     },
     {
-        "name": "ROUND_OF_16",
+        "name": "ROUND OF 16",
         "level": 2,
         "rounds": 1,
         "group_participants": 2,
         "group_tags": ["BA","AB","DC","CD","HG","GH","FE","EF"]
     },
     {
-        "name": "QUARTER_FINALS",
+        "name": "QUARTER FINALS",
         "level": 3,
         "rounds": 1,
         "group_participants": 2,
         "group_tags": ["BADC","FEHG", "ABCD", "EFGH"]
     },
     {
-        "name": "SEMI_FINALS",
+        "name": "SEMI FINALS",
         "level": 4,
         "rounds": 1,
         "group_participants": 2,
