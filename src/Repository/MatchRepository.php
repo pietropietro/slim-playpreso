@@ -6,6 +6,14 @@ namespace App\Repository;
 
 final class MatchRepository extends BaseRepository
 {   
+    public function get() : ?array {
+        $start = date("Y-m-d H:i:s", strtotime('-5 days'));
+        $finish = date("Y-m-d H:i:s", strtotime('+5 days'));
+        $this->db->where('date_start', array($start, $finish), 'BETWEEN');
+        $this->db->orderBy('date_start', 'ASC');
+        return $this->db->get('matches');
+    }
+
     public function getOne(int $matchId, bool $is_external_id = false) : ?array {
         $column = !!$is_external_id ? 'ls_id' : 'id';
         $this->db->where($column, $matchId);

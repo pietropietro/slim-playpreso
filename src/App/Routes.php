@@ -6,6 +6,7 @@ use App\Controller\User;
 use App\Controller\UserParticipation;
 use App\Controller\PPLeague;
 use App\Controller\Guess;
+use App\Controller\Match;
 use App\Controller\PPTournamentType;
 use App\Controller\PPCup;
 use App\Controller\PPCupGroup;
@@ -67,6 +68,7 @@ return function ($app){
         $app->post('/p-cup/{id}', PPCup\Create::class);
         $app->get('/p-cup', PPCup\GetAll::class);
         $app->get('/p-tournament-types', PPTournamentType\GetAll::class);
+        $app->get('/matches', Match\GetAll::class);
     })->add(new Auth($pointsService, $admin));
 
     // Catch-all route to serve a 404 Not Found page if none of the routes match
