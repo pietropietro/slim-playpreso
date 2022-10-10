@@ -31,7 +31,7 @@ return function ($app){
     $pointsService = $container->get('points_find_service');
 
     $app->group('/user', function () use ($app, $pointsService): void {
-        $app->post('', User\Create::class);
+        $app->post('/signup', User\Create::class);
         $app->post('/login', User\Login::class);
         $app->get('/{username}', User\GetOne::class)->add(new Auth($pointsService));
     });
