@@ -17,24 +17,26 @@ final class Verify extends BaseService{
         protected UserParticipation\Update $updateUpService
     ){}
     
-    public function verify(array $matchIds){
-        $ppRounds = $this->findService->getForMatches($matchIds);
-        
-        foreach ($ppRounds as $key => $round) {    
-            if($round['ppLeague_id']){
-                $this->updateUpService->update('ppLeague_id', $round['ppLeague_id']);
-                if($this->isRoundFinished($round)){
-                    $this->ppLeagueVerifyService->verify($round['ppLeague_id'], $round['round']);
-                }
-            }
-
-            //CUP TODO
-            //$ppcupGroup = getppcupGroupservice->getOne(id)
-            //check if tournament needs more rounds 
-            //if yes create
-            //if no END tournament (if cupgroup -> )
+    public function verifyForMatch(int $matchId){
+        $ppRoundIds = $this->findService->getForMatches(array($matchId), ids_only: true);
+        foreach ($ppRoundIds as $key => $id) {    
+            $this->verify($id);
         }
-    
+    }
+
+    public function verify($id){
+        $ppRound=$this->findService->getOne($id, false);
+        if($ppRound['ppLeague_id']){
+            $this->updateUpService->update('ppLeague_id', $ppRound['ppLeague_id']);
+            if($this->isRoundFinished($ppRound)){
+                $this->ppLeagueVerifyService->verify($ppRound['ppLeague_id'], $ppRound['round']);
+            }
+        }
+        //CUP TODO
+        //$ppcupGroup = getppcupGroupservice->getOne(id)
+        //check if tournament needs more rounds 
+        //if yes create
+        //if no END tournament (if cupgroup -> )
     }
 
     public function isRoundFinished(array $ppRound) : bool {

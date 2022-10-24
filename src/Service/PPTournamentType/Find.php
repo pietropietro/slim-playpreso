@@ -49,7 +49,7 @@ final class Find  extends BaseService{
         return $this->ppTournamentTypeRepository->availablePPCupsForUser($userId);
     }
 
-    public function getAvailablePPLeaguesForUser(int $userId, bool $only_ids = true): array{
+    public function getAvailablePPLeaguesForUser(int $userId, bool $ids_only = true): array{
 
         $tournamentTypesMap = $this->ppTournamentTypeRepository->getPPLeaguesMap();
         $promotedTTids = $this->userParticipationRepository->getPromotedTournamentTypesForUser($userId, false, true);
@@ -71,7 +71,7 @@ final class Find  extends BaseService{
         }
         
         $ids = $this->filterIdsExpensive($userId, $ids);
-        if($only_ids) return $ids ?? [];
+        if($ids_only) return $ids ?? [];
         return $ids ? $this->get($ids) : [];
     }
 

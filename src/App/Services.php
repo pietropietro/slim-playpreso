@@ -265,7 +265,6 @@ $container['match_elaborate_service'] = static fn (
     ContainerInterface $container
 ):  Match\Elaborate => new  Match\Elaborate(
     $container->get('match_repository'),
-    $container->get('ppround_verify_service'),
     $container->get('match_create_service'),
     $container->get('match_verify_service'),
 );
