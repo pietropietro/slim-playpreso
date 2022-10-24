@@ -22,11 +22,15 @@ final class Find extends BaseService{
     }
 
     public function get() : array {
-        $matches = $this->matchRepository->get();
-        foreach ($matches as $key => $match) {
-            $matches[$key] = $this->enrich($match);
+        $adminMatches = array();
+        for($i=-3;$i<4; $i++){
+            $dateString = date("Y-m-d", strtotime(sprintf("%+d",$i).' days'));
+            $retrieved = $this->matchRepository->get(
+                date: $dateString
+            );
+            $adminMatches[$dateString] = $this->enrichAll($retrieved);
         }
-        return $matches;
+        return $adminMatches;
     }
 
     private function enrich($match){
@@ -34,6 +38,13 @@ final class Find extends BaseService{
         $match['awayTeam'] = $this->teamRepository->getOne($match['away_id']);
         $match['league'] = $this->leagueService->getOne($match['league_id']);
         return $match;
+    }
+
+    private function enrichAll($matches){
+        foreach ($matches as &$match) {
+            $match = $this->enrich($match);
+        }
+        return $matches;
     }
     
 }

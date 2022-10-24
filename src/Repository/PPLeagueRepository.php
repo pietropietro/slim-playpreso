@@ -32,10 +32,18 @@ final class PPLeagueRepository extends BaseRepository
         return $this->db->insert('ppLeagues',$data);
     }
 
-    function start(int $id) {
+    function setStarted(int $id) {
         $data = array(
             "started_at" => $this->db->now(),
             "round_count" => 1
+        );
+        $this->db->where('id', $id);
+        $this->db->update('ppLeagues', $data, 1);
+    }
+
+    public function setFinished(int $id){
+        $data = array(
+            "finished_at" => $this->db->now(),
         );
         $this->db->where('id', $id);
         $this->db->update('ppLeagues', $data, 1);
@@ -74,5 +82,7 @@ final class PPLeagueRepository extends BaseRepository
         $this->db->where('id',$id);
         $this->db->update('ppLeagues', $data);
     }
+
+  
 
 }

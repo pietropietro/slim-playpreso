@@ -6,10 +6,13 @@ namespace App\Repository;
 
 final class MatchRepository extends BaseRepository
 {   
-    public function get() : ?array {
-        $start = date("Y-m-d H:i:s", strtotime('-5 days'));
-        $finish = date("Y-m-d H:i:s", strtotime('+5 days'));
-        $this->db->where('date_start', array($start, $finish), 'BETWEEN');
+    public function get(string $from= null, string $to= null, string $date = null) : ?array {
+        if($from && $to){
+            $this->db->where('date_start', array($from, $to), 'BETWEEN');    
+        }
+        else if($date){
+            $this->db->where('DATE(date_start) = "'.$date.'"');    
+        }
         $this->db->orderBy('date_start', 'ASC');
         return $this->db->get('matches');
     }

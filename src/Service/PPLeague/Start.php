@@ -17,7 +17,7 @@ final class Start  extends BaseService{
     ) {}
 
     public function start($id, $ppTournamentTypeId): bool{
-        $this->ppLeagueRepository->start($id);
+        $this->ppLeagueRepository->setStarted($id);
         if($this->createPPRoundService->create('ppLeague_id', $id, $ppTournamentTypeId, 1)) return true;
         return false;
     }
