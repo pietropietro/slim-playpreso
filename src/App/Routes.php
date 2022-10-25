@@ -65,10 +65,17 @@ return function ($app){
 
     $admin = $container->get('user_find_service');
     $app->group('/admin', function () use ($app): void {
+        
         $app->post('/p-cup/{id}', PPCup\Create::class);
         $app->get('/p-cup', PPCup\GetAll::class);
+        
         $app->get('/p-tournament-types', PPTournamentType\GetAll::class);
-        $app->get('/matches', Match\GetAll::class);
+        
+        $app->group('/match', function() use($app): void {
+            $app->get('', Match\GetAll::class);
+            $app->post('/{id}', Match\Verify::class);
+        });
+        
     })->add(new Auth($pointsService, $admin));
 
     // Catch-all route to serve a 404 Not Found page if none of the routes match

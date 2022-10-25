@@ -19,11 +19,11 @@ final class Verify extends BaseService{
         protected UserParticipation\Update $updateUpService,
     ) {}
 
-    public function verify(int $id, int $round_just_finished){
+    public function verifyAfterRound(int $id, int $round_just_finished){
+        
         $ppLeague = $this->findService->getOne($id);
         if($ppLeague['ppTournamentType']['rounds'] === $round_just_finished){
-            $this->ppLeagueRepository->setFinished($id);
-            $this->updateUpService->setFinished('ppLeague_id', $id);
+           $this->verifyAfterFinished($id);
         }
         
         //double-check that no successive round was already created
@@ -43,7 +43,15 @@ final class Verify extends BaseService{
             $this->ppLeagueRepository->incRoundCount($id);
             return;
         }
+    }
+
+    private function verifyAfterFinished(int $id){
+        $this->ppLeagueRepository->setFinished($id);
+        $this->updateUpService->setFinished('ppLeague_id', $id);
+
+        //TODO handle ups, best 3 users get promoted to next level
         
+        //TODO handle trophies ?
     }
 
 }

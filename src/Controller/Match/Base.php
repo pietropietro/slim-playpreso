@@ -13,6 +13,11 @@ abstract class Base extends BaseController
     protected function getFindMatchService(): Match\Find
     {
         return $this->container->get('match_find_service');
-    } 
+    }
+    
+    protected function getVerifyMatchService(): Match\Verify
+    {
+        return $this->container->get('match_verify_service');
+    }
 
 }

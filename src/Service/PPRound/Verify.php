@@ -17,7 +17,7 @@ final class Verify extends BaseService{
         protected UserParticipation\Update $updateUpService
     ){}
     
-    public function verifyForMatch(int $matchId){
+    public function verifyAfterMatch(int $matchId){
         $ppRoundIds = $this->findService->getForMatches(array($matchId), ids_only: true);
         foreach ($ppRoundIds as $key => $id) {    
             $this->verify($id);
@@ -29,7 +29,7 @@ final class Verify extends BaseService{
         if($ppRound['ppLeague_id']){
             $this->updateUpService->update('ppLeague_id', $ppRound['ppLeague_id']);
             if($this->isRoundFinished($ppRound)){
-                $this->ppLeagueVerifyService->verify($ppRound['ppLeague_id'], $ppRound['round']);
+                $this->ppLeagueVerifyService->verifyAfterRound($ppRound['ppLeague_id'], $ppRound['round']);
             }
         }
         //CUP TODO

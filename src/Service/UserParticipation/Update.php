@@ -28,7 +28,7 @@ final class Update  extends Base {
                 id: $upItem['id'], 
                 tot_points: (int)$upItem['tot_points'],
                 tot_unox2:  (int)$upItem['tot_unox2'],
-                tot_locked:  (int)$upItem['tot_locked'],
+                tot_locked: (int)$upItem['tot_locked'],
                 tot_preso:  (int)$upItem['tot_preso'],
                 position: $index + 1
             );

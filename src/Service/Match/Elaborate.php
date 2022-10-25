@@ -30,7 +30,7 @@ final class Elaborate extends BaseService{
             if($match['verified_at'])continue;
             
             if($eventObj->Eps === 'FT'){
-                $this->matchVerifyService->verify($eventObj, $match['id']);
+                $this->matchVerifyService->verify($match['id'], (int)$eventObj->Tr1, (int)$eventObj->Tr2);
                 continue;
             }
 
