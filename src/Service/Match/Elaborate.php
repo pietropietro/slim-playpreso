@@ -34,6 +34,16 @@ final class Elaborate extends BaseService{
                 continue;
             }
 
+            // TODO if abandoned change ppRoundMatches
+            // if($eventObj->Eps === 'Aband.'){
+                
+            // }
+
+            //TODO postponed handle
+            // if($eventObj->Eps === 'Postp.'){
+                
+            // }
+
             if(new \DateTime($match['date_start']) != new \DateTime((string)$eventObj->Esd)){
                 $this->matchRepository->updateDateStart($match['id'], (string)$eventObj->Esd);
             }   

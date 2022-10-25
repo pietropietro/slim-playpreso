@@ -21,9 +21,9 @@ final class Find extends BaseService{
         return $this->enrich($match);
     }
 
-    public function get() : array {
+    public function get(int $days_diff) : array {
         $adminMatches = array();
-        for($i=-3;$i<4; $i++){
+        for($i=$days_diff-3; $i<$days_diff+4; $i++){
             $dateString = date("Y-m-d", strtotime(sprintf("%+d",$i).' days'));
             $retrieved = $this->matchRepository->get(
                 date: $dateString
