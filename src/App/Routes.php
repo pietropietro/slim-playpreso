@@ -7,6 +7,7 @@ use App\Controller\UserParticipation;
 use App\Controller\PPLeague;
 use App\Controller\Guess;
 use App\Controller\Match;
+use App\Controller\League;
 use App\Controller\PPTournamentType;
 use App\Controller\PPCup;
 use App\Controller\PPCupGroup;
@@ -74,6 +75,12 @@ return function ($app){
         $app->group('/match', function() use($app): void {
             $app->get('', Match\GetAll::class);
             $app->post('/{id}', Match\Verify::class);
+        });
+
+        $app->group('/league', function() use($app): void {
+            $app->get('', League\GetAll::class);
+            $app->get('/{id}', League\GetOne::class);
+            // $app->post('/{id}', Match\Verify::class);
         });
         
     })->add(new Auth($pointsService, $admin));

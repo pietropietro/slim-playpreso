@@ -6,6 +6,11 @@ namespace App\Repository;
 
 final class LeagueRepository extends BaseRepository
 {
+
+    public function get(){
+        return $this->db->get('leagues');
+    }
+
     public function getOne(int $id){
         $this->db->where('id', $id);
         return $this->db->getOne('leagues');

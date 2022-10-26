@@ -18,7 +18,9 @@ final class GetOne extends Base
         array $args
     ): Response {
         $id = (int) $args['id'];
-        $league = $this->getFindLeagueService()->getOne(id: $id, admin: true);
+        $league = $this->getFindLeagueService()->getOne(id: $id);
+        $league['last_next_matches'] = $this->getFindMatchService()->adminGetForLeague($id);
+
         return $this->jsonResponse($response, 'success', $league, 200);
     }
 }

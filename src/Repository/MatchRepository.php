@@ -59,19 +59,32 @@ final class MatchRepository extends BaseRepository
         $this->db->update('matches', $data, 1);
     }
 
-    public function getNextMatchesForLeagues(array $league_ids, int $plus_days) : ?array{
+    public function getMatchesForLeagues(
+        array $league_ids, 
+        ?int $from_days_diff = null, 
+        ?int $until_days_diff = null, 
+        ?string $sort = 'ASC', 
+        ?int $limit = 50
+    ) : ?array {
 
-        $start = date("Y-m-d H:i:s", strtotime('+1 days'));
-        $finish = date("Y-m-d H:i:s", strtotime('+'.$plus_days.'days'));
+        $start = !is_null($from_days_diff) ? date("Y-m-d H:i:s", strtotime('+'.$from_days_diff.'days')) : null;
+        $finish = !is_null($until_days_diff) ? date("Y-m-d H:i:s", strtotime('+'.$until_days_diff.'days')) : null;
 
+        if($start && $finish){
+            $this->db->where('date_start', array($start, $finish), 'BETWEEN');    
+        }
+        else if($start){
+            $this->db->where('date_start', $start, '>');    
+        }
+        else if($finish){
+            $this->db->where('date_start', $finish, '<');    
+        }
+        
         //TODO add where league_id + round not distinc  i.e serie a only round 4, 
         $this->db->where('league_id', $league_ids, 'IN');
-        $this->db->where('date_start', array($start, $finish), 'BETWEEN');
-        $this->db->orderBy('date_start', 'ASC');
+        $this->db->orderBy('date_start', $sort);
         
-        return $this->db->get('matches', 50);
+        return $this->db->get('matches', $limit);
     }
 
-
-    
 }

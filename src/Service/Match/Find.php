@@ -21,6 +21,7 @@ final class Find extends BaseService{
         return $this->enrich($match);
     }
 
+
     public function get(int $days_diff) : array {
         $adminMatches = array();
         for($i=$days_diff-3; $i<$days_diff+4; $i++){
@@ -31,6 +32,17 @@ final class Find extends BaseService{
             $adminMatches[$dateString] = $this->enrichAll($retrieved);
         }
         return $adminMatches;
+    }
+
+    public function adminGetForLeague($league_id){
+        $lastMatch=$this->matchRepository->getMatchesForLeagues(array($league_id), null, 0, 'DESC', 1);
+        $nextMatch=$this->matchRepository->getMatchesForLeagues(array($league_id), 0, null, 'ASC', 1);
+        
+        return array(
+            $lastMatch ? $this->enrich($lastMatch[0]) : null,
+            $nextMatch ? $this->enrich($nextMatch[0]) : null
+        );
+        
     }
 
     private function enrich($match){
