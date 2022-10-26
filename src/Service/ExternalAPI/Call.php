@@ -17,8 +17,7 @@ final class Call extends BaseService{
         protected Team\Elaborate $teamService,
     ){}
 
-    public function fetchExternalData($ls_suffix, $league_id){
-
+    public function fetchExternalData(string $ls_suffix, int $league_id, bool $add_match_suffix = false){
         //REAL FETCH
         $client = new Client(
             ['base_uri' => $_SERVER['EXTERNAL_API_BASE_URI'],
@@ -41,7 +40,7 @@ final class Call extends BaseService{
         }
 
         $this->teamService->insertTeams($ls_league_table_teams, country: $ls_league_data->Cnm);
-        $match_import_result = $this->matchService->elaborateLsEvents($ls_events, $league_id);
+        $match_import_result = $this->matchService->elaborateLsEvents($ls_events, $league_id, $add_match_suffix ? $ls_suffix : null);
         $this->leagueService->elaborateLsLeagueTable($ls_league_table_teams, $league_id);
         
         return $match_import_result;

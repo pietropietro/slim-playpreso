@@ -62,7 +62,7 @@ final class LeagueRepository extends BaseRepository
         $start = date("Y-m-d H:i:s", strtotime('-3 days'));
         $finish = date("Y-m-d H:i:s");
         $this->db->where('m.date_start', array($start, $finish), 'BETWEEN');
-        return $this->db->query("select distinct l.id, l.ls_suffix from leagues l");
+        return $this->db->query("select distinct CONCAT(l.ls_suffix, m.ls_suffix) as ls_suffix, l.id, from leagues l");
     }
 
 }

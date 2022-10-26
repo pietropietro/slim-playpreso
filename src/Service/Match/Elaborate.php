@@ -16,14 +16,14 @@ final class Elaborate extends BaseService{
         protected Match\Verify $matchVerifyService,
     ) {}
 
-    public function elaborateLsEvents(array $lsEvents, int $league_id){        
+    public function elaborateLsEvents(array $lsEvents, int $league_id, string $match_ls_suffix = null){        
         foreach ($lsEvents as $key => $eventObj) {
             $match = $this->matchRepository->getOne((int) $eventObj->Eid, true);
             
             if(!$match && $eventObj->Eps === 'FT') continue;
             
             if(!$match){
-                $this->matchCreateService->create($eventObj, $league_id);
+                $this->matchCreateService->create($eventObj, $league_id, $match_ls_suffix);
                 continue;
             }
            

@@ -27,6 +27,8 @@ ALTER TABLE leagues RENAME COLUMN league_tag TO tag;
 ALTER TABLE leagues ADD COLUMN ls_suffix varchar(255) AFTER id;
 ALTER TABLE leagues ADD COLUMN standings json AFTER country_level;
 ALTER TABLE leagues ADD COLUMN updated_at timestamp AFTER created_at;
+ALTER TABLE leagues ADD COLUMN use_match_ls_suffix tinyint default 0 AFTER ls_suffix;
+
 
 ALTER TABLE ppCups DROP FOREIGN KEY presoCups_ibfk_1;
 ALTER TABLE ppCups RENAME COLUMN ppCupType_id TO ppTournamentType_id;
@@ -59,6 +61,8 @@ ALTER TABLE matches RENAME COLUMN external_api_matchid TO ls_id;
 ALTER TABLE matches RENAME COLUMN hometeam_id TO home_id;
 ALTER TABLE matches RENAME COLUMN awayteam_id TO away_id;
 ALTER TABLE matches MODIFY id INT AUTO_INCREMENT;
+ALTER TABLE matches ADD COLUMN ls_suffix varchar(255) AFTER ls_id;
+
 
 
 -- makes the column below NULLABLE, dropping the 222 thingy
