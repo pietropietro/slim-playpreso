@@ -29,6 +29,7 @@ final class Update extends Base
         }
         if(isset($data->use_match_ls_suffix)){
             $updateData['use_match_ls_suffix'] = $data->use_match_ls_suffix;
+            if($data->use_match_ls_suffix)$updateData['ls_suffix'] = null;
         }
 
         $this->getUpdateLeagueService()->update($leagueId, $updateData);
