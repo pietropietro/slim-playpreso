@@ -23,7 +23,7 @@ final class MatchRepository extends BaseRepository
         return $this->db->getOne('matches');
     }
 
-    public function create(int $ls_id, int $league_id, int $home_id, int $away_id, int $round, string $date_start, string $match_ls_suffix = null){
+    public function create(int $ls_id, int $league_id, ?int $home_id, ?int $away_id, int $round, string $date_start, string $match_ls_suffix = null){
         $data = array(
 			"ls_id" => $ls_id,
 			"league_id" => $league_id,

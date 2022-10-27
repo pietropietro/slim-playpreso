@@ -29,9 +29,9 @@ final class TeamRepository extends BaseRepository
         return $this->db->getOne('teams');
     }
 
-    public function idFromExternal(int $ls_id) : int{
+    public function idFromExternal(int $ls_id) : ?int{
         $this->db->where('ls_id',$ls_id);
         $team = $this->db->getOne('teams');
-        return $team['id'];
+        return $team ? $team['id'] : null;
     }
 }

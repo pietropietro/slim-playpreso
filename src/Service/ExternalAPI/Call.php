@@ -33,15 +33,15 @@ final class Call extends BaseService{
 
         $ls_league_data = $decoded->Stages[0];
         $ls_events = $ls_league_data->Events ?? null;
-        $ls_league_table_teams = $ls_league_data->LeagueTable->L[0]->Tables[0]->team;
+        $ls_league_table_teams = $ls_league_data->LeagueTable->L[0]->Tables[0]->team ?? null;
 
         if(!$ls_events){
             throw new \App\Exception\ExternalAPI('something went wrong', 500);
         }
 
-        $this->teamService->insertTeams($ls_league_table_teams, country: $ls_league_data->Cnm);
+        if($ls_league_table_teams)$this->teamService->insertTeams($ls_league_table_teams, country: $ls_league_data->Cnm);
         $match_import_result = $this->matchService->elaborateLsEvents($ls_events, $league_id, $add_match_suffix ? $ls_suffix : null);
-        $this->leagueService->elaborateLsLeagueTable($ls_league_table_teams, $league_id);
+        if(!$add_match_suffix)$this->leagueService->elaborateLsLeagueTable($ls_league_table_teams, $league_id);
         
         return $match_import_result;
 
