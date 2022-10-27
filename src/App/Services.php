@@ -270,9 +270,16 @@ $container['external_api_service'] = static fn (
 $container['match_elaborate_service'] = static fn (
     ContainerInterface $container
 ):  Match\Elaborate => new  Match\Elaborate(
-    $container->get('match_repository'),
     $container->get('match_create_service'),
     $container->get('match_verify_service'),
+    $container->get('match_update_service'),
+);
+
+$container['match_update_service'] = static fn (
+    ContainerInterface $container
+):  Match\Update => new  Match\Update(
+    $container->get('match_repository'),
+    $container->get('team_repository'),
 );
 
 $container['team_elaborate_service'] = static fn (

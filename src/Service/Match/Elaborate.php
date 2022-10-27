@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace App\Service\Match;
 
 use App\Service\BaseService;
-use App\Repository\MatchRepository;
 use App\Service\Match;
 
 
 final class Elaborate extends BaseService{
     public function __construct(
-        protected MatchRepository $matchRepository,
         protected Match\Create $matchCreateService,
         protected Match\Verify $matchVerifyService,
+        protected Match\Update $matchUpdateService,
     ) {}
 
     public function elaborateLsEvents(array $lsEvents, int $league_id, string $match_ls_suffix = null){        
@@ -38,14 +37,16 @@ final class Elaborate extends BaseService{
             // if($eventObj->Eps === 'Aband.'){
                 
             // }
-
             //TODO postponed handle
             // if($eventObj->Eps === 'Postp.'){
                 
             // }
-
+            
+            if(!$match['home_id'] || $match['away_id']){
+                $this->matchUpdateService->updateTeams($match['id'],(int)$eventObj->T1[0]->ID, (int)$eventObj->T2[0]->ID, true);
+            }
             if(new \DateTime($match['date_start']) != new \DateTime((string)$eventObj->Esd)){
-                $this->matchRepository->updateDateStart($match['id'], (string)$eventObj->Esd);
+                $this->matchUpdateService->updateDateStart($match['id'], (string)$eventObj->Esd);
             }   
         }
     }

@@ -49,6 +49,15 @@ final class MatchRepository extends BaseRepository
         $this->db->update('matches', $data, 1);
     }
 
+    public function updateTeams(int $id, int $home_id, int $away_id){
+        $data = array(
+			"home_id" => $home_id,
+			"away_id" => $away_id,
+	    );
+        $this->db->where('id', $id);
+        $this->db->update('matches', $data, 1);
+    }
+
     public function verify(int $id, int $score_home, int $score_away){
         $data = array(
 			"score_home" => $score_home,
