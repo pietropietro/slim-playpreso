@@ -209,6 +209,12 @@ $container['league_find_service'] = static fn (
     $container->get('league_repository'),
 );
 
+$container['league_update_service'] = static fn (
+    ContainerInterface $container
+):  League\Update => new  League\Update(
+    $container->get('league_repository'),
+);
+
 $container['league_elaborate_service'] = static fn (
     ContainerInterface $container
 ):  League\Elaborate => new  League\Elaborate(

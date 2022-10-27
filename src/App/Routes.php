@@ -80,7 +80,8 @@ return function ($app){
         $app->group('/league', function() use($app): void {
             $app->get('', League\GetAll::class);
             $app->get('/{id}', League\GetOne::class);
-            // $app->post('/{id}', Match\Verify::class);
+            $app->post('/{id}', League\Update::class);
+            $app->post('/fetch/{id}', League\Fetch::class);
         });
         
     })->add(new Auth($pointsService, $admin));

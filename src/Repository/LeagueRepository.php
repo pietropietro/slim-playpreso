@@ -51,6 +51,11 @@ final class LeagueRepository extends BaseRepository
         return $this->db->get('leagues');
     }
 
+    public function update(int $id, array $data){
+        $this->db->where('id', $id);
+        $this->db->update('leagues', $data, 1);        
+    }
+
     public function updateStandings(int $id, string $standings_json){
         $data = array(
             "standings" => $standings_json,
