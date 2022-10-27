@@ -279,6 +279,7 @@ $container['match_elaborate_service'] = static fn (
     $container->get('match_create_service'),
     $container->get('match_verify_service'),
     $container->get('match_update_service'),
+    $container->get('match_find_service'),
 );
 
 $container['match_update_service'] = static fn (

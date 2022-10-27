@@ -16,9 +16,9 @@ final class Find extends BaseService{
         protected League\Find $leagueService,
     ) {}
     
-    public function getOne(int $id) : array {
-        $match = $this->matchRepository->getOne($id);
-        return $this->enrich($match);
+    public function getOne(int $id, ?bool $is_external_id=false, ?bool $enrich=true) : ?array {
+        $match = $this->matchRepository->getOne($id, $is_external_id);
+        return $enrich ? $this->enrich($match) : $match;
     }
 
 
@@ -46,8 +46,8 @@ final class Find extends BaseService{
     }
 
     private function enrich($match){
-        $match['homeTeam'] = $this->teamRepository->getOne($match['home_id']);
-        $match['awayTeam'] = $this->teamRepository->getOne($match['away_id']);
+        $match['homeTeam'] = $match['home_id'] ? $this->teamRepository->getOne($match['home_id']) : null;
+        $match['awayTeam'] = $match['away_id'] ? $this->teamRepository->getOne($match['away_id']) : null;
         $match['league'] = $this->leagueService->getOne($match['league_id']);
         return $match;
     }
