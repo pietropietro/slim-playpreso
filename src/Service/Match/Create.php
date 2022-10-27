@@ -14,10 +14,10 @@ final class Create extends BaseService{
         protected TeamRepository $teamRepository,
     ) {}
 
-    public function create(Object $eventObj, int $league_id, string $match_ls_suffix = null) : bool{
+    public function create(Object $eventObj, int $league_id) : bool{
         $home_id = $this->teamRepository->idFromExternal((int)$eventObj->T1[0]->ID);
         $away_id = $this->teamRepository->idFromExternal((int)$eventObj->T2[0]->ID);
         $round = (int)$eventObj->Ern;
-        return $this->matchRepository->create((int)$eventObj->Eid, $league_id, $home_id, $away_id, $round, (string)$eventObj->Esd, $match_ls_suffix);
+        return $this->matchRepository->create((int)$eventObj->Eid, $league_id, $home_id, $away_id, $round, (string)$eventObj->Esd);
     }
 }

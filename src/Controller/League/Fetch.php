@@ -23,16 +23,8 @@ final class Fetch extends Base
 
         $leagueId = (int) $args['id'];
         $league = $this->getFindLeagueService()->getOne($leagueId);
-        
-        if ($league['use_match_ls_suffix'] && !isset($data->match_ls_suffix)) {
-            throw new \App\Exception\User('missing required fields', 400);
-        }
        
-        $result = $this->getExternalApiService()->fetchExternalData(
-            !!$league['use_match_ls_suffix'] ? $data->match_ls_suffix : $league['ls_suffix'], 
-            $league['id'], 
-            !!$league['use_match_ls_suffix']
-        );
+        $result = $this->getExternalApiService()->fetchExternalData($league['ls_suffix'], $league['id']);
         
         return $this->jsonResponse($response, 'success', $result, 200);
     }

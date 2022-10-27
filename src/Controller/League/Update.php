@@ -27,10 +27,6 @@ final class Update extends Base
         if(isset($data->ls_suffix)){
             $updateData['ls_suffix'] = $data->ls_suffix;
         }
-        if(isset($data->use_match_ls_suffix)){
-            $updateData['use_match_ls_suffix'] = $data->use_match_ls_suffix;
-            if($data->use_match_ls_suffix)$updateData['ls_suffix'] = null;
-        }
 
         $this->getUpdateLeagueService()->update($leagueId, $updateData);
         return $this->jsonResponse($response, "success", true, 200);

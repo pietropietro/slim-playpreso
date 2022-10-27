@@ -22,7 +22,7 @@ final class Start extends Base
 
         foreach ($leagues as $key => $league) {
             if(!$league['ls_suffix'])continue;
-            $this->getExternalApiService()->fetchExternalData($league['ls_suffix'], $league['id'], !!$league['use_match_ls_suffix']);
+            $this->getExternalApiService()->fetchExternalData($league['ls_suffix'], $league['id']);
         }
 
         return $this->jsonResponse($response, 'success', date('H:i:s T').': '.count($leagues), 200);
