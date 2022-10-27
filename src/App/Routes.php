@@ -79,6 +79,7 @@ return function ($app){
 
         $app->group('/league', function() use($app): void {
             $app->get('', League\GetAll::class);
+            $app->post('', League\Create::class);
             $app->get('/{id}', League\GetOne::class);
             $app->post('/{id}', League\Update::class);
             $app->post('/fetch/{id}', League\Fetch::class);

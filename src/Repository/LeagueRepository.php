@@ -56,6 +56,15 @@ final class LeagueRepository extends BaseRepository
         $this->db->update('leagues', $data, 1);        
     }
 
+    public function create(string $name,?int $parentId) : int {
+        $data = array(
+            "name" => $name,
+            "parent_id" => $parentId,
+            "created_at" => $this->db->now()
+        );
+        return $this->db->insert('leagues', $data);
+    }
+
     public function updateStandings(int $id, string $standings_json){
         $data = array(
             "standings" => $standings_json,

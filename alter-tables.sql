@@ -27,7 +27,15 @@ ALTER TABLE leagues RENAME COLUMN league_tag TO tag;
 ALTER TABLE leagues ADD COLUMN ls_suffix varchar(255) AFTER id;
 ALTER TABLE leagues ADD COLUMN standings json AFTER country_level;
 ALTER TABLE leagues ADD COLUMN updated_at timestamp AFTER created_at;
-ALTER TABLE leagues ADD COLUMN use_match_ls_suffix tinyint default 0 AFTER ls_suffix;
+-- ALTER TABLE leagues ADD COLUMN use_match_ls_suffix tinyint default 0 AFTER ls_suffix;
+ALTER TABLE leagues ADD COLUMN parent_id int AFTER id;
+ALTER TABLE leagues ADD FOREIGN KEY (parent_id) REFERENCES leagues(id);
+-- todo drop use_match_ls_suffix
+ALTER TABLE leagues MODIFY COLUMN country varchar(20);
+ALTER TABLE leagues MODIFY COLUMN area varchar(100);
+ALTER TABLE leagues MODIFY COLUMN area_level int;
+ALTER TABLE leagues MODIFY COLUMN country_level int;
+ALTER TABLE leagues MODIFY COLUMN tag varchar(3);
 
 
 ALTER TABLE ppCups DROP FOREIGN KEY presoCups_ibfk_1;

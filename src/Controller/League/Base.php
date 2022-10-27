@@ -32,4 +32,9 @@ abstract class Base extends BaseController
         return $this->container->get('league_update_service');
     }
 
+    protected function getCreateLeagueService(): League\Create
+    {
+        return $this->container->get('league_create_service');
+    }
+
 }

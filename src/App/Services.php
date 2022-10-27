@@ -222,6 +222,12 @@ $container['league_elaborate_service'] = static fn (
     $container->get('team_repository'),
 );
 
+$container['league_create_service'] = static fn (
+    ContainerInterface $container
+):  League\Create => new  League\Create(
+    $container->get('league_repository')
+);
+
 $container['ppcup_count_service'] = static fn (
     ContainerInterface $container
 ):  PPCup\Count => new  PPCup\Count(
