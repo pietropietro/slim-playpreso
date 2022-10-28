@@ -37,7 +37,13 @@ final class Find  extends BaseService{
         $ppCup['ppTournamentType'] = $this->ppTournamentTypeFindService->getOne($ppCup['ppTournamentType_id']);
         if($with_levels)$ppCup['levels'] = $this->ppCupGroupFindService->getLevels($ppCup['id']);
         $ppCup['user_count'] = $this->upFindService->countParticipations('ppCup_id', $ppCup['id']);
+        $ppCup['can_join'] = (bool)$this->getJoinableGroup($ppCup['id']);
         return $ppCup;
+    }
+
+    function getJoinableGroup(int $typeId){
+        if(!$ppCup = $this->ppCupRepository->getOne($typeId)) return;
+        return $this->ppCupGroupFindService->getJoinable($ppCup['id']);
     }
 
 }

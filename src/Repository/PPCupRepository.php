@@ -18,6 +18,7 @@ final class PPCupRepository extends BaseRepository
     function getOne($uniqueVal, bool $is_slug = false){
         $column = $is_slug ? 'slug' : 'id';
         $this->db->where($column, $uniqueVal);
+        $this->db->orderBy('created_at', 'DESC');
         return $this->db->getOne('ppCups');
     }
 

@@ -17,13 +17,13 @@ final class Find  extends BaseService{
         protected UserParticipation\Find $userParticipationService,
     ) {}
 
-    public function getOne($id){
+    public function getOne(int $id){
         return $this->ppCupGroupRepository->getOne($id);
     }
     
-    public function getLevels($ppCupId) : array{
+    public function getLevels(int $ppCupId) : array{
         $levels = [];
-        $groups = $this->ppCupGroupRepository->getGroupsForCup($ppCupId);
+        $groups = $this->ppCupGroupRepository->getForCup($ppCupId);
 
         foreach($groups as $group){
             $group['userParticipations'] = $this->userParticipationService->getForTournament('ppCupGroup_id', $group['id']);
@@ -34,5 +34,9 @@ final class Find  extends BaseService{
             array_push($levels[$currentLevel], $group);
         }
         return $levels;
+    }
+
+    public function getJoinable(int $ppCupId) : ?int{
+        return $this->ppCupGroupRepository->getJoinable($ppCupId)['id'] ?? null;
     }
 }

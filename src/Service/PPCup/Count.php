@@ -17,7 +17,7 @@ final class Count extends BaseService{
     ) {}
 
     public function updateGroups(int $id){
-        $groupIds =  $this->ppCupGroupRepository->getCupGroupIds($id);
+        $groupIds =  $this->ppCupGroupRepository->getIds($id);
 
         foreach ($groupIds as $groupKey => $groupId) {
             $ups = $this->upService->update('ppCupGroup_id' , $groupId);

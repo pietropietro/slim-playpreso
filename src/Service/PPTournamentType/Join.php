@@ -6,6 +6,7 @@ namespace App\Service\PPTournamentType;
 
 use App\Service\BaseService;
 use App\Service\PPLeague;
+use App\Service\PPCup;
 use App\Service\PPTournamentType;
 use App\Service\Points;
 use App\Service\UserParticipation;
@@ -13,6 +14,7 @@ use App\Service\UserParticipation;
 final class Join  extends BaseService{
     public function __construct(
         protected PPLeague\Find $findPPleagueService,
+        protected PPCup\Find $findPPCupService,
         protected PPLeague\Start $startPPLeagueService,
         protected PPTournamentType\Find $findPPTournamentTypeService,
         protected Points\Update $pointsService,
@@ -27,8 +29,7 @@ final class Join  extends BaseService{
             $ppTournament = $this->findPPleagueService->getJoinable($typeId, $userId);
             $column = 'ppLeague_id';
         }else{
-            //TODO
-            // $ppTournament =
+            $ppTournament = $this->findPPCupService->getJoinableGroup($typeId, $userId);
             // $column = 
         }
             
