@@ -30,7 +30,7 @@ ALTER TABLE leagues ADD COLUMN updated_at timestamp AFTER created_at;
 -- ALTER TABLE leagues ADD COLUMN use_match_ls_suffix tinyint default 0 AFTER ls_suffix;
 ALTER TABLE leagues ADD COLUMN parent_id int AFTER id;
 ALTER TABLE leagues ADD FOREIGN KEY (parent_id) REFERENCES leagues(id);
--- todo drop use_match_ls_suffix
+ALTER TABLE leagues DROP COLUMN use_match_ls_suffix;
 ALTER TABLE leagues MODIFY COLUMN country varchar(20);
 ALTER TABLE leagues MODIFY COLUMN area varchar(100);
 ALTER TABLE leagues MODIFY COLUMN area_level int;
@@ -69,7 +69,9 @@ ALTER TABLE matches RENAME COLUMN external_api_matchid TO ls_id;
 ALTER TABLE matches RENAME COLUMN hometeam_id TO home_id;
 ALTER TABLE matches RENAME COLUMN awayteam_id TO away_id;
 ALTER TABLE matches MODIFY id INT AUTO_INCREMENT;
-ALTER TABLE matches ADD COLUMN ls_suffix varchar(255) AFTER ls_id;
+-- ALTER TABLE matches ADD COLUMN ls_suffix varchar(255) AFTER ls_id;
+ALTER TABLE matches DROP COLUMN ls_suffix;
+
 
 
 
