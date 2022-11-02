@@ -33,15 +33,21 @@ final class PPCupGroupRepository extends BaseRepository
     }
 
     function getJoinable(int $ppCupId){
+        //raw query because of the 'having' clause
+        //which otherwise (OO) wrongly translates 'participants' as a string
+        //and not as the table column value
+
         $groups = $this->db->query('
             select ppcupgroups.id, participants, count(ups.id) 
             from ppcupgroups
             left  join userparticipations ups on ups.ppcupgroup_id=ppcupgroups.id 
             where ppcupgroups.level=1 and ppcupgroups.ppcup_id='.$ppCupId.' 
             group by ppcupgroups.id 
-            having count(ups.id) < participants',
+            having count(ups.id) < participants
+            order by count(ups.id) ASC',
         1);
-        return $groups[0] ?? null;
+
+    
     }
 
     function create(int $ppCupId, int $level, int $rounds, string $tag, int $participants){
