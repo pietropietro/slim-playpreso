@@ -36,7 +36,7 @@ final class Join  extends BaseService{
             $ppTournamentGroup =  $this->findPPCupGroupService->getJoinable($ppTournament['id']);
         }
 
-        if(!$ppTournament) throw new \App\Exception\User("could not join", 500);
+        if(!$ppTournament || $ppTournamentType['cup_format'] && !$ppTournamentGroup) throw new \App\Exception\User("could not join", 500);
 
         if(!$this->pointsService->minus($userId, $ppTournamentType['cost'])){
             throw new \App\Exception\User("couldn't afford", 500);

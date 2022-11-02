@@ -28,7 +28,7 @@ final class Verify extends BaseService{
         $ppRound=$this->findService->getOne($id, false);
         if($ppRound['ppLeague_id']){
             $this->updateUpService->update('ppLeague_id', $ppRound['ppLeague_id']);
-            if($this->isRoundFinished($ppRound)){
+            if($this->isPPRoundFinished($ppRound)){
                 $this->ppLeagueVerifyService->verifyAfterRound($ppRound['ppLeague_id'], $ppRound['round']);
             }
         }
@@ -39,7 +39,7 @@ final class Verify extends BaseService{
         //if no END tournament (if cupgroup -> )
     }
 
-    public function isRoundFinished(array $ppRound) : bool {
+    public function isPPRoundFinished(array $ppRound) : bool {
         foreach ($ppRound['ppRoundMatches'] as $key => $ppRM) {
             if(!$ppRM['match']['verified_at']) return false;
         }
