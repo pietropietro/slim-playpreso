@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Service\User;
 use App\Service\PPLeague;
+use App\Service\PPTournament;
 use App\Service\PPTournamentType;
 use App\Service\PPRound;
 use App\Service\PPRoundMatch;
@@ -62,35 +63,6 @@ $container['ppleague_find_service'] = static fn (
     $container->get('pptournamenttype_find_service'),
 );
 
-$container['ppleague_update_service'] = static fn (
-    ContainerInterface $container
-):  PPLeague\Update => new  PPLeague\Update(
-    $container->get('redis_service'),
-    $container->get('ppleague_repository'),
-    $container->get('pptournamenttype_repository'),
-    $container->get('ppround_repository'),
-    $container->get('userparticipation_repository'),
-    $container->get('user_repository'),
-    $container->get('guess_repository')
-);
-
-$container['ppleague_update_service'] = static fn (
-    ContainerInterface $container
-):  PPLeague\Update => new  PPLeague\Update(
-    $container->get('redis_service'),
-    $container->get('ppleague_repository'),
-);
-
-$container['ppleague_verify_service'] = static fn (
-    ContainerInterface $container
-):  PPLeague\Verify => new  PPLeague\Verify(
-    $container->get('ppleague_repository'),
-    $container->get('ppleague_find_service'),
-    $container->get('ppround_create_service'),
-    $container->get('ppround_find_service'),
-    $container->get('userparticipation_update_service')
-);
-
 $container['ppleague_start_service'] = static fn (
     ContainerInterface $container
 ):  PPLeague\Start => new  PPLeague\Start(
@@ -113,13 +85,12 @@ $container['pptournamenttype_join_service'] = static fn (
     ContainerInterface $container
 ):  PPTournamentType\Join => new  PPTournamentType\Join(
     $container->get('ppleague_find_service'),
-    $container->get('ppleague_start_service'),
     $container->get('pptournamenttype_find_service'),
     $container->get('points_update_service'),
     $container->get('userparticipation_create_service'),
-    $container->get('userparticipation_find_service'),
     $container->get('ppcup_find_service'),
     $container->get('ppcupgroup_find_service'),
+    $container->get('pptournament_verify_service'),
 );
 
 $container['pptournamenttype_check_service'] = static fn (
@@ -155,7 +126,7 @@ $container['ppround_verify_service'] = static fn (
     ContainerInterface $container
 ):  PPRound\Verify => new  PPRound\Verify(
     $container->get('ppround_find_service'),
-    $container->get('ppleague_verify_service'),
+    $container->get('pptournament_verify_service'),
     $container->get('userparticipation_update_service'),
 );
 
@@ -367,3 +338,26 @@ $container['guess_lock_service'] = static fn (
 ):  Guess\Lock => new  Guess\Lock(
     $container->get('guess_repository'),
 );
+
+
+$container['pptournament_verify_service'] = static fn (
+    ContainerInterface $container
+):  PPTournament\Verify => new  PPTournament\Verify(
+    $container->get('ppleague_find_service'),
+    $container->get('ppcupgroup_find_service'),
+    $container->get('ppround_find_service'),
+    $container->get('ppround_create_service'),
+    $container->get('userparticipation_update_service'),
+    $container->get('ppleague_update_service'),
+    $container->get('ppcupgroup_update_service')
+);
+
+// $container['ppleague_verify_service'] = static fn (
+//     ContainerInterface $container
+// ):  PPLeague\Verify => new  PPLeague\Verify(
+//     $container->get('ppleague_repository'),
+//     $container->get('ppleague_find_service'),
+//     $container->get('ppround_create_service'),
+//     $container->get('ppround_find_service'),
+//     $container->get('userparticipation_update_service')
+// );

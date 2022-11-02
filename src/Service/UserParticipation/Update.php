@@ -6,10 +6,10 @@ namespace App\Service\UserParticipation;
 
 final class Update  extends Base {
 
-    public function update(string $type, int $typeId) : bool{
-        $ups = $this->userParticipationRepository->getForTournament($type, $typeId);
+    public function update(string $tournamentColumn, int $tournamentId) : bool{
+        $ups = $this->userParticipationRepository->getForTournament($tournamentColumn, $tournamentId);
         foreach ($ups as $upKey => $upItem) {
-            $user_participation_result = $this->guessRepository->countUpNumbers($upItem['user_id'], $type, $typeId);
+            $user_participation_result = $this->guessRepository->countUpNumbers($upItem['user_id'], $tournamentColumn, $tournamentId);
             $ups[$upKey]['tot_points'] = $user_participation_result['tot_points'];
             $ups[$upKey]['tot_locked'] = $user_participation_result['tot_locked'] ?? 0;
             $ups[$upKey]['tot_preso'] = $user_participation_result['tot_preso'] ?? 0;

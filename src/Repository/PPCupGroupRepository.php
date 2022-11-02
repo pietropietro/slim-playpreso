@@ -47,7 +47,6 @@ final class PPCupGroupRepository extends BaseRepository
             order by count(ups.id) ASC',
         1);
 
-    
     }
 
     function create(int $ppCupId, int $level, int $rounds, string $tag, int $participants){
@@ -61,5 +60,14 @@ final class PPCupGroupRepository extends BaseRepository
         );
         return $this->db->insert('ppCupGroups',$data);
     }
+
+    public function setFinished(int $id){
+        $data = array(
+            "finished_at" => $this->db->now(),
+        );
+        $this->db->where('id', $id);
+        $this->db->update('ppCupGroups', $data, 1);
+    }
+
 
 }

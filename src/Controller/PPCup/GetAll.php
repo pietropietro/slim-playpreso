@@ -21,7 +21,6 @@ final class GetAll extends Base
         $ppTournamentTypeId = $request->getQueryParams()['ppTournamentTypeId'] ?? null;
 
         $ppCups = $this->getFindCupService()->getAll($ppTournamentTypeId);
-        // $ppCup['levels'] = $this->getFindCupService()->getLevels($ppCupId);
                  
         return $this->jsonResponse($response, 'success', $ppCups, 200);
     }

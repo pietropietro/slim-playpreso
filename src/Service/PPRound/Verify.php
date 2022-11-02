@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\PPRound;
 
 use App\Service\BaseService;
-use App\Service\PPLeague;
+use App\Service\PPTournament;
 use App\Service\UserParticipation;
 use App\Service\PPRound;
 
@@ -13,7 +13,7 @@ use App\Service\PPRound;
 final class Verify extends BaseService{
     public function __construct(
         protected PPRound\Find $findService,
-        protected PPLeague\Verify $ppLeagueVerifyService,
+        protected PPTournament\Verify $ppTournamentVerifyService,
         protected UserParticipation\Update $updateUpService
     ){}
     
@@ -26,17 +26,14 @@ final class Verify extends BaseService{
 
     public function verify($id){
         $ppRound=$this->findService->getOne($id, false);
-        if($ppRound['ppLeague_id']){
-            $this->updateUpService->update('ppLeague_id', $ppRound['ppLeague_id']);
-            if($this->isPPRoundFinished($ppRound)){
-                $this->ppLeagueVerifyService->verifyAfterRound($ppRound['ppLeague_id'], $ppRound['round']);
-            }
+        $tournamentColumn = $ppRound['ppLeague_id'] ? 'ppLeague_id' : 'ppCupGroup_id';
+        $tournamentId = $ppRound['ppLeague_id'] ?? $ppRound['ppCupGroup_id'];
+
+        $this->updateUpService->update('ppLeague_id', $ppRound['ppLeague_id']);
+
+        if($this->isPPRoundFinished($ppRound)){
+            $this->ppTournamentVerifyService->verifyAfterRound($tournamentColumn, $tournamentId, $ppRound['round']);
         }
-        //CUP TODO
-        //$ppcupGroup = getppcupGroupservice->getOne(id)
-        //check if tournament needs more rounds 
-        //if yes create
-        //if no END tournament (if cupgroup -> )
     }
 
     public function isPPRoundFinished(array $ppRound) : bool {

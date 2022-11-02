@@ -51,6 +51,12 @@ ALTER TABLE ppCups ADD UNIQUE (slug);
 ALTER TABLE ppCupGroups DROP COLUMN round_count;
 ALTER TABLE ppCupGroups DROP COLUMN user_count;
 ALTER TABLE ppCupGroups RENAME COLUMN groupTag TO tag;
+ALTER TABLE ppCupGroups ADD COLUMN ppTournamentType_id INT AFTER ppCup_id;
+ALTER TABLE ppCupGroups ADD CONSTRAINT ppCupGroups_ibfk_2 FOREIGN KEY (ppTournamentType_id) REFERENCES ppTournamentTypes(id);
+
+select COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_COLUMN_NAME, REFERENCED_TABLE_NAME
+from information_schema.KEY_COLUMN_USAGE
+where TABLE_NAME = 'ppcupgroups';
 
 ALTER TABLE teams DROP COLUMN last_five;
 ALTER TABLE teams ADD COLUMN ls_id INT AFTER id;

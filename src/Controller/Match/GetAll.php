@@ -20,7 +20,6 @@ final class GetAll extends Base
 
         $days_diff = (int)$request->getQueryParams()['days_diff'] ?? 0;
         $matches = $this->getFindMatchService()->get($days_diff);
-        // $ppCup['levels'] = $this->getFindCupService()->getLevels($ppCupId);
                  
         return $this->jsonResponse($response, 'success', $matches, 200);
     }
