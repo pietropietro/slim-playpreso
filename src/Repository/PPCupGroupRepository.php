@@ -37,7 +37,7 @@ final class PPCupGroupRepository extends BaseRepository
         //which otherwise (OO) wrongly translates 'participants' as a string
         //and not as the table column value
 
-        $groups = $this->db->query('
+        return $this->db->query('
             select ppcupgroups.id, participants, count(ups.id) 
             from ppcupgroups
             left  join userparticipations ups on ups.ppcupgroup_id=ppcupgroups.id 

@@ -33,7 +33,7 @@ final class Join  extends BaseService{
         }else{
             $column = 'ppCup_id';
             $ppTournament = $this->findPPCupService->getJoinable($ppTypeId, $userId);
-            $ppTournamentGroupId =  $this->findPPCupGroupService->getJoinable($ppTournament['id']);
+            $ppTournamentGroup =  $this->findPPCupGroupService->getJoinable($ppTournament['id']);
         }
 
         if(!$ppTournament) throw new \App\Exception\User("could not join", 500);
@@ -42,7 +42,7 @@ final class Join  extends BaseService{
             throw new \App\Exception\User("couldn't afford", 500);
         }
 
-        if(!$insert = $this->createUpService->create($userId, $ppTypeId, $ppTournament['id'], $ppTournamentGroupId ?? null)){
+        if(!$insert = $this->createUpService->create($userId, $ppTypeId, $ppTournament['id'], $ppTournamentGroup ? $ppTournamentGroup['id'] : null)){
             throw new \App\Exception\User("something went wrong", 500);
         };
         
