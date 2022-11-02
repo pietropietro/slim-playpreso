@@ -118,6 +118,8 @@ $container['pptournamenttype_join_service'] = static fn (
     $container->get('points_update_service'),
     $container->get('userparticipation_create_service'),
     $container->get('userparticipation_find_service'),
+    $container->get('ppcup_find_service'),
+    $container->get('ppcupgroup_find_service'),
 );
 
 $container['pptournamenttype_check_service'] = static fn (
@@ -125,7 +127,8 @@ $container['pptournamenttype_check_service'] = static fn (
 ):  PPTournamentType\Check => new  PPTournamentType\Check(
     $container->get('pptournamenttype_find_service'),
     $container->get('points_find_service'),
-    $container->get('ppcup_repository')
+    $container->get('ppcup_repository'),
+    $container->get('userparticipation_find_service')
 );
 
 

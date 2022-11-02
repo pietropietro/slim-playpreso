@@ -36,6 +36,18 @@ final class Find  extends Base {
         return $ups;
     }
 
+    public function countParticipations(string $tournamentColumn, int $tournamentId){
+        return $this->userParticipationRepository->count($tournamentColumn, $tournamentId);
+    }
+
+    public function isUserInTournament(int $userId, string $tournamentColumn, int $tournamentId){
+        return $this->userParticipationRepository->isUserInTournament($userId, $tournamentColumn, $tournamentId);
+    }
+
+    public function isUserInTournamentType(int $userId, int $ppTournamentType_id){
+        return $this->userParticipationRepository->isUserInTournamentType($userId, $ppTournamentType_id);
+    }
+
     public function getTrophies(int $userId){
         $ppLeagueUps = $this->userParticipationRepository->getUserParticipations(
             $userId, 'ppLeague_id', false, (int)$_SERVER['PPLEAGUE_TROPHY_POSITION']
@@ -57,7 +69,5 @@ final class Find  extends Base {
         return $trophies;
     }
 
-    public function countParticipations(string $tournamentColumn, int $tournamentId){
-        return $this->userParticipationRepository->count($tournamentColumn, $tournamentId);
-    }
+    
 }

@@ -20,9 +20,9 @@ final class Find  extends BaseService{
         protected UserParticipation\Find $upFindService
     ) {}
 
-    public function getOne($uniqueVal, bool $is_slug = false){
+    public function getOne($uniqueVal, bool $is_slug = false, ?int $userId = null){
         $ppCup = $this->ppCupRepository->getOne($uniqueVal, $is_slug);
-        return $this->enrich($ppCup, with_levels: true);
+        return $this->enrich($ppCup, with_levels: true, userId: $userId);
     }
 
     public function getAll(?int $ppTournamentTypeId){
@@ -33,17 +33,18 @@ final class Find  extends BaseService{
         return $ppCups;
     }
 
-    private function enrich($ppCup, bool $with_levels){
+    private function enrich($ppCup, bool $with_levels, ?int $userId){
         $ppCup['ppTournamentType'] = $this->ppTournamentTypeFindService->getOne($ppCup['ppTournamentType_id']);
         if($with_levels)$ppCup['levels'] = $this->ppCupGroupFindService->getLevels($ppCup['id']);
         $ppCup['user_count'] = $this->upFindService->countParticipations('ppCup_id', $ppCup['id']);
-        $ppCup['can_join'] = (bool)$this->getJoinableGroup($ppCup['id']);
+        if($userId)$ppCup['can_join'] = !$this->upFindService->isUserInTournament($userId, 'ppCup_id', $ppCup['id']);
         return $ppCup;
     }
 
-    function getJoinableGroup(int $typeId){
-        if(!$ppCup = $this->ppCupRepository->getOne($typeId)) return;
-        return $this->ppCupGroupFindService->getJoinable($ppCup['id']);
+    function getJoinable(int $ppTypeId, ?int $userId) : ?array{
+        $ppCup = $this->ppCupRepository->getJoinable($ppTypeId);
+        if($userId && $this->upFindService->isUserInTournament($userId, 'ppCup_id', $ppCup['id'])) return null;
+        return $ppCup;
     }
 
 }

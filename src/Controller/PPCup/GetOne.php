@@ -20,8 +20,9 @@ final class GetOne extends Base
 
         $is_slug = !is_numeric($args['id']);
         $ppCupId = $is_slug ? $args['id'] : (int) $args['id'];
+        $userId = $this->getAndValidateUserId($request);
 
-        $ppCup = $this->getFindCupService()->getOne($ppCupId, $is_slug);
+        $ppCup = $this->getFindCupService()->getOne($ppCupId, $is_slug, $userId);
                  
         return $this->jsonResponse($response, 'success', $ppCup, 200);
     }

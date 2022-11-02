@@ -44,6 +44,7 @@ final class UserParticipationRepository extends BaseRepository
         $this->db->where($tournamentColumn, $tournamentId);
         return $this->db->query("SELECT up.*, u.username FROM userParticipations up");
     }
+    
 
 
     function getPromotedTournamentTypesForUser(int $userId, bool $include_ppCups = false, bool $return_id_only = true){
@@ -109,4 +110,16 @@ final class UserParticipationRepository extends BaseRepository
         return $this->db->getValue($this->tableName, "count(*)");
     }
 
+    public function isUserInTournament(int $userId, string $tournamentColumn, int $tournamentId){
+        $this->db->where($tournamentColumn, $tournamentId);
+        $this->db->where('user_id', $userId);
+        return $this->db->has($this->tableName);
+    }
+
+    public function isUserInTournamentType(int $userId, int $ppTournamentType_id){
+        $this->db->where('ppTournamentType_id',$ppTournamentType_id);
+        $this->db->where('user_id', $userId);
+        $this->db->where('finished',0);
+        return $this->db->has($this->tableName);
+    }
 }

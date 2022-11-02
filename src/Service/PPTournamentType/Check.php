@@ -6,6 +6,7 @@ namespace App\Service\PPTournamentType;
 
 use App\Service\BaseService;
 use App\Service\PPTournamentType;
+use App\Service\UserParticipation;
 use App\Service\Points;
 use App\Repository\PPCupRepository;
 
@@ -13,13 +14,19 @@ final class Check  extends BaseService{
     public function __construct(
         protected PPTournamentType\Find $findTournamentService,
         protected Points\Find $pointsService,
-        protected PPCupRepository $ppCupRepository
+        protected PPCupRepository $ppCupRepository,
+        protected UserParticipation\Find $findUPservice,
     ) {}
     
     public function check($userId, $typeId) :bool {
 
-        if(!$this->isAllowed($userId, $typeId)){
-            throw new \App\Exception\User("user not allowed", 401);
+        $ppTT = $this->findTournamentService->getOne($typeId);
+        
+        if(!$ppTT['cup_format'] && !$this->isAllowedInPPLeague($userId, $typeId)){
+            throw new \App\Exception\User("user not allowed p-league", 401);
+        }
+        else if(!$this->isAllowedInPPCup($userId, $typeId)){
+            throw new \App\Exception\User("user not allowed in p-cup", 401);
         }
 
         if(!$this->canAfford($userId, $typeId)){
@@ -37,13 +44,18 @@ final class Check  extends BaseService{
         return $userPoints >= $cost;
     }
 
-    public function isAllowed($userId, $typeId){
+    public function isAllowedInPPLeague($userId, $typeId){
         $okIds = $this->findTournamentService->getAvailablePPLeaguesForUser($userId, ids_only: true);
         return in_array($typeId, $okIds);
     }
 
+    public function isAllowedInPPCup(int $userId,int $typeId){
+        return !$this->findUPservice->isUserInTournamentType($userId, $typeId);
+    }
+
+
     public function canCreateCup(int $ppTournamentType_id){
-        if($this->ppCupRepository->hasOneUnfinished($ppTournamentType_id)){
+        if((bool)$this->ppCupRepository->getJoinable($ppTournamentType_id)){
             throw new \App\Exception\User("cannot create p-cup", 401);
         }
         return true;

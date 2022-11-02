@@ -31,10 +31,11 @@ final class PPCupRepository extends BaseRepository
         return $this->db->insert('ppCups',$data);
     }
 
-    public function hasOneUnfinished(int $ppTournamentTypeId){
+    public function getJoinable(int $ppTournamentTypeId){
         $this->db->where('ppTournamentType_id', $ppTournamentTypeId);
         $this->db->where('finished_at IS NULL');
-        return $this->db->has('ppCups');
+        $this->db->where('started_at IS NULL');
+        return $this->db->getOne('ppCups');
     }
 
 }

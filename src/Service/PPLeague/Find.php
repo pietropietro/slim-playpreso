@@ -17,15 +17,15 @@ final class Find  extends BaseService{
     ) {}
 
     public function getOne(int $ppLeagueId){
-        $ppLeague = $this->ppLeagueRepository->getOne($ppLeagueId);
+        if(!$ppLeague = $this->ppLeagueRepository->getOne($ppLeagueId)) return;
         $ppLeague['ppTournamentType'] = $this->findTournamentType->getOne($ppLeague['ppTournamentType_id']);
         return $ppLeague;
 
     }
 
-    function getJoinable(int $typeId, int $userId){
-        if(!$ppLeague = $this->ppLeagueRepository->getJoinable($typeId)){
-            $id = $this->ppLeagueRepository->create($typeId);
+    function getJoinable(int $ppTypeId, int $userId){
+        if(!$ppLeague = $this->ppLeagueRepository->getJoinable($ppTypeId)){
+            $id = $this->ppLeagueRepository->create($ppTypeId);
             $ppLeague = $this->ppLeagueRepository->getOne($id);
         }
         $ppLeague['ppTournamentType'] = $this->findTournamentType->getOne($ppLeague['ppTournamentType_id']);
