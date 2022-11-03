@@ -38,4 +38,20 @@ final class PPCupRepository extends BaseRepository
         return $this->db->getOne('ppCups');
     }
 
+    public function setFinished(int $id){
+        $data = array(
+            "finished_at" => $this->db->now(),
+        );
+        $this->db->where('id', $id);
+        $this->db->update('ppCups', $data, 1);
+    }
+
+    function setStarted(int $id) {
+        $data = array(
+            "started_at" => $this->db->now(),
+        );
+        $this->db->where('id', $id);
+        $this->db->update('ppCups', $data, 1);
+    }
+
 }

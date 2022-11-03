@@ -20,10 +20,14 @@ final class Find  extends BaseService{
     public function getOne(int $id){
         return $this->ppCupGroupRepository->getOne($id);
     }
+
+    public function getForCups(int $ppCupId, ?int $level = null){
+        return $this->ppCupGroupRepository->getForCup($ppCupId, $level);
+    }
     
     public function getLevels(int $ppCupId) : array{
         $levels = [];
-        $groups = $this->ppCupGroupRepository->getForCup($ppCupId);
+        $groups = $this->getForCup($ppCupId);
 
         foreach($groups as $group){
             $group['userParticipations'] = $this->userParticipationService->getForTournament('ppCupGroup_id', $group['id']);
