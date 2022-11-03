@@ -39,8 +39,10 @@ final class Find  extends BaseService{
     public function getForPPTournamentType(int $ppTTid, bool $id_only = false){
         $ppTT =  $this->ppTournamentTypeRepository->getOne($ppTTid);
 
-        //TODO ppcup leagues
-        if($ppTT['cup_format']) return;
+        if($ppTT['cup_format'] && $ppTT['name'] === 'World Cup'){
+           return $this->leagueRepository->getForArea('world', null, $id_only);
+        }
+        if($ppTT['cup_format']) return [];
         
         if($ppTT['name'] === 'Europe'){
             $leagues = $this->leagueRepository->getForArea(strtolower($ppTT['name']), $ppTT['level']);

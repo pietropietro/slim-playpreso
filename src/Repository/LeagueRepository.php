@@ -16,7 +16,7 @@ final class LeagueRepository extends BaseRepository
         return $this->db->getOne('leagues');
     }
 
-    public function getForArea(string $area, int $level)
+    public function getForArea(string $area, ?int $level = null, ?bool $id_only = false)
     {
         $this->db->where('area', $area);
 
@@ -31,7 +31,9 @@ final class LeagueRepository extends BaseRepository
                 $this->db->where('country_level',2);
 				break;
 		}
-
+        if($id_only){
+            return $this->db->getValue('leagues', 'id', null);
+        }
         return $this->db->get('leagues');
     }
 
