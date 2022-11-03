@@ -23,13 +23,11 @@ final class Update  extends BaseService{
     //CASCADE-START CUP GROUPS
     public function start(int $id){
         $this->ppCupRepository->setStarted($id);
-        $ppCupGroups = $this->ppCupGroupfindService->getForCups($id);
-        foreach ($ppCupGroups as $key => $group) {
+        $firstLevelGroups = $this->ppCupGroupfindService->getForCup($id, 1);
+        foreach ($firstLevelGroups as $key => $group) {
             $this->ppCupGroupUpdateService->setStarted($group['id']);
             $this->createPPRoundService->create('ppCupGroup_id', $group['id'], $group['ppTournamentType_id'], 1);
         }
     }
-
-    
 
 }

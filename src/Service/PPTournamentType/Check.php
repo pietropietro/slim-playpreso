@@ -15,7 +15,7 @@ final class Check  extends BaseService{
         protected PPTournamentType\Find $findTournamentService,
         protected Points\Find $pointsService,
         protected PPCupRepository $ppCupRepository,
-        protected UserParticipation\Find $findUPservice,
+        protected UserParticipation\Find $findUpService,
     ) {}
     
     public function check($userId, $typeId) :bool {
@@ -50,7 +50,7 @@ final class Check  extends BaseService{
     }
 
     public function isAllowedInPPCup(int $userId,int $typeId){
-        return !$this->findUPservice->isUserInTournamentType($userId, $typeId);
+        return !$this->findUpService->isUserInTournamentType($userId, $typeId);
     }
 
 

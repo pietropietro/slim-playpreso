@@ -6,14 +6,12 @@ namespace App\Service\UserParticipation;
 
 use App\Service\BaseService;
 use App\Repository\UserParticipationRepository;
-use App\Repository\PPLeagueRepository;
 
 final class Create extends BaseService
 {
 
     public function __construct(
         protected UserParticipationRepository $userParticipationRepository,
-        protected PPLeagueRepository $ppLeagueRepository,
     ) {}
 
     public function create(int $userId, int $ppTournamentTypeId, int $ppTournamentId, ?int $ppGroupId = null)
@@ -23,12 +21,6 @@ final class Create extends BaseService
 
         if(!$participation = $this->userParticipationRepository->create($userId, $columns, $valueIds)){
             throw new \App\Exception\User('cant join',500);
-        }
-
-        //TODO delete
-        if($ppGroupId){
-        }else{
-            $this->ppLeagueRepository->incUserCount($ppTournamentId);
         }
 
         return $participation;

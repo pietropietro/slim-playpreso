@@ -146,8 +146,7 @@ $container['userparticipation_find_service'] = static fn (
 $container['userparticipation_create_service'] = static fn (
     ContainerInterface $container
 ):  UserParticipation\Create => new  UserParticipation\Create(
-    $container->get('userparticipation_repository'),
-    $container->get('ppleague_repository'),
+    $container->get('userparticipation_repository')
 );
 
 $container['userparticipation_update_service'] = static fn (
@@ -249,6 +248,12 @@ $container['ppcupgroup_update_service'] = static fn (
     ContainerInterface $container
 ):  PPCupGroup\Update => new  PPCupGroup\Update(
     $container->get('ppcupgroup_repository'),
+    $container->get('ppcup_update_service'),
+    $container->get('ppcupgroup_find_service'),
+    $container->get('userparticipation_find_service'),
+    $container->get('userparticipation_create_service'),
+    $container->get('pptournamenttype_find_service'),
+    $container->get('pptournament_verify_service'),
 );
 
 $container['external_api_service'] = static fn (

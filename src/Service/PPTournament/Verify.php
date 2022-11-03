@@ -16,7 +16,7 @@ final class Verify extends BaseService{
         protected PPTournamentType\Find $ppTournamentTypefindService,
         protected PPCupGroup\Find $ppCupGroupfindService,
         protected PPRound\Find $findPPRoundService,
-        protected UserParticipation\Find $findUPService,
+        protected UserParticipation\Find $findUpService,
         protected PPRound\Create $createPPRoundService,
         protected UserParticipation\Update $updateUpService,
         protected PPLeague\Update $ppLeagueUpdateService,
@@ -58,22 +58,20 @@ final class Verify extends BaseService{
     private function verifyAfterFinished(string $tournamentColumn, int $tournamentId){
         if(!in_array($tournamentColumn, array('ppLeague_id', 'ppCupGroup_id')))return;
 
-        if($tournamentColumn === 'ppLeague_id'){
-            $this->ppLeagueUpdateService->setFinished($tournamentId);
-        }else{
-            //TODO CHECK IF ALSO FINISH CUP
-            $this->ppCupGroupUpdateService->setFinished($tournamentId);
-        }
         $this->updateUpService->setFinished($tournamentColumn, $tournamentId);
 
-        //TODO handle ups, best 3 users get promoted to next level
-        //TODO handle trophies ?
+        if($tournamentColumn === 'ppLeague_id'){
+            $this->ppLeagueUpdateService->setFinished($tournamentId);
+            return;
+        }
+        
+        $this->ppCupGroupUpdateService->setFinished($tournamentId);
     }
 
     public function verifyAfterUserJoined(string $tournamentColumn, int $tournamentId, int $tournamentTypeId){
         if(!in_array($tournamentColumn, array('ppLeague_id', 'ppCupGroup_id')))return;
 
-        $participantsCount = $this->findUPService->countInTournament($tournamentColumn, $tournamentId);
+        $participantsCount = $this->findUpService->countInTournament($tournamentColumn, $tournamentId);
         
         //TODO add 'participants' column in ppleague to have same way to access value as ppcupgroups
         $maxParticipants =  $tournamentColumn === 'ppLeague_id' ? 
