@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\PPCupGroup;
 
 use App\Repository\PPCupGroupRepository;
+use App\Repository\PPCupRepository;
 use App\Service\BaseService;
 use App\Service\PPCup;
 use App\Service\PPCupGroup;
@@ -16,12 +17,12 @@ use App\Service\PPTournament;
 final class Update  extends BaseService{
     public function __construct(
         protected PPCupGroupRepository $ppCupGroupRepository,
-        protected PPCup\Update $ppCupUpdateService,
+        protected PPCupRepository $ppCupRepository,
         protected PPCupGroup\Find $ppCupGroupFindService,
         protected UserParticipation\Find $findUpService,
         protected UserParticipation\Create $createUpService,
         protected PPTournamentType\Find $findPPTournamentTypeService,
-        protected PPTournament\Verify $verifyPPTournamentService
+        protected PPTournament\VerifyAfterJoin $verify
     ) {}
 
     public function setFinished(int $id){
@@ -30,15 +31,11 @@ final class Update  extends BaseService{
 
         $unfinishedCupGroups = $this->ppCupGroupRepository->getForCup($ppCupGroup['ppCup_id'],level: null, finished: 'IS NOT NULL');
         if(count($unfinishedCupGroups) === 0){
-            $this->ppCupUpdateService->setFinished($ppCupGroup['ppCup_id']);
+            $this->ppCupRepository->setFinished($ppCupGroup['ppCup_id']);
             return;
         }
         
         $this->handlePromotions($id);
-    }
-
-    public function setStarted(int $id){
-        $this->ppCupGroupRepository->setStarted($id);
     }
 
     private function handlePromotions(int $id){
@@ -52,7 +49,7 @@ final class Update  extends BaseService{
                 throw new \App\Exception\NotFound('next group not found', 500);
             };
             $this->createUpService->create($ups[$i]['user_id'], $ppTournamentType['id'], $nextGroup['ppCup_id'], $nextGroup['id']);
-            $this->verifyPPTournamentService->verifyAfterUserJoined('ppCupGroup_id', $$nextGroup['id']);
+            $this->verify->afterJoined('ppCupGroup_id', $$nextGroup['id'], $ppTournamentType['id']);
         }
     }
 

@@ -21,7 +21,7 @@ final class Join  extends BaseService{
         protected UserParticipation\Create $createUpService,
         protected PPCup\Find $findPPCupService,
         protected PPCupGroup\Find $findPPCupGroupService,
-        protected PPTournament\Verify $verifyPPTournamentService,
+        protected PPTournament\VerifyAfterJoin $verify,
     ) {}
 
     public function joinAvailable(int $userId, int $ppTypeId){
@@ -48,7 +48,7 @@ final class Join  extends BaseService{
             throw new \App\Exception\User("something went wrong", 500);
         };
         
-        $this->verifyPPTournamentService->verifyAfterUserJoined($tournamentColumn, $ppTournamentGroup['id'] ?? $ppTournament['id']);
+        $this->verify->afterJoined($tournamentColumn, $ppTournamentGroup['id'] ?? $ppTournament['id'], $ppTournamentType['id']);
 
         return $ppTournament['id'];
     }

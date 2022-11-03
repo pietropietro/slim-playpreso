@@ -13,7 +13,7 @@ use App\Service\PPRound;
 final class Verify extends BaseService{
     public function __construct(
         protected PPRound\Find $findService,
-        protected PPTournament\Verify $ppTournamentVerifyService,
+        protected PPTournament\VerifyAfterRound $verify,
         protected UserParticipation\Update $updateUpService
     ){}
     
@@ -32,7 +32,7 @@ final class Verify extends BaseService{
         $this->updateUpService->update('ppLeague_id', $ppRound['ppLeague_id']);
 
         if($this->isPPRoundFinished($ppRound)){
-            $this->ppTournamentVerifyService->verifyAfterRound($tournamentColumn, $tournamentId, $ppRound['round']);
+            $this->verify->afterRound($tournamentColumn, $tournamentId, $ppRound['round']);
         }
     }
 
