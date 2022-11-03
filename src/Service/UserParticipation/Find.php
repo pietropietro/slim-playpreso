@@ -19,6 +19,11 @@ final class Find  extends Base {
         return $ups;
     }
 
+    public function countInTournament(string $tournamentColumn, int $tournamentId){
+        return $this->userParticipationRepository->count($tournamentColumn, $tournamentId);
+    }
+
+
     public function getUserParticipations(int $userId, string $playMode, bool $active = true){
         $ups = $this->userParticipationRepository->getUserParticipations($userId, $playMode.'_id', $active, null);        
         foreach($ups as $upKey => $upItem){
@@ -34,10 +39,6 @@ final class Find  extends Base {
             );
         }
         return $ups;
-    }
-
-    public function countParticipations(string $tournamentColumn, int $tournamentId){
-        return $this->userParticipationRepository->count($tournamentColumn, $tournamentId);
     }
 
     public function isUserInTournament(int $userId, string $tournamentColumn, int $tournamentId){

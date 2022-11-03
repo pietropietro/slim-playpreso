@@ -69,5 +69,14 @@ final class PPCupGroupRepository extends BaseRepository
         $this->db->update('ppCupGroups', $data, 1);
     }
 
+    function setStarted(int $id) {
+        $data = array(
+            "started_at" => $this->db->now(),
+        );
+        $this->db->where('id', $id);
+        $this->db->update('ppCupGroups', $data, 1);
+    }
+
+
 
 }

@@ -26,6 +26,10 @@ final class Find  extends BaseService{
         return $ppTT;
     }
 
+    public function getOneFromPPTournament(string $tournamentTable, int $tournamentId){
+        return $this->ppTournamentTypeRepository->getOneFromPPTournament($tournamentTable, $tournamentId);
+    }
+
     public function get(?array $ids, bool $onlyCups = false){
         $ppTTs =  $this->ppTournamentTypeRepository->get($ids, $onlyCups);
         foreach ($ppTTs as $key => $tt) {

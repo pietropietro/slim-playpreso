@@ -16,4 +16,9 @@ final class Update  extends BaseService{
         $this->ppLeagueRepository->setFinished($id);
     }
 
+    public function setStarted(int $id){
+        $this->ppLeagueRepository->setStarted($id);
+    }
+
+    //TODO HERE
 }

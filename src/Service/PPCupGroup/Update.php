@@ -15,7 +15,10 @@ final class Update  extends BaseService{
     public function setFinished(int $id){
         $this->ppCupGroupRepository->setFinished($id);
         //TODO HANDLE GROUP PROMOTION
-        
+    }
+
+    public function setStarted(int $id){
+        $this->ppCupGroupRepository->setStarted($id);
     }
 
     

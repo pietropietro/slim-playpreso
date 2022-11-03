@@ -36,7 +36,7 @@ final class Find  extends BaseService{
     private function enrich($ppCup, bool $with_levels, ?int $userId=null){
         $ppCup['ppTournamentType'] = $this->ppTournamentTypeFindService->getOne($ppCup['ppTournamentType_id']);
         if($with_levels)$ppCup['levels'] = $this->ppCupGroupFindService->getLevels($ppCup['id']);
-        $ppCup['user_count'] = $this->upFindService->countParticipations('ppCup_id', $ppCup['id']);
+        $ppCup['user_count'] = $this->upFindService->countInTournament('ppCup_id', $ppCup['id']);
         if($userId)$ppCup['can_join'] = !$this->upFindService->isUserInTournament($userId, 'ppCup_id', $ppCup['id']);
         return $ppCup;
     }
