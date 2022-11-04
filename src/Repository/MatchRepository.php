@@ -88,7 +88,7 @@ final class MatchRepository extends BaseRepository
         else if($finish){
             $this->db->where('date_start', $finish, '<');    
         }
-        if($verified != null)$this->db->where('verified_at IS '.$verified ? 'NOT ' : ''.' NULL');    
+        if($verified !== null)$this->db->where('verified_at IS '.($verified ? ' NOT ' : '').' NULL');    
 
         
         //TODO add where league_id + round not distinc  i.e serie a only round 4, 

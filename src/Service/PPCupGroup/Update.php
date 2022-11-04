@@ -48,7 +48,7 @@ final class Update  extends BaseService{
             if(!$nextGroup = $this->ppCupGroupFindService->getNextGroup($id, positionIndex: $i)){
                 throw new \App\Exception\NotFound('next group not found', 500);
             };
-            $this->createUpService->create($ups[$i]['user_id'], $ppTournamentType['id'], $nextGroup['ppCup_id'], $nextGroup['id']);
+            $this->createUpService->create($ups[$i]['user_id'], $ppTournamentType['id'], $nextGroup['ppCup_id'], $nextGroup['id'], fromTag: $ppCupGroup['tag']);
             $this->verify->afterJoined('ppCupGroup_id', $nextGroup['id'], $ppTournamentType['id']);
         }
     }

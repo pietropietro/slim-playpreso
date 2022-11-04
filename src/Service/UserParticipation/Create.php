@@ -14,10 +14,15 @@ final class Create extends BaseService
         protected UserParticipationRepository $userParticipationRepository,
     ) {}
 
-    public function create(int $userId, int $ppTournamentTypeId, int $ppTournamentId, ?int $ppGroupId = null)
+    public function create(
+        int $userId, 
+        int $ppTournamentTypeId, 
+        int $ppTournamentId, 
+        ?int $ppGroupId = null, 
+        ?string $fromTag = null)
     {
-        $columns = $ppGroupId ? array("ppCup_id", "ppCupGroup_id", "ppTournamentType_id") : array("ppLeague_id", "ppTournamentType_id");
-        $valueIds = $ppGroupId ? array($ppTournamentId, $ppGroupId, $ppTournamentTypeId) : array($ppTournamentId, $ppTournamentTypeId);
+        $columns = $ppGroupId ? array("ppCup_id", "ppCupGroup_id", "ppTournamentType_id", "from_tag") : array("ppLeague_id", "ppTournamentType_id");
+        $valueIds = $ppGroupId ? array($ppTournamentId, $ppGroupId, $ppTournamentTypeId, $fromTag) : array($ppTournamentId, $ppTournamentTypeId);
 
         if(!$participation = $this->userParticipationRepository->create($userId, $columns, $valueIds)){
             throw new \App\Exception\User('cant join',500);

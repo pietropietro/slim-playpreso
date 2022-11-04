@@ -61,8 +61,8 @@ final class Find  extends BaseService{
         return $levels;
     }
 
-    public function getJoinable(int $ppCupId) : ?array{
-        $ppCupGroup = $this->ppCupGroupRepository->getJoinable($ppCupId);
+    public function getNotFull(int $ppCupId, int $level) : ?array{
+        $ppCupGroup = $this->ppCupGroupRepository->getNotFull($ppCupId, $level);
         return $ppCupGroup ? $ppCupGroup[0] : null;
     }
 }

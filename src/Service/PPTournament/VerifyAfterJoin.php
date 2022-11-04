@@ -47,8 +47,8 @@ final class VerifyAfterJoin extends BaseService{
             return;
         }
 
-        if((bool)$this->ppCupGroupfindService->getJoinable($tournamentId)) return;
-        $ppCupGroup = $this->ppCupGroupfindService->getOne($tournamentId);
-        $this->ppCupUpdateService->start($ppCupGroup['ppCup_id']);
+        $startingGroup = $this->ppCupGroupfindService->getOne($tournamentId);
+        if((bool)$this->ppCupGroupfindService->getNotFull($tournamentId, level:$startingGroup['level'])) return;        
+        $this->ppCupUpdateService->start($startingGroup['ppCup_id'], level: $startingGroup['level']);
     }
 }

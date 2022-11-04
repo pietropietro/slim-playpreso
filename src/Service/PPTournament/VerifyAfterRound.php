@@ -40,9 +40,6 @@ final class VerifyAfterRound extends BaseService{
         
         //prevent double round creation when recalculating a round.
         $nextRound = $round_just_finished + 1;
-        //move check in create ppround service
-        if($this->findPPRoundService->has($tournamentColumn, $tournamentId, $nextRound))return;
-
         if($tournamentRounds > $round_just_finished){
             $this->createPPRoundService->create(
                 $tournamentColumn, 
