@@ -11,6 +11,8 @@ ALTER TABLE userParticipations MODIFY COLUMN ppTournamentType_id int AFTER user_
 ALTER TABLE userParticipations DROP COLUMN ppCupType_id;
 ALTER TABLE userParticipations DROP FOREIGN KEY userParticipations_ibfk_6;
 ALTER TABLE userParticipations RENAME COLUMN score TO points;
+ALTER TABLE userParticipations ADD COLUMN from_tag varchar(30) AFTER ppCupGroup_id;
+
 
 
 ALTER TABLE users ADD COLUMN admin tinyint AFTER username;

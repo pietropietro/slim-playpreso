@@ -29,7 +29,7 @@ final class Update  extends BaseService{
         $this->ppCupGroupRepository->setFinished($id);
         $ppCupGroup = $this->ppCupGroupRepository->getOne($id);
 
-        $unfinishedCupGroups = $this->ppCupGroupRepository->getForCup($ppCupGroup['ppCup_id'],level: null, finished: 'IS NOT NULL');
+        $unfinishedCupGroups = $this->ppCupGroupRepository->getForCup($ppCupGroup['ppCup_id'],level: null, finished: false);
         if(count($unfinishedCupGroups) === 0){
             $this->ppCupRepository->setFinished($ppCupGroup['ppCup_id']);
             return;
@@ -42,14 +42,14 @@ final class Update  extends BaseService{
         $ppCupGroup = $this->ppCupGroupRepository->getOne($id);
         $ppTournamentType = $this->findPPTournamentTypeService->getOne($ppCupGroup['ppTournamentType_id']);
         $ups = $this->findUpService->getForTournament('ppCupGroup_id',$id);
-        $promotions = $ppTournamentType['cup_format'][$ppCupGroup['level'] - 1]['promotions'];
+        $promotions = $ppTournamentType['cup_format'][$ppCupGroup['level'] - 1]->promotions;
 
         for ($i=0; $i < $promotions; $i++) { 
-            if(!$nextGroup = $this->ppCupGroupFindService->getNextGroup($id, position: $i)){
+            if(!$nextGroup = $this->ppCupGroupFindService->getNextGroup($id, positionIndex: $i)){
                 throw new \App\Exception\NotFound('next group not found', 500);
             };
             $this->createUpService->create($ups[$i]['user_id'], $ppTournamentType['id'], $nextGroup['ppCup_id'], $nextGroup['id']);
-            $this->verify->afterJoined('ppCupGroup_id', $$nextGroup['id'], $ppTournamentType['id']);
+            $this->verify->afterJoined('ppCupGroup_id', $nextGroup['id'], $ppTournamentType['id']);
         }
     }
 

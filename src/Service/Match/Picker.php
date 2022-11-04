@@ -18,10 +18,10 @@ final class Picker extends BaseService{
         if(!$leagueIDs = $this->leagueService->getForPPTournamentType($tournamentTypeId, true)) return [];
 
         $plus_days = 8;
-        $matches = $this->matchRepository->getMatchesForLeagues($leagueIDs, from_days_diff: 1, until_days_diff: $plus_days);
+        $matches = $this->matchRepository->getMatchesForLeagues($leagueIDs, from_days_diff: 1, until_days_diff: $plus_days, verified: false);
         while(count($matches)<3 && $plus_days < 30){
             $plus_days += 4;
-            $matches = $this->matchRepository->getMatchesForLeagues($leagueIDs, from_days_diff: 1, until_days_diff: $plus_days);
+            $matches = $this->matchRepository->getMatchesForLeagues($leagueIDs, from_days_diff: 1, until_days_diff: $plus_days, verified: false);
         }
 
         shuffle($matches);

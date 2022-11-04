@@ -35,6 +35,7 @@ final class VerifyAfterRound extends BaseService{
 
         if($tournamentRounds === $round_just_finished){
             $this->afterFinished($tournamentColumn, $tournamentId);
+            return;
         }
         
         //prevent double round creation when recalculating a round.

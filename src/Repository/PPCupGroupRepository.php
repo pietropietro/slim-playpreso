@@ -27,10 +27,10 @@ final class PPCupGroupRepository extends BaseRepository
         return $this->db->getValue('ppCupGroups', 'id', null);
     }
 
-    function getForCup(int $ppCupId, ?int $level = null, ?string $finished = null){
+    function getForCup(int $ppCupId, ?int $level = null, ?bool $finished = null){
         $this->db->where('ppCup_id', $ppCupId);
         if($level)$this->db->where('level', $level);
-        if($finished)$this->db->where('finished', $finished);
+        if($finished != null)$this->db->where('finished_at IS '. ($finished ? ' NOT ' : '').'NULL');
         return $this->db->get('ppCupGroups');
     }
 

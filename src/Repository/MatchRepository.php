@@ -72,7 +72,8 @@ final class MatchRepository extends BaseRepository
         ?int $from_days_diff = null, 
         ?int $until_days_diff = null, 
         ?string $sort = 'ASC', 
-        ?int $limit = 50
+        ?int $limit = 50,
+        ?bool $verified = null
     ) : ?array {
 
         $start = !is_null($from_days_diff) ? date("Y-m-d H:i:s", strtotime('+'.$from_days_diff.'days')) : null;
@@ -87,6 +88,8 @@ final class MatchRepository extends BaseRepository
         else if($finish){
             $this->db->where('date_start', $finish, '<');    
         }
+        if($verified != null)$this->db->where('verified_at IS '.$verified ? 'NOT ' : ''.' NULL');    
+
         
         //TODO add where league_id + round not distinc  i.e serie a only round 4, 
         $this->db->where('league_id', $league_ids, 'IN');

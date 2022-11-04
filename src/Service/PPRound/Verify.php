@@ -29,7 +29,7 @@ final class Verify extends BaseService{
         $tournamentColumn = $ppRound['ppLeague_id'] ? 'ppLeague_id' : 'ppCupGroup_id';
         $tournamentId = $ppRound['ppLeague_id'] ?? $ppRound['ppCupGroup_id'];
 
-        $this->updateUpService->update('ppLeague_id', $ppRound['ppLeague_id']);
+        $this->updateUpService->update($tournamentColumn, $tournamentId);
 
         if($this->isPPRoundFinished($ppRound)){
             $this->verify->afterRound($tournamentColumn, $tournamentId, $ppRound['round']);
