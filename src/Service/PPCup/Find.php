@@ -21,7 +21,7 @@ final class Find  extends BaseService{
     ) {}
 
     public function getOne($uniqueVal, bool $is_slug = false, ?int $userId = null){
-        $ppCup = $this->ppCupRepository->getOne($uniqueVal, $is_slug);
+        if(!$ppCup = $this->ppCupRepository->getOne($uniqueVal, $is_slug)) return;
         return $this->enrich($ppCup, with_levels: true, userId: $userId);
     }
 
@@ -42,7 +42,7 @@ final class Find  extends BaseService{
     }
 
     function getJoinable(int $ppTypeId, ?int $userId) : ?array{
-        $ppCup = $this->ppCupRepository->getJoinable($ppTypeId);
+        if(!$ppCup = $this->ppCupRepository->getJoinable($ppTypeId))return null;
         if($userId && $this->upFindService->isUserInTournament($userId, 'ppCup_id', $ppCup['id'])) return null;
         return $ppCup;
     }
