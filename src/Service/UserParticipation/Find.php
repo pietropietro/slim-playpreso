@@ -8,21 +8,12 @@ final class Find  extends Base {
 
     public function getForTournament(string $tournamentColumn, int $tournamentId) :array{
         $ups = $this->userParticipationRepository->getForTournament($tournamentColumn, $tournamentId); 
-        if($tournamentColumn === 'ppCupGroup_id'){
-            //TODO refactor
-            $ups = array_map(function ($up){
-                $up['tot_cup_points'] = $this->userParticipationRepository
-                    ->getCupPointsTotal($up['user_id'], $up['ppCup_id'], $up['joined_at']);
-                return $up;
-            }, $ups);
-        }
         return $ups;
     }
 
     public function countInTournament(string $tournamentColumn, int $tournamentId){
         return $this->userParticipationRepository->count($tournamentColumn, $tournamentId);
     }
-
 
     public function getUserParticipations(int $userId, string $playMode, bool $active = true){
         $ups = $this->userParticipationRepository->getUserParticipations($userId, $playMode.'_id', $active, null);        
@@ -69,6 +60,4 @@ final class Find  extends Base {
         $trophies['ppLeagues'] = $ppLeagueUps;
         return $trophies;
     }
-
-    
 }

@@ -4,6 +4,7 @@ ALTER TABLE userParticipations ADD COLUMN score INT AFTER updated_at;
 ALTER TABLE userParticipations ADD COLUMN tot_preso INT AFTER points;
 ALTER TABLE userParticipations ADD COLUMN tot_unox2 INT AFTER points;
 ALTER TABLE userParticipations ADD COLUMN tot_locked INT AFTER points;
+ALTER TABLE userParticipations ADD COLUMN tot_cup_points INT AFTER tot_points;
 ALTER TABLE userParticipations ADD COLUMlN finished tinyint AFTER updated_at;
 ALTER TABLE userParticipations RENAME COLUMN ppLeagueType_id TO ppTournamentType_id;
 ALTER TABLE userParticipations RENAME COLUMN points TO tot_points;

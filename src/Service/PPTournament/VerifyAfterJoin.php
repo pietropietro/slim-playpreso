@@ -15,6 +15,7 @@ use App\Service\UserParticipation;
 final class VerifyAfterJoin extends BaseService{
     public function __construct(
         protected UserParticipation\Find $findUpService,
+        protected UserParticipation\Update $updateUpService,
         protected PPTournamentType\Find $ppTournamentTypefindService,
         protected PPCupGroup\Find $ppCupGroupfindService,
         protected PPLeague\Update $ppLeagueUpdateService,
@@ -26,11 +27,16 @@ final class VerifyAfterJoin extends BaseService{
         if(!in_array($tournamentColumn, array('ppLeague_id', 'ppCupGroup_id')))return;
 
         $participantsCount = $this->findUpService->countInTournament($tournamentColumn, $tournamentId);
+
+        //TODO add 'participants' column in ppleague to have same way to access maxParticipants as ppcupgroups
+        if($tournamentColumn === 'ppCupGroup_id'){
+            //TODO if ppcupgroup udpate ups to set total_cup_points and sort ups before group start
+            $this->updateUpService->update($tournamentColumn, $tournamentId);
+            $maxParticipants = $this->ppCupGroupfindService->getOne($tournamentId)['participants'];
+        }else{
+            $maxParticipants = $this->ppTournamentTypefindService->getOneFromPPTournament('ppLeagues', $tournamentId)['participants'];
+        }
         
-        //TODO add 'participants' column in ppleague to have same way to access value as ppcupgroups
-        $maxParticipants =  $tournamentColumn === 'ppLeague_id' ? 
-            $this->ppTournamentTypefindService->getOneFromPPTournament('ppLeagues', $tournamentId)['participants'] :
-            $ppTournament = $this->ppCupGroupfindService->getOne($tournamentId)['participants'];
 
         if($participantsCount && $participantsCount === $maxParticipants){
             $this->startPPTournament($tournamentColumn, $tournamentId, $tournamentTypeId);

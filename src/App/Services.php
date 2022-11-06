@@ -361,6 +361,7 @@ $container['pptournament_verifyafterjoin_service'] = static fn (
     ContainerInterface $container
 ):  PPTournament\VerifyAfterJoin => new  PPTournament\VerifyAfterJoin(
     $container->get('userparticipation_find_service'),
+    $container->get('userparticipation_update_service'),
     $container->get('pptournamenttype_find_service'),
     $container->get('ppcupgroup_find_service'),
     $container->get('ppleague_update_service'),

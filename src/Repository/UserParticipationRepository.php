@@ -66,20 +66,21 @@ final class UserParticipationRepository extends BaseRepository
         return $this->db->get($this->tableName);
     }
 
-    function getCupPointsTotal(int $userId, int $cupId, ?string $joinedAt) : ?int{
+    function getOverallPPCupPoints(int $userId, int $cupId, ?string $joinedBefore) : ?int{
         $this->db->where('user_id',$userId);
         $this->db->where('ppCup_id',$cupId);
-        if($joinedAt)$this->db->where('joined_at', $joinedAt, '<=');
+        if($joinedBefore)$this->db->where('joined_at', $joinedBefore, '<');
         return (int)$this->db->getOne($this->tableName, 'sum(tot_points) as points_total')['points_total'];
     }
 
     
-    function update(int $id, int $tot_points, int $tot_unox2, int $tot_locked, int $tot_preso, int $position){
+    function update(int $id, int $tot_points, int $tot_unox2, int $tot_locked, int $tot_preso, int $position, ?int $tot_cup_points = null){
         $data = array(
 			"tot_points" => $tot_points,
 			"tot_locked" => $tot_locked,
 			"tot_preso" => $tot_preso,
 			"tot_unox2" => $tot_unox2,
+			"tot_cup_points" => $tot_cup_points,
             "position" => $position,
             "updated_at" => $this->db->now(),
 		);
