@@ -74,7 +74,7 @@ final class UserParticipationRepository extends BaseRepository
     }
 
     
-    function update(int $id, int $tot_points, int $tot_unox2, int $tot_locked, int $tot_preso, int $position, ?int $tot_cup_points = null){
+    function update(int $id, ?int $tot_points, ?int $tot_unox2, ?int $tot_locked, ?int $tot_preso, ?int $position, ?int $tot_cup_points = null){
         $data = array(
 			"tot_points" => $tot_points,
 			"tot_locked" => $tot_locked,

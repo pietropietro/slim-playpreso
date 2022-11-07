@@ -10,10 +10,12 @@ final class Update  extends Base {
         $ups = $this->userParticipationRepository->getForTournament($tournamentColumn, $tournamentId);
         foreach ($ups as &$upItem) {
             $user_participation_result = $this->guessRepository->countUpNumbers($upItem['user_id'], $tournamentColumn, $tournamentId);
-            $upItem['tot_points'] = (int)$user_participation_result['tot_points'] ?? null;
-            $upItem['tot_locked'] = (int)$user_participation_result['tot_locked'] ?? 0;
-            $upItem['tot_preso'] = (int)$user_participation_result['tot_preso'] ?? 0;
-            $upItem['tot_unox2'] = (int)$user_participation_result['tot_unox2'] ?? 0;
+            if($user_participation_result){
+                $upItem['tot_points'] = (int)$user_participation_result['tot_points'] ?? null;
+                $upItem['tot_locked'] = (int)$user_participation_result['tot_locked'] ?? 0;
+                $upItem['tot_preso'] = (int)$user_participation_result['tot_preso'] ?? 0;
+                $upItem['tot_unox2'] = (int)$user_participation_result['tot_unox2'] ?? 0;
+            }
             
             if($tournamentColumn === 'ppCupGroup_id'){
                 $previousGroupsPoints = $this->userParticipationRepository->getOverallPPCupPoints($upItem['user_id'], $upItem['ppCup_id'], joinedBefore: $upItem['joined_at']) ?? null;
@@ -32,10 +34,10 @@ final class Update  extends Base {
         foreach($ups as $index => $up){
             $this->userParticipationRepository->update(
                 id: $up['id'], 
-                tot_points: (int)$up['tot_points'],
-                tot_unox2:  (int)$up['tot_unox2'],
-                tot_locked: (int)$up['tot_locked'],
-                tot_preso:  (int)$up['tot_preso'],
+                tot_points: $up['tot_points'],
+                tot_unox2:  $up['tot_unox2'],
+                tot_locked: $up['tot_locked'],
+                tot_preso:  $up['tot_preso'],
                 tot_cup_points:  (int)$up['tot_cup_points'] ?? null,
                 position: $index + 1
             );
