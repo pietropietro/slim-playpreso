@@ -11,3 +11,8 @@
 /.phpunit.result.cache
 /dump.rdb
 /.DS_Store
+
+cup-format-sample.json
+external-api-sample.json
+alter-tables.sql
+schema.sql
