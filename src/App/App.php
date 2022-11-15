@@ -15,8 +15,6 @@ $dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS', 'DB_PORT']);
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
-$playpreso_version = '1.0.0';
-
 $settings = require __DIR__ . '/Settings.php';
 $app = new \Slim\App($settings);
 // $app->add(new \CorsSlim\CorsSlim());

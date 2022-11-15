@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
     'settings' => [
         //'determineRouteBeforeAppMiddleware' => true,
-        'displayErrorDetails' => $_SERVER['DISPLAY_ERROR_DETAILS'] === 'true',
+        'displayErrorDetails' => $_SERVER['DEBUG'] === 'true',
         'db' => [
             'host' => $_SERVER['DB_HOST'],
             'name' => $_SERVER['DB_NAME'],

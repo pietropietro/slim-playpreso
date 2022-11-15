@@ -40,11 +40,11 @@ final class PPCupGroupRepository extends BaseRepository
         //and not as the table column value
 
         return $this->db->query('
-            select ppcupgroups.id, participants, count(ups.id) 
-            from ppcupgroups
-            left  join userparticipations ups on ups.ppcupgroup_id=ppcupgroups.id 
-            where ppcupgroups.level='.$level.' and ppcupgroups.ppcup_id='.$ppCupId.' 
-            group by ppcupgroups.id 
+            select ppCupGroups.id, participants, count(ups.id) 
+            from ppCupGroups
+            left  join userParticipations ups on ups.ppCupGroup_id=ppCupGroups.id 
+            where ppCupGroups.level='.$level.' and ppCupGroups.ppCup_id='.$ppCupId.' 
+            group by ppCupGroups.id 
             having count(ups.id) < participants
             order by count(ups.id) ASC',
         1);

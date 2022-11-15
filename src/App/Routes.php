@@ -30,6 +30,7 @@ return function ($app){
 
     $container = $app->getContainer();
     $pointsService = $container->get('points_find_service');
+    $admin = $container->get('user_find_service');
 
     $app->group('/user', function () use ($app, $pointsService): void {
         $app->post('/signup', User\Create::class);
@@ -61,10 +62,9 @@ return function ($app){
 
     $app->get('/p-cup-group/{id}', PPCupGroup\GetOne::class)->add(new Auth($pointsService));
 
+    //TODO protect this endpoint
     $app->get('/externalAPI/call', Cron\Start::class);
 
-
-    $admin = $container->get('user_find_service');
     $app->group('/admin', function () use ($app): void {
         
         $app->post('/p-cup/{id}', PPCup\Create::class);

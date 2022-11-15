@@ -29,8 +29,8 @@ final class ApiError extends \Slim\Handlers\Error
             'code' => $statusCode,
         ];
         
+        $data['message'] = $exception->getMessage();
         if ($_SERVER['DEBUG'] === 'true') {
-            $data['message'] = $exception->getMessage();
             $data['trace'] = $exception->getTraceAsString();
         }
 
