@@ -9,7 +9,7 @@ use Slim\Http\Response;
 
 final class DefaultController extends BaseController
 {
-    private const API_VERSION = '1.0';
+    private const API_VERSION = '1.0a';
 
     public function getHelp(Request $request, Response $response): Response
     {
@@ -40,16 +40,11 @@ final class DefaultController extends BaseController
         return $this->jsonResponse($response, 'success', $status, 200);
     }
 
-    /**
-     * @return array<int>
-     */
-    private function getDbStats(): array
-    {
-        $userService = $this->container->get('user_find_service');
 
-        return [
-            'users' => count($userService->getAll()),
-        ];
+    private function getDbStatus()
+    {
+        $repo = $this->container->get('league_repository');
+        return $repo->get();
     }
 
     private function checkRedisConnection(): string
