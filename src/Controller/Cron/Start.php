@@ -16,7 +16,6 @@ final class Start extends Base
         Request $request,
         Response $response,
     ): Response {
-
         $this->getGuessService()->setMissed();
         $leagues = $this->getLeaguesService()->getNeedData();
 
@@ -25,6 +24,6 @@ final class Start extends Base
             $this->getExternalApiService()->fetchExternalData($league['ls_suffix'], $league['id']);
         }
 
-        return $this->jsonResponse($response, 'success', date('H:i:s T').': '.count($leagues), 200);
+        return $this->jsonResponse($response, 'success', date('H:i:s T').',like: '.$leagues[0]['ls_suffix'], 200);
     }
 }

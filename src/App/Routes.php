@@ -14,6 +14,7 @@ use App\Controller\PPCupGroup;
 use App\Controller\Cron;
 use App\Middleware\Auth;
 use App\Middleware\Cors;
+use App\Middleware\InternalRequest;
 
 
 return function ($app){
@@ -62,9 +63,6 @@ return function ($app){
 
     $app->get('/p-cup-group/{id}', PPCupGroup\GetOne::class)->add(new Auth($pointsService));
 
-    //TODO protect this endpoint
-    $app->get('/externalAPI/call', Cron\Start::class);
-
     $app->group('/admin', function () use ($app): void {
         
         $app->post('/p-cup/{id}', PPCup\Create::class);
@@ -86,6 +84,8 @@ return function ($app){
         });
         
     })->add(new Auth($pointsService, $admin));
+
+    $app->get('/externalAPI/call', Cron\Start::class)->add(new InternalRequest());
 
     // Catch-all route to serve a 404 Not Found page if none of the routes match
     // NOTE: make sure this route is defined last
