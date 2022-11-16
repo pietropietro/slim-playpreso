@@ -24,7 +24,8 @@ final class Start extends Base
             $this->getExternalApiService()->fetchExternalData($league['ls_suffix'], $league['id']);
         }
 
-        $message = date('H:i:s T'). $leagues ? count($leagues).',like: '.$leagues[0]['ls_suffix'] : 'no leagues';
+        $message = date('H:i:s T'). (count($leagues) > 0 ? ' count:'.count($leagues).',like: '.$leagues[0]['ls_suffix'] : ' - no leagues');
+        
         return $this->jsonResponse($response, 'success', $message, 200);
     }
 }

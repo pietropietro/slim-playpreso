@@ -19,7 +19,7 @@ final class InternalRequest extends Base
         Route $next
     ): ResponseInterface {
 
-        if(!$_SERVER['DEBUG'] && ($_SERVER['REMOTE_ADDR'] != $_SERVER['SERVER_ADDR'])){
+        if(!$_SERVER['DEBUG'] && ($_SERVER['REMOTE_ADDR'] !== $_SERVER['SERVER_ADDR'])){
             throw new \App\Exception\Auth('NOT ALLOWED.', 401);
         }
         
