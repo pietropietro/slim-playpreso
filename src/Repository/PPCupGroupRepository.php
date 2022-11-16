@@ -51,9 +51,10 @@ final class PPCupGroupRepository extends BaseRepository
 
     }
 
-    function create(int $ppCupId, int $level, int $rounds, string $tag, int $participants){
+    function create(int $ppCupId, int $ppTournamentType_id, int $level, int $rounds, string $tag, int $participants){
         $data = array(
             "ppCup_id" => $ppCupId,
+            "ppTournamentType_id" => $ppTournamentType_id,
             "level" => $level,
             "rounds" => $rounds,
             "created_at" => $this->db->now(),

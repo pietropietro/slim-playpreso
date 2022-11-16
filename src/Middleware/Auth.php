@@ -70,7 +70,7 @@ final class Auth extends Base
         try {
             return JWT::decode($token, $_SERVER['SECRET_KEY'], ['HS256']);
         } catch (\UnexpectedValueException) {
-            throw new Auth('Forbidden: you are not authorized.', 403);
+            throw new \App\Exception\Auth('jwt not valid.', 401);
         }
     }
 }

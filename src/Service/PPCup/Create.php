@@ -26,6 +26,7 @@ final class Create extends BaseService{
         foreach ($format as $key => $cup_level) {
             $this->createLevelGroups(
                 $id, 
+                $ppTournamentType_id,
                 $cup_level->level, 
                 $cup_level->rounds, 
                 $cup_level->group_tags, 
