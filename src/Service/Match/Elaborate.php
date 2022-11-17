@@ -34,16 +34,15 @@ final class Elaborate extends BaseService{
                 continue;
             }
 
-            // TODO if abandoned change ppRoundMatches
-            // if($eventObj->Eps === 'Aband.'){
-                
-            // }
-            //TODO postponed handle
-            // if($eventObj->Eps === 'Postp.'){
-                
-            // }
+            //if match is not FT or NS, which means it is
+            // either 'Aband.' or 'Postp.', or other non-usual state, add note
+            //so to stop the api call for its score
+            //TODO handle ppRoundMatches with this match_id
+            if($eventObj->Eps !== 'NS'){
+                $this->matchUpdateService->updateNotes($match['id'],$eventObj->Eps);
+            }
             
-            if(!$match['home_id'] || $match['away_id']){
+            if(!$match['home_id'] || !$match['away_id']){
                 $this->matchUpdateService->updateTeams($match['id'],(int)$eventObj->T1[0]->ID, (int)$eventObj->T2[0]->ID, true);
             }
             if(new \DateTime($match['date_start']) != new \DateTime((string)$eventObj->Esd)){

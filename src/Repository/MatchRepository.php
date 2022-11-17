@@ -41,12 +41,21 @@ final class MatchRepository extends BaseRepository
     public function updateDateStart(int $id, string $date_start){
         $data = array(
 			"date_start" => $date_start,
-            "rescheduled_at" => $this->db->now()
 	    );
 
         $this->db->where('id', $id);
         $this->db->update('matches', $data, 1);
     }
+
+    public function updateNotes(int $id, string $notes){
+        $data = array(
+			"notes" => $notes,
+	    );
+
+        $this->db->where('id', $id);
+        $this->db->update('matches', $data, 1);
+    }
+
 
     public function updateTeams(int $id, int $home_id, int $away_id){
         $data = array(
