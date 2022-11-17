@@ -6,6 +6,8 @@ namespace App\Repository;
 
 final class MatchRepository extends BaseRepository
 {   
+    
+
     public function get(string $from= null, string $to= null, string $date = null) : ?array {
         if($from && $to){
             $this->db->where('date_start', array($from, $to), 'BETWEEN');    
@@ -13,8 +15,22 @@ final class MatchRepository extends BaseRepository
         else if($date){
             $this->db->where('DATE(date_start) = "'.$date.'"');    
         }
+        $this->db->join('guesses g', "g.match_id=m.id", "left");
+        $this->db->groupBy('m.id');
         $this->db->orderBy('date_start', 'ASC');
-        return $this->db->get('matches');
+
+        $columns = array(
+            'm.id', 'm.ls_id', 'm.league_id', 'm.home_id', 'm.away_id', 'm.score_home','m.score_away', 
+            'm.round', 'm.date_start', 'm.created_at', 'm.verified_at', 'm.notes',
+            // 'count(distinct g.ppRoundMatch_id) as ppRMcount', 
+            'count(g.id) as aggregateGuesses',
+            'ROUND(sum(g.UNOX2)/count(guessed_at) * 100) as aggregateUNOX2',
+            'ROUND(sum(g.GGNG)/count(guessed_at) * 100) as aggregateGGNG',
+            'ROUND(sum(g.UO25)/count(guessed_at) * 100) as aggregateUO25',
+            'ROUND(sum(g.PRESO)/count(guessed_at) * 100) as aggregatePRESO',
+        );
+
+        return $this->db->get('matches m', null, $columns);
     }
 
     public function getOne(int $matchId, bool $is_external_id = false) : ?array {
