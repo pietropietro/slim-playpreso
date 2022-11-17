@@ -108,7 +108,7 @@ final class UserParticipationRepository extends BaseRepository
 
     public function count(string $tournamentColumn, int $tournamentId){
         $this->db->where($tournamentColumn, $tournamentId);
-        return $this->db->getValue($this->tableName, "count(*)");
+        return $this->db->getValue($this->tableName, "COUNT(DISTINCT(user_id))");
     }
 
     public function isUserInTournament(int $userId, string $tournamentColumn, int $tournamentId){
