@@ -19,9 +19,11 @@ final class Call extends BaseService{
 
     public function fetchExternalData(string $ls_suffix, int $league_id){
         //REAL FETCH
-        $client = new Client(
-            ['base_uri' => $_SERVER['EXTERNAL_API_BASE_URI'],
-            'timeout'  => 10.0]
+        $client = new Client([
+                'base_uri' => $_SERVER['EXTERNAL_API_BASE_URI'],
+                'timeout'  => 10.0,
+                'proxy' => $_SERVER['PROXY_URL']
+            ]
         );
         $req_url = $ls_suffix.'/2?MD=5';
         $response = $client->get($req_url);

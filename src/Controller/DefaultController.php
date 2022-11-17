@@ -9,7 +9,7 @@ use Slim\Http\Response;
 
 final class DefaultController extends BaseController
 {
-    private const API_VERSION = '1.1a';
+    private const API_VERSION = '1.1b';
 
     public function getHelp(Request $request, Response $response): Response
     {
@@ -22,6 +22,7 @@ final class DefaultController extends BaseController
             // 'endpoints' => $endpoints,
             'version' => self::API_VERSION,
             'timestamp' => time(),
+            // 'your_ip' => $_SERVER['REMOTE_ADDR']
         ];
 
         return $this->jsonResponse($response, 'success', $message, 200);
