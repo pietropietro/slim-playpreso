@@ -43,6 +43,8 @@ final class Update  extends BaseService{
         $ppTournamentType = $this->findPPTournamentTypeService->getOne($ppCupGroup['ppTournamentType_id']);
         $ups = $this->findUpService->getForTournament('ppCupGroup_id',$id);
         $promotions = $ppTournamentType['cup_format'][$ppCupGroup['level'] - 1]->promotions;
+        //i.e. final
+        if(!$promotions) return;
 
         for ($i=0; $i < $promotions; $i++) { 
             if(!$nextGroup = $this->ppCupGroupFindService->getNextGroup($id, positionIndex: $i)){
