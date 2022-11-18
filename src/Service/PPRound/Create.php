@@ -16,10 +16,11 @@ final class Create extends BaseService{
         protected PPRoundMatch\Create $ppRMcreateService,
     ){}
     
-    public function create(string $tournamentColumn, int $tournamentId, int $tournamentTypeId, int $newRound) : bool{
+    public function create(string $tournamentColumn, int $tournamentId, int $tournamentTypeId, int $newRound , ?int $matchesPerRound = null) : bool{
         if($this->ppRoundRepository->has($tournamentColumn, $tournamentId, $newRound))return false;
 
-        $picked = $this->matchPickerService->pick($tournamentTypeId);
+        $matchesPerRound = $matchesPerRound ?? 3;
+        $picked = $this->matchPickerService->pick($tournamentTypeId, $matchesPerRound);
         if(!$picked) throw new \App\Exception\NotFound("no matches for new round", 500);
         if(!$newRoundId = $this->ppRoundRepository->create($tournamentColumn, $tournamentId, $newRound))return false;
         

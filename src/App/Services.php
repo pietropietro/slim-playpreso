@@ -232,6 +232,7 @@ $container['ppcup_update_service'] = static fn (
     $container->get('ppcup_repository'),
     $container->get('ppcupgroup_repository'),
     $container->get('ppcupgroup_find_service'),
+    $container->get('pptournamenttype_find_service'),
     $container->get('ppround_create_service'),
 );
 
