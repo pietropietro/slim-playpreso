@@ -20,25 +20,28 @@ final class Elaborate extends BaseService{
         foreach ($lsEvents as $key => $eventObj) {
             $match = $this->matchFindService->getOne((int) $eventObj->Eid, true, false);
             
-            if(!$match && $eventObj->Eps === 'FT') continue;
-            
-            if(!$match){
+            //CREATE MATCH
+            if(!$match && $eventObj->Eps === 'NS'){
                 $this->matchCreateService->create($eventObj, $league_id);
                 continue;
             }
-           
+
+            if(!$match) continue;
             if($match['verified_at'])continue;
             
+
+            //VERIFY MATCH - i.e. final score
             if($eventObj->Eps === 'FT'){
                 $this->matchVerifyService->verify($match['id'], (int)$eventObj->Tr1, (int)$eventObj->Tr2);
                 continue;
             }
 
-            //if match is not FT or NS, which means it is
-            // either 'Aband.' or 'Postp.', or other non-usual state, add note
-            //so to stop the api call for its score
-            //TODO handle ppRoundMatches with this match_id
-            if($eventObj->Eps !== 'NS'){
+
+
+            //MODIFY MATCH NOTES - TEAMS - DATE
+            if((!!$match['notes'] && $match['notes'] != $eventObj->Eps) || 
+                !in_array($eventObj->Eps, array('NS', 'HT'))
+            ){
                 $this->matchUpdateService->updateNotes($match['id'],$eventObj->Eps);
             }
             
