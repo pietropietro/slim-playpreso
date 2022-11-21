@@ -25,7 +25,7 @@ final class Call extends BaseService{
                 'proxy' => $_SERVER['PROXY_URL']
             ]
         );
-        $req_url = $ls_suffix.'/2?MD=5';
+        $req_url = $ls_suffix.'/1';
         $response = $client->get($req_url);
         $decoded = json_decode((string)$response->getBody());
 

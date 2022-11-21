@@ -38,7 +38,7 @@ final class Elaborate extends BaseService{
 
             //MODIFY MATCH NOTES - TEAMS - DATE
             if((!!$match['notes'] && $match['notes'] != $eventObj->Eps) || 
-                in_array($eventObj->Eps, array('Aband.', 'Postp.'))
+                in_array($eventObj->Eps, array('Aband.', 'Postp.', 'Canc.'))
             ){
                 $this->matchUpdateService->updateNotes($match['id'],$eventObj->Eps);
             }
