@@ -6,6 +6,7 @@ namespace App\Service\PPCupGroup;
 
 use App\Service\RedisService;
 use App\Service\UserParticipation;
+use App\Service\PPRound;
 use App\Service\BaseService;
 use App\Repository\PPCupGroupRepository;
 
@@ -15,6 +16,7 @@ final class Find  extends BaseService{
         protected RedisService $redisService,
         protected PPCupGroupRepository $ppCupGroupRepository,
         protected UserParticipation\Find $userParticipationService,
+        protected PPRound\Find $ppRoundFindService,
     ) {}
 
     public function getOne(int $id){
@@ -56,10 +58,16 @@ final class Find  extends BaseService{
             if(!in_array($currentLevel, array_keys($levels))){
                 $levels[$currentLevel] = [];
             }
+            $group['isLive'] = $this->ppRoundFindService->hasLiveMatch('ppCupGroup_id', $group['id']);
             array_push($levels[$currentLevel], $group);
         }
         return $levels;
     }
+
+    public function hasLiveMatch($id){
+
+    }
+    
 
     public function getNotFull(int $ppCupId, int $level) : ?array{
         $ppCupGroup = $this->ppCupGroupRepository->getNotFull($ppCupId, $level);

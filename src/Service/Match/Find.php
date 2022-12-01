@@ -21,8 +21,13 @@ final class Find extends BaseService{
         return $enrich ? $this->enrich($match) : $match;
     }
 
+    public function get(array $ids) : ?array {
+        if(!$ids)return [];
+        $matches = $this->matchRepository->get(ids: $ids);
+        return $this->enrichAll($matches);
+    }
 
-    public function get(int $days_diff) : array {
+    public function getForWeek(int $days_diff) : array {
         $adminMatches = array();
         for($i=$days_diff-3; $i<$days_diff+4; $i++){
             $dateString = date("Y-m-d", strtotime(sprintf("%+d",$i).' days'));
@@ -42,7 +47,10 @@ final class Find extends BaseService{
             $lastMatch ? $this->enrich($lastMatch[0]) : null,
             $nextMatch ? $this->enrich($nextMatch[0]) : null
         );
-        
+    }
+
+    public function hasLiveMatch(array $ids){
+        return $this->matchRepository->hasLiveMatch(ids: $ids);
     }
 
     private function enrich($match){

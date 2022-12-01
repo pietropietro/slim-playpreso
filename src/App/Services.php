@@ -106,6 +106,7 @@ $container['ppround_find_service'] = static fn (
 ):  PPRound\Find => new  PPRound\Find(
     $container->get('redis_service'),
     $container->get('pproundmatch_find_service'),
+    $container->get('match_find_service'),
     $container->get('ppround_repository'),
     $container->get('guess_repository'),
 );
@@ -253,7 +254,8 @@ $container['ppcupgroup_find_service'] = static fn (
 ):  PPCupGroup\Find => new  PPCupGroup\Find(
     $container->get('redis_service'),
     $container->get('ppcupgroup_repository'),
-    $container->get('userparticipation_find_service')
+    $container->get('userparticipation_find_service'),
+    $container->get('ppround_find_service')
 );
 
 $container['external_api_service'] = static fn (

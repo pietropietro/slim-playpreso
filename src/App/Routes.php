@@ -72,6 +72,7 @@ return function ($app){
         
         $app->group('/match', function() use($app): void {
             $app->get('', Match\GetAll::class);
+            $app->get('/pick/{id}', Match\AdminPick::class);
             $app->post('/{id}', Match\Verify::class);
         });
 

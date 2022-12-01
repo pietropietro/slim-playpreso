@@ -13,8 +13,12 @@ final class PPRoundRepository extends BaseRepository
         return $result[0]['round_count'];
     }
 
-    public function getForTournament($column, $valueId){
+    public function getForTournament(string $column, int $valueId, ?bool $only_last=false){
         $this->db->where($column, $valueId);
+        if($only_last){
+            $this->db->orderBy('round');
+            return $this->db->getOne('ppRounds');
+        }
         return $this->db->get('ppRounds');
     }
 

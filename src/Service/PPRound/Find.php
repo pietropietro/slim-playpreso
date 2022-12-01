@@ -7,6 +7,7 @@ namespace App\Service\PPRound;
 use App\Service\RedisService;
 use App\Service\BaseService;
 use App\Service\PPRoundMatch;
+use App\Service\Match;
 use App\Repository\PPRoundRepository;
 use App\Repository\GuessRepository;
 
@@ -15,6 +16,7 @@ final class Find  extends BaseService{
     public function __construct(
         protected RedisService $redisService,
         protected PPRoundMatch\Find $ppRoundMatchService,
+        protected Match\Find $findMatchService,
         protected PPRoundRepository $ppRoundRepository,
         protected GuessRepository $guessRepository
     ){}
@@ -41,6 +43,14 @@ final class Find  extends BaseService{
     public function has(string $type, int $typeId, int $round): bool{
         return $this->ppRoundRepository->has($type, $typeId, $round);
     }
+
+    public function hasLiveMatch(string $type, int $typeId): bool{
+        $latestRound = $this->ppRoundRepository->getForTournament(column: $type, valueId: $typeId, only_last: true);
+        if(!$latestRound)return false;
+        $matchIds = $this->ppRoundMatchService->getMatchesForRound($latestRound['id'], onlyIds:true);  
+        return $this->findMatchService->hasLiveMatch(ids: $matchIds);
+    }
+
     
     public function getForTournament(string $type, int $typeId) : ?array {
         $ppRounds = $this->ppRoundRepository->getForTournament($type, $typeId);

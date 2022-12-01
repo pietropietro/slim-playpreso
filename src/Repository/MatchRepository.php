@@ -7,14 +7,17 @@ namespace App\Repository;
 final class MatchRepository extends BaseRepository
 {   
     
-
-    public function get(string $from= null, string $to= null, string $date = null) : ?array {
+    //TODO REFACTOR
+    public function get(array $ids=null, string $from= null, string $to= null, string $date = null) : ?array {
         if($from && $to){
             $this->db->where('date_start', array($from, $to), 'BETWEEN');    
         }
         else if($date){
             $this->db->where('DATE(date_start) = "'.$date.'"');    
         }
+
+        if($ids) $this->db->where('m.id', $ids, 'IN');
+
         $this->db->join('guesses g', "g.match_id=m.id", "left");
         $this->db->groupBy('m.id');
         $this->db->orderBy('date_start', 'ASC');
@@ -37,6 +40,22 @@ final class MatchRepository extends BaseRepository
         $column = !!$is_external_id ? 'ls_id' : 'id';
         $this->db->where($column, $matchId);
         return $this->db->getOne('matches');
+    }
+
+    public function hasLiveMatch(array $ids){
+        $this->db->where('id', $ids, 'IN');
+        $this->db->where('verified_at IS NULL');
+
+        $start = date("Y-m-d H:i:s", strtotime('-120 minutes'));
+        $end = date("Y-m-d H:i:s");
+        $this->db->where('date_start', array($start, $end), 'BETWEEN');
+
+        // $start = date("Y-m-d H:i:s", strtotime('-3 days'));
+        // $finish = date("Y-m-d H:i:s", strtotime('+100 minutes'));
+        // $this->db->where('m.date_start', array($start, $finish), 'BETWEEN');
+
+
+        return $this->db->has('matches');
     }
 
     public function create(int $ls_id, int $league_id, ?int $home_id, ?int $away_id, int $round, string $date_start){
@@ -92,6 +111,46 @@ final class MatchRepository extends BaseRepository
         $this->db->update('matches', $data, 1);
     }
 
+    private function getNextRoundNumber(int $league_id) : ?int{
+        $lastRound = $this->getLastRoundNumber($league_id);
+        if($lastRound)$this->db->where('round', $lastRound, '!=');
+
+        $this->db->where('league_id', $league_id);
+
+        //to exclude round-of-16 and such when groups not finished.
+        $this->db->where('home_id IS NOT NULL');
+        $this->db->where('away_id IS NOT NULL');
+
+        $this->db->where('date_start', date('Y-m-d H:i:s'), '>');
+        $this->db->orderBy('date_start', 'asc');
+
+        return $this->db->getValue('matches','round');
+    }
+    
+    //last round with a match verified.
+    //round could not be finished
+    private function getLastRoundNumber(int $league_id) : ?int{
+        $this->db->where('league_id', $league_id);
+        $this->db->where('verified_at IS NOT NULL');
+        $this->db->orderBy('date_start', 'desc');
+        return $this->db->getValue('matches', 'round');
+    }
+
+    public function getNextRoundForLeague(int $league_id) : ?array{
+        if(!$nextRoundNumber = $this->getNextRoundNumber($league_id)){
+            return [];
+        }
+        
+        $this->db->where('round', $nextRoundNumber);
+        $this->db->where('league_id', $league_id);
+
+        $minTimeInterval = date("Y-m-d H:i:s", strtotime('+1 days'));
+        $this->db->where('date_start', $minTimeInterval, '>');
+        
+        return $this->db->get('matches');
+    }
+
+    //TODO maybe delete (duplicate of get?)
     public function getMatchesForLeagues(
         array $league_ids, 
         ?int $from_days_diff = null, 
@@ -115,8 +174,6 @@ final class MatchRepository extends BaseRepository
         }
         if($verified !== null)$this->db->where('verified_at IS '.($verified ? ' NOT ' : '').' NULL');    
 
-        
-        //TODO add where league_id + round not distinc  i.e serie a only round 4, 
         $this->db->where('league_id', $league_ids, 'IN');
         $this->db->orderBy('date_start', $sort);
         
