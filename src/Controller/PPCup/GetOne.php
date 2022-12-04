@@ -23,7 +23,7 @@ final class GetOne extends Base
         $userId = $this->getAndValidateUserId($request);
 
         $ppCup = $this->getFindCupService()->getOne($ppCupId, $is_slug, $userId);
-                 
+                
         return $this->jsonResponse($response, 'success', $ppCup, 200);
     }
 }

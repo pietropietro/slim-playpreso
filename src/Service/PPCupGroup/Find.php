@@ -49,6 +49,10 @@ final class Find  extends BaseService{
             }
         }
     }
+
+    public function getCurrentCupLevel(int $ppCupId) : int{
+        return $this->ppCupGroupRepository->getCurrentCupLevel($ppCupId);
+    }
     
     public function getLevels(int $ppCupId) : array{
         $levels = [];

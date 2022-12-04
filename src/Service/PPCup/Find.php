@@ -38,6 +38,7 @@ final class Find  extends BaseService{
         if($with_levels)$ppCup['levels'] = $this->ppCupGroupFindService->getLevels($ppCup['id']);
         $ppCup['user_count'] = $this->upFindService->countInTournament('ppCup_id', $ppCup['id']);
         if($userId)$ppCup['can_join'] = !$this->upFindService->isUserInTournament($userId, 'ppCup_id', $ppCup['id']);
+        $ppCup['currentLevel'] = $this->ppCupGroupFindService->getCurrentCupLevel($ppCup['id']);
         return $ppCup;
     }
 
