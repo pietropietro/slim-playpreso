@@ -19,8 +19,10 @@ final class Find  extends BaseService{
         protected PPRound\Find $ppRoundFindService,
     ) {}
 
-    public function getOne(int $id){
-        return $this->ppCupGroupRepository->getOne($id);
+    public function getOne(int $id, ?bool $enriched=false){
+        $ppCupGroup = $this->ppCupGroupRepository->getOne($id);
+        if(!$enriched)return $ppCupGroup;
+        return $this->enrich($ppCupGroup, withRounds: true);
     }
 
     public function getForCup(int $ppCupId, ?int $level = null, ?bool $finished = null){
@@ -53,22 +55,27 @@ final class Find  extends BaseService{
         $groups = $this->getForCup($ppCupId);
 
         foreach($groups as $group){
-            $group['userParticipations'] = $this->userParticipationService->getForTournament('ppCupGroup_id', $group['id']);
             $currentLevel = $group['level'];
             if(!in_array($currentLevel, array_keys($levels))){
                 $levels[$currentLevel] = [];
             }
-            $group['isLive'] = $this->ppRoundFindService->hasLiveMatch('ppCupGroup_id', $group['id']);
+            $group = $this->enrich($group);
             array_push($levels[$currentLevel], $group);
         }
         return $levels;
     }
 
-    public function hasLiveMatch($id){
-
+    public function enrich(array $group, ?bool $withRounds=false){
+        $group['userParticipations'] = $this->userParticipationService->getForTournament('ppCupGroup_id', $group['id']);
+        if($group['started_at'] && !$group['finished_at'] ){
+            $group['isLive'] = $this->ppRoundFindService->hasLiveMatch('ppCupGroup_id', $group['id']);
+            $group['currentRound'] = $this->ppRoundFindService->getCurrentRoundNumber('ppCupGroup_id', $group['id']);
+            $group['verifiedInCurrentRound'] = $this->ppRoundFindService->verifiedInLatestRound('ppCupGroup_id', $group['id']);    
+        }
+        if($withRounds) $group['ppRounds'] = $this->ppRoundFindService->getForTournament('ppCupGroup_id', $group['id']);
+        return $group;
     }
     
-
     public function getNotFull(int $ppCupId, int $level) : ?array{
         $ppCupGroup = $this->ppCupGroupRepository->getNotFull($ppCupId, $level);
         return $ppCupGroup ? $ppCupGroup[0] : null;

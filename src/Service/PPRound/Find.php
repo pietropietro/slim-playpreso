@@ -51,6 +51,24 @@ final class Find  extends BaseService{
         return $this->findMatchService->hasLiveMatch(ids: $matchIds);
     }
 
+    public function getCurrentRoundNumber(string $type, int $typeId): int{
+        return $this->ppRoundRepository->getForTournament(column: $type, valueId: $typeId, only_last: true)['round'];
+    }
+
+    //returns array like (1,3) where 1 is verified matches count and 3 is tot matches in round
+    public function verifiedInLatestRound(string $type, int $typeId): ?array{
+        $latestPPRound = $this->ppRoundRepository->getForTournament(column: $type, valueId: $typeId, only_last: true);
+        if(!$latestPPRound) return null;
+        
+        $ppRoundMatches = $this->ppRoundMatchService->getForRound($latestPPRound['id'], withGuesses: false);
+        $verifiedCount = 0;
+        foreach ($ppRoundMatches as $pprm) {
+            if($pprm['match']['verified_at'])$verifiedCount++;
+        }
+        
+        return array( $verifiedCount, count($ppRoundMatches));
+    }
+
     
     public function getForTournament(string $type, int $typeId) : ?array {
         $ppRounds = $this->ppRoundRepository->getForTournament($type, $typeId);
