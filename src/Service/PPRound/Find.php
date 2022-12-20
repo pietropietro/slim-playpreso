@@ -74,11 +74,12 @@ final class Find  extends BaseService{
     
     public function getForTournament(string $type, int $typeId) : ?array {
         $ppRounds = $this->ppRoundRepository->getForTournament($type, $typeId);
-        foreach($ppRounds as $roundKey => $roundItem){
-            $ppRounds[$roundKey]['ppRoundMatches'] = $this->ppRoundMatchService->getForRound($roundItem['id'], withGuesses: true);
-            $ppRounds[$roundKey]['best'] = $this->guessRepository->bestUsersInRound(
-                ppRMids: array_column($ppRounds[$roundKey]['ppRoundMatches'], 'id'), 
-            );
+        foreach($ppRounds as &$ppRound){
+            if($ppRound['ppRoundMatches'] = $this->ppRoundMatchService->getForRound($ppRound['id'], withGuesses: true)){
+                $ppRound['best'] = $this->guessRepository->bestUsersInRound(
+                    ppRMids: array_column($ppRound['ppRoundMatches'], 'id'), 
+                );
+            }
         }
         return $ppRounds;
     }
