@@ -6,11 +6,7 @@ namespace App\Repository;
 
 final class TeamRepository extends BaseRepository
 {
-    public function get(array $ids){
-        $this->db->where('id',$ids,'IN');
-        return $this->db->get('teams');
-    }
-
+    
     public function create(int $ls_id, string $name, string $country){
         $data = array(
 			"ls_id" => $ls_id,
@@ -26,7 +22,9 @@ final class TeamRepository extends BaseRepository
     public function getOne(int $id, bool $is_external_id = false){
         $column = !!$is_external_id ? 'ls_id' : 'id';
         $this->db->where($column, $id);
-        return $this->db->getOne('teams');
+        //do not return ls_id
+        $columns = array('id','country','name');
+        return $this->db->getOne('teams', $columns);
     }
 
     public function idFromExternal(int $ls_id) : ?int{
