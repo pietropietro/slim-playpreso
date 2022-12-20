@@ -151,7 +151,6 @@ final class MatchRepository extends BaseRepository
         return $this->db->get('matches');
     }
 
-    //TODO maybe delete (duplicate of get?)
     public function getMatchesForLeagues(
         array $league_ids, 
         ?int $from_days_diff = null, 
