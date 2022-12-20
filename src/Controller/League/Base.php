@@ -17,7 +17,7 @@ abstract class Base extends BaseController
         return $this->container->get('league_find_service');
     }
 
-    protected function getFindMatchService(): Match\Find
+    protected function getMatchFindService(): Match\Find
     {
         return $this->container->get('match_find_service');
     }

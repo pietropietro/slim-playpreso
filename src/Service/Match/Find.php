@@ -21,17 +21,17 @@ final class Find extends BaseService{
         return $enrich ? $this->enrich($match) : $match;
     }
 
-    public function get(array $ids) : ?array {
+    public function adminGet(array $ids) : ?array {
         if(!$ids)return [];
-        $matches = $this->matchRepository->get(ids: $ids);
+        $matches = $this->matchRepository->adminGet(ids: $ids);
         return $this->enrichAll($matches);
     }
 
-    public function getForWeek(int $days_diff) : array {
+    public function adminGetForWeek(int $days_diff) : array {
         $adminMatches = array();
         for($i=$days_diff-3; $i<$days_diff+4; $i++){
             $dateString = date("Y-m-d", strtotime(sprintf("%+d",$i).' days'));
-            $retrieved = $this->matchRepository->get(
+            $retrieved = $this->matchRepository->adminGet(
                 date: $dateString
             );
             $adminMatches[$dateString] = $this->enrichAll($retrieved);

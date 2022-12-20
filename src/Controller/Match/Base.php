@@ -11,7 +11,7 @@ use App\Service\League;
 
 abstract class Base extends BaseController
 {
-    protected function getFindMatchService(): Match\Find
+    protected function getMatchFindService(): Match\Find
     {
         return $this->container->get('match_find_service');
     }

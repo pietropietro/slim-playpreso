@@ -15,7 +15,7 @@ final class Find  extends BaseService{
         protected RedisService $redisService,
         protected PPRoundMatchRepository $ppRoundMatchRepository,
         protected guessRepository $guessRepository,
-        protected Match\Find $findMatch
+        protected Match\Find $matchFindService
     ){}
     
     public function getForRound(int $ppRoundId, ?bool $withGuesses = false, ?bool $onlyIds = false) : ?array {
@@ -23,7 +23,7 @@ final class Find  extends BaseService{
         if($onlyIds)return $ppRoundMatches;
 
         foreach($ppRoundMatches as $key => $ppRM){        
-            $ppRoundMatches[$key]['match'] = $this->findMatch->getOne($ppRM['match_id']);
+            $ppRoundMatches[$key]['match'] = $this->matchFindService->getOne($ppRM['match_id']);
             if(!$withGuesses)continue;
             $ppRoundMatches[$key]['guesses'] = $this->guessRepository->getForPPRoundMatch($ppRM['id']);
         }

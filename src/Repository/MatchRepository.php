@@ -6,9 +6,10 @@ namespace App\Repository;
 
 final class MatchRepository extends BaseRepository
 {   
-    
+    private $whiteListColumns = array('id','league_id','home_id','away_id','score_home','score_away','round','date_start','verified_at');
+
     //TODO REFACTOR
-    public function get(array $ids=null, string $from= null, string $to= null, string $date = null) : ?array {
+    public function adminGet(array $ids=null, string $from= null, string $to= null, string $date = null) : ?array {
         if($from && $to){
             $this->db->where('date_start', array($from, $to), 'BETWEEN');    
         }
@@ -39,7 +40,7 @@ final class MatchRepository extends BaseRepository
     public function getOne(int $matchId, bool $is_external_id = false) : ?array {
         $column = !!$is_external_id ? 'ls_id' : 'id';
         $this->db->where($column, $matchId);
-        return $this->db->getOne('matches');
+        return $this->db->getOne('matches', $this->whiteListColumns);
     }
 
     public function hasLiveMatch(array $ids){
