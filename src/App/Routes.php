@@ -11,6 +11,7 @@ use App\Controller\League;
 use App\Controller\PPTournamentType;
 use App\Controller\PPCup;
 use App\Controller\PPCupGroup;
+use App\Controller\PPRound;
 use App\Controller\Cron;
 use App\Middleware\Auth;
 use App\Middleware\Cors;
@@ -62,6 +63,8 @@ return function ($app){
     })->add(new Auth($pointsService));
 
     $app->get('/p-cup-group/{id}', PPCupGroup\GetOne::class)->add(new Auth($pointsService));
+
+    $app->get('/p-round/{id}', PPRound\GetOne::class)->add(new Auth($pointsService));
 
     $app->group('/admin', function () use ($app): void {
         

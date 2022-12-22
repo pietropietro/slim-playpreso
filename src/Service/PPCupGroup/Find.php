@@ -19,10 +19,10 @@ final class Find  extends BaseService{
         protected PPRound\Find $ppRoundFindService,
     ) {}
 
-    public function getOne(int $id, ?bool $enriched=false){
+    public function getOne(int $id, ?bool $enriched=false, ?int $userId = null){
         $ppCupGroup = $this->ppCupGroupRepository->getOne($id);
         if(!$enriched)return $ppCupGroup;
-        return $this->enrich($ppCupGroup, withRounds: true);
+        return $this->enrich($ppCupGroup, withRounds: true, userId: $userId);
     }
 
     public function getForCup(int $ppCupId, ?int $level = null, ?bool $finished = null){
@@ -69,14 +69,20 @@ final class Find  extends BaseService{
         return $levels;
     }
 
-    public function enrich(array $group, ?bool $withRounds=false){
+    public function enrich(array $group, ?bool $withRounds=false, ?int $userId=null){
         $group['userParticipations'] = $this->userParticipationService->getForTournament('ppCupGroup_id', $group['id']);
         if($group['started_at'] && !$group['finished_at'] ){
             $group['isLive'] = $this->ppRoundFindService->hasLiveMatch('ppCupGroup_id', $group['id']);
             $group['currentRound'] = $this->ppRoundFindService->getCurrentRoundNumber('ppCupGroup_id', $group['id']);
             $group['verifiedInCurrentRound'] = $this->ppRoundFindService->verifiedInLatestRound('ppCupGroup_id', $group['id']);    
         }
-        if($withRounds) $group['ppRounds'] = $this->ppRoundFindService->getForTournament('ppCupGroup_id', $group['id']);
+        if($withRounds){
+            $group['ppRounds'] = $this->ppRoundFindService->getForTournament('ppCupGroup_id', $group['id']);
+            $group['userCurrentRound'] = $userId ? 
+                $this->ppRoundFindService->getUserCurrentRound('ppCupGroup_id', $group['id'], $userId) 
+                : null;
+        }
+    
         return $group;
     }
     

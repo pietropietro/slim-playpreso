@@ -28,12 +28,16 @@ final class GuessRepository extends BaseRepository
         return $this->db->get('guesses', $limit);
     }
 
-    public function getForPPRoundMatch($ppRMId){
+    public function getForPPRoundMatch(int $ppRMId, ?int $userId=null){
+        $this->db->where('ppRoundMatch_id', $ppRMId);
+        if($userId){
+            $this->db->where('user_id', $userId);
+            return $this->db->getOne('guesses');
+        }
         $this->db->join("users u", "u.id=g.user_id", "INNER");
         $this->db->orderBy('g.points','desc');
         $this->db->orderBy('g.home','asc');
-        $this->db->where('ppRoundMatch_id', $ppRMId);
-        return $this->db->query("SELECT g.*, u.username FROM guesses g");
+        return $this->db->get('guesses g', null, array('g.*, u.username'));
     }
 
     public function getForMatch(int $matchId, bool $not_verified){

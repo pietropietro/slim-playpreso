@@ -22,12 +22,21 @@ final class Find  extends BaseService{
         $ppRoundMatches = $this->ppRoundMatchRepository->getForRound($ppRoundId, $onlyIds);
         if($onlyIds)return $ppRoundMatches;
 
-        foreach($ppRoundMatches as $key => $ppRM){        
-            $ppRoundMatches[$key]['match'] = $this->matchFindService->getOne($ppRM['match_id']);
+        foreach($ppRoundMatches as &$ppRM){        
+            $ppRM['match'] = $this->matchFindService->getOne($ppRM['match_id']);
             if(!$withGuesses)continue;
-            $ppRoundMatches[$key]['guesses'] = $this->guessRepository->getForPPRoundMatch($ppRM['id']);
+            $ppRM['guesses'] = $this->getPPRMGuesses($ppRM['id']);
         }
         return $ppRoundMatches;
+    }
+
+    private function getPPRMGuesses($id){
+        $guesses = $this->guessRepository->getForPPRoundMatch($id);
+        //TODO 
+        //if any of the guesses is not verified and not locked,
+        //do not return other users prediction
+        
+        return $guesses;
     }
 
     public function getMatchesForRound(int $ppRoundId, ?bool $onlyIds = false) : ?array {
@@ -35,10 +44,17 @@ final class Find  extends BaseService{
         //TODO enrich if needed
     }
 
-    
-    
     public function getRoundIdsForMatches(array $matchIds){
         return $this->ppRoundMatchRepository->getRoundIdsForMatches($matchIds);
+    }
+
+    public function getCurrentForUser(int $ppRoundId, int $userId){
+        $ppRoundMatches = $this->ppRoundMatchRepository->getForRound($ppRoundId);
+        foreach($ppRoundMatches as &$ppRM){        
+            $ppRM['match'] = $this->matchFindService->getOne($ppRM['match_id']);
+            $ppRM['guess'] = $this->guessRepository->getForPPRoundMatch($ppRM['id'], $userId);
+        }
+        return $ppRoundMatches;
     }
     
 }

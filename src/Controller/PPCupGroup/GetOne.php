@@ -18,8 +18,15 @@ final class GetOne extends Base
         array $args
     ): Response {
         $groupId = (int) $args['id'];
-        
-        $ppCupGroup = $this->getCupGroupService()->getOne($groupId, enriched: true);
+        $userId = $this->getAndValidateUserId($request);
+
+        $ppCupGroup = $this->getCupGroupService()->getOne(
+            $groupId, 
+            enriched: true, 
+            userId: $this->getUserParticipationService()->isUserInTournament($userId, 'ppCupGroup_id', $groupId) ? $userId 
+                : null
+        );
+
         $ppCupGroup['ppTournamentType'] = $this->getTournamentTypeService()->getOne($ppCupGroup['ppTournamentType_id']);
         
         return $this->jsonResponse($response, 'success', $ppCupGroup, 200);
