@@ -17,8 +17,10 @@ final class GetOne extends Base
         Response $response,
         array $args
     ): Response {
+        $userId = $this->getAndValidateUserId($request);
+
         $ppRoundId = (int) $args['id'];
-        $ppRound = $this->getPPRoundFindService()->getOne($ppRoundId, withGuesses: true);
+        $ppRound = $this->getPPRoundFindService()->getOne($ppRoundId, withGuesses: true, userId: $userId);
          
         return $this->jsonResponse($response, 'success', $ppRound, 200);
     }

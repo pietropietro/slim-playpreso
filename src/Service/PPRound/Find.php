@@ -21,9 +21,9 @@ final class Find  extends BaseService{
         protected GuessRepository $guessRepository
     ){}
 
-    public function getOne(int $id, bool $withGuesses){
+    public function getOne(int $id, bool $withGuesses, ?int $userId){
         $ppRound = $this->ppRoundRepository->getOne($id);
-        $ppRound['ppRoundMatches'] = $this->ppRoundMatchService->getForRound($id, $withGuesses);
+        $ppRound['ppRoundMatches'] = $this->ppRoundMatchService->getForRound($id, $withGuesses, false, $userId);
         return $ppRound;
     }
 
@@ -72,20 +72,22 @@ final class Find  extends BaseService{
     }
 
     
-    public function getForTournament(string $type, int $typeId) : ?array {
+    public function getForTournament(string $type, int $typeId, ?int $userId) : ?array {
         $ppRounds = $this->ppRoundRepository->getForTournament($type, $typeId);
         foreach($ppRounds as &$ppRound){
-            if($ppRound['ppRoundMatches'] = $this->ppRoundMatchService->getForRound($ppRound['id'], withGuesses: true)){
-                $ppRound['best'] = $this->guessRepository->bestUsersInRound(
-                    ppRMids: array_column($ppRound['ppRoundMatches'], 'id'), 
-                );
+            if($ppRound['ppRoundMatches'] = $this->ppRoundMatchService->getForRound(
+                $ppRound['id'], withGuesses: true, onlyIds: false, userId: $userId)
+            ){
+                // $ppRound['best'] = $this->guessRepository->bestUsersInRound(
+                //     ppRMids: array_column($ppRound['ppRoundMatches'], 'id'), 
+                // );
             }
         }
         return $ppRounds;
     }
 
-    public function getUserCurrentRound(string $type, int $typeId, int $userId){
-        $latestPPRound = $this->ppRoundRepository->getForTournament(column: $type, valueId: $typeId, only_last: true);
-        return $this->ppRoundMatchService->getCurrentForUser($latestPPRound['id'], $userId);
-    }
+    // public function getUserCurrentRound(string $type, int $typeId, int $userId){
+    //     $latestPPRound = $this->ppRoundRepository->getForTournament(column: $type, valueId: $typeId, only_last: true);
+    //     return $this->ppRoundMatchService->getCurrentForUser($latestPPRound['id'], $userId);
+    // }
 }

@@ -77,10 +77,10 @@ final class Find  extends BaseService{
             $group['verifiedInCurrentRound'] = $this->ppRoundFindService->verifiedInLatestRound('ppCupGroup_id', $group['id']);    
         }
         if($withRounds){
-            $group['ppRounds'] = $this->ppRoundFindService->getForTournament('ppCupGroup_id', $group['id']);
-            $group['userCurrentRound'] = $userId ? 
-                $this->ppRoundFindService->getUserCurrentRound('ppCupGroup_id', $group['id'], $userId) 
-                : null;
+            $group['ppRounds'] = $this->ppRoundFindService->getForTournament('ppCupGroup_id', $group['id'], $userId);
+            // $group['userCurrentRound'] = $userId ? 
+            //     $this->ppRoundFindService->getUserCurrentRound('ppCupGroup_id', $group['id'], $userId) 
+            //     : null;
         }
     
         return $group;
