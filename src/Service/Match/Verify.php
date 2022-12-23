@@ -16,8 +16,8 @@ final class Verify extends BaseService{
         protected PPRound\Verify $ppRoundVerifyService,
     ) {}
     
-    public function verify(int $matchId, int $homeScore, int $awayScore){
-        $this->matchRepository->verify($matchId, $homeScore, $awayScore);
+    public function verify(int $matchId, int $homeScore, int $awayScore, ?string $notes=null){
+        $this->matchRepository->verify($matchId, $homeScore, $awayScore, $notes);
         $this->guessVerifyService->verify($matchId, $homeScore, $awayScore);
         $this->ppRoundVerifyService->verifyAfterMatch($matchId);
     }

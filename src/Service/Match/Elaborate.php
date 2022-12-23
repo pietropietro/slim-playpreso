@@ -30,11 +30,17 @@ final class Elaborate extends BaseService{
             if($match['verified_at'])continue;
             
 
-            //VERIFY MATCH - i.e. final score – NO EXTRATIME
-            if($eventObj->Eps === 'FT' || !!$eventObj->Tr1ET){
+            //VERIFY MATCH - i.e. final score 
+            if($eventObj->Eps === 'FT'){
                 $this->matchVerifyService->verify($match['id'], (int)$eventObj->Tr1, (int)$eventObj->Tr2);
                 continue;
             }
+            // NO EXTRATIME
+            if(!!$eventObj->Tr1ET){
+                $this->matchVerifyService->verify($match['id'], (int)$eventObj->Tr1OR, (int)$eventObj->Tr2OR, 'et');
+                continue;
+            }
+
         
 
             //MODIFY MATCH NOTES - TEAMS - DATE

@@ -102,10 +102,11 @@ final class MatchRepository extends BaseRepository
         $this->db->update('matches', $data, 1);
     }
 
-    public function verify(int $id, int $score_home, int $score_away){
+    public function verify(int $id, int $score_home, int $score_away, ?string $notes=null){
         $data = array(
 			"score_home" => $score_home,
 			"score_away" => $score_away,
+            "notes" => $notes,
             "verified_at" => $this->db->now()
 	    );
         $this->db->where('id', $id);
