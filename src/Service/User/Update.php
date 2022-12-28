@@ -17,6 +17,14 @@ final class Update extends Base
     ) {
     }
 
+
+    public function resetPassword(int $userId, string $password){
+        $hash = password_hash($password, PASSWORD_BCRYPT);
+        $encoded = base64_encode($hash);
+        return $this->userRepository->updatePassword($userId, $encoded);
+    }
+
+
     /**
      * @param array<string> $input
      */

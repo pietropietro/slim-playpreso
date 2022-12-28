@@ -65,6 +65,14 @@ final class UserRepository extends BaseRepository
         throw new \App\Exception\User('Login failed: username or password incorrect.', 401);
     }
 
+    public function updatePassword(int $userId, string $passwordEncoded){
+        $data = array(
+            "password" => $passwordEncoded
+        );
+        $this->db->where('id', $userId);
+        return $this->db->update('users', $data, 1);
+    }
+
     public function checkEmail(string $email): void
     {
         $this->db->where('email', $email);
@@ -114,5 +122,7 @@ final class UserRepository extends BaseRepository
         $this->db->where('id', $userId);
         return $this->db->update('users', $data, 1);
     }
+
+
    
 }

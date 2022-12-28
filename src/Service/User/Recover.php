@@ -14,8 +14,16 @@ final class Recover extends Base
 
     public function saveRecoverToken(int $userId, string $hashedToken){
         //delete all previous entries for user
-        $this->userRecoverRepository->deleteForUser($userId);
+        $this->userRecoverRepository->deleteTokens($userId);
         $this->userRecoverRepository->create($userId, $hashedToken);
+    }
+
+    public function getUserFromToken(string $hashedToken){
+        return $this->userRecoverRepository->getFromToken($hashedToken);
+    }
+
+    public function deleteTokens(int $userId){
+        return $this->userRecoverRepository->deleteTokens($userId);
     }
 
 }
