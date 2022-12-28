@@ -11,6 +11,7 @@ use App\Service\User\Delete;
 use App\Service\User\Find;
 use App\Service\User\Login;
 use App\Service\User\Update;
+use App\Service\User\Recover;
 use App\Service\UserParticipation;
 
 abstract class Base extends BaseController
@@ -45,11 +46,18 @@ abstract class Base extends BaseController
         return $this->container->get('userparticipation_find_service');
     }
 
+    protected function getUserRecoverService(): Recover
+    {
+        return $this->container->get('user_recover_service');
+    }
+
+
     protected function checkUserPermissions(int $userId, int $userIdLogged): void
     {
         if ($userId !== $userIdLogged) {
             throw new User('User permission failed.', 400);
         }
     }
+
 
 }

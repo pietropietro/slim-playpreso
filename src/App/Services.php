@@ -383,3 +383,9 @@ $container['pptournament_verifyafterround_service'] = static fn (
     $container->get('ppleague_update_service'),
     $container->get('ppcupgroup_update_service'),
 );
+
+$container['user_recover_service'] = static fn (
+    ContainerInterface $container
+):  User\Recover => new  User\Recover(
+    $container->get('userrecover_repository'),
+);
