@@ -37,6 +37,7 @@ return function ($app){
     $app->group('/user', function () use ($app, $pointsService): void {
         $app->post('/signup', User\Create::class);
         $app->post('/login', User\Login::class);
+        $app->post('/recover/{username}', User\Recover::class);
         $app->get('/{username}', User\GetOne::class)->add(new Auth($pointsService));
     });
 

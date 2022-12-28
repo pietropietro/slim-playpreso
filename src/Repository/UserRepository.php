@@ -21,12 +21,11 @@ final class UserRepository extends BaseRepository
         return $userId;
     }
 
-    public function getOne(int $userId)
+    public function getOne(int $userId, ?bool $allColumns=false)
     {
         $this->db->where('id',$userId);
         $columns = array("username, id, created_at");
-        //only retrieve certain columns of user. in order to give back a JSON without password
-        $user = $this->db->getOne('users', $columns);
+        $user = $this->db->getOne('users', $allColumns ?? $columns);
 
         if (! $user) {
             throw new \App\Exception\User('User not found.', 404);

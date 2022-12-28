@@ -19,15 +19,20 @@ final class Find extends Base
         return $this->userRepository->isAdmin($userId);
     }
 
-    public function getOne(int $userId) 
+    public function getOneFromUsername(string $username, ?bool $allColumns=false){
+        if(!$id = $this->idFromUsername($username)) return null;
+        return $this->getOne($id, $allColumns);
+    }
+
+    public function getOne(int $userId, ?bool $allColumns=false) 
     {
-        if (self::isRedisEnabled() === true && $cached = $this->getUserFromCache($userId)) {
+        if (!$allColumns && self::isRedisEnabled() === true && $cached = $this->getUserFromCache($userId)) {
             return $cached;
         } 
         
-        $user = $this->getUserFromDb($userId);
+        $user = $this->getUserFromDb($userId, $allColumns);
 
-        if (self::isRedisEnabled() === true){
+        if (!$allColumns && self::isRedisEnabled() === true){
             $this->saveInCache($userId, (object) $user);
         }
 
