@@ -40,7 +40,7 @@ return function ($app){
         $app->get('/{username}', User\GetOne::class)->add(new Auth($pointsService));
         $app->post('/recover/{username}', User\Recover::class);
         $app->post('/validate-token/{token}', User\ValidateToken::class);
-        $app->post('/reset/{id}', User\Reset::class);
+        $app->post('/reset', User\Reset::class);
     });
 
     $app->post('/guess/lock/{id}', Guess\Lock::class)->add(new Auth($pointsService));

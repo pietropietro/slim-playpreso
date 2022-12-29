@@ -17,7 +17,7 @@ final class UserRecoverRepository extends BaseRepository
     public function getFromToken(string $hashedToken){
         $this->db->join("users u", "u.id=ur.user_id", "INNER");
         $this->db->where('hashed_token', $hashedToken);
-        return $this->db->getOne("userRecover ur", "username, id");
+        return $this->db->getOne("userRecover ur", "username, id, ur.created_at");
     }
 
     public function deleteTokens(int $userId){

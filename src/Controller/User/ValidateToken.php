@@ -17,13 +17,12 @@ final class ValidateToken extends Base
     ): Response {    
 
         $token=$args['token'];
-        if(!$token || !StoPasswordReset::isTokenValid($token)){
-            throw new \App\Exception\User('Invalid token.', 400);
-        }        
+        if(!$token){
+            throw new \App\Exception\User('missing required field.', 400);
+        }    
 
-        $hash = StoPasswordReset::calculateTokenHash($token);
-        $user = $this->getUserRecoverService()->getUserFromToken($hash);
+        $userRecover = $this->getUserRecoverService()->validateToken($token);
         
-        return $this->jsonResponse($response, 'success', $user, 200);
+        return $this->jsonResponse($response, 'success', $userRecover, 200);
     }
 }
