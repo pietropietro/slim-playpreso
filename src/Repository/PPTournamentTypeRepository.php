@@ -26,7 +26,7 @@ final class PPTournamentTypeRepository extends BaseRepository
     }
 
     public function getOneFromPPTournament(string $tournamentTable, int $tournamentId){
-        $this->db->join( $tournamentTable.' ppt', 'ppTournamentTypes.id == ppt.ppTournamentType_id');
+        $this->db->join( $tournamentTable.' ppt', 'ppTournamentTypes.id = ppt.ppTournamentType_id');
         $this->db->where('ppt.id', $tournamentId);
         return $this->db->getOne('ppTournamentTypes', "ppTournamentTypes.*");
     }

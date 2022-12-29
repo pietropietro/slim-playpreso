@@ -44,7 +44,7 @@ final class Join  extends BaseService{
             throw new \App\Exception\User("couldn't afford", 500);
         }
 
-        if(!$insert = $this->createUpService->create($userId, $ppTypeId, $ppTournament['id'], $ppTournamentGroup ? $ppTournamentGroup['id'] : null)){
+        if(!$insert = $this->createUpService->create($userId, $ppTypeId, $ppTournament['id'], isset($ppTournamentGroup) ? $ppTournamentGroup['id'] : null)){
             throw new \App\Exception\User("something went wrong", 500);
         };
         

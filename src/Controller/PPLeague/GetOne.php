@@ -17,10 +17,17 @@ final class GetOne extends Base
         Response $response,
         array $args
     ): Response {
+
+        $userId = $this->getAndValidateUserId($request);
+
         $ppLeagueId = (int) $args['id'];
         $ppLeague = $this->getPPLeagueService()->getOne($ppLeagueId);
-        $ppLeague['userParticipations'] = $this->getParticipationService()->getForTournament('ppLeague_id', $ppLeagueId);
-        $ppLeague['ppRounds'] = $this->getPPRoundService()->getForTournament('ppLeague_id', $ppLeagueId);
+        $ppLeague['userParticipations'] = $this->getUserParticipationService()->getForTournament('ppLeague_id', $ppLeagueId);
+        $ppLeague['ppRounds'] = $this->getPPRoundService()->getForTournament(
+            'ppLeague_id',
+            $ppLeagueId,
+            userId: $this->getUserParticipationService()->isUserInTournament($userId, 'ppLeague_id', $ppLeagueId) ? $userId : null
+        );
          
         return $this->jsonResponse($response, 'success', $ppLeague, 200);
     }
