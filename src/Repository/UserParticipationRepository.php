@@ -7,6 +7,13 @@ namespace App\Repository;
 final class UserParticipationRepository extends BaseRepository
 {   
     private $tableName = 'userParticipations';
+    private $columnsJoined3= 'userParticipations.*, 
+                            if(ppl.started_at IS NOT NULL or ppcg.started_at IS NOT NULL, 1, 0) as started, 
+                            if(ppl.finished_at IS NOT NULL or ppcg.finished_at IS NOT NULL, 1, 0) as finished';
+
+    private $columnsJoinedPPL= 'userParticipations.*, 
+    if(ppl.started_at IS NOT NULL, 1, 0) as started, 
+    if(ppl.finished_at IS NOT NULL, 1, 0) as finished';
 
     function create(int $userId, array $columns, array $valueIds){
         $data = array(
@@ -25,8 +32,9 @@ final class UserParticipationRepository extends BaseRepository
     //TODO change string type to ENUM 'ppLeague_id', 'ppCupGroup_id'
     function getUserParticipations(int $userId, ?string $type, ?bool $active, ?int $minPosition){
         $this->db->where('user_id', $userId);
+
         if($active){
-            $this->db->where('finished IS NULL');
+            $this->db->having('finished', 0);
         }
         if($minPosition){
             $this->db->where('position', $minPosition, '<=');
@@ -35,7 +43,12 @@ final class UserParticipationRepository extends BaseRepository
             $this->db->where($type.' IS NOT NULL');
         }
         $this->db->orderBy('joined_at','desc');
-        return $this->db->get($this->tableName) ;
+
+        $this->db->join('ppLeagues ppl', 'ppl.id = userParticipations.ppLeague_id', "LEFT");
+        $this->db->join('ppCupGroups ppcg', 'ppcg.id = userParticipations.ppCupGroup_id', "LEFT");
+        
+        return $this->db->get($this->tableName, null, $this->columnsJoined3) ;
+                
     }
 
     function getForTournament(string $tournamentColumn, int $tournamentId){
@@ -49,21 +62,29 @@ final class UserParticipationRepository extends BaseRepository
 
     function getPromotedTournamentTypesForUser(int $userId, bool $include_ppCups = false, bool $return_id_only = true){
         $this->db->where('user_id',$userId);
-        $this->db->where('finished',1);
+        $this->db->having('finished',1);
         $this->db->where('position', $_SERVER['PPLEAGUE_TROPHY_POSITION'], "<=");
         if(!$include_ppCups) $this->db->where('ppLeague_id IS NOT NULL');
-        if($return_id_only) return $this->db->getValue($this->tableName, 'ppTournamentType_id', null);
-        return $this->db->get($this->tableName);
+
+        $this->db->join('ppLeagues ppl', 'ppl.id = userParticipations.ppLeague_id', "INNER");
+        $result = $this->db->get($this->tableName, null, $this->columnsJoinedPPL) ;
+
+        return $return_id_only ? array_column($result, 'ppTournamentType_id') : $result;        
+        
     }
 
     function getCurrentTournamentTypesForUser(int $userId, bool $include_ppCups = false, bool $return_id_only = true){
-        $this->db->groupBy('ppTournamentType_id');
-        $this->db->where('user_id',$userId);
-        $this->db->where('finished IS NULL');
+        $this->db->where('user_id', $userId);
+        
+        $this->db->having('finished',1);
+        $this->db->join('ppLeagues ppl', 'ppl.id = userParticipations.ppLeague_id', "LEFT");
+        $this->db->join('ppCupGroups ppcg', 'ppcg.id = userParticipations.ppCupGroup_id', "LEFT");
+
         if(!$include_ppCups) $this->db->where('ppLeague_id IS NOT NULL');
-       
-        if($return_id_only)return $this->db->getValue($this->tableName,  'ppTournamentType_id', null);
-        return $this->db->get($this->tableName);
+
+        $result = $this->db->get($this->tableName, null, $this->columnsJoined3) ;
+        return $return_id_only ? array_column($result, 'ppTournamentType_id') : $result; 
+
     }
 
     function getOverallPPCupPoints(int $userId, int $cupId, ?string $joinedBefore) : ?int{
@@ -120,7 +141,13 @@ final class UserParticipationRepository extends BaseRepository
     public function isUserInTournamentType(int $userId, int $ppTournamentType_id){
         $this->db->where('ppTournamentType_id',$ppTournamentType_id);
         $this->db->where('user_id', $userId);
-        $this->db->where('finished',0);
-        return $this->db->has($this->tableName);
+        
+        $this->db->having('finished',0);
+        $this->db->join('ppLeagues ppl', 'ppl.id = userParticipations.ppLeague_id', "LEFT");
+        $this->db->join('ppCupGroups ppcg', 'ppcg.id = userParticipations.ppCupGroup_id', "LEFT");
+        
+        return !!$this->db->getOne($this->tableName, null, $this->columnsJoined3) ;
+
+        // return $this->db->has($this->tableName);
     }
 }

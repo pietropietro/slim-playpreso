@@ -26,7 +26,7 @@ abstract class Base extends BaseService
     ){}
 
 
-    public function addPPLeagueData($up){
+    public function addPPLeagueData(&$up){
         $up['ppTournamentType'] = $this->ppTournamentTypeRepository->getOne($up['ppTournamentType_id']);
         $up['ppLeague'] = $this->ppLeagueRepository->getOne($up['ppLeague_id']);        
         
@@ -35,7 +35,7 @@ abstract class Base extends BaseService
             $up['locked'] = !$this->guessRepository->hasUnlockedGuesses($up['user_id'], 'ppLeague_id', $up['ppLeague_id']); 
         }       
 
-        return $up;           
+        return;           
     }
 
 }

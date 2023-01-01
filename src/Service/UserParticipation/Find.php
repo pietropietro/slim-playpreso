@@ -15,19 +15,17 @@ final class Find  extends Base {
         return $this->userParticipationRepository->count($tournamentColumn, $tournamentId);
     }
 
-    public function getUserParticipations(int $userId, string $playMode, bool $active = true){
-        $ups = $this->userParticipationRepository->getUserParticipations($userId, $playMode.'_id', $active, null);        
-        foreach($ups as $upKey => $upItem){
-            if($playMode === 'ppLeague'){
-                $ups[$upKey] = $this->addPPLeagueData($ups[$upKey]);
+    public function getUserParticipations(int $userId, ?string $playMode, bool $active = true){
+        $ups = $this->userParticipationRepository->getUserParticipations(
+            $userId, 
+            $playMode ? $playMode.'_id' : null,
+            $active, 
+            null
+        );        
+        foreach($ups as &$up){
+            if($up['ppLeague_id']){
+                $this->addPPLeagueData($up);
             }
-        }
-        if($playMode === 'ppLeague'){
-            usort($ups, fn($a, $b) =>
-                [$b['ppLeague']['round_count']] 
-                    <=> 
-                [$a['ppLeague']['round_count']] 
-            );
         }
         return $ups;
     }
