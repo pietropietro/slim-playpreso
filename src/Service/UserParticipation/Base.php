@@ -30,13 +30,18 @@ abstract class Base extends BaseService
         $up['ppTournamentType'] = $this->ppTournamentTypeRepository->getOne($up['ppTournamentType_id']);
         
         if($up['ppLeague_id']){
-            $up['ppLeague'] = $this->ppLeagueRepository->getOne($up['ppLeague_id']);        
+            $ppLeague = $this->ppLeagueRepository->getOne($up['ppLeague_id']);      
+            $up['rounds']= $up['ppTournamentType']['rounds'];
         }
         
         if($up['started'] && !$up['finished']){
             $column = $up['ppLeague_id'] ? 'ppLeague_id' : 'ppCupGroup_id';
             $userCurrentRound = $this->ppRoundFindService->getUserCurrentRound($column, $up[$column], $userId);
             
+            $up['currentRound'] = $this->ppRoundFindService->getCurrentRoundNumber($column, $up[$column]);
+            $up['playedInCurrentRound'] = $this->ppRoundFindService->verifiedInLatestRound($column, $up[$column]);
+            $up['user_count']= $this->userParticipationRepository->count($column, $up[$column]);
+
             $unlocked=0;
             $guesses = array_column($userCurrentRound, 'guess');
             foreach ($guesses as $guess) {

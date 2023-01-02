@@ -74,7 +74,7 @@ final class Find  extends BaseService{
         if($group['started_at'] && !$group['finished_at'] ){
             $group['isLive'] = $this->ppRoundFindService->hasLiveMatch('ppCupGroup_id', $group['id']);
             $group['currentRound'] = $this->ppRoundFindService->getCurrentRoundNumber('ppCupGroup_id', $group['id']);
-            $group['verifiedInCurrentRound'] = $this->ppRoundFindService->verifiedInLatestRound('ppCupGroup_id', $group['id']);    
+            $group['playedInCurrentRound'] = $this->ppRoundFindService->verifiedInLatestRound('ppCupGroup_id', $group['id']);    
         }
         if($withRounds){
             $group['ppRounds'] = $this->ppRoundFindService->getForTournament('ppCupGroup_id', $group['id'], $userId);
