@@ -15,7 +15,7 @@ final class Find  extends Base {
         return $this->userParticipationRepository->count($tournamentColumn, $tournamentId);
     }
 
-    public function getUserParticipations(int $userId, ?string $playMode, bool $active = true){
+    public function getUserParticipationsEnriched(int $userId, ?string $playMode, bool $active = true){
         $ups = $this->userParticipationRepository->getUserParticipations(
             $userId, 
             $playMode ? $playMode.'_id' : null,
@@ -23,9 +23,7 @@ final class Find  extends Base {
             null
         );        
         foreach($ups as &$up){
-            if($up['ppLeague_id']){
-                $this->addPPLeagueData($up);
-            }
+            $this->enrich($up, $userId);
         }
         return $ups;
     }
@@ -38,6 +36,7 @@ final class Find  extends Base {
         return $this->userParticipationRepository->isUserInTournamentType($userId, $ppTournamentType_id);
     }
 
+    
     public function getTrophies(int $userId){
         $ppLeagueUps = $this->userParticipationRepository->getUserParticipations(
             $userId, 'ppLeague_id', false, (int)$_SERVER['PPLEAGUE_TROPHY_POSITION']
@@ -50,7 +49,7 @@ final class Find  extends Base {
         if(!$ppLeagueUps && !$ppCupUps) return null;
 
         foreach($ppLeagueUps as $upKey => $upItem){
-            $ppLeagueUps[$upKey] = $this->addPPLeagueData($ppLeagueUps[$upKey]);
+            $ppLeagueUps[$upKey] = $this->enrich($ppLeagueUps[$upKey]);
         }
 
         //also add data to cup trophies

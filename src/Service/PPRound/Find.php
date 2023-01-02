@@ -86,8 +86,8 @@ final class Find  extends BaseService{
         return $ppRounds;
     }
 
-    // public function getUserCurrentRound(string $type, int $typeId, int $userId){
-    //     $latestPPRound = $this->ppRoundRepository->getForTournament(column: $type, valueId: $typeId, only_last: true);
-    //     return $this->ppRoundMatchService->getCurrentForUser($latestPPRound['id'], $userId);
-    // }
+    public function getUserCurrentRound(string $type, int $typeId, int $userId){
+        $latestPPRound = $this->ppRoundRepository->getForTournament(column: $type, valueId: $typeId, only_last: true);
+        return $this->ppRoundMatchService->getCurrentForUser($latestPPRound['id'], $userId);
+    }
 }

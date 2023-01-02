@@ -18,7 +18,7 @@ final class PPCups extends Base{
     ): Response {
         $userId = $this->getAndValidateUserId($request);
 
-        $ups = $this->getParticipationService()->getUserParticipations($userId, 'ppCup', active: true);
+        $ups = $this->getParticipationService()->getUserParticipationsEnriched($userId, 'ppCup', active: true);
 
         return $this->jsonResponse($response, 'success', $ups, 200);
     }

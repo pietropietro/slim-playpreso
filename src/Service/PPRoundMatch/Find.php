@@ -66,14 +66,14 @@ final class Find  extends BaseService{
         return $this->ppRoundMatchRepository->getRoundIdsForMatches($matchIds);
     }
 
-    // public function getCurrentForUser(int $ppRoundId, int $userId){
-    //     $ppRoundMatches = $this->ppRoundMatchRepository->getForRound($ppRoundId);
-    //     foreach($ppRoundMatches as &$ppRM){        
-    //         $ppRM['match'] = $this->matchFindService->getOne($ppRM['match_id']);
-    //         $ppRM['guess'] = $this->guessRepository->getForPPRoundMatch($ppRM['id'], $userId);
-    //     }
-    //     return $ppRoundMatches;
-    // }
+    public function getCurrentForUser(int $ppRoundId, int $userId){
+        $ppRoundMatches = $this->ppRoundMatchRepository->getForRound($ppRoundId);
+        foreach($ppRoundMatches as &$ppRM){        
+            $ppRM['match'] = $this->matchFindService->getOne($ppRM['match_id']);
+            $ppRM['guess'] = $this->guessRepository->getForPPRoundMatch($ppRM['id'], $userId);
+        }
+        return $ppRoundMatches;
+    }
     
 }
 

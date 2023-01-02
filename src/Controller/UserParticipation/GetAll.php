@@ -19,7 +19,7 @@ final class GetAll extends Base{
         $userId = $this->getAndValidateUserId($request);
 
         //TODO change type to enum
-        $ups = $this->getParticipationService()->getUserParticipations($userId, null, true);
+        $ups = $this->getParticipationService()->getUserParticipationsEnriched($userId, null, true);
 
         return $this->jsonResponse($response, 'success', $ups, 200);
     }

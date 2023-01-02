@@ -76,7 +76,7 @@ final class UserParticipationRepository extends BaseRepository
     function getCurrentTournamentTypesForUser(int $userId, bool $include_ppCups = false, bool $return_id_only = true){
         $this->db->where('user_id', $userId);
         
-        $this->db->having('finished',1);
+        $this->db->having('finished',0);
         $this->db->join('ppLeagues ppl', 'ppl.id = userParticipations.ppLeague_id', "LEFT");
         $this->db->join('ppCupGroups ppcg', 'ppcg.id = userParticipations.ppCupGroup_id', "LEFT");
 
@@ -139,14 +139,14 @@ final class UserParticipationRepository extends BaseRepository
     }
 
     public function isUserInTournamentType(int $userId, int $ppTournamentType_id){
-        $this->db->where('ppTournamentType_id',$ppTournamentType_id);
+        $this->db->where($this->tableName.'.ppTournamentType_id',$ppTournamentType_id);
         $this->db->where('user_id', $userId);
         
-        $this->db->having('finished',0);
+        $this->db->having('finished', 0);
         $this->db->join('ppLeagues ppl', 'ppl.id = userParticipations.ppLeague_id', "LEFT");
         $this->db->join('ppCupGroups ppcg', 'ppcg.id = userParticipations.ppCupGroup_id', "LEFT");
         
-        return !!$this->db->getOne($this->tableName, null, $this->columnsJoined3) ;
+        return !!$this->db->getOne($this->tableName, $this->columnsJoined3) ;
 
         // return $this->db->has($this->tableName);
     }
