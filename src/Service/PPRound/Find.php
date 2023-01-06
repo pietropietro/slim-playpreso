@@ -21,7 +21,7 @@ final class Find  extends BaseService{
         protected GuessRepository $guessRepository
     ){}
 
-    public function getOne(int $id, bool $withGuesses, ?int $userId){
+    public function getOne(int $id, bool $withGuesses, ?int $userId = null){
         $ppRound = $this->ppRoundRepository->getOne($id);
         $ppRound['ppRoundMatches'] = $this->ppRoundMatchService->getForRound($id, $withGuesses, false, $userId);
         return $ppRound;

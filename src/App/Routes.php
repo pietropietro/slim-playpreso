@@ -43,7 +43,10 @@ return function ($app){
         $app->post('/reset', User\Reset::class);
     });
 
-    $app->post('/guess/lock/{id}', Guess\Lock::class)->add(new Auth($pointsService));
+    $app->group('/guess', function () use ($app): void {
+        $app->get('/not-verified', Guess\GetNotVerified::class);
+        $app->post('/lock/{id}', Guess\Lock::class);
+    })->add(new Auth($pointsService));
     
     $app->group('/p-tournament-type', function () use ($app): void {
         $app->post('/join/{id}', PPTournamentType\Join::class);

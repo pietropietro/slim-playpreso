@@ -13,19 +13,20 @@ final class GuessRepository extends BaseRepository
         return $this->db->getOne('guesses');
     }
 
-    public function getUserGuesses(int $userId, $verified = true, $limit = 20, string $stringTime = null) : array {
-        
+    public function getForUser(int $userId, ?bool $not_verified=null) : array {
         $this->db->where('user_id', $userId);
-        if($verified){
-            $this->db->where('verified_at IS NOT NULL');
+        $this->db->join('matches m ', 'm.id=guesses.match_id', 'INNER');
+        if($not_verified){
+            $this->db->where('guesses.verified_at IS NULL');
         }
-        $this->db->orderBy('created_at', 'DESC');
-        
+        // $this->db->orderBy('guessed_at', 'DESC');
+        $this->db->orderBy('m.date_start', 'DESC');
+
         //i.e. "-3 months"
-        if($stringTime){
-            $this->db->where('verified_at', date("Y-m-d H:i:s", strtotime($stringTime)), ">");
-        }
-        return $this->db->get('guesses', $limit);
+        // if($stringTime){
+        //     $this->db->where('verified_at', date("Y-m-d H:i:s", strtotime($stringTime)), ">");
+        // }
+        return $this->db->get('guesses', null, 'guesses.*');
     }
 
     public function getForPPRoundMatch(int $ppRMId, ?int $userId=null){
@@ -120,6 +121,7 @@ final class GuessRepository extends BaseRepository
 
     //TODO MOVE TO SERVICE
     //TODO CHANGE COLUMN TO ENUM ['cup_id', 'league_id',]
+    //possible duplicate
     public function hasUnlockedGuesses(int $userId, string $column, int $valueId){
         $ppRoundIds = $this->db->subQuery();
         $ppRoundIds->where($column, $valueId);

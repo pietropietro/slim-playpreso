@@ -42,17 +42,19 @@ abstract class Base extends BaseService
             $up['playedInCurrentRound'] = $this->ppRoundFindService->verifiedInLatestRound($column, $up[$column]);
             $up['user_count']= $this->userParticipationRepository->count($column, $up[$column]);
 
-            $unlocked=0;
-            $guesses = array_column($userCurrentRound, 'guess');
-            foreach ($guesses as $guess) {
-                if(!!$guess && !$guess['guessed_at'] && !$guess['verified_at'])$unlocked++;
-            }
-            $up['unlocked'] = $unlocked;
+            // $unlocked=0;
+            // $guesses = array_column($userCurrentRound, 'guess');
+            // foreach ($guesses as $guess) {
+            //     if(!!$guess && !$guess['guessed_at'] && !$guess['verified_at'])$unlocked++;
+            // }
+            // $up['unlocked'] = $unlocked;
             
             $matches = array_column($userCurrentRound, 'match');
             if($matches){
                 usort($matches, fn($a, $b) => $a['date_start'] <=> $b['date_start']);
                 $up['nextMatch'] = $matches[0];
+                //avoid heavy resp
+                unset($up['nextMatch']['league']['standings']);
             }
 
         }       

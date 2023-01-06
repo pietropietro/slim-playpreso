@@ -311,6 +311,14 @@ $container['guess_verify_service'] = static fn (
     $container->get('points_update_service')
 );
 
+$container['guess_find_service'] = static fn (
+    ContainerInterface $container
+):  Guess\Find => new  Guess\Find(
+    $container->get('guess_repository'),
+    $container->get('match_find_service')
+);
+
+
 $container['points_calculate_service'] = static fn (
     ContainerInterface $container
 ):  Points\Calculate => new  Points\Calculate();

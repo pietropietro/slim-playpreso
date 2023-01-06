@@ -14,4 +14,9 @@ abstract class Base extends BaseController
         return $this->container->get('guess_lock_service');
     }
 
+    protected function getFindGuessService(): Guess\Find
+    {
+        return $this->container->get('guess_find_service');
+    }
+
 }
