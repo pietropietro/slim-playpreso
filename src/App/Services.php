@@ -374,6 +374,7 @@ $container['guess_lock_service'] = static fn (
     ContainerInterface $container
 ):  Guess\Lock => new  Guess\Lock(
     $container->get('guess_repository'),
+    $container->get('match_repository'),
 );
 
 

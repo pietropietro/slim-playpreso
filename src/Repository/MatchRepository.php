@@ -179,6 +179,13 @@ final class MatchRepository extends BaseRepository
         return $this->db->get('matches');
     }
 
+    public function isBeforeStartTime(int $id):bool{
+        $this->db->where('id', $id);
+        $now = date("Y-m-d H:i:s");
+        $this->db->where('date_start', $now, '>');
+        return $this->db->has('matches');
+    }
+
     public function getMatchesForLeagues(
         array $league_ids, 
         ?int $from_days_diff = null, 

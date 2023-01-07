@@ -6,11 +6,13 @@ namespace App\Service\Guess;
 
 use App\Service\BaseService;
 use App\Repository\GuessRepository;
+use App\Repository\MatchRepository;
 
 
 final class Lock extends BaseService{
     public function __construct(
         protected GuessRepository $guessRepository,
+        protected MatchRepository $matchRepository,
     ){}
 
     public function lock(int $id, int $userId, int $home, int $away){
@@ -19,8 +21,12 @@ final class Lock extends BaseService{
             throw new \App\Exception\NotFound("forbidden", 403);
         }
         if($guess['guessed_at'] || $guess['verified_at']){
-            throw new \App\Exception\NotFound("forbidden", 403);
+            throw new \App\Exception\NotFound("forbidden", 401);
         }
+        if(!$this->matchRepository->isBeforeStartTime($guess['match_id'])){
+            throw new \App\Exception\NotFound("match started.", 401);
+        }
+
         $this->guessRepository->lock($id, $home, $away);
     }
 
