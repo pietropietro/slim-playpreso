@@ -53,12 +53,31 @@ final class Find extends BaseService{
         return $this->matchRepository->hasLiveMatch(ids: $ids);
     }
 
-    private function enrich($match){
+    public function getNextMatchInPPRound(int $ppRound_id){
+        $match = $this->matchRepository->getNextInPPRound($ppRound_id);
+        if(!$match)return null;
+        return $this->enrich($match);
+    }
+
+    public function getLastMatchInPPTournament(string $type, int $typeId){
+        $match = $this->matchRepository->getLastInPPTournament($type, $typeId);
+        if(!$match)return null;
+        return $this->enrich($match, false);
+    }
+
+    public function getNextMatchInPPTournament(string $type, int $typeId){
+        $match = $this->matchRepository->getNextInPPTournament($type, $typeId);
+        if(!$match)return null;
+        return $this->enrich($match, false);
+    }
+
+    private function enrich(array $match, ?bool $withStandings=true){
         $match['homeTeam'] = $match['home_id'] ? $this->teamRepository->getOne($match['home_id']) : null;
         $match['awayTeam'] = $match['away_id'] ? $this->teamRepository->getOne($match['away_id']) : null;
-        $match['league'] = $this->leagueService->getOne($match['league_id']);
+        $match['league'] = $this->leagueService->getOne($match['league_id'], $withStandings);
         return $match;
     }
+    
 
     private function enrichAll($matches){
         foreach ($matches as &$match) {

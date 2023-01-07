@@ -12,19 +12,24 @@ use App\Service;
 
 abstract class Base extends BaseController
 {
-    protected function getPPLeagueService(): Service\PPLeague\Find
+    protected function getPPLeagueFindService(): Service\PPLeague\Find
     {
         return $this->container->get('ppleague_find_service');
     }
 
-    protected function getUserParticipationService(): Service\UserParticipation\Find
+    protected function getUserParticipationFindService(): Service\UserParticipation\Find
     {
         return $this->container->get('userparticipation_find_service');
     }
 
-    protected function getPPRoundService(): Service\PPRound\Find
+    protected function getPPRoundFindService(): Service\PPRound\Find
     {
         return $this->container->get('ppround_find_service');
+    }
+
+    protected function getMatchFindService(): Service\Match\Find
+    {
+        return $this->container->get('match_find_service');
     }
 
 }

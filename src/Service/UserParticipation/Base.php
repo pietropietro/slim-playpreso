@@ -12,6 +12,7 @@ use App\Repository\GuessRepository;
 
 use App\Service\BaseService;
 use App\Service\PPRound;
+use App\Service\Match;
 
 
 abstract class Base extends BaseService
@@ -23,6 +24,7 @@ abstract class Base extends BaseService
         protected PPLeagueRepository $ppLeagueRepository,
         protected GuessRepository $guessRepository,
         protected PPRound\Find $ppRoundFindService,
+        protected Match\Find $matchFindService
     ){}
 
 
@@ -36,26 +38,18 @@ abstract class Base extends BaseService
         
         if($up['started'] && !$up['finished']){
             $column = $up['ppLeague_id'] ? 'ppLeague_id' : 'ppCupGroup_id';
-            $userCurrentRound = $this->ppRoundFindService->getUserCurrentRound($column, $up[$column], $userId);
             
             $up['currentRound'] = $this->ppRoundFindService->getCurrentRoundNumber($column, $up[$column]);
             $up['playedInCurrentRound'] = $this->ppRoundFindService->verifiedInLatestRound($column, $up[$column]);
             $up['user_count']= $this->userParticipationRepository->count($column, $up[$column]);
 
-            // $unlocked=0;
-            // $guesses = array_column($userCurrentRound, 'guess');
-            // foreach ($guesses as $guess) {
-            //     if(!!$guess && !$guess['guessed_at'] && !$guess['verified_at'])$unlocked++;
-            // }
-            // $up['unlocked'] = $unlocked;
-            
-            $matches = array_column($userCurrentRound, 'match');
-            if($matches){
-                usort($matches, fn($a, $b) => $a['date_start'] <=> $b['date_start']);
-                $up['nextMatch'] = $matches[0];
+            // $userCurrentRound = $this->ppRoundFindService->getUserCurrentRound($column, $up[$column], $userId);
+
+            $up['nextMatch'] = $this->matchFindService->getNextMatchInPPTournament($column, $up[$column]);
+            // if($up['nextMatch']){
                 //avoid heavy resp
-                unset($up['nextMatch']['league']['standings']);
-            }
+                // unset($up['nextMatch']['league']['standings']);
+            // }
 
         }       
 

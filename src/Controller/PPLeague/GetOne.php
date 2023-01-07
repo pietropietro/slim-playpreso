@@ -21,12 +21,12 @@ final class GetOne extends Base
         $userId = $this->getAndValidateUserId($request);
 
         $ppLeagueId = (int) $args['id'];
-        $ppLeague = $this->getPPLeagueService()->getOne($ppLeagueId);
-        $ppLeague['userParticipations'] = $this->getUserParticipationService()->getForTournament('ppLeague_id', $ppLeagueId);
-        $ppLeague['ppRounds'] = $this->getPPRoundService()->getForTournament(
+        $ppLeague = $this->getPPLeagueFindService()->getOne($ppLeagueId);
+        $ppLeague['userParticipations'] = $this->getUserParticipationFindService()->getForTournament('ppLeague_id', $ppLeagueId);
+        $ppLeague['ppRounds'] = $this->getPPRoundFindService()->getForTournament(
             'ppLeague_id',
             $ppLeagueId,
-            userId: $this->getUserParticipationService()->isUserInTournament($userId, 'ppLeague_id', $ppLeagueId) ? $userId : null
+            userId: $this->getUserParticipationFindService()->isUserInTournament($userId, 'ppLeague_id', $ppLeagueId) ? $userId : null
         );
          
         return $this->jsonResponse($response, 'success', $ppLeague, 200);

@@ -18,10 +18,22 @@ final class Find  extends BaseService{
 
     public function getOne(int $ppLeagueId){
         if(!$ppLeague = $this->ppLeagueRepository->getOne($ppLeagueId)) return;
-        $ppLeague['ppTournamentType'] = $this->findTournamentType->getOne($ppLeague['ppTournamentType_id']);
+        $this->enrich($ppLeague);
         return $ppLeague;
-
     }
+
+    public function adminGetAll(?int $ppTournamentTypeId){
+        $ppLeagues = $this->ppLeagueRepository->get(null, $ppTournamentTypeId);
+        foreach ($ppLeagues as &$ppLeague) {
+            $this->enrich($ppLeague);
+        }
+        return $ppLeagues;
+    }
+
+    private function enrich(&$ppLeague){
+        $ppLeague['ppTournamentType'] = $this->findTournamentType->getOne($ppLeague['ppTournamentType_id']);
+    }
+
 
     function getJoinable(int $ppTypeId, int $userId){
         if(!$ppLeague = $this->ppLeagueRepository->getJoinable($ppTypeId)){

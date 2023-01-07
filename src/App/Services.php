@@ -141,6 +141,7 @@ $container['userparticipation_find_service'] = static fn (
     $container->get('ppleague_repository'),
     $container->get('guess_repository'),
     $container->get('ppround_find_service'),
+    $container->get('match_find_service'),
 );
 
 $container['userparticipation_create_service'] = static fn (
@@ -158,6 +159,7 @@ $container['userparticipation_update_service'] = static fn (
     $container->get('ppleague_repository'),
     $container->get('guess_repository'),
     $container->get('ppround_find_service'),
+    $container->get('match_find_service'),
 );
 
 $container['points_update_service'] = static fn (

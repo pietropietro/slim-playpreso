@@ -43,6 +43,33 @@ final class MatchRepository extends BaseRepository
         return $this->db->getOne('matches', $this->whiteListColumns);
     }
 
+    public function getNextInPPRound(int $ppRound_id){
+        $this->db->join('ppRoundMatches pprm','pprm.ppRound_id=ppRounds.id','INNER');
+        $this->db->join('matches m','pprm.match_id=m.id','INNER');
+        $this->db->where('ppRounds.id', $ppRound_id);
+        $this->db->where('m.verified_at IS NULL');
+        $this->db->orderBy('m.date_start','asc');
+        return $this->db->getOne('ppRounds','pprm.id as pprm_id, m.*');
+    }
+
+    public function getNextInPPTournament(string $type, int $typeId){
+        $this->db->join('ppRoundMatches pprm','pprm.ppRound_id=ppRounds.id','INNER');
+        $this->db->join('matches m','pprm.match_id=m.id','INNER');
+        $this->db->where('ppRounds.'.$type, $typeId);
+        $this->db->where('m.verified_at IS NULL');
+        $this->db->orderBy('m.date_start','asc');
+        return $this->db->getOne('ppRounds','pprm.id as pprm_id, m.*');
+    }
+
+    public function getLastInPPTournament(string $type, int $typeId){
+        $this->db->join('ppRoundMatches pprm','pprm.ppRound_id=ppRounds.id','INNER');
+        $this->db->join('matches m','pprm.match_id=m.id','INNER');
+        $this->db->where('ppRounds.'.$type, $typeId);
+        $this->db->where('m.verified_at IS NOT NULL');
+        $this->db->orderBy('m.date_start','desc');
+        return $this->db->getOne('ppRounds','pprm.id as pprm_id, m.*');
+    }
+
     public function hasLiveMatch(array $ids){
         $this->db->where('id', $ids, 'IN');
         $this->db->where('verified_at IS NULL');

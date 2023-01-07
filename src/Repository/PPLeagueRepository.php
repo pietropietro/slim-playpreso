@@ -8,9 +8,11 @@ use \App\Exception\NotFound;
 
 final class PPLeagueRepository extends BaseRepository
 {
-    public function get(array $ids) {
-        $this->db->where('id', $ids, 'IN');
-        $ppLeagues=$this->db->get('ppLeagues');
+    public function get(?array $ids = null, ?int $ppTournamentTypeId) {
+        if($ids)$this->db->where('id', $ids, 'IN');
+        if($ppTournamentTypeId)$this->db->where('ppTournamentType_id', $ppTournamentTypeId);
+
+        $ppLeagues=$this->db->get('ppLeagues', 50);
         if (! $ppLeagues) {
             throw new NotFound('ppLeagues not found.', 404);
         }   
