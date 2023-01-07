@@ -355,6 +355,14 @@ $container['pproundmatch_create_service'] = static fn (
     $container->get('guess_create_service'),
 );
 
+$container['pproundmatch_update_service'] = static fn (
+    ContainerInterface $container
+):  PPRoundMatch\Update => new  PPRoundMatch\Update(
+    $container->get('pproundmatch_repository'),
+    $container->get('guess_repository'),
+);
+
+
 $container['guess_create_service'] = static fn (
     ContainerInterface $container
 ):  Guess\Create => new  Guess\Create(

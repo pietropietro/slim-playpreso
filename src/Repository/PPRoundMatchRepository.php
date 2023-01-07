@@ -8,8 +8,6 @@ final class PPRoundMatchRepository extends BaseRepository
 {
     public function getForRound(int $ppRoundId, ?bool $onlyIds = false) : array {
         $this->db->where('ppRound_id', $ppRoundId);
-        $this->db->join('matches m', 'ppRoundMatches.match_id=m.id','INNER');
-        $this->db->orderBy('m.date_start','desc');
         if($onlyIds)return $this->db->getValue('ppRoundMatches', 'id', null);
         return $this->db->get('ppRoundMatches');
     }
@@ -34,6 +32,14 @@ final class PPRoundMatchRepository extends BaseRepository
             throw new \App\Exception\Mysql($this->db->getLastError(), 500);
         };
         return $this->db->getInsertId();
+    }
+
+    public function changeMatch(int $id, int $newMatchId){
+        $data = array(
+            "match_id" => $newMatchId
+        );
+        $this->db->where('id', $id);
+        $this->db->update('ppRoundMatches', $data);  
     }
 
 }

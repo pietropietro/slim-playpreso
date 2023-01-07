@@ -36,7 +36,7 @@ final class Elaborate extends BaseService{
                 continue;
             }
             // NO EXTRATIME
-            if(!!$eventObj->Tr1ET){
+            if(isset($eventObj->Tr1ET)){
                 $this->matchVerifyService->verify($match['id'], (int)$eventObj->Tr1OR, (int)$eventObj->Tr2OR, 'et');
                 continue;
             }
@@ -44,7 +44,7 @@ final class Elaborate extends BaseService{
         
 
             //MODIFY MATCH NOTES - TEAMS - DATE
-            if((!!$match['notes'] && $match['notes'] != $eventObj->Eps) || 
+            if((isset($match['notes']) && $match['notes'] != $eventObj->Eps) || 
                 in_array($eventObj->Eps, array('Aband.', 'Postp.', 'Canc.'))
             ){
                 $this->matchUpdateService->updateNotes($match['id'],$eventObj->Eps);

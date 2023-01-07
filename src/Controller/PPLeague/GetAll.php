@@ -19,6 +19,7 @@ final class GetAll extends Base
     ): Response {
 
         $ppTournamentTypeId = $request->getQueryParams()['ppTournamentTypeId'] ?? null;
+        $ppTournamentTypeId = (int) $ppTournamentTypeId ?? null;
 
         $ppLeagues = $this->getPPLeagueFindService()->adminGetAll($ppTournamentTypeId);
         foreach($ppLeagues as &$ppLeague){

@@ -13,9 +13,6 @@ final class PPLeagueRepository extends BaseRepository
         if($ppTournamentTypeId)$this->db->where('ppTournamentType_id', $ppTournamentTypeId);
 
         $ppLeagues=$this->db->get('ppLeagues', 50);
-        if (! $ppLeagues) {
-            throw new NotFound('ppLeagues not found.', 404);
-        }   
         return $ppLeagues;
     }
 

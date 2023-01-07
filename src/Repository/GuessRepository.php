@@ -119,6 +119,18 @@ final class GuessRepository extends BaseRepository
         }
     }
 
+    public function changePPRMMatch(int $ppRoundMatch_id, int $newMatchId){
+        $data = array(
+            "guessed_at" => null,
+            "home" => null,
+            "away" => null,
+            "match_id" => $newMatchId
+        );
+        $this->db->where('ppRoundMatch_id', $ppRoundMatch_id);
+        $this->db->where('verified_at IS NULL');
+        $this->db->update('guesses', $data);     
+    }
+
     //TODO MOVE TO SERVICE
     //TODO CHANGE COLUMN TO ENUM ['cup_id', 'league_id',]
     //possible duplicate

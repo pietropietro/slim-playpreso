@@ -12,6 +12,7 @@ use App\Controller\PPTournamentType;
 use App\Controller\PPCup;
 use App\Controller\PPCupGroup;
 use App\Controller\PPRound;
+use App\Controller\PPRoundMatch;
 use App\Controller\Cron;
 use App\Middleware\Auth;
 use App\Middleware\Cors;
@@ -81,6 +82,8 @@ return function ($app){
         $app->get('/p-league', PPLeague\GetAll::class);
 
         $app->get('/p-tournament-types', PPTournamentType\GetAll::class);
+
+        $app->post('/p-round-match/swap/{id}', PPRoundMatch\Swap::class);
         
         $app->group('/match', function() use($app): void {
             $app->get('', Match\GetAll::class);
