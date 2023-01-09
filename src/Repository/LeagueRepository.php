@@ -38,7 +38,7 @@ final class LeagueRepository extends BaseRepository
     }
 
     public function getUefa(){
-		$this->db->where('country','AAA');
+		$this->db->where('country','Europe');
 		return $this->db->get('leagues');
     }
 
