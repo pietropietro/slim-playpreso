@@ -28,6 +28,15 @@ final class Elaborate extends BaseService{
 
             if(!$match) continue;
             if($match['verified_at'])continue;
+
+            //UPDATE TEAMS
+            if(!$match['home_id'] || !$match['away_id']){
+                $this->matchUpdateService->updateTeams($match['id'],(int)$eventObj->T1[0]->ID, (int)$eventObj->T2[0]->ID, true);
+            }
+            //UPDATE TIME
+            if(new \DateTime($match['date_start']) != new \DateTime((string)$eventObj->Esd)){
+                $this->matchUpdateService->updateDateStart($match['id'], (string)$eventObj->Esd);
+            }
             
 
             //VERIFY MATCH - i.e. final score 
@@ -35,27 +44,23 @@ final class Elaborate extends BaseService{
                 $this->matchVerifyService->verify($match['id'], (int)$eventObj->Tr1, (int)$eventObj->Tr2);
                 continue;
             }
+
             // NO EXTRATIME
             if(isset($eventObj->Tr1ET)){
                 $this->matchVerifyService->verify($match['id'], (int)$eventObj->Tr1OR, (int)$eventObj->Tr2OR, 'et');
                 continue;
             }
 
-        
-
-            //MODIFY MATCH NOTES - TEAMS - DATE
-            if((isset($match['notes']) && $match['notes'] != $eventObj->Eps) || 
-                in_array($eventObj->Eps, array('Aband.', 'Postp.', 'Canc.'))
+            //Match post/cancel./aband
+            if( isset($match['notes']) && 
+                    (   $match['notes'] != $eventObj->Eps && 
+                        in_array($eventObj->Eps, array('Aband.', 'Postp.', 'Canc.'))
+                    )
             ){
-                $this->matchUpdateService->updateNotes($match['id'],$eventObj->Eps);
+                $this->matchUpdateService->updateNotes($match['id'], $eventObj->Eps);
             }
             
-            if(!$match['home_id'] || !$match['away_id']){
-                $this->matchUpdateService->updateTeams($match['id'],(int)$eventObj->T1[0]->ID, (int)$eventObj->T2[0]->ID, true);
-            }
-            if(new \DateTime($match['date_start']) != new \DateTime((string)$eventObj->Esd)){
-                $this->matchUpdateService->updateDateStart($match['id'], (string)$eventObj->Esd);
-            }   
+               
         }
     }
 }

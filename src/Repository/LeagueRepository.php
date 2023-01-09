@@ -81,10 +81,10 @@ final class LeagueRepository extends BaseRepository
         $this->db->join("matches m", "m.league_id=l.id", "INNER");
         $this->db->where('m.verified_at IS NULL');
         $this->db->where('m.notes IS NULL');
-        $start = date("Y-m-d H:i:s", strtotime('-3 days'));
-        $finish = date("Y-m-d H:i:s", strtotime('+100 minutes'));
+        $start = date("Y-m-d H:i:s", strtotime('-400 minutes'));
+        $finish = date("Y-m-d H:i:s", strtotime('-110 minutes'));
         $this->db->where('m.date_start', array($start, $finish), 'BETWEEN');
-        return $this->db->query("select distinct ls_suffix, l.id from leagues l");
+        return $this->db->query("select distinct ls_suffix, l.id, l.tag, l.country from leagues l");
     }
 
 }
