@@ -89,6 +89,7 @@ return function ($app){
             $app->get('', Match\GetAll::class);
             $app->get('/pick/{id}', Match\AdminPick::class);
             $app->post('/{id}', Match\Verify::class);
+            $app->delete('/{id}', Match\AdminDelete::class);
         });
 
         $app->group('/league', function() use($app): void {

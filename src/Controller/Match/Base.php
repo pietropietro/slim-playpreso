@@ -26,6 +26,12 @@ abstract class Base extends BaseController
         return $this->container->get('match_picker_service');
     }
 
+    protected function getDeleteMatchService(): Match\Delete
+    {
+        return $this->container->get('match_delete_service');
+    }
+
+
     protected function getFindLeagueService(): League\Find
     {
         return $this->container->get('league_find_service');

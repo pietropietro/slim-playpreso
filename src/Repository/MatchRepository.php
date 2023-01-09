@@ -215,4 +215,10 @@ final class MatchRepository extends BaseRepository
         return $this->db->get('matches', $limit);
     }
 
+    public function delete(int $id){
+        $this->db->where('matches.id', $id);
+        $this->db->where('matches.verified_at IS NULL');
+        return $this->db->delete('matches',1);
+    }
+
 }

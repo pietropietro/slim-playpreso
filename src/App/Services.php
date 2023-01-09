@@ -284,6 +284,12 @@ $container['match_update_service'] = static fn (
     $container->get('team_repository'),
 );
 
+$container['match_delete_service'] = static fn (
+    ContainerInterface $container
+):  Match\Delete => new  Match\Delete(
+    $container->get('match_repository'),
+);
+
 $container['team_elaborate_service'] = static fn (
     ContainerInterface $container
 ):  Team\Elaborate => new  Team\Elaborate(
