@@ -18,8 +18,8 @@ final class GuessRepository extends BaseRepository
         $this->db->join('matches m ', 'm.id=guesses.match_id', 'INNER');
         if($not_verified){
             $this->db->where('guesses.verified_at IS NULL');
-            $this->db->orderBy('guesses.guessed_at', 'ASC', array(null));
-            // $this->db->orderBy('guesses.guessed_at', 'asc');
+            // $this->db->orderBy('guesses.guessed_at', 'asc', null);
+            $this->db->orderBy('guessed_at is null', 'desc');
             $this->db->orderBy('m.date_start', 'asc');
         }
 
