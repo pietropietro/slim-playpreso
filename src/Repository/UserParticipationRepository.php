@@ -35,6 +35,7 @@ final class UserParticipationRepository extends BaseRepository
 
         if($active){
             $this->db->having('finished', 0);
+            $this->db->orderBy('started','desc');
         }
         if($minPosition){
             $this->db->where('position', $minPosition, '<=');
@@ -42,7 +43,7 @@ final class UserParticipationRepository extends BaseRepository
         if($type){
             $this->db->where($type.' IS NOT NULL');
         }
-        $this->db->orderBy('joined_at','desc');
+        // $this->db->orderBy('joined_at','desc');
 
         $this->db->join('ppLeagues ppl', 'ppl.id = userParticipations.ppLeague_id', "LEFT");
         $this->db->join('ppCupGroups ppcg', 'ppcg.id = userParticipations.ppCupGroup_id', "LEFT");
