@@ -38,7 +38,7 @@ final class GuessRepository extends BaseRepository
         }
         $this->db->join("users u", "u.id=g.user_id", "INNER");
         $this->db->orderBy('g.points','desc');
-        $this->db->orderBy('g.home','asc');
+        $this->db->orderBy('g.guessed_at','desc');
         return $this->db->get('guesses g', null, array('g.*, u.username'));
     }
 
