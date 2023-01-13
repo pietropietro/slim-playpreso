@@ -23,6 +23,10 @@ abstract class Base extends BaseController
         return $this->container->get('pptournamenttype_join_service');
     }
 
+    protected function getUpdatePPTournamentService(): PPTournamentType\Update {
+        return $this->container->get('pptournamenttype_update_service');
+    }
+
     //TODO DELETE?
     protected function checkUserPermissions(int $userId, int $userIdLogged): void
     {

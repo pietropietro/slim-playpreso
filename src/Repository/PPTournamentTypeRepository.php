@@ -63,4 +63,9 @@ final class PPTournamentTypeRepository extends BaseRepository
         return $this->db->getValue('ppTournamentTypes', 'id', null);
     }
 
+    public function update(int $id, array $data){
+        $this->db->where('id', $id);
+        return $this->db->update('ppTournamentTypes', $data, 1);        
+    }
+
 }

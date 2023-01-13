@@ -100,6 +100,11 @@ $container['pptournamenttype_check_service'] = static fn (
     $container->get('userparticipation_find_service')
 );
 
+$container['pptournamenttype_update_service'] = static fn (
+    ContainerInterface $container
+):  PPTournamentType\Update => new  PPTournamentType\Update(
+    $container->get('pptournamenttype_repository'),
+);
 
 $container['ppround_find_service'] = static fn (
     ContainerInterface $container

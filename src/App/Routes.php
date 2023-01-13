@@ -81,7 +81,10 @@ return function ($app){
         
         $app->get('/p-league', PPLeague\GetAll::class);
 
-        $app->get('/p-tournament-types', PPTournamentType\GetAll::class);
+        $app->group('/p-tournament-types', function() use($app): void {
+            $app->get('', PPTournamentType\GetAll::class);
+            $app->post('/{id}', PPTournamentType\AdminUpdate::class);
+        });
 
         $app->post('/p-round-match/swap/{id}', PPRoundMatch\Swap::class);
         
