@@ -30,6 +30,16 @@ final class AdminUpdate extends Base
         if(isset($data->emoji)){
             $updateData['emoji'] = $data->emoji;
         }
+        if(isset($data->rounds)){
+            $updateData['rounds'] = $data->rounds;
+        }
+        if(isset($data->cost)){
+            $updateData['cost'] = $data->cost;
+        }
+        if(isset($data->participants)){
+            $updateData['participants'] = $data->participants;
+        }
+        if(!$updateData) throw new \App\Exception\NotFound('Invalid request.', 400);
 
         $result = $this->getUpdatePPTournamentService()->update($ppTournamentTypeId, $updateData);
 
