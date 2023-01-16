@@ -66,6 +66,10 @@ final class Find  extends BaseService{
         return $this->ppRoundMatchRepository->getRoundIdsForMatches($matchIds);
     }
 
+    public function getParentPPRound(int $id){
+        return $this->ppRoundMatchRepository->getParentPPRound($id);
+    }
+
     public function getCurrentForUser(int $ppRoundId, int $userId){
         $ppRoundMatches = $this->ppRoundMatchRepository->getForRound($ppRoundId);
         foreach($ppRoundMatches as &$ppRM){        
