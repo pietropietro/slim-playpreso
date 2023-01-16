@@ -27,6 +27,9 @@ final class AdminUpdate extends Base
         if(isset($data->rgb)){
             $updateData['rgb'] = $data->rgb;
         }
+        if(isset($data->emoji)){
+            $updateData['emoji'] = $data->emoji;
+        }
 
         $result = $this->getUpdatePPTournamentService()->update($ppTournamentTypeId, $updateData);
 
