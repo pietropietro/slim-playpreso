@@ -15,17 +15,31 @@ final class Picker extends BaseService{
     ) {}
     
     public function pick(int $tournamentTypeId, int $howMany) : ?array{
+        $matches = $this->nextMatchesForPPTournamentType($tournamentTypeId);
+        shuffle($matches);
+        return array_slice($matches, 0, $howMany);
+    }
+
+    public function nextMatchesForPPTournamentType(int $tournamentTypeId){
         if(!$leagueIDs = $this->leagueService->getForPPTournamentType($tournamentTypeId, true)) return [];
         
         $matches = array();
         foreach ($leagueIDs as $id) {
-            if($retrieved = $this->matchRepository->getNextRoundForLeague($id)){
+            //limit to 10 matches in case of wrong round value (i.e. some league matches all round=1)
+            if($retrieved = $this->matchRepository->getNextRoundForLeague($id, 10)){
                 $matches = array_merge($matches, $retrieved);
             }
         }
         if(!$matches) return [];
-        shuffle($matches);
-        return array_slice($matches, 0, $howMany);
+        
+        $reasonableMatches = array_filter($matches, 
+            function ($e){
+                return $e['date_start'] < date("Y-m-d H:i:s", strtotime('+8 days'));
+            }
+        );
+
+        if(count($reasonableMatches) > 2) return $reasonableMatches;
+        return $matches;
     }
 
 }

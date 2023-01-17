@@ -165,7 +165,7 @@ final class MatchRepository extends BaseRepository
         return $this->db->getValue('matches', 'round');
     }
 
-    public function getNextRoundForLeague(int $league_id) : ?array{
+    public function getNextRoundForLeague(int $league_id, ?int $limit=null) : ?array{
         if(!$nextRoundNumber = $this->getNextRoundNumber($league_id)){
             return [];
         }
@@ -175,8 +175,10 @@ final class MatchRepository extends BaseRepository
 
         $minTimeInterval = date("Y-m-d H:i:s", strtotime('+1 days'));
         $this->db->where('date_start', $minTimeInterval, '>');
+
+        $this->db->orderBy('date_start', 'asc');
         
-        return $this->db->get('matches');
+        return $this->db->get('matches', $limit);
     }
 
     public function isBeforeStartTime(int $id):bool{

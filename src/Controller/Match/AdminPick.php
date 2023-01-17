@@ -21,14 +21,13 @@ final class AdminPick extends Base
         $ppTournamentTypeId = (int) $args['id'];
 
         $matchesRaw = $this->getPickMatchService()->pick($ppTournamentTypeId, 3);
-        
-        $ids= array();
-        foreach ($matchesRaw as $value) {
-            array_push($ids, $value['id']);
-        }
+        $all_matches_raw = $this->getPickMatchService()->nextMatchesForPPTournamentType($ppTournamentTypeId);
+        $ids = array_column($matchesRaw, 'id');
+        $all_ids = array_column($all_matches_raw, 'id');
 
         $returnObj = array(
-            'matches' =>  $this->getMatchFindService()->adminGet(ids: $ids),
+            'all_matches' =>  $this->getMatchFindService()->adminGet(ids: $all_ids),
+            'picked_matches' =>  $this->getMatchFindService()->adminGet(ids: $ids),
             'leagues' =>  $this->getFindLeagueService()->getForPPTournamentType($ppTournamentTypeId)
         );
 
