@@ -58,44 +58,26 @@ final class Find  extends BaseService{
 
 
     public function getAvailablePPLeaguesForUser(int $userId, bool $ids_only = true){
+        $currentPPTournamentTypes = $this->userParticipationRepository->getCurrentTournamentTypesForUser($userId, false);
+        $currentPPTTNames = array_column($currentPPTournamentTypes, 'name');
 
-        $tournamentTypesMap = $this->ppTournamentTypeRepository->getPPLeaguesMap();
-        $promotedTTids = $this->userParticipationRepository->getPromotedTournamentTypesForUser($userId, false, true);
-        $currentTTids = $this->userParticipationRepository->getCurrentTournamentTypesForUser($userId, false, true);
+        $promotedPPTTids = $this->userParticipationRepository->getPromotedTournamentTypesForUser($userId, false, true);
 
-        $ids = [];
-
-        foreach($tournamentTypesMap as $typeKey => $typeItem){
-            $sameNameTournamentIds = explode(',', $typeItem['ppTTids']);
-
-            if(!!$currentTTids && !empty(array_intersect($currentTTids, $sameNameTournamentIds ))){
-                unset($tournamentTypesMap[$typeKey]);
-                continue;
-            }
-
-            $okIds = !!$promotedTTids ? array_values(array_diff($sameNameTournamentIds, $promotedTTids)) : $sameNameTournamentIds;
-            $difference = count($sameNameTournamentIds) - count($okIds);
-            $ppTTlevelAllowedForType = $okIds[$difference];
-            array_push($ids, $ppTTlevelAllowedForType);
-        }
-
-        $ids = $this->filterIdsExpensive($userId, $ids);
-
-        if($ids_only) $returnIds = $ids ?? [];
-        else $returnIds = $ids ? $this->get($ids) : [];
-
-       
-        return array(
-            'map' => $tournamentTypesMap,
-            'promoted' => $promotedTTids,
-            'current' => $currentTTids,
-            'ok' => $returnIds,
+        $userPoints = $this->pointsService->get($userId);
+        
+        $availablePPTTs = $this->ppTournamentTypeRepository->availablePPLeaguesTypes(
+            $currentPPTTNames,
+            $promotedPPTTids,
+            $userPoints,
+            $ids_only
         );
+
+        return $ids_only ? array_column($availablePPTTs, 'id') : $availablePPTTs;
     }
 
 
 
-    //TODO add to check service
+    //TODO remove
     public function filterIdsExpensive(int $userId, array $ids){
         if(!$ids)return null;
         $userPoints = $this->pointsService->get($userId);

@@ -21,6 +21,6 @@ final class GetAvailablePPLeagues extends Base
         $userId = $this->getAndValidateUserId($request);
         $ppTournamentTypes = $this->getPPTournamentTypeService()->getAvailablePPLeaguesForUser($userId, ids_only: false);
 
-        return $this->jsonResponse($response, 'success', $ppTournamentTypes['ok'], 200);
+        return $this->jsonResponse($response, 'success', $ppTournamentTypes, 200);
     }
 }

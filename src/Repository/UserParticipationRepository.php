@@ -74,18 +74,24 @@ final class UserParticipationRepository extends BaseRepository
         
     }
 
-    function getCurrentTournamentTypesForUser(int $userId, bool $include_ppCups = false, bool $return_id_only = true){
+    function getCurrentTournamentTypesForUser(int $userId, bool $include_ppCups = false){
         $this->db->where('user_id', $userId);
         
         $this->db->having('finished',0);
         $this->db->join('ppLeagues ppl', 'ppl.id = userParticipations.ppLeague_id', "LEFT");
+        $this->db->join('ppTournamentTypes pptt', 'pptt.id = userParticipations.ppTournamentType_id', "INNER");
         $this->db->join('ppCupGroups ppcg', 'ppcg.id = userParticipations.ppCupGroup_id', "LEFT");
+        
+        if(!$include_ppCups){
+            $this->db->where('ppLeague_id IS NOT NULL');
+        }
 
-        if(!$include_ppCups) $this->db->where('ppLeague_id IS NOT NULL');
-
-        $result = $this->db->get($this->tableName, null, $this->columnsJoined3) ;
-        return $return_id_only ? array_column($result, 'ppTournamentType_id') : $result; 
-
+        $result = $this->db->get(
+            $this->tableName, 
+            null, 
+            'pptt.*, if(ppl.finished_at IS NOT NULL or ppcg.finished_at IS NOT NULL, 1, 0) as finished'
+        );
+        return $result; 
     }
 
     function getOverallPPCupPoints(int $userId, int $cupId, ?string $joinedBefore) : ?int{
