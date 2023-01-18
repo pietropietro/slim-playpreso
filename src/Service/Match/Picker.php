@@ -16,9 +16,26 @@ final class Picker extends BaseService{
     
     public function pick(int $tournamentTypeId, int $howMany) : ?array{
         $matches = $this->nextMatchesForPPTournamentType($tournamentTypeId);
-        shuffle($matches);
-        return array_slice($matches, 0, $howMany);
+        $picked = array();
+
+        for($i=0; $i<$howMany; $i++){
+            $leagueOccurrances = array_count_values(
+                array_column($matches, 'league_id')
+            );
+
+            if(count($leagueOccurrances) >= 2 && $picked){
+                $ids=array_column($picked, 'league_id');
+                $matches = array_filter($matches, 
+                    fn ($m) => !in_array($m['league_id'], $ids)
+                );
+            }
+
+            shuffle($matches);
+            array_push($picked, array_pop($matches));
+        }
+        return $picked;
     }
+
 
     public function nextMatchesForPPTournamentType(int $tournamentTypeId){
         if(!$leagueIDs = $this->leagueService->getForPPTournamentType($tournamentTypeId, true)) return [];

@@ -48,7 +48,8 @@ final class Find  extends BaseService{
         if($ppTT['name'] === 'Europe'){
             $leagues = $this->leagueRepository->getForArea(strtolower($ppTT['name']), $ppTT['level']);
             $uefaLeagues =  $this->leagueRepository->getUefa();
-            return array_merge($leagues,$uefaLeagues);
+            $merged = array_merge($leagues,$uefaLeagues);
+            return array_column($merged, 'id');
         }       
 
         $country = $ppTT['name'] === 'Random' ? null : strtolower($ppTT['name']);
