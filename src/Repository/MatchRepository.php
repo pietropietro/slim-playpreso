@@ -156,11 +156,9 @@ final class MatchRepository extends BaseRepository
         return $this->db->getValue('matches','round');
     }
     
-    //last round with a match verified.
-    //round could not be finished
     private function getLastRoundNumber(int $league_id) : ?int{
         $this->db->where('league_id', $league_id);
-        $this->db->where('verified_at IS NOT NULL');
+        $this->db->where('date_start', date('Y-m-d H:i:s'), '<');
         $this->db->orderBy('date_start', 'desc');
         return $this->db->getValue('matches', 'round');
     }
