@@ -49,11 +49,15 @@ final class Find  extends BaseService{
         return $ppTT;
     }
 
+
+
     public function getAvailablePPCupsForUser(int $userId): array{
         return $this->ppTournamentTypeRepository->availablePPCupsForUser($userId);
     }
 
-    public function getAvailablePPLeaguesForUser(int $userId, bool $ids_only = true): array{
+
+
+    public function getAvailablePPLeaguesForUser(int $userId, bool $ids_only = true){
 
         $tournamentTypesMap = $this->ppTournamentTypeRepository->getPPLeaguesMap();
         $promotedTTids = $this->userParticipationRepository->getPromotedTournamentTypesForUser($userId, false, true);
@@ -71,13 +75,25 @@ final class Find  extends BaseService{
 
             $okIds = !!$promotedTTids ? array_values(array_diff($sameNameTournamentIds, $promotedTTids)) : $sameNameTournamentIds;
             $difference = count($sameNameTournamentIds) - count($okIds);
-            array_push($ids, $okIds[0]);
+            $ppTTlevelAllowedForType = $okIds[$difference];
+            array_push($ids, $ppTTlevelAllowedForType);
         }
-        
+
         $ids = $this->filterIdsExpensive($userId, $ids);
-        if($ids_only) return $ids ?? [];
-        return $ids ? $this->get($ids) : [];
+
+        if($ids_only) $returnIds = $ids ?? [];
+        else $returnIds = $ids ? $this->get($ids) : [];
+
+       
+        return array(
+            'map' => $tournamentTypesMap,
+            'promoted' => $promotedTTids,
+            'current' => $currentTTids,
+            'ok' => $returnIds,
+        );
     }
+
+
 
     //TODO add to check service
     public function filterIdsExpensive(int $userId, array $ids){

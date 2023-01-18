@@ -79,7 +79,10 @@ return function ($app){
         $app->post('/p-cup/{id}', PPCup\Create::class);
         $app->get('/p-cup', PPCup\GetAll::class);
         
-        $app->get('/p-league', PPLeague\GetAll::class);
+        $app->group('/p-league',  function() use($app): void {
+            $app->get('', PPLeague\GetAll::class);
+            $app->get('/available/{userId}', PPTournamentType\AdminAvailablePPLeagues::class);
+        });
 
         $app->group('/p-tournament-types', function() use($app): void {
             $app->get('', PPTournamentType\GetAll::class);

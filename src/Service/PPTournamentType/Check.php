@@ -46,7 +46,7 @@ final class Check  extends BaseService{
 
     public function isAllowedInPPLeague($userId, $typeId){
         $okIds = $this->findTournamentService->getAvailablePPLeaguesForUser($userId, ids_only: true);
-        return in_array($typeId, $okIds);
+        return in_array($typeId, $okIds['ok']);
     }
 
     public function isAllowedInPPCup(int $userId,int $typeId){
