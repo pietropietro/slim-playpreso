@@ -7,13 +7,6 @@ namespace App\Repository;
 
 final class PPTournamentTypeRepository extends BaseRepository
 {
-    //returns an array like (0: [name: 'america', maxLevel: 2, ppTTids: '21,23'])
-    function getPPLeaguesMap(){
-        return $this->db->query('SELECT name, max(level) as maxLevel, 
-            GROUP_CONCAT(id) as ppTTids
-            FROM ppTournamentTypes where cup_format IS NULL GROUP BY name ORDER BY maxLevel ');
-    }
-
     function get(?array $ids, ?bool $onlyCups){
         if($ids)$this->db->where('id',$ids,'IN');
         if($onlyCups)$this->db->where('cup_format IS NOT NULL');
@@ -40,6 +33,27 @@ final class PPTournamentTypeRepository extends BaseRepository
     function getCost(int $id){
         $this->db->where('id',$id);
         return $this->db->getOne('ppTournamentTypes', 'cost');
+    }
+
+    function availablePPLeaguesTypes(array $excludeNames, array $excldueIds, int $userPoints){
+        
+        $textQuery = "
+            select * from ppTournamentTypes pptt 
+            where pptt.level = 
+                (select min(level) from ppTournamentTypes pptt2 
+                    where pptt2.name = pptt.name 
+                    and cup_format is null and cost < " . $userPoints;
+
+        if($excludeNames){
+            $textQuery .= ' and name not in ("'.implode('", "' ,$excludeNames).'")';
+        }
+        if($excludeIds){
+            $textQuery .= " and id not in (".implode(',',$excludeIds).")";
+        }
+        $textQuery .= ")";      
+
+        $result = $this->db->query($textQuery);
+        return $result;
     }
 
     function availablePPCupsForUser(int $userId){
