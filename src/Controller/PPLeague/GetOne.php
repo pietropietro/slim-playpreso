@@ -22,6 +22,11 @@ final class GetOne extends Base
 
         $ppLeagueId = (int) $args['id'];
         $ppLeague = $this->getPPLeagueFindService()->getOne($ppLeagueId);
+        
+        if(!$ppLeague){
+            throw new \App\Exception\NotFound('P-League Not Found.', 404);
+        }
+
         $ppLeague['userParticipations'] = $this->getUserParticipationFindService()->getForTournament('ppLeague_id', $ppLeagueId);
         $ppLeague['ppRounds'] = $this->getPPRoundFindService()->getForTournament(
             'ppLeague_id',
