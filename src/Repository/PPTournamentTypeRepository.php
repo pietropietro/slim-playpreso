@@ -35,14 +35,14 @@ final class PPTournamentTypeRepository extends BaseRepository
         return $this->db->getOne('ppTournamentTypes', 'cost');
     }
 
-    function availablePPLeaguesTypes(array $excludeNames, array $excldueIds, int $userPoints){
+    function availablePPLeaguesTypes(array $excludeNames, array $excludeIds, int $userPoints){
         
         $textQuery = "
             select * from ppTournamentTypes pptt 
             where pptt.level = 
                 (select min(level) from ppTournamentTypes pptt2 
                     where pptt2.name = pptt.name 
-                    and cup_format is null and cost < " . $userPoints;
+                    and cup_format is null and cost <= " . $userPoints;
 
         if($excludeNames){
             $textQuery .= ' and name not in ("'.implode('", "' ,$excludeNames).'")';
