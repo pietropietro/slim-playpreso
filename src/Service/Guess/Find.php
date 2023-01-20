@@ -24,7 +24,7 @@ final class Find extends BaseService{
     }
 
     public function notLocked(int $userId){
-        $guesses = $this->guessRepository->getForUser($userId, true);
+        $guesses = $this->guessRepository->getForUser($userId, false);
         foreach($guesses as &$guess){
             $guess['match'] = $this->matchFindService->getOne($guess['match_id']);
             $guess['ppTournamentType'] = $this->getGuessPPTournamentType($guess['ppRoundMatch_id']);
