@@ -52,10 +52,8 @@ final class Elaborate extends BaseService{
             }
 
             //Match post/cancel./aband
-            if( isset($match['notes']) && 
-                    (   $match['notes'] != $eventObj->Eps && 
-                        in_array($eventObj->Eps, array('Aband.', 'Postp.', 'Canc.'))
-                    )
+            if( in_array($eventObj->Eps, array('Aband.', 'Postp.', 'Canc.' , 'et')) &&
+                (!$match['notes'] || $match['notes'] != $eventObj->Eps)
             ){
                 $this->matchUpdateService->updateNotes($match['id'], $eventObj->Eps);
             }

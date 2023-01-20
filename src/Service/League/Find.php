@@ -32,8 +32,8 @@ final class Find  extends BaseService{
         return $league;
     }
 
-    public function getNeedData(): array{
-        return $this->leagueRepository->getNeedData() ?? [];
+    public function getNeedData(?bool $havingGuesses = true, ?string $fromTime = null): array{
+        return $this->leagueRepository->getNeedData($havingGuesses, $fromTime) ?? [];
     }
 
 

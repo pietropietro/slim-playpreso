@@ -17,7 +17,14 @@ final class Start extends Base
         Response $response,
     ): Response {
         $this->getGuessService()->setMissed();
-        $leagues = $this->getLeaguesService()->getNeedData();
+
+        $havingGuesses = true;
+        if(isset($request->getQueryParams()['havingGuesses']) != null){
+            $havingGuesses = (bool) $request->getQueryParams()['havingGuesses'];
+        }
+        $fromTime = $request->getQueryParams()['fromTime'] ?? null;
+
+        $leagues = $this->getLeaguesService()->getNeedData($havingGuesses, $fromTime);
 
         foreach ($leagues as $key => $league) {
             if(!$league['ls_suffix'])continue;
