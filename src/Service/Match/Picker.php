@@ -19,11 +19,14 @@ final class Picker extends BaseService{
         $picked = array();
 
         for($i=0; $i<$howMany; $i++){
+            if(!$matches)continue;
             $leagueOccurrances = array_count_values(
                 array_column($matches, 'league_id')
             );
 
-            if(count($leagueOccurrances) >= 2 && $picked){
+            if(count($leagueOccurrances) > 2 && $picked 
+                ||  count($leagueOccurrances) == 2 && count($picked)>1)
+            {
                 $ids=array_column($picked, 'league_id');
                 $matches = array_filter($matches, 
                     fn ($m) => !in_array($m['league_id'], $ids)
