@@ -18,6 +18,10 @@ final class Find extends BaseService{
         protected PPRound\Find $ppRoundFindService,
         protected PPRoundMatch\Find $ppRoundMatchFindService,
     ){}
+    
+    public function getForUser(int $userId, ?bool $verified=null, ?int $limit = null) : array {
+        return $this->guessRepository->getForUser($userId, $verified, $limit);
+    }
 
     public function notLocked(int $userId){
         $guesses = $this->guessRepository->getForUser($userId, true);

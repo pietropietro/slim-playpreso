@@ -75,6 +75,11 @@ return function ($app){
     $app->get('/p-round/{id}', PPRound\GetOne::class)->add(new Auth($pointsService));
 
     $app->group('/admin', function () use ($app): void {
+
+        $app->group('/user',  function() use($app): void {
+            $app->get('', User\AdminGetAll::class);
+        });
+
         
         $app->post('/p-cup/{id}', PPCup\Create::class);
         $app->get('/p-cup', PPCup\GetAll::class);

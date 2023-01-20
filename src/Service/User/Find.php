@@ -6,19 +6,32 @@ namespace App\Service\User;
 
 use App\Repository\UserRepository;
 use App\Service\RedisService;
+use App\Service\UserParticipation;
+use App\Service\Guess;
 
 final class Find extends Base
 {
     public function __construct(
         protected UserRepository $userRepository,
-        protected RedisService $redisService
+        protected RedisService $redisService,
+        protected UserParticipation\Find $userParticipationFindService,
+        protected Guess\Find $guessFindService
     ) {
     }
 
     public function isAdmin(int $userId){
         return $this->userRepository->isAdmin($userId);
     }
-
+    
+    public function adminGet() : ?array {
+        $users = $this->userRepository->adminGet();
+        foreach ($users as &$user) {
+            $user['activeUserParticipations'] = $this->userParticipationFindService->getForUser($user['id'], null, true);
+            $user['lastVerifiedGuesses'] = $this->guessFindService->getForUser($user['id'], true, 5);
+        }
+        return $users;
+    }
+    
     public function getOneFromUsername(string $username, ?bool $allColumns=false){
         if(!$id = $this->idFromUsername($username)) return null;
         return $this->getOne($id, $allColumns);

@@ -15,7 +15,7 @@ final class Find  extends Base {
         return $this->userParticipationRepository->count($tournamentColumn, $tournamentId);
     }
 
-    public function getUserParticipationsEnriched(int $userId, ?string $playMode, bool $active = true){
+    public function getForUser(int $userId, ?string $playMode, bool $active = true){
         $ups = $this->userParticipationRepository->getUserParticipations(
             $userId, 
             $playMode ? $playMode.'_id' : null,

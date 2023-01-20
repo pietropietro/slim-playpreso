@@ -24,6 +24,8 @@ $container['user_find_service'] = static fn (
 ): User\Find => new User\Find(
     $container->get('user_repository'),
     $container->get('redis_service'),
+    $container->get('userparticipation_find_service'),
+    $container->get('guess_find_service'),
 );
 
 $container['user_create_service'] = static fn (
