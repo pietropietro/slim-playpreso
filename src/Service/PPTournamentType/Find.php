@@ -30,10 +30,13 @@ final class Find  extends BaseService{
         return $this->ppTournamentTypeRepository->getOneFromPPTournament($tournamentTable, $tournamentId);
     }
 
-    public function get(?array $ids, bool $onlyCups = false){
+    public function get(?array $ids, bool $onlyCups = false, ?bool $enriched = true){
         $ppTTs =  $this->ppTournamentTypeRepository->get($ids, $onlyCups);
-        foreach ($ppTTs as $key => $tt) {
-            $ppTTs[$key] = $this->enrich($tt);
+        
+        if($enriched){
+            foreach ($ppTTs as &$tt) {
+                $this->enrich($tt);
+            }    
         }
         return $ppTTs;
     }
