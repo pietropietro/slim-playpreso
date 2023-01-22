@@ -29,18 +29,25 @@ final class Calculate extends BaseService
             $guessUO25 = $guessHome + $guessAway > 2;
             if($uo25 = $realUO25 === $guessUO25) $points += $this->uo25Points;
 
-            $maxGoals = (int)$_SERVER['MAX_GUESS_GOALS'];
-
-            $scoreHome = $scoreHome > $maxGoals ? $maxGoals : $scoreHome;
-            $scoreAway = $scoreAway > $maxGoals ? $maxGoals : $scoreAway;
+            $maxGoals = (int)$_SERVER['MAX_GUESS_GOALS']; 
             
             $unoX2 = ($scoreHome > $scoreAway && $guessHome > $guessAway) ||
                 ($scoreHome < $scoreAway && $guessHome < $guessAway) ||
-                ($scoreHome == $scoreAway && $guessHome == $guessAway) ? true : false;
+                ($scoreHome == $scoreAway && $guessHome == $guessAway) ||
+                // if guess is 3+ - 3+ and match is 4-3, 4-4, 3-6 is always correct
+                ($scoreHome >= $maxGoals && $scoreAway >= $maxGoals && $guessHome >= $maxGoals && $guessAway >= $maxGoals) 
+                ? true : false;
             
-            if($unoX2) $points += $this->unoX2Points;
+            if($unoX2){
+                $points += $this->unoX2Points;
+            }
 
-            if($preso = $scoreHome === $guessHome && $scoreAway === $guessAway)$points += $this->presoPoints;
+            $scoreHome = $scoreHome > $maxGoals ? $maxGoals : $scoreHome;
+            $scoreAway = $scoreAway > $maxGoals ? $maxGoals : $scoreAway;
+
+            if($preso = $scoreHome === $guessHome && $scoreAway === $guessAway){
+                $points += $this->presoPoints;
+            }
         }
         
         $data = array(
