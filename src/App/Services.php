@@ -297,6 +297,12 @@ $container['match_delete_service'] = static fn (
     $container->get('match_repository'),
 );
 
+$container['team_find_service'] = static fn (
+    ContainerInterface $container
+):  Team\Find => new  Team\Find(
+    $container->get('team_repository'),
+);
+
 $container['team_elaborate_service'] = static fn (
     ContainerInterface $container
 ):  Team\Elaborate => new  Team\Elaborate(
@@ -351,8 +357,8 @@ $container['match_find_service'] = static fn (
     ContainerInterface $container
 ):  Match\Find => new Match\Find(
     $container->get('match_repository'),
-    $container->get('team_repository'),
     $container->get('league_find_service'),
+    $container->get('team_find_service'),
 );
 
 $container['ppround_create_service'] = static fn (

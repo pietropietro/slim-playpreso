@@ -6,19 +6,35 @@ namespace App\Service\Match;
 
 use App\Service\BaseService;
 use App\Service\League;
-use App\Repository\TeamRepository;
+use App\Service\Team;
 use App\Repository\MatchRepository;
 
 final class Find extends BaseService{
     public function __construct(
         protected MatchRepository $matchRepository,
-        protected TeamRepository $teamRepository,
-        protected League\Find $leagueService,
+        protected League\Find $leagueFindService,
+        protected Team\Find $teamFindService,
     ) {}
+
+    private function enrich(array $match, ?bool $withStats=true){
+        $match['homeTeam'] = $match['home_id'] ? $this->teamFindService->getOne($match['home_id'], false, $withStats) : null;
+        $match['awayTeam'] = $match['away_id'] ? $this->teamFindService->getOne($match['away_id'], false, $withStats) : null;
+        $match['league'] = $this->leagueFindService->getOne($match['league_id'], $withStats);
+        return $match;
+    }
     
-    public function getOne(int $id, ?bool $is_external_id=false, ?bool $enrich=true) : ?array {
+    //withStats: league standings + teams last matches WDL
+    public function getOne(
+        int $id, 
+        ?bool $is_external_id=false, 
+        ?bool $withTeams=true, 
+        ?bool $withStats=true
+    ) : ?array {
+        if($id === 213){
+            echo('ciao');
+        }
         $match = $this->matchRepository->getOne($id, $is_external_id);
-        return $enrich ? $this->enrich($match) : $match;
+        return $withTeams ? $this->enrich($match, $withStats) : $match;
     }
 
     public function adminGet(array $ids) : ?array {
@@ -70,14 +86,6 @@ final class Find extends BaseService{
         if(!$match)return null;
         return $this->enrich($match, false);
     }
-
-    private function enrich(array $match, ?bool $withStandings=true){
-        $match['homeTeam'] = $match['home_id'] ? $this->teamRepository->getOne($match['home_id']) : null;
-        $match['awayTeam'] = $match['away_id'] ? $this->teamRepository->getOne($match['away_id']) : null;
-        $match['league'] = $this->leagueService->getOne($match['league_id'], $withStandings);
-        return $match;
-    }
-    
 
     private function enrichAll($matches){
         foreach ($matches as &$match) {

@@ -18,12 +18,18 @@ final class Find  extends BaseService{
         protected Match\Find $matchFindService
     ){}
     
-    public function getForRound(int $ppRoundId, ?bool $withGuesses = false, ?bool $onlyIds = false, ?int $userId=null) : ?array {
+    public function getForRound(
+        int $ppRoundId, 
+        ?int $userId = null,
+        ?bool $withGuesses = false, 
+        ?bool $withMatchesStats = false,         
+        ?bool $onlyIds = false, 
+    ) : ?array {
         $ppRoundMatches = $this->ppRoundMatchRepository->getForRound($ppRoundId, $onlyIds);
         if($onlyIds)return $ppRoundMatches;
 
         foreach($ppRoundMatches as &$ppRM){        
-            $ppRM['match'] = $this->matchFindService->getOne($ppRM['match_id']);
+            $ppRM['match'] = $this->matchFindService->getOne($ppRM['match_id'], false, true, $withMatchesStats);
             if(!$withGuesses)continue;
             $ppRM['guesses'] = $this->getPPRMGuesses($ppRM['id'], $userId);
         }

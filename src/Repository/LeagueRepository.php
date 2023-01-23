@@ -6,14 +6,19 @@ namespace App\Repository;
 
 final class LeagueRepository extends BaseRepository
 {
+    private $columnsNoStandings = "id, name, tag, country, area, area_level, country_level";
+    private $columnsWithStandings = "id, name, tag, country, area, standings";
 
     public function get(){
         return $this->db->get('leagues');
     }
 
-    public function getOne(int $id){
+    public function getOne(int $id, ?bool $withStandings = false){
         $this->db->where('id', $id);
-        return $this->db->getOne('leagues');
+        return $this->db->getOne(
+            'leagues', 
+            $withStandings ? $this->columnsWithStandings : $this->columnsNoStandings
+        );
     }
 
     public function getForArea(string $area, ?int $level = null, ?bool $id_only = false)
@@ -34,12 +39,12 @@ final class LeagueRepository extends BaseRepository
         if($id_only){
             return $this->db->getValue('leagues', 'id', null);
         }
-        return $this->db->get('leagues');
+        return $this->db->get('leagues', null, $this->columnsNoStandings);
     }
 
     public function getUefa(){
 		$this->db->where('country','Europe');
-		return $this->db->get('leagues');
+		return $this->db->get('leagues', null, $this->columnsNoStandings);
     }
 
     public function getForCountry(?string $country, int $level, bool $id_only = false){
@@ -50,7 +55,7 @@ final class LeagueRepository extends BaseRepository
         if($id_only){
             return $this->db->getValue('leagues', 'id', null);
         }
-        return $this->db->get('leagues');
+        return $this->db->get('leagues', null, $this->columnsNoStandings);
     }
 
     public function update(int $id, array $data){

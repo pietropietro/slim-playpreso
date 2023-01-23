@@ -20,7 +20,7 @@ final class GetOne extends Base
         $userId = $this->getAndValidateUserId($request);
 
         $ppRoundId = (int) $args['id'];
-        $ppRound = $this->getPPRoundFindService()->getOne($ppRoundId, withGuesses: true, userId: $userId);
+        $ppRound = $this->getPPRoundFindService()->getOne($ppRoundId, $userId, true, true);
          
         return $this->jsonResponse($response, 'success', $ppRound, 200);
     }

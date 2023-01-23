@@ -18,7 +18,7 @@ final class Elaborate extends BaseService{
 
     public function elaborateLsEvents(array $lsEvents, int $league_id){        
         foreach ($lsEvents as $key => $eventObj) {
-            $match = $this->matchFindService->getOne((int) $eventObj->Eid, true, false);
+            $match = $this->matchFindService->getOne((int) $eventObj->Eid, true, false, false);
             
             //CREATE MATCH
             if(!$match && $eventObj->Eps === 'NS'){

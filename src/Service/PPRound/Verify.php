@@ -12,20 +12,20 @@ use App\Service\PPRound;
 
 final class Verify extends BaseService{
     public function __construct(
-        protected PPRound\Find $findService,
+        protected PPRound\Find $ppRoundFindService,
         protected PPTournament\VerifyAfterRound $verify,
         protected UserParticipation\Update $updateUpService
     ){}
     
     public function verifyAfterMatch(int $matchId){
-        $ppRoundIds = $this->findService->getForMatches(array($matchId), ids_only: true);
+        $ppRoundIds = $this->ppRoundFindService->getForMatches(array($matchId), ids_only: true);
         foreach ($ppRoundIds as $key => $id) {    
             $this->verify($id);
         }
     }
 
     public function verify($id){
-        $ppRound=$this->findService->getOne($id, false);
+        $ppRound=$this->ppRoundFindService->getOne($id);
         $tournamentColumn = $ppRound['ppLeague_id'] ? 'ppLeague_id' : 'ppCupGroup_id';
         $tournamentId = $ppRound['ppLeague_id'] ?? $ppRound['ppCupGroup_id'];
 

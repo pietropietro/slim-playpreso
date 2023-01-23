@@ -21,9 +21,16 @@ final class Find  extends BaseService{
         protected GuessRepository $guessRepository
     ){}
 
-    public function getOne(int $id, bool $withGuesses, ?int $userId = null){
+    public function getOne(
+        int $id, 
+        ?int $userId = null, 
+        ?bool $withGuesses = false,
+        ?bool $withMatchesStats = false 
+    ){
         $ppRound = $this->ppRoundRepository->getOne($id);
-        $ppRound['ppRoundMatches'] = $this->ppRoundMatchService->getForRound($id, $withGuesses, false, $userId);
+        $ppRound['ppRoundMatches'] = $this->ppRoundMatchService->getForRound(
+            $id, $userId, $withGuesses, $withMatchesStats
+        );
         return $ppRound;
     }
 
@@ -34,14 +41,14 @@ final class Find  extends BaseService{
         $ppRounds = [];
         if(is_array($ids)){
             foreach ($ids as $key => $id) {
-                array_push($ppRounds, $this->getOne($id, false));
+                array_push($ppRounds, $this->getOne($id));
             }    
         }
         return $ppRounds;
     }
 
     public function getParentTournamentType(int $id){
-        $ppRound = $this->getOne($id, false, null);
+        $ppRound = $this->getOne($id);
         $column = $ppRound['ppLeague_id'] ? 'ppLeague_id' : 'ppCupGroup_id';
         $parentTable = $ppRound['ppLeague_id'] ? 'ppLeagues' : 'ppCupGroups';
         return $this->ppRoundRepository->getParentTournamentType($parentTable, $ppRound[$column]);
@@ -69,8 +76,11 @@ final class Find  extends BaseService{
         $latestPPRound = $this->ppRoundRepository->getForTournament(column: $type, valueId: $typeId, only_last: true);
         if(!$latestPPRound) return null;
         
-        $ppRoundMatches = $this->ppRoundMatchService->getForRound($latestPPRound['id'], withGuesses: false);
+        $ppRoundMatches = $this->ppRoundMatchService->getForRound(
+            $latestPPRound['id'], 
+        );
         $verifiedCount = 0;
+
         foreach ($ppRoundMatches as $pprm) {
             if($pprm['match']['verified_at'])$verifiedCount++;
         }
@@ -81,14 +91,18 @@ final class Find  extends BaseService{
     
     public function getForTournament(string $type, int $typeId, ?int $userId) : ?array {
         $ppRounds = $this->ppRoundRepository->getForTournament($type, $typeId);
-        foreach($ppRounds as &$ppRound){
-            if($ppRound['ppRoundMatches'] = $this->ppRoundMatchService->getForRound(
-                $ppRound['id'], withGuesses: true, onlyIds: false, userId: $userId)
-            ){
+        
+        foreach($ppRounds as $key => &$ppRound){
+            $withMatchesStats = $key === array_key_last($ppRounds);
+            $ppRound['ppRoundMatches'] = $this->ppRoundMatchService->getForRound(
+                $ppRound['id'], 
+                $userId,
+                true, 
+                $withMatchesStats
+            );
                 // $ppRound['best'] = $this->guessRepository->bestUsersInRound(
                 //     ppRMids: array_column($ppRound['ppRoundMatches'], 'id'), 
                 // );
-            }
         }
         return $ppRounds;
     }

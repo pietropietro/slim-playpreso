@@ -21,8 +21,8 @@ final class Find  extends BaseService{
         return $this->leagueRepository->get();
     }
 
-    public function getOne(int $id, ?bool $withStandings=true){
-        $league = $this->leagueRepository->getOne($id);
+    public function getOne(int $id, ?bool $withStandings=false){
+        $league = $this->leagueRepository->getOne($id, $withStandings);
         if(!$withStandings) return $league;
         return $this->enrich($league);
     }
