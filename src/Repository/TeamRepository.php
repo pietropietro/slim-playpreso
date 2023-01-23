@@ -32,4 +32,15 @@ final class TeamRepository extends BaseRepository
         $team = $this->db->getOne('teams');
         return $team ? $team['id'] : null;
     }
+
+    // W || D || L
+    public function getLastResults(int $id, int $limit = 3){
+        $this->db->where("(home_id={$id} or away_id={$id}) and verified_at is not null");
+        $this->db->orderBy('date_start');
+        $select = "case 
+            WHEN score_home < score_away THEN CASE WHEN home_id={$id} THEN 'L' ELSE 'W' END 
+            WHEN score_home > score_away THEN CASE WHEN home_id={$id} THEN 'W' ELSE 'L' END 
+            WHEN score_home = score_away THEN 'D' end as wdl";
+        return $this->db->get('matches',$limit, $select);
+    }
 }
