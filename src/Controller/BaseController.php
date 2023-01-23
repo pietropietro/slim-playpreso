@@ -29,7 +29,8 @@ abstract class BaseController
             'message' => $message,
         ];
 
-        return $response->withJson($result, $code, JSON_PRETTY_PRINT);
+        //removed JSON_PRETTY_PRINT as third parameter
+        return $response->withJson($result, $code);
     }
 
     protected static function isRedisEnabled(): bool
