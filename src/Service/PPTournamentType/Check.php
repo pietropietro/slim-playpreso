@@ -23,14 +23,14 @@ final class Check  extends BaseService{
         $ppTT = $this->findTournamentService->getOne($typeId);
         
         if(!$ppTT['cup_format'] && !$this->isAllowedInPPLeague($userId, $typeId)){
-            throw new \App\Exception\User("user not allowed p-league", 401);
+            throw new \App\Exception\User("user not allowed p-league", 403);
         }
         else if(!$this->isAllowedInPPCup($userId, $typeId)){
-            throw new \App\Exception\User("user not allowed in p-cup", 401);
+            throw new \App\Exception\User("user not allowed in p-cup", 403);
         }
 
         if(!$this->canAfford($userId, $typeId)){
-            throw new \App\Exception\User("not enough points", 401);
+            throw new \App\Exception\User("not enough points", 403);
         }
 
         //TODO ALSO CHECK PPTOURNAMENT CAN START i.e. has matches
@@ -56,7 +56,7 @@ final class Check  extends BaseService{
 
     public function canCreateCup(int $ppTournamentType_id){
         if((bool)$this->ppCupRepository->getJoinable($ppTournamentType_id)){
-            throw new \App\Exception\User("cannot create p-cup", 401);
+            throw new \App\Exception\User("forbidden – cannot create p-cup", 403);
         }
         return true;
     }

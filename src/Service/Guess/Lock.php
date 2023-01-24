@@ -21,10 +21,10 @@ final class Lock extends BaseService{
             throw new \App\Exception\NotFound("forbidden", 403);
         }
         if($guess['guessed_at'] || $guess['verified_at']){
-            throw new \App\Exception\NotFound("forbidden", 401);
+            throw new \App\Exception\NotFound("forbidden", 403);
         }
         if(!$this->matchRepository->isBeforeStartTime($guess['match_id'])){
-            throw new \App\Exception\NotFound("match started.", 401);
+            throw new \App\Exception\NotFound("match started.", 403);
         }
 
         $this->guessRepository->lock($id, $home, $away);

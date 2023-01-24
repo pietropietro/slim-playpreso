@@ -15,13 +15,13 @@ final class Recover extends Base
 
     public function validateToken(string $plainToken){
         if(!StoPasswordReset::isTokenValid($plainToken)){
-            throw new \App\Exception\User('Invalid token.', 400);
+            throw new \App\Exception\User('Invalid token.', 401);
         }        
         $hash = StoPasswordReset::calculateTokenHash($plainToken);
         $userRecover = $this->userRecoverRepository->getFromToken($hash);
         
         if (StoPasswordReset::isTokenExpired(new \DateTime($userRecover['created_at']))){
-            throw new \App\Exception\User('Token expired.', 400);
+            throw new \App\Exception\User('Token expired.', 401);
         }
         return $userRecover;
     }

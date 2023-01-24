@@ -6,8 +6,8 @@ namespace App\Repository;
 
 final class LeagueRepository extends BaseRepository
 {
-    private $columnsNoStandings = "id, name, tag, country, area, area_level, country_level";
-    private $columnsWithStandings = "id, name, tag, country, area, standings";
+    private $columnsNoStandings = "id, name, tag, country, area, ls_suffix, parent_id, area_level, country_level";
+    private $columnsWithStandings = "id, name, tag, country, area, ls_suffix, parent_id, standings";
 
     public function get(){
         return $this->db->get('leagues');

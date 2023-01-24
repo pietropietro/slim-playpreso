@@ -22,7 +22,7 @@ final class Join extends Base
         $typeId = (int) $args['id'];
 
         if(!$this->getCheckPPTournamentService()->check($userId, $typeId)){
-            throw new Exception\User("user not allowed", 401);
+            throw new Exception\User("user not allowed", 403);
         }
         
         if(!$id = $this->getJoinPPTournamentTypeService()->joinAvailable($userId, $typeId)){

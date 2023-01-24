@@ -30,7 +30,7 @@ final class Auth extends Base
         }
         $jwt = explode('Bearer ', $jwtHeader);
         if (! isset($jwt[1])) {
-            throw new \App\Exception\Auth('JWT Token invalid.', 400);
+            throw new \App\Exception\Auth('JWT Token invalid.', 401);
         }
         $decoded = Auth::checkToken($jwt[1]);
 
@@ -41,7 +41,7 @@ final class Auth extends Base
         $points = $this->pointsService->get($user_id);
 
         if(!!$this->findUserService && !$this->findUserService->isAdmin($user_id)){
-            throw new \App\Exception\Auth('NOT AN ADMIN.', 401);
+            throw new \App\Exception\Auth('FORBIDDEN – NOT AN ADMIN.', 403);
         }
         
         $updatedJWT = Auth::createToken(

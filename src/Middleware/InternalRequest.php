@@ -20,7 +20,7 @@ final class InternalRequest extends Base
     ): ResponseInterface {
 
         if(!$_SERVER['DEBUG'] && ($_SERVER['REMOTE_ADDR'] !== $_SERVER['SERVER_ADDR'])){
-            throw new \App\Exception\Auth('NOT ALLOWED.', 401);
+            throw new \App\Exception\Auth('FORBIDDEN – NOT ALLOWED.', 403);
         }
         
         return $next($request->withParsedBody($request), $response);
