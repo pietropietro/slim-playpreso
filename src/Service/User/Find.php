@@ -28,6 +28,7 @@ final class Find extends Base
         foreach ($users as &$user) {
             $user['activeUserParticipations'] = $this->userParticipationFindService->getForUser($user['id'], null, true);
             $user['lastVerifiedGuesses'] = $this->guessFindService->getForUser($user['id'], true, 5);
+            $user['lastLock'] = $this->guessFindService->lastLock($user['id']);
         }
         return $users;
     }

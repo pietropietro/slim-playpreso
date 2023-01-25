@@ -23,6 +23,10 @@ final class Find extends BaseService{
         return $this->guessRepository->getForUser($userId, $verified, $limit);
     }
 
+    public function lastLock(int $userId){
+        return $this->guessRepository->lastLock($userId);
+    }
+
     public function notLocked(int $userId){
         $guesses = $this->guessRepository->getForUser($userId, false);
         foreach($guesses as &$guess){

@@ -157,6 +157,12 @@ final class GuessRepository extends BaseRepository
 
     }
 
+    public function lastLock(int $userId){
+        $this->db->where('user_id', $userId);
+        $this->db->orderBy('guessed_at');
+        return $this->db->getValue('guesses','guessed_at');
+    }
+
     public function verifyMissed(){
         $data = array(
             "g.verified_at" => $this->db->now()
