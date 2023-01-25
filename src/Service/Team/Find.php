@@ -16,6 +16,11 @@ final class Find extends BaseService{
         $team['lastMatches'] = $this->teamRepository->getLastResults($team['id']);
         return $team;
     }
+
+    public function idFromExternal(int $ls_id) : ?int{
+        return $this->teamRepository->idFromExternal($ls_id);
+    }
+
     
     public function getOne(int $id, ?bool $is_external_id=false, ?bool $enrich=false ) : ?array {
         $team = $this->teamRepository->getOne($id, $is_external_id);

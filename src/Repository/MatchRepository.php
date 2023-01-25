@@ -43,6 +43,18 @@ final class MatchRepository extends BaseRepository
         return $this->db->getOne('matches', $this->whiteListColumns);
     }
 
+    public function getOneByLeagueRoundAndTeams(int $leagueId, int $round, int $homeId, int $awayId){
+        $this->db->where('league_id', $leagueId);
+        $this->db->where('round', $round);
+        $this->db->where('home_id', $homeId);
+        $this->db->where('away_id', $awayId);
+        $this->db->where('verified_at IS NULL');
+        $this->db->where('date_start > now()');
+        $match= $this->db->getOne('matches');
+        return $match;
+    }
+
+
     public function getNextInPPRound(int $ppRound_id){
         $this->db->join('ppRoundMatches pprm','pprm.ppRound_id=ppRounds.id','INNER');
         $this->db->join('matches m','pprm.match_id=m.id','INNER');
@@ -127,6 +139,14 @@ final class MatchRepository extends BaseRepository
 	    );
         $this->db->where('id', $id);
         $this->db->update('matches', $data, 1);
+    }
+    
+    public function updateExternalId(int $id, int $newLs_id){
+        $data = array(
+			"ls_id" => $newLs_id,
+	    );
+        $this->db->where('id', $id);
+        return $this->db->update('matches', $data, 1);
     }
 
     public function verify(int $id, int $score_home, int $score_away, ?string $notes=null){

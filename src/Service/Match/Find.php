@@ -37,6 +37,10 @@ final class Find extends BaseService{
         return $withTeams ? $this->enrich($match, $withStats) : $match;
     }
 
+    public function getOneByLeagueRoundAndTeams(int $leagueId, int $round, int $homeId, int $awayId){
+        return $this->matchRepository->getOneByLeagueRoundAndTeams($leagueId, $round, $homeId, $awayId);
+    }
+
     public function adminGet(array $ids) : ?array {
         if(!$ids)return [];
         $matches = $this->matchRepository->adminGet(ids: $ids);
@@ -55,9 +59,9 @@ final class Find extends BaseService{
         return $adminMatches;
     }
 
-    public function adminGetForLeague($league_id){
-        $lastMatch=$this->matchRepository->getMatchesForLeagues(array($league_id), null, 0, 'DESC', 1);
-        $nextMatch=$this->matchRepository->getMatchesForLeagues(array($league_id), 0, null, 'ASC', 1);
+    public function adminGetForLeague(int $leagueId){
+        $lastMatch=$this->matchRepository->getMatchesForLeagues(array($leagueId), null, 0, 'DESC', 1);
+        $nextMatch=$this->matchRepository->getMatchesForLeagues(array($leagueId), 0, null, 'ASC', 1);
         
         return array(
             $lastMatch ? $this->enrich($lastMatch[0]) : null,
