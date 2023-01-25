@@ -24,12 +24,14 @@ final class Picker extends BaseService{
                 array_column($matches, 'league_id')
             );
 
-            if(count($leagueOccurrances) > 2 && $picked 
-                ||  count($leagueOccurrances) == 2 && count($picked)>1)
-            {
+            if(count($leagueOccurrances) > 2 && $picked){
                 $ids=array_column($picked, 'league_id');
                 $matches = array_filter($matches, 
                     fn ($m) => !in_array($m['league_id'], $ids)
+                );
+            }else if(count($leagueOccurrances) == 2 && count($picked)>1){
+                $matches = array_filter($matches, 
+                    fn ($m) => !in_array($m['league_id'], array($picked[0]['league_id']))
                 );
             }
 
