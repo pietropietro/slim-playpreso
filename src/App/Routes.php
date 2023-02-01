@@ -118,8 +118,8 @@ return function ($app){
     })->add(new Auth($pointsService, $admin));
 
     $app->group('/cron', function () use ($app): void {
-        $app->get('/fetchFootball', Cron\Start::class);
-        $app->get('/sendLockReminders', Cron\ReminderLock::class);
+        $app->get('/fetch-football', Cron\Start::class);
+        $app->get('/send-lock-reminders', Cron\ReminderLock::class);
     })->add(new InternalRequest());
 
     // Catch-all route to serve a 404 Not Found page if none of the routes match
