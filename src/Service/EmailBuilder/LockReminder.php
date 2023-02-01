@@ -29,7 +29,7 @@ final class LockReminder extends BaseService
             $html .= '</div>';
         }
 
-        $html .= '<i>you can stop receiving this reminders by changing your preferences in playpreso.</i>';
+        $html .= '<i>you can stop receiving this reminder by changing your preferences in playpreso.</i>';
         return array (
             'subject' => $subject,
             'contentHtml' => $html
