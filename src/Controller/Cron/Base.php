@@ -8,6 +8,8 @@ use App\Controller\BaseController;
 use App\Service\ExternalAPI\Call;
 use App\Service\League;
 use App\Service\Guess;
+use App\Service\EmailPreferences;
+use App\Service\EmailBuilder;
 
 abstract class Base extends BaseController
 {
@@ -21,9 +23,24 @@ abstract class Base extends BaseController
         return $this->container->get('league_find_service');
     }
 
-    protected function getGuessService(): Guess\Verify
+    protected function getGuessVerifyService(): Guess\Verify
     {
         return $this->container->get('guess_verify_service');
+    }
+
+    protected function getGuessFindService(): Guess\Find
+    {
+        return $this->container->get('guess_find_service');
+    }
+
+    protected function getEmailPreferencesFindService(): EmailPreferences\Find
+    {
+        return $this->container->get('emailpreferences_find_service');
+    }
+
+    protected function getEmailBuilderLockService(): EmailBuilder\LockReminder
+    {
+        return $this->container->get('emailbuilder_lockreminder_service');
     }
 
 }

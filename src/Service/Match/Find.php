@@ -22,6 +22,11 @@ final class Find extends BaseService{
         $match['league'] = $this->leagueFindService->getOne($match['league_id'], $withStats);
         return $match;
     }
+
+    public function get(array $ids){
+        $matches = $this->matchRepository->get($ids);
+        return $this->enrichAll($matches);
+    }
     
     //withStats: league standings + teams last matches WDL
     public function getOne(

@@ -16,7 +16,7 @@ final class Start extends Base
         Request $request,
         Response $response,
     ): Response {
-        $this->getGuessService()->setMissed();
+        $this->getGuessVerifyService()->setMissed();
 
         $havingGuesses = true;
         if(isset($request->getQueryParams()['havingGuesses']) != null){

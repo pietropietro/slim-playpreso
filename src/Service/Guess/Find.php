@@ -36,6 +36,10 @@ final class Find extends BaseService{
         return $guesses;
     }
 
+    public function getNeedReminder(){
+        return $this->guessRepository->getNeedReminder();
+    }
+
     private function getGuessPPTournamentType(int $ppRoundMatchId){
         $ppRound = $this->ppRoundMatchFindService->getParentPPRound($ppRoundMatchId);
         if(!$ppRound)return;

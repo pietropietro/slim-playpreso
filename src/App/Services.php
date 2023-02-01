@@ -17,6 +17,8 @@ use App\Service\Match;
 use App\Service\Guess;
 use App\Service\Points;
 use App\Service\Team;
+use App\Service\EmailPreferences;
+use App\Service\EmailBuilder;
 use Psr\Container\ContainerInterface;
 
 $container['user_find_service'] = static fn (
@@ -53,6 +55,7 @@ $container['login_user_service'] = static fn (
     ContainerInterface $container
 ): User\Login => new User\Login(
     $container->get('user_repository'),
+    $container->get('emailpreferences_repository'),
     $container->get('redis_service')
 );
 
@@ -428,4 +431,22 @@ $container['user_recover_service'] = static fn (
     ContainerInterface $container
 ):  User\Recover => new  User\Recover(
     $container->get('userrecover_repository'),
+);
+
+$container['emailpreferences_update_service'] = static fn (
+    ContainerInterface $container
+):  EmailPreferences\Update => new  EmailPreferences\Update(
+    $container->get('emailpreferences_repository'),
+);
+
+$container['emailpreferences_find_service'] = static fn (
+    ContainerInterface $container
+):  EmailPreferences\Find => new  EmailPreferences\Find(
+    $container->get('emailpreferences_repository'),
+);
+
+$container['emailbuilder_lockreminder_service'] = static fn (
+    ContainerInterface $container
+):  EmailBuilder\LockReminder => new  EmailBuilder\LockReminder(
+    $container->get('match_find_service'),
 );

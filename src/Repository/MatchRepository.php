@@ -37,6 +37,12 @@ final class MatchRepository extends BaseRepository
         return $this->db->get('matches m', null, $columns);
     }
 
+    public function get(array $ids){
+        if(!$ids)return;
+        $this->db->where('id', $ids, 'IN');
+        return $this->db->get('matches');
+    }
+
     public function getOne(int $matchId, bool $is_external_id = false) : ?array {
         $column = !!$is_external_id ? 'ls_id' : 'id';
         $this->db->where($column, $matchId);
