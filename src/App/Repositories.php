@@ -15,6 +15,7 @@ use App\Repository\UserParticipationRepository;
 use App\Repository\LeagueRepository;
 use App\Repository\TeamRepository;
 use App\Repository\UserRecoverRepository;
+use App\Repository\EmailPreferencesRepository;
 
 use Psr\Container\ContainerInterface;
 
@@ -43,3 +44,5 @@ $container['ppcupgroup_repository'] = static fn (ContainerInterface $container):
 $container['team_repository'] = static fn (ContainerInterface $container): TeamRepository => new TeamRepository($container->get('db'));
 
 $container['userrecover_repository'] = static fn (ContainerInterface $container): UserRecoverRepository => new UserRecoverRepository($container->get('db'));
+
+$container['emailpreferences_repository'] = static fn (ContainerInterface $container): EmailPreferencesRepository => new EmailPreferencesRepository($container->get('db'));

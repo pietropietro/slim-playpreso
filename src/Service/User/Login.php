@@ -6,6 +6,7 @@ namespace App\Service\User;
 
 use App\Exception\User;
 use App\Repository\UserRepository;
+use App\Repository\EmailPreferencesRepository;
 use App\Service\RedisService;
 
 
@@ -13,6 +14,7 @@ final class Login extends Base
 {
     public function __construct(
         protected UserRepository $userRepository,
+        protected EmailPreferencesRepository $emailPreferencesRepository,
         protected RedisService $redisService
     ) {
     }
@@ -30,6 +32,8 @@ final class Login extends Base
             throw new User('The field "password" is required.', 400);
         }
 
-        return $this->userRepository->loginUser($data->username, $data->password);
+        $user = $this->userRepository->loginUser($data->username, $data->password);
+        $user['emailPreferences'] = $this->emailPreferencesRepository->getOne($user['id']);
+        return $user;
     }
 }

@@ -13,6 +13,7 @@ use App\Controller\PPCup;
 use App\Controller\PPCupGroup;
 use App\Controller\PPRound;
 use App\Controller\PPRoundMatch;
+use App\Controller\EmailPreferences;
 use App\Controller\Cron;
 use App\Middleware\Auth;
 use App\Middleware\Cors;
@@ -73,6 +74,8 @@ return function ($app){
     $app->get('/p-cup-group/{id}', PPCupGroup\GetOne::class)->add(new Auth($pointsService));
 
     $app->get('/p-round/{id}', PPRound\GetOne::class)->add(new Auth($pointsService));
+    
+    $app->post('/email-preferences', EmailPreferences\Update::class)->add(new Auth($pointsService));
 
     $app->group('/admin', function () use ($app): void {
 
