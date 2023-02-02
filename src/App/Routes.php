@@ -15,6 +15,7 @@ use App\Controller\PPRound;
 use App\Controller\PPRoundMatch;
 use App\Controller\EmailPreferences;
 use App\Controller\Cron;
+use App\Controller\Stats;
 use App\Middleware\Auth;
 use App\Middleware\Cors;
 use App\Middleware\InternalRequest;
@@ -76,6 +77,10 @@ return function ($app){
     $app->get('/p-round/{id}', PPRound\GetOne::class)->add(new Auth($pointsService));
     
     $app->post('/email-preferences', EmailPreferences\Update::class)->add(new Auth($pointsService));
+
+    $app->group('/stats', function () use ($app): void {
+        $app->get('/best-users', Stats\BestUsers::class);
+    })->add(new Auth($pointsService));
 
     $app->group('/admin', function () use ($app): void {
 

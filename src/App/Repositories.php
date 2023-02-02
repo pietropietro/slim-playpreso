@@ -16,6 +16,7 @@ use App\Repository\LeagueRepository;
 use App\Repository\TeamRepository;
 use App\Repository\UserRecoverRepository;
 use App\Repository\EmailPreferencesRepository;
+use App\Repository\StatsRepository;
 
 use Psr\Container\ContainerInterface;
 
@@ -46,3 +47,5 @@ $container['team_repository'] = static fn (ContainerInterface $container): TeamR
 $container['userrecover_repository'] = static fn (ContainerInterface $container): UserRecoverRepository => new UserRecoverRepository($container->get('db'));
 
 $container['emailpreferences_repository'] = static fn (ContainerInterface $container): EmailPreferencesRepository => new EmailPreferencesRepository($container->get('db'));
+
+$container['stats_repository'] = static fn (ContainerInterface $container): StatsRepository => new StatsRepository($container->get('db'));

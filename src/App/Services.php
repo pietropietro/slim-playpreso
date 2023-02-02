@@ -19,6 +19,7 @@ use App\Service\Points;
 use App\Service\Team;
 use App\Service\EmailPreferences;
 use App\Service\EmailBuilder;
+use App\Service\Stats;
 use Psr\Container\ContainerInterface;
 
 $container['user_find_service'] = static fn (
@@ -449,4 +450,10 @@ $container['emailbuilder_lockreminder_service'] = static fn (
     ContainerInterface $container
 ):  EmailBuilder\LockReminder => new  EmailBuilder\LockReminder(
     $container->get('match_find_service'),
+);
+
+$container['stats_find_service'] = static fn (
+    ContainerInterface $container
+):  Stats\Find => new  Stats\Find(
+    $container->get('stats_repository'),
 );
