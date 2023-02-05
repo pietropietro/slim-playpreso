@@ -18,7 +18,7 @@ final class Create extends Base
         array $args
     ): Response {
 
-        $ppRoundId = (int) $args['id'];
+        $ppRoundId = (int) $args['ppRoundId'];
         $ppRound = $this->getPPRoundFindService()->getOne($ppRoundId);
 
         if(!$ppRound){

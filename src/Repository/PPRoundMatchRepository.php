@@ -48,4 +48,10 @@ final class PPRoundMatchRepository extends BaseRepository
         return $this->db->getOne('ppRoundMatches', 'ppr.*');
     }
 
+    public function delete(int $id){
+        if(!$id) return;
+        $this->db->where('id', $id);
+        return $this->db->delete('ppRoundMatches',1);
+    }
+
 }

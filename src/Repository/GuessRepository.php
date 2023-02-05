@@ -136,6 +136,13 @@ final class GuessRepository extends BaseRepository
         $this->db->update('guesses', $data);     
     }
 
+    public function deletePPRMMatch(int $ppRoundMatch_id){
+        if(!$ppRoundMatch_id)return;
+        $this->db->where('ppRoundMatch_id', $ppRoundMatch_id);
+        $this->db->where('verified_at is null');
+        return $this->db->delete('guesses');
+    }
+
     //TODO MOVE TO SERVICE
     //TODO CHANGE COLUMN TO ENUM ['cup_id', 'league_id',]
     //possible duplicate

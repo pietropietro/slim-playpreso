@@ -26,4 +26,9 @@ abstract class Base extends BaseController
         return $this->container->get('ppround_find_service');
     }
 
+    protected function getPPRoundMatchDeleteService(): PPRoundMatch\Delete
+    {
+        return $this->container->get('pproundmatch_delete_service');
+    }
+
 }
