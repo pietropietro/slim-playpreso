@@ -102,8 +102,11 @@ return function ($app){
             $app->post('/{id}', PPTournamentType\AdminUpdate::class);
         });
 
-        $app->post('/p-round-match/swap/{id}', PPRoundMatch\Swap::class);
-        
+        $app->group('/p-round-match', function() use($app): void {
+            $app->get('/swap/{id}', PPRoundMatch\Swap::class);
+            $app->post('/{id}', PPRoundMatch\Create::class);
+        });
+
         $app->group('/match', function() use($app): void {
             $app->get('', Match\GetAll::class);
             $app->get('/pick/{id}', Match\AdminPick::class);
