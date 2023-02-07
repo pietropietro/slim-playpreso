@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service\Points;
 
-use App\Exception\User;
 use App\Repository\UserRepository;
 use App\Service\BaseService;
 

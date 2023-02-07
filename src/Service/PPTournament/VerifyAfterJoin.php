@@ -7,18 +7,18 @@ namespace App\Service\PPTournament;
 use App\Service\BaseService;
 use App\Service\PPTournamentType;
 use App\Service\PPCupGroup;
-use App\Service\PPLeague;
+use App\Repository\PPLeagueRepository;
 use App\Service\PPCup;
 use App\Service\PPRound;
 use App\Service\UserParticipation;
 
 final class VerifyAfterJoin extends BaseService{
     public function __construct(
+        protected PPLeagueRepository $ppLeagueRepository,
         protected UserParticipation\Find $findUpService,
         protected UserParticipation\Update $updateUpService,
         protected PPTournamentType\Find $ppTournamentTypefindService,
         protected PPCupGroup\Find $ppCupGroupfindService,
-        protected PPLeague\Update $ppLeagueUpdateService,
         protected PPRound\Create $createPPRoundService,
         protected PPCup\Update $ppCupUpdateService,
     ) {}
@@ -48,7 +48,7 @@ final class VerifyAfterJoin extends BaseService{
         if(!in_array($tournamentColumn, array('ppLeague_id', 'ppCupGroup_id')))return;
         
         if($tournamentColumn === 'ppLeague_id'){
-            $this->ppLeagueUpdateService->setStarted($tournamentId);
+            $this->ppLeagueRepository->setStarted($tournamentId);
             $this->createPPRoundService->create($tournamentColumn, $tournamentId, $tournamentTypeId, 1);
             return;
         }

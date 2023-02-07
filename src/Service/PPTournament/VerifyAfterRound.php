@@ -17,7 +17,6 @@ final class VerifyAfterRound extends BaseService{
         protected PPCupGroup\Find $ppCupGroupfindService,
         protected PPRound\Find $findPPRoundService,
         protected PPRound\Create $createPPRoundService,
-        protected UserParticipation\Update $updateUpService,
         protected PPLeague\Update $ppLeagueUpdateService,
         protected PPCupGroup\Update $ppCupGroupUpdateService,
     ) {}
@@ -53,8 +52,6 @@ final class VerifyAfterRound extends BaseService{
 
     private function afterFinished(string $tournamentColumn, int $tournamentId){
         if(!in_array($tournamentColumn, array('ppLeague_id', 'ppCupGroup_id')))return;
-
-        $this->updateUpService->setFinished($tournamentColumn, $tournamentId);
 
         if($tournamentColumn === 'ppLeague_id'){
             $this->ppLeagueUpdateService->afterFinished($tournamentId);
