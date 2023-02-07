@@ -28,7 +28,7 @@ final class Join  extends BaseService{
         $ppTournamentType = $this->findPPTournamentTypeService->getOne($ppTypeId);
 
         if(!$ppTournamentType['cup_format']){
-            $ppTournament = $this->findPPleagueService->getJoinable($ppTypeId, $userId);
+            $ppTournament = $this->findPPleagueService->getJoinable($ppTypeId);
             $tournamentColumn = 'ppLeague_id';
         }else{
             $tournamentColumn = 'ppCupGroup_id';
@@ -36,7 +36,7 @@ final class Join  extends BaseService{
             $ppTournamentGroup =  $this->findPPCupGroupService->getNotFull($ppTournament['id'], level: 1);
         }
 
-        if(!$ppTournament || $ppTournamentType['cup_format'] && !$ppTournamentGroup){
+        if(!$ppTournament || ($ppTournamentType['cup_format'] && !$ppTournamentGroup)){
             throw new \App\Exception\User("could not join", 500);
         }
 
@@ -44,7 +44,12 @@ final class Join  extends BaseService{
             throw new \App\Exception\User("couldn't afford", 500);
         }
 
-        if(!$insert = $this->createUpService->create($userId, $ppTypeId, $ppTournament['id'], isset($ppTournamentGroup) ? $ppTournamentGroup['id'] : null)){
+        if(!$insert = $this->createUpService->create(
+            $userId, 
+            $ppTypeId, 
+            $ppTournament['id'], 
+            isset($ppTournamentGroup) ? $ppTournamentGroup['id'] : null)
+        ){
             throw new \App\Exception\User("something went wrong", 500);
         };
         

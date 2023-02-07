@@ -116,15 +116,6 @@ final class UserParticipationRepository extends BaseRepository
         $this->db->update($this->tableName, $data, 1);
     }
 
-    public function setFinished(string $tournamentColumn, int $tournamentId){
-        $data = array(
-			"finished" => 1,
-            "updated_at" => $this->db->now(),
-		);
-        $this->db->where($tournamentColumn, $tournamentId);
-        $this->db->update($this->tableName, $data);
-    }
-
     public function setStarted(string $tournamentColumn, int $tournamentId){
         $data = array(
 			"tot_points" => 0,

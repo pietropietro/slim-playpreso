@@ -57,7 +57,7 @@ final class VerifyAfterRound extends BaseService{
         $this->updateUpService->setFinished($tournamentColumn, $tournamentId);
 
         if($tournamentColumn === 'ppLeague_id'){
-            $this->ppLeagueUpdateService->setFinished($tournamentId);
+            $this->ppLeagueUpdateService->afterFinished($tournamentId);
             return;
         }
         

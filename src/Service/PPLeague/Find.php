@@ -35,7 +35,7 @@ final class Find  extends BaseService{
     }
 
 
-    function getJoinable(int $ppTypeId, int $userId){
+    function getJoinable(int $ppTypeId){
         if(!$ppLeague = $this->ppLeagueRepository->getJoinable($ppTypeId)){
             $id = $this->ppLeagueRepository->create($ppTypeId);
             $ppLeague = $this->ppLeagueRepository->getOne($id);

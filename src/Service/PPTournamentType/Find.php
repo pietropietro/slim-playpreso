@@ -20,10 +20,10 @@ final class Find  extends BaseService{
         protected League\Find $leagueService,
     ){}
 
-    public function getOne(int $id){
+    public function getOne(int $id, bool $enrich = true){
         $ppTT =  $this->ppTournamentTypeRepository->getOne($id);
-        $ppTT = $this->enrich($ppTT);
-        return $ppTT;
+        if(!$enrich) return $ppTT;
+        return $this->enrich($ppTT);
     }
 
     public function getOneFromPPTournament(string $tournamentTable, int $tournamentId){
@@ -41,9 +41,17 @@ final class Find  extends BaseService{
         return $ppTTs;
     }
 
+    public function getNextLevel(int $id){ 
+        $pptt = $this->getOne($id, false);
+        return $this->ppTournamentTypeRepository->getByNameAndLevel($pptt['name'], $pptt['level'] + 1);
+    }
+
     private function enrich($ppTT){
         $ppTT['leagues'] = $this->leagueService->getForPPTournamentType($ppTT['id']);
         if(!$ppTT['cup_format']){
+            $ppTT['promote'] = floor($ppTT['participants']/4);
+            //TODO calculate relegation logic
+            $ppTT['relegate'] = null;
             $ppTT['next'] = $this->ppTournamentTypeRepository->getByNameAndLevel(name: $ppTT['name'], level: $ppTT['level']+1);
         }
         else{
@@ -52,13 +60,9 @@ final class Find  extends BaseService{
         return $ppTT;
     }
 
-
-
     public function getAvailablePPCupsForUser(int $userId): array{
         return $this->ppTournamentTypeRepository->availablePPCupsForUser($userId);
     }
-
-
 
     public function getAvailablePPLeaguesForUser(int $userId, bool $ids_only = true){
         $currentPPTournamentTypes = $this->userParticipationRepository->getCurrentTournamentTypesForUser($userId, false);
@@ -71,20 +75,11 @@ final class Find  extends BaseService{
         $availablePPTTs = $this->ppTournamentTypeRepository->availablePPLeaguesTypes(
             $currentPPTTNames,
             $promotedPPTTids,
-            $userPoints,
-            $ids_only
+            $userPoints        
         );
 
         return $ids_only ? array_column($availablePPTTs, 'id') : $availablePPTTs;
     }
 
-
-
-    //TODO remove
-    public function filterIdsExpensive(int $userId, array $ids){
-        if(!$ids)return null;
-        $userPoints = $this->pointsService->get($userId);
-        return $this->ppTournamentTypeRepository->filterIdsExpensive($ids, $userPoints);
-    }
 
 }

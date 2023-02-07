@@ -32,6 +32,7 @@ final class PPTournamentTypeRepository extends BaseRepository
         return $this->db->getOne('ppTournamentTypes');
     }
 
+
     function getCost(int $id){
         $this->db->where('id',$id);
         return $this->db->getOne('ppTournamentTypes', 'cost');
@@ -72,16 +73,8 @@ final class PPTournamentTypeRepository extends BaseRepository
         return $this->db->get("ppTournamentTypes");
     }
 
-
-    function filterIdsExpensive(array $ids, int $points){
-        $this->db->where('id', $ids, 'IN');
-        $this->db->where('cost', $points, '<=');
-        return $this->db->getValue('ppTournamentTypes', 'id', null);
-    }
-
     public function update(int $id, array $data){
         $this->db->where('id', $id);
         return $this->db->update('ppTournamentTypes', $data, 1);        
     }
-
 }

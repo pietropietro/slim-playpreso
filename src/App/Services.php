@@ -69,12 +69,6 @@ $container['ppleague_find_service'] = static fn (
     $container->get('pptournamenttype_find_service'),
 );
 
-$container['ppleague_update_service'] = static fn (
-    ContainerInterface $container
-):  PPLeague\Update => new  PPLeague\Update(
-    $container->get('ppleague_repository'),
-);
-
 $container['pptournamenttype_find_service'] = static fn (
     ContainerInterface $container
 ):  PPTournamentType\Find => new  PPTournamentType\Find(
@@ -83,6 +77,16 @@ $container['pptournamenttype_find_service'] = static fn (
     $container->get('userparticipation_repository'),
     $container->get('points_find_service'),
     $container->get('league_find_service'),
+);
+
+$container['ppleague_update_service'] = static fn (
+    ContainerInterface $container
+):  PPLeague\Update => new  PPLeague\Update(
+    // $container->get('ppleague_repository'),
+    // $container->get('userparticipation_find_service'),
+    // $container->get('pptournamenttype_find_service'),
+    $container->get('pptournamenttype_join_service'),
+    // $container->get('points_update_service'),
 );
 
 $container['pptournamenttype_join_service'] = static fn (
