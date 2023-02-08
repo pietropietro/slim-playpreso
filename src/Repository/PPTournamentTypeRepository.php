@@ -7,7 +7,7 @@ namespace App\Repository;
 
 final class PPTournamentTypeRepository extends BaseRepository
 {
-    function get(?array $ids, ?bool $onlyCups){
+    function get(?array $ids, ?bool $onlyCups = false){
         if($ids)$this->db->where('id',$ids,'IN');
         if($onlyCups)$this->db->where('cup_format IS NOT NULL');
         $this->db->orderBy('name', 'asc');

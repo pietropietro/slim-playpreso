@@ -29,27 +29,37 @@ final class UserParticipationRepository extends BaseRepository
         return true;
     }
 
-    //TODO change string type to ENUM 'ppLeague_id', 'ppCupGroup_id'
-    function getUserParticipations(int $userId, ?string $type, ?bool $active, ?int $minPosition){
+    //TODO change type to ENUM 'ppLeague_id', 'ppCupGroup_id'
+    function getForUser(
+        int $userId, 
+        ?string $type = null, 
+        ?bool $started = null, 
+        ?bool $finished = null, 
+        ?int $minPosition = null
+    ){
         $this->db->where('user_id', $userId);
 
-        if($active){
-            $this->db->having('finished', 0);
-            $this->db->orderBy('started','desc');
+        if(isset($started)){
+            $this->db->having('started', $started);
+            // $this->db->orderBy('started','desc');
+        }
+        if(isset($finished)){
+            $this->db->having('finished', $finished);
+            // $this->db->orderBy('finished','desc');
         }
         if($minPosition){
             $this->db->where('position', $minPosition, '<=');
+            $this->db->where('position is not null');
         }
         if($type){
-            $this->db->where($type.' IS NOT NULL');
+            $this->db->where('userParticipations.'.$type.' IS NOT NULL');
         }
         // $this->db->orderBy('joined_at','desc');
 
         $this->db->join('ppLeagues ppl', 'ppl.id = userParticipations.ppLeague_id', "LEFT");
         $this->db->join('ppCupGroups ppcg', 'ppcg.id = userParticipations.ppCupGroup_id', "LEFT");
         
-        return $this->db->get($this->tableName, null, $this->columnsJoined3) ;
-                
+        return $this->db->get($this->tableName, null, $this->columnsJoined3);
     }
 
     function getForTournament(string $tournamentColumn, int $tournamentId){
@@ -59,6 +69,19 @@ final class UserParticipationRepository extends BaseRepository
         $this->db->orderBy('userParticipations.position','asc');
         $this->db->where($tournamentColumn, $tournamentId);
         return $this->db->get('userParticipations', null, $this->columnsJoined3.',u.username');
+    }
+
+    public function getCupWins(int $userId){
+        if(!$userId)return;
+        return $this->db->query('
+            SELECT up.* 
+            FROM userParticipations up 
+            JOIN ppCupGroups pcg ON up.ppCupGroup_id = pcg.id 
+            JOIN ppCups pc ON pcg.ppCup_id = pc.id 
+            WHERE up.user_id = '.$userId.'
+            AND up.position = 1 
+            AND pcg.level = (SELECT MAX(level) FROM ppCupGroups WHERE ppCup_id = pc.id)
+        ');
     }
     
 

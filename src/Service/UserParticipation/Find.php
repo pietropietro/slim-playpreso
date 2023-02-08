@@ -8,6 +8,11 @@ final class Find  extends Base {
 
     public function getForTournament(string $tournamentColumn, int $tournamentId) :array{
         $ups = $this->userParticipationRepository->getForTournament($tournamentColumn, $tournamentId); 
+        foreach ($ups as &$up) {
+            $up['user']['id'] = $up['user_id'];
+            $up['user']['username'] = $up['username'];
+            $up['user']['trophies'] = $this->getTrophies($up['user']['id']);
+        }
         return $ups;
     }
 
@@ -15,11 +20,17 @@ final class Find  extends Base {
         return $this->userParticipationRepository->count($tournamentColumn, $tournamentId);
     }
 
-    public function getForUser(int $userId, ?string $playMode, bool $active = true){
-        $ups = $this->userParticipationRepository->getUserParticipations(
+    public function getForUser(
+        int $userId, 
+        ?string $playMode, 
+        ?bool $started = null, 
+        ?bool $finished = null, 
+    ){
+        $ups = $this->userParticipationRepository->getForUser(
             $userId, 
             $playMode ? $playMode.'_id' : null,
-            $active, 
+            $started, 
+            $finished, 
             null
         );        
         foreach($ups as &$up){
@@ -38,23 +49,19 @@ final class Find  extends Base {
 
     
     public function getTrophies(int $userId){
-        $ppLeagueUps = $this->userParticipationRepository->getUserParticipations(
-            $userId, 'ppLeague_id', false, (int)$_SERVER['PPLEAGUE_TROPHY_POSITION']
+        $ppLeagueUps = $this->userParticipationRepository->getForUser(
+            $userId, 'ppLeague_id', started: null, finished: true, minPosition: 1
         );  
 
-        $ppCupUps = $this->userParticipationRepository->getUserParticipations(
-            $userId, 'ppCup_id', false, (int)$_SERVER['PPLEAGUE_TROPHY_POSITION']
-        );  
-        
-        if(!$ppLeagueUps && !$ppCupUps) return null;
+        //TODO
+        $ppCupWins = $this->userParticipationRepository->getCupWins($userId);
 
-        foreach($ppLeagueUps as $upKey => $upItem){
-            $ppLeagueUps[$upKey] = $this->enrich($ppLeagueUps[$upKey]);
+        $trophiesUP = array_merge($ppLeagueUps, $ppCupWins);
+        foreach ($trophiesUP as &$trophyUP) {
+            $trophyUP['ppTournamentType'] = $this->ppTournamentTypeRepository->getOne($trophyUP['ppTournamentType_id']);
         }
-
-        //also add data to cup trophies
-
-        $trophies['ppLeagues'] = $ppLeagueUps;
-        return $trophies;
+        
+        
+        return $trophiesUP;
     }
 }
