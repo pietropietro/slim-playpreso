@@ -468,4 +468,5 @@ $container['stats_find_service'] = static fn (
     ContainerInterface $container
 ):  Stats\Find => new  Stats\Find(
     $container->get('stats_repository'),
+    $container->get('userparticipation_find_service'),
 );
