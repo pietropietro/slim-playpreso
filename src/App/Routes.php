@@ -103,7 +103,7 @@ return function ($app){
         });
 
         $app->group('/p-round-match', function() use($app): void {
-            $app->get('/swap/{id}', PPRoundMatch\Swap::class);
+            $app->post('/swap/{id}', PPRoundMatch\Swap::class);
             $app->post('/{ppRoundId}', PPRoundMatch\Create::class);
             $app->delete('/{id}', PPRoundMatch\Delete::class);
         });
