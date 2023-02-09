@@ -26,7 +26,9 @@ final class Find extends Base
     public function adminGet() : ?array {
         $users = $this->userRepository->adminGet();
         foreach ($users as &$user) {
-            $user['activeUserParticipations'] = $this->userParticipationFindService->getForUser($user['id'], null, true);
+            $user['activeUserParticipations'] = $this->userParticipationFindService->getForUser(
+                $user['id'], null, started: null, finished:false
+            );
             $user['lastVerifiedGuesses'] = $this->guessFindService->getForUser($user['id'], true, 5);
             $user['lastLock'] = $this->guessFindService->lastLock($user['id']);
         }
