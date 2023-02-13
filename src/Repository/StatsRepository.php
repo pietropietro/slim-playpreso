@@ -7,7 +7,11 @@ namespace App\Repository;
 final class StatsRepository extends BaseRepository
 {   
 
-    public function bestUsers(){
+    public function bestUsers(?int $userId=null){
+
+        if($userId){
+            $this->db->where('g.user_id', $userId);
+        }
         $limit = 5;
         $from = date("Y-m-d H:i:s", strtotime('- 1 month'));
         $this->db->where('verified_at', $from, '>');
@@ -27,6 +31,7 @@ final class StatsRepository extends BaseRepository
         );
         return $this->db->get('guesses g', $limit, $columns);
     }
+
 
     public function countCommonScore(){
 

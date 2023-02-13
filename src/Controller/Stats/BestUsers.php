@@ -17,9 +17,9 @@ final class BestUsers extends Base
         Response $response,
         array $args
     ): Response {
-        // $userId = $this->getAndValidateUserId($request);
+        $userId = $this->getAndValidateUserId($request);
 
-        $bestUsers = $this->getFindStatsService()->bestUsers();
+        $bestUsers = $this->getFindStatsService()->bestUsers($userId);
         
         return $this->jsonResponse($response, 'success', $bestUsers, 200);
     }
