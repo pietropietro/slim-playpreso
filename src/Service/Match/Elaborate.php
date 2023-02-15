@@ -22,7 +22,7 @@ final class Elaborate extends BaseService{
         foreach ($lsEvents as $key => $eventObj) {
             
             $ls_id = (int) $eventObj->Eid;
-            $round = (int)$eventObj->Ern; 
+            $round = (int) $eventObj->ErnInf; 
             $homeId = $this->teamFindService->idFromExternal((int)$eventObj->T1[0]->ID);
             $awayId = $this->teamFindService->idFromExternal((int)$eventObj->T2[0]->ID);
             $dateStart = (string)$eventObj->Esd;
