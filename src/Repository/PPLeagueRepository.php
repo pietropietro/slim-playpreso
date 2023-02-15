@@ -8,12 +8,21 @@ use \App\Exception\NotFound;
 
 final class PPLeagueRepository extends BaseRepository
 {
-    public function get(?array $ids = null, ?int $ppTournamentTypeId, ?bool $finished=null) {
+    public function get(
+        ?array $ids = null, 
+        ?int $ppTournamentTypeId, 
+        ?bool $finished=null,
+        ?bool $started=null
+    ) {
         if($ids)$this->db->where('id', $ids, 'IN');
         if($ppTournamentTypeId)$this->db->where('ppTournamentType_id', $ppTournamentTypeId);
         if(isset($finished)){
             if($finished)$this->db->where('finished_at is not null');
             else $this->db->where('finished_at is null');
+        }
+        if(isset($started)){
+            if($started)$this->db->where('started_at is not null');
+            else $this->db->where('started_at is null');
         }
         $ppLeagues=$this->db->get('ppLeagues', 50);
         return $ppLeagues;

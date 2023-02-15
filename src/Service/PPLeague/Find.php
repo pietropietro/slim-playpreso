@@ -22,8 +22,8 @@ final class Find  extends BaseService{
         return $ppLeague;
     }
 
-    public function adminGetAll(?int $ppTournamentTypeId, ?bool $finished=null){
-        $ppLeagues = $this->ppLeagueRepository->get(null, $ppTournamentTypeId, $finished);
+    public function adminGetAll(?int $ppTournamentTypeId, ?bool $finished=null, ?bool $started=null){
+        $ppLeagues = $this->ppLeagueRepository->get(null, $ppTournamentTypeId, $finished, $started);
         foreach ($ppLeagues as &$ppLeague) {
             $this->enrich($ppLeague);
         }

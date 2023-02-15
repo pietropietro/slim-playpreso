@@ -24,8 +24,17 @@ final class GetAll extends Base
         $finished = $request->getQueryParams()['ft'] ?? null;
         $finishedBool = $finished === 'all' ? null : ($finished === 'finished' ? true : false);
 
+        $started = $request->getQueryParams()['st'] ?? null;
+        $startedBool = $started === 'all' ? null : ($started === 'started' ? true : false);
 
-        $ppLeagues = $this->getPPLeagueFindService()->adminGetAll($ppTournamentTypeId, $finishedBool);
+
+        $ppLeagues = $this->getPPLeagueFindService()->adminGetAll(
+            $ppTournamentTypeId, 
+            $finishedBool, 
+            $startedBool
+        );
+
+
         foreach($ppLeagues as &$ppLeague){
             $ppLeague['user_count']= $this->getUserParticipationFindService()->countInTournament('ppLeague_id', $ppLeague['id']);
             if($ppLeague['started_at']){
