@@ -32,6 +32,16 @@ final class StatsRepository extends BaseRepository
         return $this->db->get('guesses g', $limit, $columns);
     }
 
+    public function lastPreso(){
+        $sql='
+        select guesses.*, u.username 
+        from guesses 
+        inner join users u on guesses.user_id = u.id 
+        where PRESO = 1 
+        and guesses.match_id = (select match_id from guesses where PRESO = 1 order by verified_at desc limit 1)';
+        return $this->db->query($sql);
+    }
+
 
     public function countCommonScore(){
 
