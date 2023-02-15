@@ -168,10 +168,9 @@ final class MatchRepository extends BaseRepository
 
     private function getNextRoundNumber(int $league_id) : ?int{
         $lastRound = $this->getLastRoundNumber($league_id);
-        if($lastRound)$this->db->where('round', $lastRound, '!=');
+        if($lastRound)$this->db->where('round', $lastRound, '>');
 
         $this->db->where('league_id', $league_id);
-
         //to exclude round-of-16 and such when groups not finished.
         $this->db->where('home_id IS NOT NULL');
         $this->db->where('away_id IS NOT NULL');
