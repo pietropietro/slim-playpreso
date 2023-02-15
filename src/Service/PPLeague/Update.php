@@ -22,6 +22,7 @@ final class Update  extends BaseService{
     public function setStarted(int $id){
         $this->ppLeagueRepository->setStarted($id);
     }
+    
     public function afterFinished(int $id){
         $ppLeague = $this->ppLeagueRepository->getOne($id);
         $this->ppLeagueRepository->setFinished($id);
@@ -37,10 +38,22 @@ final class Update  extends BaseService{
         $ppTournamentType = $this->ppTournamentTypeFindService->getOne($fromPPTTId);
         if(!$ppTournamentType['next'] || !$ppTournamentType['promote']) return;
        
+        //PROMOTE FIRST USERS
         for($i = 0; $i<$ppTournamentType['promote'] ; $i++){
             $this->ppTournamentTypeJoinService->joinAvailable(
                 $ups[$i]['user_id'], 
                 $ppTournamentType['next']['id'],
+                pay: false
+            );
+        }
+
+        if(!$ppTournamentType['rejoin']) return;
+        //REJOIN USERS
+        $rejoinEndIndex = $ppTournamentType['promote'] + $ppTournamentType['rejoin'];
+        for($i = $ppTournamentType['promote']; $i < $rejoinEndIndex ;  $i++){
+            $this->ppTournamentTypeJoinService->joinAvailable(
+                $ups[$i]['user_id'], 
+                $ppTournamentType['id'],
                 pay: false
             );
         }

@@ -50,6 +50,7 @@ final class Find  extends BaseService{
         $ppTT['leagues'] = $this->leagueService->getForPPTournamentType($ppTT['id']);
         if(!$ppTT['cup_format']){
             $ppTT['promote'] = floor($ppTT['participants']/4);
+            $ppTT['rejoin'] = 2;
             //TODO calculate relegation logic
             $ppTT['relegate'] = null;
             $ppTT['next'] = $this->ppTournamentTypeRepository->getByNameAndLevel(name: $ppTT['name'], level: $ppTT['level']+1);
