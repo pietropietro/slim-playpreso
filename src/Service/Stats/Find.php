@@ -28,7 +28,9 @@ final class Find extends BaseService{
         );
 
         if($userId && !in_array($userId, array_column($aggregates,'user_id'))){
-            $user_extra_stats = $this->statsRepository->bestUsers($userId)[0];
+            $userResult = $this->statsRepository->bestUsers($userId);
+            if(!$userResult) return $returnArray;
+            $user_extra_stats = $userResult[0];
             $this->addUser($user_extra_stats);
             $returnArray['currentUserStat'] = $user_extra_stats;
         }
