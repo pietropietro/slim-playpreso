@@ -19,8 +19,13 @@ final class GetAvailablePPLeagues extends Base
     ): Response {
         
         $userId = $this->getAndValidateUserId($request);
-        $ppTournamentTypes = $this->getPPTournamentTypeService()->getAvailablePPLeaguesForUser($userId, ids_only: false);
+        $availablePPTournamentTypes = $this->getPPTournamentTypeService()->getAvailablePPLeaguesForUser($userId, ids_only: false);
 
-        return $this->jsonResponse($response, 'success', $ppTournamentTypes, 200);
+        //get ppTTs whose p-leagues have most players
+        $ppTTtoStart = $this->getPPTournamentTypeService()->getCloseToStart(array_column($availablePPTournamentTypes, 'id'));
+
+        $returnArray = !empty($ppTTtoStart) ? $ppTTtoStart : $availablePPTournamentTypes;
+        return $this->jsonResponse($response, 'success', $returnArray, 200);
     }
+
 }

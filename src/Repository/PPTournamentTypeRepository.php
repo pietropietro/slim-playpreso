@@ -40,8 +40,7 @@ final class PPTournamentTypeRepository extends BaseRepository
 
     function availablePPLeaguesTypes(array $excludeNames, array $excludeIds, int $userPoints){
         
-        $textQuery = "
-            select * from ppTournamentTypes pptt 
+        $textQuery = "SELECT * from ppTournamentTypes pptt 
             where pptt.level = 
                 (select min(level) from ppTournamentTypes pptt2 
                     where pptt2.name = pptt.name 
@@ -76,5 +75,33 @@ final class PPTournamentTypeRepository extends BaseRepository
     public function update(int $id, array $data){
         $this->db->where('id', $id);
         return $this->db->update('ppTournamentTypes', $data, 1);        
+    }
+
+    public function getCloseToStart(array $ids){
+        if(!$ids)return null;
+        // this does not work because of the having clause
+        // need to do the raw query instead
+        // $this->db->join('ppTournamentTypes pptt', 'up.ppTournamentType_id = pptt.id', 'INNER');
+        // $this->db->join('ppLeagues ppl', 'up.ppLeague_id = ppl.id ', 'INNER');
+        // $this->db->where('up.ppLeague_id is not null');
+        // $this->db->where('ppl.started_at is null');
+        // // $this->db->where('ppl.started_at is null');
+        // $this->db->groupBy('up.ppLeague_id, up.ppTournamentType_id');
+        // $this->db->having('cnt', 'pptt.participants', '<');
+        // $this->db->orderBy('cnt');
+        // $result = $this->db->get('userParticipations up',null,'pptt.*, up.ppLeague_id, up.ppTournamentType_id, COUNT(*) as cnt');
+        // return $result;
+        
+        $sql = "SELECT pptt.*, up.ppLeague_id, up.ppTournamentType_id, COUNT(*) as user_cnt
+            FROM userParticipations up
+            inner join ppTournamentTypes pptt on up.ppTournamentType_id = pptt.id
+            inner join ppLeagues ppl on up.ppLeague_id = ppl.id 
+            and ppl.started_at is null
+            and up.ppLeague_id is NOT null
+            and up.ppTournamentType_id in (".implode(',', $ids).")
+            GROUP BY up.ppLeague_id, up.ppTournamentType_id
+            having user_cnt < pptt.participants
+            order by user_cnt desc";
+        return $this->db->query($sql);
     }
 }

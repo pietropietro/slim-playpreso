@@ -82,5 +82,9 @@ final class Find  extends BaseService{
         return $ids_only ? array_column($availablePPTTs, 'id') : $availablePPTTs;
     }
 
+    public function getCloseToStart(array $ids){
+        return $this->ppTournamentTypeRepository->getCloseToStart($ids);
+    }
+
 
 }
