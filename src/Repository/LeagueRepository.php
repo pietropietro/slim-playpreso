@@ -63,10 +63,25 @@ final class LeagueRepository extends BaseRepository
         $this->db->update('leagues', $data, 1);        
     }
 
-    public function create(string $name,?int $parentId) : int {
+    public function create(
+        string $name, 
+        string $tag, 
+        string $country, 
+        int $country_level, 
+        string $area, 
+        int $area_level, 
+        ?int $parentId = null,
+        ?string $ls_suffix = null,
+    ) {
         $data = array(
             "name" => $name,
+            "tag" => $tag,
+            "country" => $country,
+            "country_level" => $country_level,
+            "area" => $area,
+            "area_level" => $area_level,
             "parent_id" => $parentId,
+            "ls_suffix" => $ls_suffix,
             "created_at" => $this->db->now()
         );
         return $this->db->insert('leagues', $data);
