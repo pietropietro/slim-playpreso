@@ -24,7 +24,7 @@ final class Create extends BaseService{
     ){
         return $this->leagueRepository->create(
             $name, 
-            $tag,
+            substr(strtoupper($tag),0,3),
             $country,
             $country_level,
             $area,

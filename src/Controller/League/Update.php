@@ -23,10 +23,16 @@ final class Update extends Base
         $input = (array) $request->getParsedBody();
         $data = json_decode((string) json_encode($input), false);
 
-        $updateData = array();
-        if(isset($data->ls_suffix)){
-            $updateData['ls_suffix'] = $data->ls_suffix;
+        if(!$data->name || !$data->tag) {
+            throw new \App\Exception\NotFound('missing required fields', 400);
         }
+
+        $updateData = array_intersect_key(
+            // the array with all keys
+            get_object_vars($data),  
+            // keys to be extracted
+            array_flip(['name', 'tag', 'country', 'country_level', 'area', 'area_level', 'ls_suffix', 'parent_id'])
+        );
 
         $this->getUpdateLeagueService()->update($leagueId, $updateData);
         return $this->jsonResponse($response, "success", true, 200);

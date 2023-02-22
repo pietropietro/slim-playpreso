@@ -17,7 +17,7 @@ final class Create extends Base
         if (!isset($data->name) || !isset($data->tag) || !isset($data->country) 
             || !isset($data->country_level) || !isset($data->area) || !isset($data->area_level)
         ){
-            throw new App/Exception/User('missing required fields', 400);
+            throw new \App\Exception\NotFound('missing required fields', 400);
         }
 
         $newId = $this->getCreateLeagueService()->create(
@@ -27,10 +27,11 @@ final class Create extends Base
             (int) $data->country_level,
             $data->area,
             (int) $data->area_level,            
-            (int) $data->parent_id ?? null,
+            isset($data->parent_id) ? (int) $data->parent_id : null,
             $data->ls_suffix ?? null
         );
         
-        return $this->jsonResponse($response, 'success', $newId, 201);
+        $status = $newId ? 'success' : 'error';
+        return $this->jsonResponse($response, $status , $newId, 201);
     }
 }
