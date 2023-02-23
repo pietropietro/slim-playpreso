@@ -17,7 +17,6 @@ final class Fetch extends Base
         Response $response,
         array $args
     ): Response {
-
         $input = (array) $request->getParsedBody();
         $data = json_decode((string) json_encode($input), false);
 
@@ -25,7 +24,6 @@ final class Fetch extends Base
         $league = $this->getFindLeagueService()->getOne($leagueId);
        
         $result = $this->getExternalApiService()->fetchExternalData($league['ls_suffix'], $league['id']);
-        
         return $this->jsonResponse($response, 'success', $result, 200);
     }
 }

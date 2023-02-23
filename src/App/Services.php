@@ -291,7 +291,7 @@ $container['external_api_service'] = static fn (
 ):  ExternalAPI\Call => new  ExternalAPI\Call(
     $container->get('match_elaborate_service'),
     $container->get('league_elaborate_service'),
-    $container->get('team_elaborate_service'),
+    $container->get('team_create_service'),
     
 );
 
@@ -303,6 +303,7 @@ $container['match_elaborate_service'] = static fn (
     $container->get('match_update_service'),
     $container->get('match_find_service'),
     $container->get('team_find_service'),
+    $container->get('team_create_service'),
 );
 
 $container['match_update_service'] = static fn (
@@ -324,9 +325,9 @@ $container['team_find_service'] = static fn (
     $container->get('team_repository'),
 );
 
-$container['team_elaborate_service'] = static fn (
+$container['team_create_service'] = static fn (
     ContainerInterface $container
-):  Team\Elaborate => new  Team\Elaborate(
+):  Team\Create => new  Team\Create(
     $container->get('team_repository'),
 );
 

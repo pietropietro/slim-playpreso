@@ -15,8 +15,8 @@ final class Create extends BaseService{
     public function create(
         string $name, 
         string $tag, 
-        string $country, 
-        int $country_level, 
+        ?string $country, 
+        ?int $country_level, 
         string $area, 
         int $area_level, 
         ?int $parent_id = null,

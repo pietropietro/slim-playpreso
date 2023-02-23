@@ -16,6 +16,7 @@ final class Elaborate extends BaseService{
         protected Match\Update $matchUpdateService,
         protected Match\Find $matchFindService,
         protected Team\Find $teamFindService,
+        protected Team\Create $teamCreateService,
     ) {}
 
     public function elaborateLsEvents(array $lsEvents, int $leagueId){        
@@ -24,7 +25,21 @@ final class Elaborate extends BaseService{
             $ls_id = (int) $eventObj->Eid;
             $round = (int) $eventObj->ErnInf; 
             $homeId = $this->teamFindService->idFromExternal((int)$eventObj->T1[0]->ID);
+            if(!$homeId){
+                $homeId = $this->teamCreateService->create(
+                    ls_id: (int)$eventObj->T1[0]->ID,
+                    name: $eventObj->T1[0]->Nm,
+                    country: $eventObj->T1[0]->CoNm
+                );
+            }
             $awayId = $this->teamFindService->idFromExternal((int)$eventObj->T2[0]->ID);
+            if(!$awayId){
+                $awayId = $this->teamCreateService->create(
+                    ls_id: (int)$eventObj->T2[0]->ID,
+                    name: $eventObj->T2[0]->Nm,
+                    country: $eventObj->T2[0]->CoNm
+                );
+            }
             $dateStart = (string)$eventObj->Esd;
 
             //RETRIEVE MATCH FROM DB IF EXISTS
@@ -33,7 +48,7 @@ final class Elaborate extends BaseService{
             //UPDATE LEGACY(i.e. wrong ls_id) OR CREATE
             if(!$match && $eventObj->Eps === 'NS'){
                 //UPDATE LEGACY
-                if($legacyMatch = $this->matchFindService->getOneByLeagueRoundAndTeams($leagueId, $round, $homeId, $awayId)){
+                if($homeId && $awayId && $legacyMatch = $this->matchFindService->getOneByLeagueRoundAndTeams($leagueId, $round, $homeId, $awayId)){
                     $this->matchUpdateService->updateExternalId($legacyMatch['id'], $ls_id);
                     continue;
                 }

@@ -14,8 +14,7 @@ final class Create extends Base
         $input = (array) $request->getParsedBody();
         $data = json_decode((string) json_encode($input), false);
 
-        if (!isset($data->name) || !isset($data->tag) || !isset($data->country) 
-            || !isset($data->country_level) || !isset($data->area) || !isset($data->area_level)
+        if (!isset($data->name) || !isset($data->tag) || !isset($data->area) || !isset($data->area_level)
         ){
             throw new \App\Exception\NotFound('missing required fields', 400);
         }

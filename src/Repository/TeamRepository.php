@@ -13,10 +13,11 @@ final class TeamRepository extends BaseRepository
 			"name" => $name,
 			"country" => $country,
 	    );
-        if(!$this->db->insert('teams',$data)){
+        if(!$newId = $this->db->insert('teams',$data)){
             throw new \App\Exception\Mysql($this->db->getLastError(), 500);
         };
-        return true;
+        return $newId;
+        
     }
 
     public function getOne(int $id, bool $is_external_id = false){
