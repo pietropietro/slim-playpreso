@@ -18,7 +18,7 @@ final class StatsRepository extends BaseRepository
         $this->db->join('users u', 'g.user_id=u.id', 'INNER');
         $this->db->groupBy('g.user_id');
         $this->db->orderBy('avg');
-        $this->db->having('cnt', 9, '>');
+        $this->db->having('cnt', 14, '>');
         $columns = array('g.user_id', 
             'u.username', 
             'ROUND(avg(coalesce(g.points,0)),1) as avg',
