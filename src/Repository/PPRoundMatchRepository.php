@@ -23,10 +23,16 @@ final class PPRoundMatchRepository extends BaseRepository
         return $this->db->getValue('ppRoundMatches', 'ppRound_id', null);
     }
 
-    public function getMotd(){
+    public function getLastMotd(){
+        $this->db->join('guesses g', 'pprm.id = g.ppRoundMatch_id', 'LEFT');
+        $this->db->groupBy('pprm.id');
+        $this->db->orderBy('motd');
+        return $this->db->getOne('ppRoundMatches pprm', 'pprm.*, count(g.id) as aggr_count');
+    }
+    
+    public function hasMotd(){
         $this->db->where('motd = CURDATE()');
-        return $this->db->getOne('ppRoundMatches');
-
+        return $this->db->has('ppRoundMatches');
     }
 
     public function create(int $matchId, ?int $ppRoundId = null){

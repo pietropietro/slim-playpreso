@@ -19,8 +19,10 @@ final class Verify extends BaseService{
     
     public function verifyAfterMatch(int $matchId){
         $ppRoundIds = $this->ppRoundFindService->getForMatches(array($matchId), ids_only: true);
-        foreach ($ppRoundIds as $key => $id) {    
-            $this->verify($id);
+        foreach ($ppRoundIds as $key => $id) {   
+            if(isset($id) && (int)$id){
+                $this->verify($id);
+            }
         }
     }
 

@@ -39,13 +39,13 @@ final class Find  extends BaseService{
             bool $withGuesses = false, 
             ?int $userId = null, 
             bool $withUserGuess = false, 
-            bool $withMatchesStats=false
+            bool $withMatchStats=false
     ){
         $ppRoundMatch['match'] = $this->matchFindService->getOne(
             $ppRoundMatch['match_id'], 
             false, 
             true, 
-            $withMatchesStats
+            $withMatchStats
         );
         if($withGuesses){
             $ppRoundMatch['guesses'] = $this->getPPRMGuesses($ppRoundMatch['id'], $userId);
@@ -108,15 +108,20 @@ final class Find  extends BaseService{
         return $ppRoundMatches;
     }
 
-    public function getMotd(?int $userId = null){
-        $ppRM = $this->ppRoundMatchRepository->getMotd();
+    public function getLastMotd(?int $userId = null){
+        $ppRM = $this->ppRoundMatchRepository->getLastMotd();
         if(!$ppRM) return null;
         $this->enrich(
             $ppRM,
             userId: $userId, 
-            withUserGuess: true
+            withUserGuess: true,
         );
+        $ppRM['can_lock'] = $this->matchFindService->isBeforeStartTime($ppRM['match_id']);
         return $ppRM;
+    }
+
+    public function hasMotd(){
+        return $this->ppRoundMatchRepository->hasMotd();
     }
     
 }

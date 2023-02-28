@@ -18,7 +18,7 @@ final class GetOne extends Base
         array $args
     ): Response {
         $userId = $this->getAndValidateUserId($request);
-        $motd = $this->getPPRoundMatchFindService()->getMotd($userId);
+        $motd = $this->getPPRoundMatchFindService()->getLastMotd($userId);
         return $this->jsonResponse($response, 'success', $motd, 200);
     }
 }

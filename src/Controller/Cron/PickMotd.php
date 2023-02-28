@@ -17,7 +17,7 @@ final class PickMotd extends Base
         Response $response,
     ): Response {
         
-        if($this->getPPRoundMatchFindService()->getMotd()){
+        if($this->getPPRoundMatchFindService()->hasMotd()){
             return $this->jsonResponse($response, 'fail', 'already picked motd', 403);
         }
 

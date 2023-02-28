@@ -35,9 +35,7 @@ final class Find extends BaseService{
         ?bool $withTeams=true, 
         ?bool $withStats=true
     ) : ?array {
-        if($id === 213){
-            echo('ciao');
-        }
+
         $match = $this->matchRepository->getOne($id, $is_external_id);
         return $withTeams ? $this->enrich($match, $withStats) : $match;
     }
@@ -101,6 +99,10 @@ final class Find extends BaseService{
             $match = $this->enrich($match);
         }
         return $matches;
+    }
+
+    public function isBeforeStartTime(int $id){
+        return $this->matchRepository->isBeforeStartTime($id);
     }
     
 }
