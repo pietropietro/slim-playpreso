@@ -40,14 +40,13 @@ final class Call extends BaseService{
         if(!$ls_events){
             throw new \App\Exception\ExternalAPI('something went wrong', 500);
         }
-
-        if($ls_league_table_teams){
-            //maybe drop createAll since match creation also takes care of that
-            // $this->teamCreateService->createAll($ls_league_table_teams);
-            $this->leagueService->elaborateLsLeagueTable($ls_league_table_teams, $league_id);
-        }
+        
 
         $match_import_result = $this->matchService->elaborateLsEvents($ls_events, $league_id);
+
+        if($ls_league_table_teams){
+            $this->leagueService->elaborateLsLeagueTable($ls_league_table_teams, $league_id);
+        }
 
         return $match_import_result;
 
