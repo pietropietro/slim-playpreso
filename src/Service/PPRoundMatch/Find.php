@@ -50,7 +50,7 @@ final class Find  extends BaseService{
         if($withGuesses){
             $ppRoundMatch['guesses'] = $this->getPPRMGuesses($ppRoundMatch['id'], $userId);
         }
-        if($withUserGuess){
+        if($withUserGuess && $userId){
             $ppRoundMatch['guess'] = $this->guessRepository->getForPPRoundMatch($ppRoundMatch['id'], $userId);
         }
     }
@@ -108,10 +108,14 @@ final class Find  extends BaseService{
         return $ppRoundMatches;
     }
 
-    public function getMotd(){
+    public function getMotd(?int $userId = null){
         $ppRM = $this->ppRoundMatchRepository->getMotd();
         if(!$ppRM) return null;
-        $this->enrich($ppRM);
+        $this->enrich(
+            $ppRM,
+            userId: $userId, 
+            withUserGuess: true
+        );
         return $ppRM;
     }
     

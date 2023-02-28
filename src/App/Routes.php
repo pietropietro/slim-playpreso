@@ -16,6 +16,7 @@ use App\Controller\PPRoundMatch;
 use App\Controller\EmailPreferences;
 use App\Controller\Cron;
 use App\Controller\Stats;
+use App\Controller\MOTD;
 use App\Middleware\Auth;
 use App\Middleware\Cors;
 use App\Middleware\InternalRequest;
@@ -75,6 +76,12 @@ return function ($app){
     $app->get('/p-cup-group/{id}', PPCupGroup\GetOne::class)->add(new Auth($pointsService));
 
     $app->get('/p-round/{id}', PPRound\GetOne::class)->add(new Auth($pointsService));
+    
+    $app->group('/motd', function () use ($app): void {
+        $app->get('', MOTD\GetOne::class);
+        $app->post('/lock', MOTD\Lock::class);
+    })->add(new Auth($pointsService));
+
     
     $app->post('/email-preferences', EmailPreferences\Update::class)->add(new Auth($pointsService));
 

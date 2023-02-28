@@ -12,7 +12,8 @@ final class Find extends BaseService{
         protected TeamRepository $teamRepository,
     ) {}
 
-    private function enrich(array $team){
+    private function enrich($team){
+        if(!$team) return null;
         $team['lastMatches'] = $this->teamRepository->getLastResults($team['id']);
         return $team;
     }

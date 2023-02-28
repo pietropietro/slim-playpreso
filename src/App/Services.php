@@ -418,6 +418,7 @@ $container['guess_create_service'] = static fn (
 ):  Guess\Create => new  Guess\Create(
     $container->get('guess_repository'),
     $container->get('userparticipation_repository'),
+    $container->get('match_repository'),
 );
 
 $container['guess_lock_service'] = static fn (
