@@ -34,10 +34,9 @@ final class Create extends Base
             throw new \App\Exception\User('missing required fields', 400);
         }
 
-
         $result = $this->getPPRoundMatchCreateService()->create(
-            $ppRoundId, 
             (int)$data->newMatchId, 
+            $ppRoundId, 
             $tournamentColumn, 
             $ppRound[$tournamentColumn]
         );

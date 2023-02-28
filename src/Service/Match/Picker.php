@@ -13,6 +13,10 @@ final class Picker extends BaseService{
         protected MatchRepository $matchRepository,
         protected League\Find $leagueService,
     ) {}
+
+    public function pickForToday(){
+        return $this->matchRepository->pickForToday();
+    }
     
     public function pick(int $tournamentTypeId, int $howMany) : ?array{
         $matches = $this->nextMatchesForPPTournamentType($tournamentTypeId);

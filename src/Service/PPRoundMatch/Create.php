@@ -14,11 +14,27 @@ final class Create  extends BaseService{
         protected Guess\Create $guessCreateService,
     ){}
     
-    public function create(int $ppRoundId, int $matchId, string $tournamentColumn, int $tournamentId) : int {
-        if(!$id = $this->ppRoundMatchRepository->create($ppRoundId, $matchId)){
+    public function create(
+        int $matchId, 
+        ?int  $ppRoundId=null,
+        ?string $tournamentColumn=null, 
+        ?int $tournamentId=null
+    ) : int {
+        if(!$id = $this->ppRoundMatchRepository->create(
+            $matchId, 
+            $ppRoundId
+        )){
             throw new \App\Exception\Mysql("could not create ppRoundMatch", 500);
         }
-        $this->guessCreateService->createForParticipants($id, $matchId, $tournamentColumn, $tournamentId);
+
+        if($tournamentColumn && $tournamentId){
+            $this->guessCreateService->createForParticipants(
+                $id, 
+                $matchId, 
+                $tournamentColumn, 
+                $tournamentId
+            );
+        }
         return $id;
     }
     

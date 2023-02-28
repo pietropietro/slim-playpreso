@@ -6,7 +6,7 @@ namespace App\Repository;
 
 final class MatchRepository extends BaseRepository
 {   
-    private $whiteListColumns = array('id','league_id','home_id','away_id','score_home','score_away','round','date_start','verified_at');
+    private $whitelistColumns = array('id','league_id','home_id','away_id','score_home','score_away','round','date_start','verified_at');
 
     //TODO REFACTOR
     public function adminGet(array $ids=null, string $from= null, string $to= null, string $date = null) : ?array {
@@ -46,7 +46,7 @@ final class MatchRepository extends BaseRepository
     public function getOne(int $matchId, bool $is_external_id = false) : ?array {
         $column = !!$is_external_id ? 'ls_id' : 'id';
         $this->db->where($column, $matchId);
-        return $this->db->getOne('matches', $this->whiteListColumns);
+        return $this->db->getOne('matches', $this->whitelistColumns);
     }
 
     public function getOneByLeagueRoundAndTeams(int $leagueId, int $round, int $homeId, int $awayId){
@@ -244,6 +244,14 @@ final class MatchRepository extends BaseRepository
         $this->db->where('matches.id', $id);
         $this->db->where('matches.verified_at IS NULL');
         return $this->db->delete('matches',1);
+    }
+
+    public function pickForToday(){
+        $this->db->where('date(date_start) = CURDATE()');
+        $this->db->where('time(date_start) > "11.30"');
+        $this->db->where("verified_at IS NULL");
+        $this->db->orderBy("rand()");
+        return $this->db->getOne('matches', $this->whitelistColumns);
     }
 
 }

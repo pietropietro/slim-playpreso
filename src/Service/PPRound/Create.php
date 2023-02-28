@@ -13,7 +13,7 @@ final class Create extends BaseService{
     public function __construct(
         protected Match\Picker $matchPickerService,
         protected PPRoundRepository $ppRoundRepository,
-        protected PPRoundMatch\Create $ppRMcreateService,
+        protected PPRoundMatch\Create $ppRoundMatchCreateService,
     ){}
     
     public function create(string $tournamentColumn, int $tournamentId, int $tournamentTypeId, int $newRound , ?int $matchesPerRound = null) : bool{
@@ -25,7 +25,12 @@ final class Create extends BaseService{
         if(!$newRoundId = $this->ppRoundRepository->create($tournamentColumn, $tournamentId, $newRound))return false;
         
         foreach ($picked as $key => $match) {
-            $this->ppRMcreateService->create($newRoundId, $match['id'], $tournamentColumn, $tournamentId);
+            $this->ppRoundMatchCreateService->create(
+                $match['id'], 
+                $newRoundId, 
+                $tournamentColumn, 
+                $tournamentId
+            );
         }
         return true;
     }

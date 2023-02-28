@@ -28,12 +28,31 @@ final class Find  extends BaseService{
         $ppRoundMatches = $this->ppRoundMatchRepository->getForRound($ppRoundId, $onlyIds);
         if($onlyIds)return $ppRoundMatches;
 
-        foreach($ppRoundMatches as &$ppRM){        
-            $ppRM['match'] = $this->matchFindService->getOne($ppRM['match_id'], false, true, $withMatchesStats);
-            if(!$withGuesses)continue;
-            $ppRM['guesses'] = $this->getPPRMGuesses($ppRM['id'], $userId);
+        foreach($ppRoundMatches as &$ppRM){      
+            $this->enrich($ppRM, $withGuesses, $userId, false, $withMatchesStats);  
         }
         return $ppRoundMatches;
+    }
+
+    private function enrich(
+            &$ppRoundMatch, 
+            bool $withGuesses = false, 
+            ?int $userId = null, 
+            bool $withUserGuess = false, 
+            bool $withMatchesStats=false
+    ){
+        $ppRoundMatch['match'] = $this->matchFindService->getOne(
+            $ppRoundMatch['match_id'], 
+            false, 
+            true, 
+            $withMatchesStats
+        );
+        if($withGuesses){
+            $ppRoundMatch['guesses'] = $this->getPPRMGuesses($ppRoundMatch['id'], $userId);
+        }
+        if($withUserGuess){
+            $ppRoundMatch['guess'] = $this->guessRepository->getForPPRoundMatch($ppRoundMatch['id'], $userId);
+        }
     }
 
     private function getPPRMGuesses(int $id, ?int $userId = null){
@@ -78,11 +97,22 @@ final class Find  extends BaseService{
 
     public function getCurrentForUser(int $ppRoundId, int $userId){
         $ppRoundMatches = $this->ppRoundMatchRepository->getForRound($ppRoundId);
-        foreach($ppRoundMatches as &$ppRM){        
-            $ppRM['match'] = $this->matchFindService->getOne($ppRM['match_id']);
-            $ppRM['guess'] = $this->guessRepository->getForPPRoundMatch($ppRM['id'], $userId);
+        foreach($ppRoundMatches as &$ppRM){       
+            $this->enrich(
+                ppRoundMatch: $ppRM, 
+                withGuesses: false, 
+                userId: $userId, 
+                withUserGuess: true
+            ); 
         }
         return $ppRoundMatches;
+    }
+
+    public function getMotd(){
+        $ppRM = $this->ppRoundMatchRepository->getMotd();
+        if(!$ppRM) return null;
+        $this->enrich($ppRM);
+        return $ppRM;
     }
     
 }

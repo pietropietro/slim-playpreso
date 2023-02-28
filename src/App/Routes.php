@@ -130,6 +130,7 @@ return function ($app){
     $app->group('/cron', function () use ($app): void {
         $app->get('/fetch-football', Cron\Start::class);
         $app->get('/send-lock-reminders', Cron\ReminderLock::class);
+        $app->get('/pick-motd', Cron\PickMotd::class);
     })->add(new InternalRequest());
 
     // Catch-all route to serve a 404 Not Found page if none of the routes match

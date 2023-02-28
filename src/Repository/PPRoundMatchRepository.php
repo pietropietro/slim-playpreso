@@ -23,11 +23,22 @@ final class PPRoundMatchRepository extends BaseRepository
         return $this->db->getValue('ppRoundMatches', 'ppRound_id', null);
     }
 
-    public function create($ppRoundId, $matchId){
+    public function getMotd(){
+        $this->db->where('motd = CURDATE()');
+        return $this->db->getOne('ppRoundMatches');
+
+    }
+
+    public function create(int $matchId, ?int $ppRoundId = null){
         $data = array(
 			"ppRound_id" => $ppRoundId,
             "match_id" => $matchId
 	    );
+
+        if(!$ppRoundId){
+            $data["motd"] = $this->db->now();
+        }
+
         if(!$this->db->insert('ppRoundMatches',$data)){
             throw new \App\Exception\Mysql($this->db->getLastError(), 500);
         };
