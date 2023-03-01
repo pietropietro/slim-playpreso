@@ -115,6 +115,7 @@ final class Find  extends BaseService{
             $ppRM,
             userId: $userId, 
             withUserGuess: true,
+            withMatchStats: true
         );
         $ppRM['can_lock'] = $this->matchFindService->isBeforeStartTime($ppRM['match_id']);
         return $ppRM;
