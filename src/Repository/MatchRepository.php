@@ -20,6 +20,8 @@ final class MatchRepository extends BaseRepository
         if($ids) $this->db->where('m.id', $ids, 'IN');
 
         $this->db->join('guesses g', "g.match_id=m.id", "left");
+        $this->db->join('ppRoundMatches pprm', "pprm.match_id=m.id", "left");
+
         $this->db->groupBy('m.id');
         $this->db->orderBy('date_start', 'ASC');
 
@@ -27,6 +29,8 @@ final class MatchRepository extends BaseRepository
             'm.id', 'm.ls_id', 'm.league_id', 'm.home_id', 'm.away_id', 'm.score_home','m.score_away', 
             'm.round', 'm.date_start', 'm.created_at', 'm.verified_at', 'm.notes',
             // 'count(distinct g.ppRoundMatch_id) as ppRMcount', 
+            'count(distinct pprm.id) as aggregatePPRM',
+            'count(distinct pprm.motd) as motd',
             'count(g.id) as aggregateGuesses',
             'ROUND(sum(g.UNOX2)/count(guessed_at) * 100) as aggregateUNOX2',
             'ROUND(sum(g.GGNG)/count(guessed_at) * 100) as aggregateGGNG',

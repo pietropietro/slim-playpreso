@@ -14,6 +14,7 @@ final class Create  extends BaseService{
         protected Guess\Create $guessCreateService,
     ){}
     
+    //if only matchId is passed, pprm is considered MOTD
     public function create(
         int $matchId, 
         ?int  $ppRoundId=null,

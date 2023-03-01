@@ -108,8 +108,8 @@ final class Find  extends BaseService{
         return $ppRoundMatches;
     }
 
-    public function getLastMotd(?int $userId = null){
-        $ppRM = $this->ppRoundMatchRepository->getLastMotd();
+    public function getCurrentMotd(?int $userId = null){
+        $ppRM = $this->ppRoundMatchRepository->getCurrentMotd();
         if(!$ppRM) return null;
         $this->enrich(
             $ppRM,
@@ -118,6 +118,10 @@ final class Find  extends BaseService{
         );
         $ppRM['can_lock'] = $this->matchFindService->isBeforeStartTime($ppRM['match_id']);
         return $ppRM;
+    }
+
+    public function getMotd(?string $dateString = null){
+        return $this->ppRoundMatchRepository->getMotd($dateString);
     }
 
     public function hasMotd(){

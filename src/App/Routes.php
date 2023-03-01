@@ -99,6 +99,9 @@ return function ($app){
         
         $app->post('/p-cup/{id}', PPCup\Create::class);
         $app->get('/p-cup', PPCup\GetAll::class);
+
+        $app->post('/motd/{matchId}', MOTD\AdminSet::class);
+
         
         $app->group('/p-league',  function() use($app): void {
             $app->get('', PPLeague\GetAll::class);

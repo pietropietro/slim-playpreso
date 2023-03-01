@@ -23,15 +23,28 @@ final class PPRoundMatchRepository extends BaseRepository
         return $this->db->getValue('ppRoundMatches', 'ppRound_id', null);
     }
 
-    public function getLastMotd(){
+    public function getCurrentMotd(){
         $this->db->join('guesses g', 'pprm.id = g.ppRoundMatch_id', 'LEFT');
         $this->db->groupBy('pprm.id');
         $this->db->orderBy('motd');
+        
+        if(date('H',time())<7){
+            $this->db->where('motd', date('Y-m-d'), '<');
+        }
+
+        $this->db->where('motd is not null');
         return $this->db->getOne('ppRoundMatches pprm', 'pprm.*, count(g.id) as aggr_count');
     }
+
+    public function getMotd(?string $dateString = null){
+        $dateString = $dateString ?? date('Y-m-d');
+        $this->db->where('motd', $dateString);
+        return $this->db->getOne('ppRoundMatches');
+    }
     
-    public function hasMotd(){
-        $this->db->where('motd = CURDATE()');
+    public function hasMotd(?string $dateString = null){
+        $dateString = $dateString ?? date('Y-m-d');
+        $this->db->where('motd', $dateString);
         return $this->db->has('ppRoundMatches');
     }
 
@@ -42,7 +55,10 @@ final class PPRoundMatchRepository extends BaseRepository
 	    );
 
         if(!$ppRoundId){
-            $data["motd"] = $this->db->now();
+            $this->db->where('id', $matchId);
+            $match = $this->db->getOne('matches');
+            $dateString = (new \DateTime($match['date_start']))->format('Y-m-d');
+            $data["motd"] = $dateString;
         }
 
         if(!$this->db->insert('ppRoundMatches',$data)){
