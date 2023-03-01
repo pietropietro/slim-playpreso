@@ -30,6 +30,8 @@ final class PPRoundMatchRepository extends BaseRepository
         
         if(date('H',time())<7){
             $this->db->where('motd', date('Y-m-d'), '<');
+        }else{
+            $this->db->where('motd', date('Y-m-d'), '<=');
         }
 
         $this->db->where('motd is not null');
