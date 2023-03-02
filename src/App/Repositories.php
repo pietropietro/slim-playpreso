@@ -17,6 +17,7 @@ use App\Repository\TeamRepository;
 use App\Repository\UserRecoverRepository;
 use App\Repository\EmailPreferencesRepository;
 use App\Repository\StatsRepository;
+use App\Repository\MOTDRepository;
 
 use Psr\Container\ContainerInterface;
 
@@ -49,3 +50,5 @@ $container['userrecover_repository'] = static fn (ContainerInterface $container)
 $container['emailpreferences_repository'] = static fn (ContainerInterface $container): EmailPreferencesRepository => new EmailPreferencesRepository($container->get('db'));
 
 $container['stats_repository'] = static fn (ContainerInterface $container): StatsRepository => new StatsRepository($container->get('db'));
+
+$container['motd_repository'] = static fn (ContainerInterface $container): MOTDRepository => new MOTDRepository($container->get('db'));

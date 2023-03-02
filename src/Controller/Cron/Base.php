@@ -9,6 +9,7 @@ use App\Service\ExternalAPI\Call;
 use App\Service\League;
 use App\Service\Guess;
 use App\Service\PPRoundMatch;
+use App\Service\MOTD;
 use App\Service\Match;
 use App\Service\EmailPreferences;
 use App\Service\EmailBuilder;
@@ -45,9 +46,9 @@ abstract class Base extends BaseController
         return $this->container->get('emailbuilder_lockreminder_service');
     }
 
-    protected function getPPRoundMatchFindService(): PPRoundMatch\Find
+    protected function getMotdFindService(): MOTD\Find
     {
-        return $this->container->get('pproundmatch_find_service');
+        return $this->container->get('motd_find_service');
     }
 
     protected function getMatchPickerService(): Match\Picker
@@ -55,9 +56,9 @@ abstract class Base extends BaseController
         return $this->container->get('match_picker_service');
     }
 
-    protected function getPPRoundMatchCreateService(): PPRoundMatch\Create
+    protected function getMotdCreateService(): MOTD\Create
     {
-        return $this->container->get('pproundmatch_create_service');
+        return $this->container->get('motd_create_service');
     }
 
 }

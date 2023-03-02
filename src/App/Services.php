@@ -20,6 +20,7 @@ use App\Service\Team;
 use App\Service\EmailPreferences;
 use App\Service\EmailBuilder;
 use App\Service\Stats;
+use App\Service\MOTD;
 use Psr\Container\ContainerInterface;
 
 $container['user_find_service'] = static fn (
@@ -145,6 +146,21 @@ $container['pproundmatch_find_service'] = static fn (
     $container->get('pproundmatch_repository'),
     $container->get('guess_repository'),
     $container->get('match_find_service')
+);
+
+$container['motd_find_service'] = static fn (
+    ContainerInterface $container
+):  MOTD\Find => new  MOTD\Find(
+    $container->get('redis_service'),
+    $container->get('motd_repository'),
+    $container->get('pproundmatch_find_service'),
+    $container->get('match_find_service')
+);
+
+$container['motd_create_service'] = static fn (
+    ContainerInterface $container
+):  MOTD\Find => new  MOTD\Find(
+    $container->get('motd_repository'),
 );
 
 

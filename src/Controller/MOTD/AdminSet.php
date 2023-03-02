@@ -26,12 +26,12 @@ final class AdminSet extends Base
 
         $matchDate = new \DateTime($match['date_start']);
 
-        $oldMotd = $this->getPPRoundMatchFindService()->getMotd($matchDate->format('Y-m-d'));
+        $oldMotd = $this->getMotdFindService()->getMotd($matchDate->format('Y-m-d'));
         if($oldMotd){
             $this->getDeletePPRoundMatchService()->delete($oldMotd['id']);
         }
 
-        $newMotdId = $this->getPPRoundMatchCreateService()->create($match['id']);
+        $newMotdId = $this->getMotdCreateService()->create($match['id']);
 
         return $this->jsonResponse($response, "success", $newMotdId, 200);
     }

@@ -111,9 +111,9 @@ final class GuessRepository extends BaseRepository
 
         $this->db->where('ppRound_id',$ids,'IN');
         
-        if($matchList = $this->db->getValue('ppRoundMatches','id',null)){
+        if($ppRMIds = $this->db->getValue('ppRoundMatches','id',null)){
             $this->db->where('user_id',$userId);
-            $this->db->where('ppRoundMatch_id', $matchList,'in');
+            $this->db->where('ppRoundMatch_id', $ppRMIds,'in');
             $this->db->where("verified_at IS NOT NULL");
             $this->db->where("guessed_at IS NOT NULL");
             $columns = array('sum(points) as tot_points', 'sum(preso) as tot_preso', 'sum(UNOX2) as tot_unox2', 'count(id) as tot_locked');

@@ -8,13 +8,14 @@ use App\Controller\BaseController;
 use App\Service\PPRoundMatch;
 use App\Service\Guess;
 use App\Service\Match;
+use App\Service\MOTD;
 
 
 abstract class Base extends BaseController
 {
-    protected function getPPRoundMatchFindService(): PPRoundMatch\Find
+    protected function getMotdFindService(): MOTD\Find
     {
-        return $this->container->get('pproundmatch_find_service');
+        return $this->container->get('motd_find_service');
     } 
 
     protected function getDeletePPRoundMatchService(): PPRoundMatch\Delete
@@ -22,9 +23,9 @@ abstract class Base extends BaseController
         return $this->container->get('pproundmatch_delete_service');
     }
 
-    protected function getPPRoundMatchCreateService(): PPRoundMatch\Create
+    protected function getMotdCreateService(): MOTD\Create
     {
-        return $this->container->get('pproundmatch_create_service');
+        return $this->container->get('motd_create_service');
     }
 
     protected function getMatchFindService(): Match\Find

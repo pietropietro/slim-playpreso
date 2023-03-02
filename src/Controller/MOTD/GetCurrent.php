@@ -7,7 +7,7 @@ namespace App\Controller\MOTD;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class GetOne extends Base
+final class GetCurrent extends Base
 {
     /**
      * @param array<string> $args
@@ -18,7 +18,11 @@ final class GetOne extends Base
         array $args
     ): Response {
         $userId = $this->getAndValidateUserId($request);
-        $motd = $this->getPPRoundMatchFindService()->getCurrentMotd($userId);
-        return $this->jsonResponse($response, 'success', $motd, 200);
+
+        $motd = $this->getMotdFindService()->getCurrentMotd($userId);
+        $standings = $this->getMotdFindService()->getWeeklyStandings($userId);
+
+        $returnArray = array("motd" => $motd, "standings" => $standings);
+        return $this->jsonResponse($response, 'success', $returnArray, 200);
     }
 }

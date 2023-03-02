@@ -17,7 +17,7 @@ final class PickMotd extends Base
         Response $response,
     ): Response {
         
-        if($this->getPPRoundMatchFindService()->hasMotd()){
+        if($this->getMotdFindService()->hasMotd()){
             return $this->jsonResponse($response, 'fail', 'already picked motd', 403);
         }
 
@@ -27,7 +27,7 @@ final class PickMotd extends Base
             return $this->jsonResponse($response, 'fail', 'no match', 404);
         };
 
-        $newPPRMid = $this->getPPRoundMatchCreateService()->create($match['id']);
+        $newPPRMid = $this->getMotdCreateService()->create($match['id']);
         return $this->jsonResponse($response, 'success', $newPPRMid, 200);
     }
 }

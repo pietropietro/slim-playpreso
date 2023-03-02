@@ -34,7 +34,7 @@ final class Find  extends BaseService{
         return $ppRoundMatches;
     }
 
-    private function enrich(
+    public function enrich(
             &$ppRoundMatch, 
             bool $withGuesses = false, 
             ?int $userId = null, 
@@ -106,27 +106,6 @@ final class Find  extends BaseService{
             ); 
         }
         return $ppRoundMatches;
-    }
-
-    public function getCurrentMotd(?int $userId = null){
-        $ppRM = $this->ppRoundMatchRepository->getCurrentMotd();
-        if(!$ppRM) return null;
-        $this->enrich(
-            $ppRM,
-            userId: $userId, 
-            withUserGuess: true,
-            withMatchStats: true
-        );
-        $ppRM['can_lock'] = $this->matchFindService->isBeforeStartTime($ppRM['match_id']);
-        return $ppRM;
-    }
-
-    public function getMotd(?string $dateString = null){
-        return $this->ppRoundMatchRepository->getMotd($dateString);
-    }
-
-    public function hasMotd(){
-        return $this->ppRoundMatchRepository->hasMotd();
     }
     
 }
