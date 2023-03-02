@@ -159,7 +159,7 @@ $container['motd_find_service'] = static fn (
 
 $container['motd_create_service'] = static fn (
     ContainerInterface $container
-):  MOTD\Find => new  MOTD\Find(
+):  MOTD\Create => new  MOTD\Create(
     $container->get('motd_repository'),
 );
 
