@@ -44,12 +44,13 @@ final class Find  extends BaseService{
            return $this->leagueRepository->getForArea('world', null, $id_only);
         }
         if($ppTT['cup_format']) return [];
+
+        $area_ptt = array('Europe', 'America', 'Asia', 'Africa');
         
-        if($ppTT['name'] === 'Europe'){
-            $leagues = $this->leagueRepository->getForArea(strtolower($ppTT['name']), $ppTT['level']);
-            $uefaLeagues =  $this->leagueRepository->getUefa();
-            $merged = array_merge($leagues,$uefaLeagues);
-            return array_column($merged, 'id');
+        if(in_array($ppTT['name'], $area_ptt)){
+            $areaLeagues = $this->leagueRepository->getForArea(strtolower($ppTT['name']), $ppTT['level']);
+            if(!$id_only) return $areaLeagues;
+            return array_column($areaLeagues, 'id');
         }       
 
         $country = $ppTT['name'] === 'Random' ? null : strtolower($ppTT['name']);
