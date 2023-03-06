@@ -51,8 +51,7 @@ final class Picker extends BaseService{
         
         $matches = array();
         foreach ($leagueIDs as $id) {
-            //limit to 10 matches in case of wrong round value (i.e. some league matches all round=1)
-            if($retrieved = $this->matchRepository->getNextRoundForLeague($id, 10)){
+            if($retrieved = $this->nextMatchesForLeague($id, 10)){
                 $matches = array_merge($matches, $retrieved);
             }
         }
@@ -66,6 +65,13 @@ final class Picker extends BaseService{
 
         if(count($reasonableMatches) > 2) return $reasonableMatches;
         return $matches;
+    }
+
+    private function nextMatchesForLeague(int $leagueId){
+        //limit to 10 matches in case of wrong round value (i.e. some league matches all round=1)
+        if($retrieved = $this->matchRepository->getNextRoundForLeague($leagueId, 10)) return $retrieved;
+        //to easily solve the no round sequence
+        return $this->matchRepository->nextMatches($leagueId, 10);
     }
 
 }

@@ -258,4 +258,17 @@ final class MatchRepository extends BaseRepository
         return $this->db->getOne('matches', $this->whitelistColumns);
     }
 
+    public function nextMatches(int $league_id, int $limit = 20){
+        $this->db->where('league_id', $league_id);
+
+        $minTimeInterval = date("Y-m-d H:i:s", strtotime('+1 days'));
+        
+        $this->db->where('date_start', $minTimeInterval, '>');
+        $this->db->where('verified_at is null');
+
+        $this->db->orderBy('date_start', 'asc');
+        
+        return $this->db->get('matches', $limit);
+    }
+
 }
