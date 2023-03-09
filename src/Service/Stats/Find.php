@@ -72,8 +72,9 @@ final class Find extends BaseService{
 
     public function lastPreso() {
         $guesses = $this->statsRepository->lastPreso();
-        foreach ($guesses as &$value) {
-            $this->addUser($value);
+        foreach ($guesses as &$guess) {
+            $this->addUser($guess);
+            $this->addTournament($guess);
         }
         
         $match = $this->matchFindService->getOne($guesses[0]['match_id']);
@@ -81,6 +82,11 @@ final class Find extends BaseService{
             'match' => $match,
             'guesses' => $guesses
         );
+    }
+
+
+    private function addTournament(&$guess){
+        $guess['ppTournamentType'] = $this->statsRepository->getPPRMTournamentType($guess['ppRoundMatch_id']);
     }
 
 

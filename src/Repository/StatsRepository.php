@@ -52,18 +52,16 @@ final class StatsRepository extends BaseRepository
     }
 
     public function lastPreso(){
-        $sql='
-        select guesses.*, u.username 
-        from guesses 
-        inner join users u on guesses.user_id = u.id 
-        where PRESO = 1 
-        and guesses.match_id = (select match_id from guesses where PRESO = 1 order by verified_at desc limit 1)';
+        $sql=" SELECT guesses.*, u.username 
+            from guesses 
+            inner join users u on guesses.user_id = u.id 
+            where PRESO = 1 
+            and guesses.match_id = (select match_id from guesses where PRESO = 1 order by verified_at desc limit 1)";
         return $this->db->query($sql);
     }
 
 
     public function countCommonScore(){
-
         $this->db->where('verified_at IS NOT NULL');
         $sql = 'SELECT COUNT("score_home") as occurrances, score_home,
             ROUND((COUNT("score_home") / (SELECT COUNT("id") FROM matches WHERE verified_at IS NOT NULL)) * 100,1) as percent
@@ -88,4 +86,17 @@ final class StatsRepository extends BaseRepository
         return $this->db->query($sql);
     }
     
+    public function getPPRMTournamentType(int $ppRoundMatchId){
+        $sql = "SELECT id,name,level,emoji,rgb,tournament_id from ppTournamentTypes 
+                INNER JOIN 
+                    (SELECT if(ppLeague_id, ppLeague_id, ppCupGroup_id) as tournament_id, 
+                    if(ppl.ppTournamentType_id,ppl.ppTournamentType_id, ppcg.ppTournamentType_id) as ppTournamentType_id
+                    from ppRounds ppr 
+                    left join ppLeagues ppl on ppl.id=ppr.ppLeague_id  
+                    left join ppCupGroups ppcg on ppcg.id=ppr.ppCupGroup_id
+                    where ppr.id=(select ppRound_id from ppRoundMatches where id=".$ppRoundMatchId.")) aggr
+                on aggr.ppTournamentType_id = ppTournamentTypes.id";
+        $result = $this->db->query($sql);
+        return $result[0] ?? null;
+    }
 }
