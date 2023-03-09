@@ -15,9 +15,16 @@ final class Find extends BaseService{
         protected UserParticipation\Find $userParticipationFindService,
         protected Match\Find $matchFindService,
     ) {}
-    
+
     public function bestUsers(?int $userId = null) {
-        $aggregates = $this->statsRepository->bestUsers();
+        return array(
+            "bestAverage" => $this->bestAverage($userId),
+            "mostPoints" => $this->mostPoints($userId)
+        );
+    }
+
+    private function mostPoints(?int $userId = null) {
+        $aggregates = $this->statsRepository->mostPoints();
 
         foreach ($aggregates as &$value) {
             $this->addUser($value);
@@ -27,8 +34,33 @@ final class Find extends BaseService{
             "best" => $aggregates,
         );
 
+
+        //TODO refactor
         if($userId && !in_array($userId, array_column($aggregates,'user_id'))){
-            $userResult = $this->statsRepository->bestUsers($userId);
+            $userResult = $this->statsRepository->mostPoints($userId);
+            if(!$userResult) return $returnArray;
+            $user_extra_stats = $userResult[0];
+            $this->addUser($user_extra_stats);
+            $returnArray['currentUserStat'] = $user_extra_stats;
+        }
+
+        return $returnArray;
+    }
+    
+    private function bestAverage(?int $userId = null) {
+        $aggregates = $this->statsRepository->bestAverage();
+
+        foreach ($aggregates as &$value) {
+            $this->addUser($value);
+        }
+
+        $returnArray = array(
+            "best" => $aggregates,
+        );
+
+        //TODO refactor
+        if($userId && !in_array($userId, array_column($aggregates,'user_id'))){
+            $userResult = $this->statsRepository->bestAverage($userId);
             if(!$userResult) return $returnArray;
             $user_extra_stats = $userResult[0];
             $this->addUser($user_extra_stats);

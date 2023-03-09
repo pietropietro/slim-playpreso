@@ -7,7 +7,7 @@ namespace App\Repository;
 final class StatsRepository extends BaseRepository
 {   
 
-    public function bestUsers(?int $userId=null){
+    public function bestAverage(?int $userId=null){
 
         if($userId){
             $this->db->where('g.user_id', $userId);
@@ -17,17 +17,36 @@ final class StatsRepository extends BaseRepository
         $this->db->where('verified_at', $from, '>');
         $this->db->join('users u', 'g.user_id=u.id', 'INNER');
         $this->db->groupBy('g.user_id');
-        $this->db->orderBy('avg');
+        $this->db->orderBy('display_points');
         $this->db->having('cnt', 14, '>');
         $columns = array('g.user_id', 
             'u.username', 
-            'ROUND(avg(coalesce(g.points,0)),1) as avg',
+            'ROUND(avg(coalesce(g.points,0)),1) as display_points',
             'count(*) as cnt',
             'count(guessed_at) as cnt_locked',
             'sum(PRESO) as cnt_preso',
             'sum(UNOX2) as cnt_1x2', 
             'sum(UO25) as cnt_uo25', 
             'sum(GGNG) as cnt_ggng'
+        );
+        return $this->db->get('guesses g', $limit, $columns);
+    }
+
+    public function mostPoints(?int $userId=null){
+        if($userId){
+            $this->db->where('g.user_id', $userId);
+        }
+        $limit = 5;
+        $from = date("Y-m-d H:i:s", strtotime('- 1 month'));
+        $this->db->where('verified_at', $from, '>');
+        $this->db->join('users u', 'g.user_id=u.id', 'INNER');
+        $this->db->groupBy('g.user_id');
+        $this->db->orderBy('display_points');
+        $columns = array('g.user_id', 
+            'u.username', 
+            'SUM(g.points) as display_points',
+            'count(*) as cnt',
+            'count(guessed_at) as cnt_locked'
         );
         return $this->db->get('guesses g', $limit, $columns);
     }
