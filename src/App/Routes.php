@@ -110,6 +110,7 @@ return function ($app){
 
         $app->group('/p-tournament-types', function() use($app): void {
             $app->get('', PPTournamentType\GetAll::class);
+            $app->post('', PPTournamentType\AdminCreate::class);
             $app->post('/{id}', PPTournamentType\AdminUpdate::class);
         });
 

@@ -129,6 +129,12 @@ $container['pptournamenttype_update_service'] = static fn (
     $container->get('pptournamenttype_repository'),
 );
 
+$container['pptournamenttype_create_service'] = static fn (
+    ContainerInterface $container
+):  PPTournamentType\Create => new  PPTournamentType\Create(
+    $container->get('pptournamenttype_repository'),
+);
+
 $container['ppround_find_service'] = static fn (
     ContainerInterface $container
 ):  PPRound\Find => new  PPRound\Find(

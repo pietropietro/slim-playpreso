@@ -19,11 +19,18 @@ final class AdminUpdate extends Base
     ): Response {
 
         $ppTournamentTypeId = (int) $args['id'];
+        if(!$ppTournamentTypeId) throw new \App\Exception\NotFound('Invalid request.', 400);
 
         $input = (array) $request->getParsedBody();
         $data = json_decode((string) json_encode($input), false);
 
         $updateData = array();
+        if(isset($data->name)){
+            $updateData['name'] = $data->name;
+        }
+        if(isset($data->level)){
+            $updateData['level'] = $data->level;
+        }
         if(isset($data->rgb)){
             $updateData['rgb'] = $data->rgb;
         }

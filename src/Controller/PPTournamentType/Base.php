@@ -27,6 +27,12 @@ abstract class Base extends BaseController
         return $this->container->get('pptournamenttype_update_service');
     }
 
+    protected function getPPTournamentTypeCreateService(): PPTournamentType\Create {
+        return $this->container->get('pptournamenttype_create_service');
+    }
+
+    
+
     //TODO DELETE?
     protected function checkUserPermissions(int $userId, int $userIdLogged): void
     {
@@ -34,6 +40,6 @@ abstract class Base extends BaseController
             throw new User('User permission failed.', 400);
         }
     }
-
+    
 
 }

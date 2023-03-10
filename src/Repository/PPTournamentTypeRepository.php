@@ -7,6 +7,29 @@ namespace App\Repository;
 
 final class PPTournamentTypeRepository extends BaseRepository
 {
+
+    public function create(
+        string $name, 
+        int $cost, 
+        string $rgb,
+        string $emoji,
+        ?int $level = null, 
+        ?int $rounds = null, 
+        ?int $participants = null,
+    ){
+        $data = array(
+            "name" => $name, 
+            "cost" => $cost, 
+            "rgb" => $rgb,
+            "emoji" => $emoji,
+            "level" => $level, 
+            "rounds" => $rounds, 
+            "participants" => $participants
+        );
+        return $this->db->insert('ppTournamentTypes', $data);
+    }
+
+
     function get(?array $ids, ?bool $onlyCups = false){
         if($ids)$this->db->where('id',$ids,'IN');
         if($onlyCups)$this->db->where('cup_format IS NOT NULL');
