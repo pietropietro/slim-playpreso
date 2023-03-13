@@ -92,4 +92,8 @@ final class Find  extends BaseService{
         return $this->ppTournamentTypeRepository->getMOTDType();
     }
 
+    public function getMOTDType(){
+        return $this->ppTournamentTypeRepository->getMOTDType();
+    }
+
 }

@@ -9,6 +9,7 @@ use App\Service\PPRoundMatch;
 use App\Service\Guess;
 use App\Service\Match;
 use App\Service\MOTD;
+use App\Service\PPTournamentType;
 
 
 abstract class Base extends BaseController
@@ -41,6 +42,11 @@ abstract class Base extends BaseController
     protected function getGuessLockService(): Guess\Lock
     {
         return $this->container->get('guess_lock_service');
+    }
+
+    protected function getPPTournamentTypeService(): PPTournamentType\Find
+    {
+        return $this->container->get('pptournamenttype_find_service');
     }
 
 }

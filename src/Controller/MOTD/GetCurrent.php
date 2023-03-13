@@ -21,8 +21,9 @@ final class GetCurrent extends Base
 
         $motd = $this->getMotdFindService()->getCurrentMotd($userId);
         $standings = $this->getMotdFindService()->getWeeklyStandings($userId);
+        $ppTournamentType = $this->getPPTournamentTypeService()->getMOTDType();
 
-        $returnArray = array("motd" => $motd, "standings" => $standings);
+        $returnArray = array("motd" => $motd, "standings" => $standings, "ppTournamentType" => $ppTournamentType);
         return $this->jsonResponse($response, 'success', $returnArray, 200);
     }
 }
