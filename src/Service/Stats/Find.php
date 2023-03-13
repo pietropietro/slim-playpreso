@@ -7,6 +7,7 @@ namespace App\Service\Stats;
 use App\Service\BaseService;
 use App\Service\UserParticipation;
 use App\Service\Match;
+use App\Service\PPTournamentType;
 use App\Repository\StatsRepository;
 
 final class Find extends BaseService{
@@ -14,6 +15,7 @@ final class Find extends BaseService{
         protected StatsRepository $statsRepository,
         protected UserParticipation\Find $userParticipationFindService,
         protected Match\Find $matchFindService,
+        protected PPTournamentType\Find $ppTournamentTypeFindService,
     ) {}
 
     public function bestUsers(?int $userId = null) {
@@ -86,7 +88,7 @@ final class Find extends BaseService{
 
 
     private function addTournament(&$guess){
-        $guess['ppTournamentType'] = $this->statsRepository->getPPRMTournamentType($guess['ppRoundMatch_id']);
+        $guess['ppTournamentType'] = $this->ppTournamentTypeFindService->getFromPPRoundMatch($guess['ppRoundMatch_id']);
     }
 
 

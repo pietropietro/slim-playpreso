@@ -86,5 +86,10 @@ final class Find  extends BaseService{
         return $this->ppTournamentTypeRepository->getCloseToStart($ids);
     }
 
+    public function getFromPPRoundMatch(int $ppRoundMatchId){
+        $pptt = $this->ppTournamentTypeRepository->getFromPPRoundMatch($ppRoundMatchId);
+        if($pptt)return $pptt;
+        return $this->ppTournamentTypeRepository->getMOTDType();
+    }
 
 }

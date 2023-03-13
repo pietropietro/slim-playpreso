@@ -52,6 +52,8 @@ final class Find  extends BaseService{
             if(!$id_only) return $areaLeagues;
             return array_column($areaLeagues, 'id');
         }       
+        
+        if(!$ppTT['level'] && $ppTT['name']) return null;
 
         $country = $ppTT['name'] === 'Random' ? null : strtolower($ppTT['name']);
         return $this->leagueRepository->getForCountry($country, $ppTT['level'], $id_only);

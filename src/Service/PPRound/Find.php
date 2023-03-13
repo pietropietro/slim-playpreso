@@ -47,13 +47,6 @@ final class Find  extends BaseService{
         return $ppRounds;
     }
 
-    public function getParentTournamentType(int $id){
-        $ppRound = $this->getOne($id);
-        $column = $ppRound['ppLeague_id'] ? 'ppLeague_id' : 'ppCupGroup_id';
-        $parentTable = $ppRound['ppLeague_id'] ? 'ppLeagues' : 'ppCupGroups';
-        return $this->ppRoundRepository->getParentTournamentType($parentTable, $ppRound[$column]);
-    }
-
     public function has(string $type, int $typeId, int $round): bool{
         return $this->ppRoundRepository->has($type, $typeId, $round);
     }

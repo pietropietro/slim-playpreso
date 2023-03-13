@@ -86,17 +86,5 @@ final class StatsRepository extends BaseRepository
         return $this->db->query($sql);
     }
     
-    public function getPPRMTournamentType(int $ppRoundMatchId){
-        $sql = "SELECT id,name,level,emoji,rgb,tournament_id from ppTournamentTypes 
-                INNER JOIN 
-                    (SELECT if(ppLeague_id, ppLeague_id, ppCupGroup_id) as tournament_id, 
-                    if(ppl.ppTournamentType_id,ppl.ppTournamentType_id, ppcg.ppTournamentType_id) as ppTournamentType_id
-                    from ppRounds ppr 
-                    left join ppLeagues ppl on ppl.id=ppr.ppLeague_id  
-                    left join ppCupGroups ppcg on ppcg.id=ppr.ppCupGroup_id
-                    where ppr.id=(select ppRound_id from ppRoundMatches where id=".$ppRoundMatchId.")) aggr
-                on aggr.ppTournamentType_id = ppTournamentTypes.id";
-        $result = $this->db->query($sql);
-        return $result[0] ?? null;
-    }
+    
 }

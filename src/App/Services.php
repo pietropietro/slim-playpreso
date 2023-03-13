@@ -381,8 +381,7 @@ $container['guess_find_service'] = static fn (
 ):  Guess\Find => new  Guess\Find(
     $container->get('guess_repository'),
     $container->get('match_find_service'),
-    $container->get('ppround_find_service'),
-    $container->get('pproundmatch_find_service')
+    $container->get('pptournamenttype_find_service'),
 );
 
 
@@ -494,4 +493,5 @@ $container['stats_find_service'] = static fn (
     $container->get('stats_repository'),
     $container->get('userparticipation_find_service'),
     $container->get('match_find_service'),
+    $container->get('pptournamenttype_find_service'),
 );

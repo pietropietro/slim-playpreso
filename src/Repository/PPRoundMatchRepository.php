@@ -44,12 +44,6 @@ final class PPRoundMatchRepository extends BaseRepository
         $this->db->update('ppRoundMatches', $data);  
     }
 
-    public function getParentPPRound(int $id){
-        $this->db->where('ppRoundMatches.id', $id);
-        $this->db->join('ppRounds ppr', 'ppr.id=ppRoundMatches.ppRound_id');
-        return $this->db->getOne('ppRoundMatches', 'ppr.*');
-    }
-
     public function delete(int $id){
         if(!$id) return;
         $this->db->where('id', $id);

@@ -33,12 +33,6 @@ final class PPRoundRepository extends BaseRepository
         return $this->db->has('ppRounds');
     }
 
-    public function getParentTournamentType(string $parentTable, int $valueId){
-        $this->db->where($parentTable.'.id', $valueId);
-        $this->db->join('ppTournamentTypes pptt', 'pptt.id='.$parentTable.'.ppTournamentType_id', 'INNER');
-        return $this->db->getOne($parentTable, $parentTable.'.id as ppTournamentId, pptt.*');
-    }
-
     public function create(string $column, int $valueId, int $round) : int{
         $data = array(
 			$column => $valueId,
