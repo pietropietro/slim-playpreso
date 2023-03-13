@@ -22,7 +22,7 @@ final class GetUserLastNext extends Base
 
         $returnArray = array(
             "next" => $this->getFindGuessService()->getNext($userId),
-            "last" => $this->getFindGuessService()->getLast($userId, '-2 week')
+            "last" => $this->getFindGuessService()->getLast($userId, '-1 week')
         );
                  
         return $this->jsonResponse($response, "success", $returnArray, 200);
