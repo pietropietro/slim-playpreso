@@ -48,7 +48,7 @@ return function ($app){
     });
 
     $app->group('/guess', function () use ($app): void {
-        $app->get('/not-verified', Guess\GetNotVerified::class);
+        $app->get('', Guess\GetUserLastNext::class);
         $app->post('/lock/{id}', Guess\Lock::class);
     })->add(new Auth($pointsService));
     

@@ -13,25 +13,27 @@ final class GuessRepository extends BaseRepository
         return $this->db->getOne('guesses');
     }
 
-    public function getForUser(int $userId, ?bool $verified=null, ?int $limit = null) : array {
+    public function getNext(int $userId, ?int $limit = null) : array {
         $this->db->where('user_id', $userId);
         $this->db->join('matches m ', 'm.id=guesses.match_id', 'INNER');
-        
-        if(isset($verified) && $verified === false){
-            $this->db->where('guesses.verified_at IS NULL');
-            $this->db->orderBy('guessed_at is null', 'desc');
-            $this->db->orderBy('m.date_start', 'asc');
-        }
-        else if(isset($verified) && $verified === true){
-            $this->db->where('guesses.verified_at IS NOT NULL');
-            $this->db->orderBy('guesses.verified_at');
-        }
+
+        $this->db->where('guesses.verified_at IS NULL');
+        $this->db->orderBy('guessed_at is null', 'desc');
+        $this->db->orderBy('m.date_start', 'asc');
+
+        return $this->db->get('guesses', $limit, 'guesses.*');
+    }
+
+    public function getLast(int $userId, ?string $afterString = null, ?int $limit = null) : array {
+        $this->db->where('user_id', $userId);
+        $this->db->where('guesses.verified_at IS NOT NULL');
+        $this->db->orderBy('guesses.verified_at');
 
         //i.e. "-3 months"
-        // if($stringTime){
-        //     $this->db->where('verified_at', date("Y-m-d H:i:s", strtotime($stringTime)), ">");
-        // }
-        return $this->db->get('guesses', $limit, 'guesses.*');
+        if($afterString){
+            $this->db->where('verified_at', date("Y-m-d H:i:s", strtotime($afterString)), ">");
+        }
+        return $this->db->get('guesses', $limit);
     }
 
     public function getForPPRoundMatch(int $ppRMId, ?int $userId=null){
