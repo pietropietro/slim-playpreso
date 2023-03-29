@@ -78,7 +78,7 @@ return function ($app){
     $app->get('/p-round/{id}', PPRound\GetOne::class)->add(new Auth($pointsService));
     
     $app->group('/motd', function () use ($app): void {
-        $app->get('', MOTD\GetCurrent::class);
+        $app->get('', MOTD\GetLatest::class);
         $app->post('/lock', MOTD\Lock::class);
     })->add(new Auth($pointsService));
 

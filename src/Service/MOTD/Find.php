@@ -18,21 +18,39 @@ final class Find  extends BaseService{
         protected Match\Find $matchFindService
     ){}
 
-    public function getCurrentMotd(?int $userId = null){
-        $ppRM = $this->motdRepository->getCurrentMotd();
-        if(!$ppRM) return null;
-        $this->ppRoundMatchFindService->enrich(
-            $ppRM,
-            userId: $userId, 
-            withUserGuess: true,
-            withMatchStats: true
-        );
-        $ppRM['can_lock'] = $this->matchFindService->isBeforeStartTime($ppRM['match_id']);
-        return $ppRM;
+    //returns last 7 motds
+    public function getLatestMotds(?int $userId = null){
+        $ppRMs = $this->motdRepository->getLatestMotds(7);
+        if(!$ppRMs) return null;
+        
+        foreach($ppRMs as &$ppRM){
+                $this->ppRoundMatchFindService->enrich(
+                $ppRM,
+                userId: $userId, 
+                withUserGuess: true,
+                withMatchStats: true
+            );
+            $ppRM['can_lock'] = $this->matchFindService->isBeforeStartTime($ppRM['match_id']);
+        }
+        
+        return $ppRMs;
     }
 
-    public function getMotd(?string $dateString = null){
-        return $this->motdRepository->getMotd($dateString);
+    //before 7am gmt+1 gives back yesterday's motd
+    public function getMotd(
+        ?string $dateString = null,
+        ?int $userId = null
+    ){
+        $motdPPRM = $this->motdRepository->getMotd($dateString);
+        if($userId){
+            $this->ppRoundMatchFindService->enrich(
+                $motdPPRM,
+                userId: $userId, 
+                withUserGuess: true,
+                withMatchStats: false
+            );
+        }
+        return $motdPPRM;
     }
 
     public function hasMotd(){

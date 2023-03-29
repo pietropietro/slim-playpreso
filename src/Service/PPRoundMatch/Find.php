@@ -41,12 +41,17 @@ final class Find  extends BaseService{
             bool $withUserGuess = false, 
             bool $withMatchStats=false
     ){
+        if(!$ppRoundMatch){
+            return;
+        }
+        
         $ppRoundMatch['match'] = $this->matchFindService->getOne(
             $ppRoundMatch['match_id'], 
             false, 
             true, 
             $withMatchStats
         );
+        
         if($withGuesses){
             $ppRoundMatch['guesses'] = $this->getPPRMGuesses($ppRoundMatch['id'], $userId);
         }

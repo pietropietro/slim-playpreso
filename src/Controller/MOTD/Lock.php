@@ -27,8 +27,9 @@ final class Lock extends Base
 
         $userId = $this->getAndValidateUserId($request);
         
-        $motdPPRM = $this->getMotdFindService()->getCurrentMotd($userId);
-        if(!$motdPPRM || $motdPPRM['guess']){
+        $motdPPRM = $this->getMotdFindService()->getMotd(null, $userId);
+
+        if(!$motdPPRM || isset($motdPPRM['guess'])){
             throw new \App\Exception\NotFound("can't lock", 400);
         }
 

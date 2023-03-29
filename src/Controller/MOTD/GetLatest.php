@@ -7,7 +7,7 @@ namespace App\Controller\MOTD;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class GetCurrent extends Base
+final class GetLatest extends Base
 {
     /**
      * @param array<string> $args
@@ -19,11 +19,12 @@ final class GetCurrent extends Base
     ): Response {
         $userId = $this->getAndValidateUserId($request);
 
-        $motd = $this->getMotdFindService()->getCurrentMotd($userId);
         $standings = $this->getMotdFindService()->getWeeklyStandings($userId);
-        $ppTournamentType = $this->getPPTournamentTypeService()->getMOTDType();
+        
+        $MOTDs = $this->getMotdFindService()->getLatestMotds($userId);
+        $MOTDppTT = $this->getPPTournamentTypeService()->getMOTDType();
 
-        $returnArray = array("motd" => $motd, "standings" => $standings, "ppTournamentType" => $ppTournamentType);
+        $returnArray = array("motd" => $MOTDs, "standings" => $standings, "ppTournamentType" => $MOTDppTT);
         return $this->jsonResponse($response, 'success', $returnArray, 200);
     }
 }

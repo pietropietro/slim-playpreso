@@ -6,7 +6,7 @@ namespace App\Repository;
 
 final class MOTDRepository extends BaseRepository
 {
-    public function getCurrentMotd(){
+    public function getLatestMotds(?int $limit = 7){
         $this->db->join('guesses g', 'pprm.id = g.ppRoundMatch_id', 'LEFT');
         $this->db->groupBy('pprm.id');
         $this->db->orderBy('motd');
@@ -18,11 +18,14 @@ final class MOTDRepository extends BaseRepository
         }
 
         $this->db->where('motd is not null');
-        return $this->db->getOne('ppRoundMatches pprm', 'pprm.*, count(g.id) as aggr_count');
+        return $this->db->get('ppRoundMatches pprm', $limit,'pprm.*, count(g.id) as aggr_count');
     }
 
     public function getMotd(?string $dateString = null){
-        $dateString = $dateString ?? date('Y-m-d');
+        if(!$dateString){
+            $dateString = date('H',time()) < 7 ? date('Y-m-d', strtotime('-1 days')) : date('Y-m-d');
+        };
+
         $this->db->where('motd', $dateString);
         return $this->db->getOne('ppRoundMatches');
     }
