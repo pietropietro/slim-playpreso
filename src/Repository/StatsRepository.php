@@ -95,8 +95,9 @@ final class StatsRepository extends BaseRepository
 
     public function getPPRMAggregates(int $ppRoundMatchId){
         $this->db->where('ppRoundMatch_id', $ppRoundMatchId);
+        $this->db->where('guessed_at is not null');
         $this->db->groupBy('ppRoundMatch_id');
-        $columns = 'avg(points) as points_avg, count(PRESO) as preso_count';
+        $columns = 'ROUND(avg(points),1) as points_avg, sum(PRESO) as preso_count';
         return $this->db->getOne('guesses', $columns);
     }
 }

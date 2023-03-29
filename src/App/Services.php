@@ -24,6 +24,9 @@ use App\Service\Trophies;
 use App\Service\MOTD;
 use Psr\Container\ContainerInterface;
 
+
+//TODO REFACTOR IN DIFFERENT FILES
+
 $container['user_find_service'] = static fn (
     ContainerInterface $container
 ): User\Find => new User\Find(
