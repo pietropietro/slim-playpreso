@@ -24,7 +24,7 @@ final class GetLatest extends Base
         $MOTDs = $this->getMotdFindService()->getLatestMotds($userId);
         $MOTDppTT = $this->getPPTournamentTypeService()->getMOTDType();
 
-        $returnArray = array("motd" => $MOTDs, "standings" => $standings, "ppTournamentType" => $MOTDppTT);
+        $returnArray = array("motds" => $MOTDs, "standings" => $standings, "ppTournamentType" => $MOTDppTT);
         return $this->jsonResponse($response, 'success', $returnArray, 200);
     }
 }
