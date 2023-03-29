@@ -20,6 +20,7 @@ use App\Service\Team;
 use App\Service\EmailPreferences;
 use App\Service\EmailBuilder;
 use App\Service\Stats;
+use App\Service\Trophies;
 use App\Service\MOTD;
 use Psr\Container\ContainerInterface;
 
@@ -151,7 +152,8 @@ $container['pproundmatch_find_service'] = static fn (
     $container->get('redis_service'),
     $container->get('pproundmatch_repository'),
     $container->get('guess_repository'),
-    $container->get('match_find_service')
+    $container->get('match_find_service'),
+    $container->get('stats_find_service') 
 );
 
 $container['motd_find_service'] = static fn (
@@ -188,9 +190,9 @@ $container['userparticipation_find_service'] = static fn (
     $container->get('userparticipation_repository'),
     $container->get('pptournamenttype_repository'),
     $container->get('ppleague_repository'),
-    $container->get('guess_repository'),
     $container->get('ppround_find_service'),
     $container->get('match_find_service'),
+    $container->get('trophies_find_service')
 );
 
 $container['userparticipation_create_service'] = static fn (
@@ -202,13 +204,8 @@ $container['userparticipation_create_service'] = static fn (
 $container['userparticipation_update_service'] = static fn (
     ContainerInterface $container
 ):  UserParticipation\Update => new  UserParticipation\Update(
-    $container->get('redis_service'),
     $container->get('userparticipation_repository'),
-    $container->get('pptournamenttype_repository'),
-    $container->get('ppleague_repository'),
     $container->get('guess_repository'),
-    $container->get('ppround_find_service'),
-    $container->get('match_find_service'),
 );
 
 $container['points_update_service'] = static fn (
@@ -449,9 +446,6 @@ $container['guess_lock_service'] = static fn (
     $container->get('match_repository'),
 );
 
-
-
-
 $container['pptournament_verifyafterround_service'] = static fn (
     ContainerInterface $container
 ):  PPTournament\VerifyAfterRound => new  PPTournament\VerifyAfterRound(
@@ -491,7 +485,15 @@ $container['stats_find_service'] = static fn (
     ContainerInterface $container
 ):  Stats\Find => new  Stats\Find(
     $container->get('stats_repository'),
-    $container->get('userparticipation_find_service'),
+    $container->get('trophies_find_service'),
     $container->get('match_find_service'),
     $container->get('pptournamenttype_find_service'),
+);
+
+$container['trophies_find_service'] = static fn (
+    ContainerInterface $container
+):  Trophies\Find => new  Trophies\Find(
+    $container->get('redis_service'),
+    $container->get('userparticipation_repository'),
+    $container->get('pptournamenttype_repository')
 );

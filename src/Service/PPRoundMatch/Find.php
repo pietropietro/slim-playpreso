@@ -9,13 +9,15 @@ use App\Repository\GuessRepository;
 use App\Service\RedisService;
 use App\Service\BaseService;
 use App\Service\Match;
+use App\Service\Stats;
 
 final class Find  extends BaseService{
     public function __construct(
         protected RedisService $redisService,
         protected PPRoundMatchRepository $ppRoundMatchRepository,
         protected guessRepository $guessRepository,
-        protected Match\Find $matchFindService
+        protected Match\Find $matchFindService,
+        protected Stats\Find $statsFindService
     ){}
     
     public function getForRound(
@@ -39,7 +41,8 @@ final class Find  extends BaseService{
             bool $withGuesses = false, 
             ?int $userId = null, 
             bool $withUserGuess = false, 
-            bool $withMatchStats=false
+            bool $withMatchStats=false,
+            bool $withPPRMStats=false,
     ){
         if(!$ppRoundMatch){
             return;
@@ -57,6 +60,10 @@ final class Find  extends BaseService{
         }
         if($withUserGuess && $userId){
             $ppRoundMatch['guess'] = $this->guessRepository->getForPPRoundMatch($ppRoundMatch['id'], $userId);
+        }
+
+        if($ppRoundMatch['match']['verified_at'] && $withPPRMStats){
+            $ppRoundMatch['stats'] = $this->statsFindService->getPPRMStats($ppRoundMatch['id']);
         }
     }
 

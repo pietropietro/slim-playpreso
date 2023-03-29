@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Stats;
 
 use App\Service\BaseService;
-use App\Service\UserParticipation;
+use App\Service\Trophies;
 use App\Service\Match;
 use App\Service\PPTournamentType;
 use App\Repository\StatsRepository;
@@ -13,7 +13,7 @@ use App\Repository\StatsRepository;
 final class Find extends BaseService{
     public function __construct(
         protected StatsRepository $statsRepository,
-        protected UserParticipation\Find $userParticipationFindService,
+        protected Trophies\Find $trophiesFindService,
         protected Match\Find $matchFindService,
         protected PPTournamentType\Find $ppTournamentTypeFindService,
     ) {}
@@ -35,7 +35,6 @@ final class Find extends BaseService{
         $returnArray = array(
             "best" => $aggregates,
         );
-
 
         //TODO refactor
         if($userId && !in_array($userId, array_column($aggregates,'user_id'))){
@@ -87,6 +86,17 @@ final class Find extends BaseService{
     }
 
 
+    public function getPPRMStats(int $ppRoundMatchId){
+        $aggregates = $this->statsRepository->getPPRMAggregates($ppRoundMatchId);
+        $stats = array(
+            "most_locked" => $this->statsRepository->getCommonLock($ppRoundMatchId),
+            "preso_count" => $aggregates['preso_count'],
+            "points_avg" => $aggregates['points_avg'],
+        );
+        return $stats;
+    }
+
+
     private function addTournament(&$guess){
         $guess['ppTournamentType'] = $this->ppTournamentTypeFindService->getFromPPRoundMatch($guess['ppRoundMatch_id']);
     }
@@ -96,7 +106,7 @@ final class Find extends BaseService{
         $userStat['user'] = array(
             "username" => $userStat['username'],
             "id" => $userStat['user_id'],
-            "trophies" => $this->userParticipationFindService->getTrophies($userStat['user_id'])
+            "trophies" => $this->trophiesFindService->getTrophies($userStat['user_id'])
         );
     }
 

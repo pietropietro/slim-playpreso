@@ -86,5 +86,17 @@ final class StatsRepository extends BaseRepository
         return $this->db->query($sql);
     }
     
-    
+    public function getCommonLock(int $ppRoundMatchId){
+        $this->db->where('ppRoundMatch_id', $ppRoundMatchId);
+        $this->db->orderBy('occurrances');
+        $this->db->groupBy('result');
+        return $this->db->getOne('guesses','concat_ws("-",home,away)as result, count(*) as occurrances');
+    }
+
+    public function getPPRMAggregates(int $ppRoundMatchId){
+        $this->db->where('ppRoundMatch_id', $ppRoundMatchId);
+        $this->db->groupBy('ppRoundMatch_id');
+        $columns = 'avg(points) as points_avg, count(PRESO) as preso_count';
+        return $this->db->getOne('guesses', $columns);
+    }
 }

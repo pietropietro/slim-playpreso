@@ -3,8 +3,16 @@
 declare(strict_types=1);
 
 namespace App\Service\UserParticipation;
+use App\Service\BaseService;
+use App\Repository\UserParticipationRepository;
+use App\Repository\GuessRepository;
 
-final class Update  extends Base {
+final class Update  extends BaseService {
+
+    public function __construct(
+        protected UserParticipationRepository $userParticipationRepository,
+        protected GuessRepository $guessRepository,
+    ) {}
 
     public function update(string $tournamentColumn, int $tournamentId) : bool{
         $ups = $this->userParticipationRepository->getForTournament($tournamentColumn, $tournamentId);

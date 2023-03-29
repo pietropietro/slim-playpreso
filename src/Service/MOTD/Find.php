@@ -24,11 +24,12 @@ final class Find  extends BaseService{
         if(!$ppRMs) return null;
         
         foreach($ppRMs as &$ppRM){
-                $this->ppRoundMatchFindService->enrich(
+            $this->ppRoundMatchFindService->enrich(
                 $ppRM,
                 userId: $userId, 
                 withUserGuess: true,
-                withMatchStats: true
+                withMatchStats: true,
+                withPPRMStats: true
             );
             $ppRM['can_lock'] = $this->matchFindService->isBeforeStartTime($ppRM['match_id']);
         }

@@ -3,15 +3,34 @@
 declare(strict_types=1);
 
 namespace App\Service\UserParticipation;
+use App\Service\BaseService;
+use App\Service\RedisService;
+use App\Repository\UserParticipationRepository;
+use App\Repository\PPTournamentTypeRepository;
+use App\Repository\PPLeagueRepository;
+use App\Service\PPRound;
+use App\Service\Match;
+use App\Service\Trophies;
 
-final class Find  extends Base {
+final class Find  extends BaseService {
+
+    public function __construct(
+        protected RedisService $redisService,
+        protected UserParticipationRepository $userParticipationRepository,
+        protected PPTournamentTypeRepository $ppTournamentTypeRepository,
+        protected PPLeagueRepository $ppLeagueRepository,
+        protected PPRound\Find $ppRoundFindService,
+        protected Match\Find $matchFindService,
+        protected Trophies\Find $trophiesFindService,
+    ){}
+
 
     public function getForTournament(string $tournamentColumn, int $tournamentId) :array{
         $ups = $this->userParticipationRepository->getForTournament($tournamentColumn, $tournamentId); 
         foreach ($ups as &$up) {
             $up['user']['id'] = $up['user_id'];
             $up['user']['username'] = $up['username'];
-            $up['user']['trophies'] = $this->getTrophies($up['user']['id']);
+            $up['user']['trophies'] = $this->trophiesFindService->getTrophies($up['user']['id']);
         }
         return $ups;
     }
@@ -47,21 +66,31 @@ final class Find  extends Base {
         return $this->userParticipationRepository->isUserInTournamentType($userId, $ppTournamentType_id);
     }
 
-    
-    public function getTrophies(int $userId){
-        $ppLeagueUps = $this->userParticipationRepository->getForUser(
-            $userId, 'ppLeague_id', started: null, finished: true, minPosition: 1
-        );  
-
-        //TODO
-        $ppCupWins = $this->userParticipationRepository->getCupWins($userId);
-
-        $trophiesUP = array_merge($ppLeagueUps, $ppCupWins);
-        foreach ($trophiesUP as &$trophyUP) {
-            $trophyUP['ppTournamentType'] = $this->ppTournamentTypeRepository->getOne($trophyUP['ppTournamentType_id']);
+    protected function enrich(array &$up, int $userId){
+        $up['ppTournamentType'] = $this->ppTournamentTypeRepository->getOne($up['ppTournamentType_id']);
+        
+        if($up['ppLeague_id']){
+            $ppLeague = $this->ppLeagueRepository->getOne($up['ppLeague_id']);      
+            $up['rounds']= $up['ppTournamentType']['rounds'];
         }
         
-        
-        return $trophiesUP;
+        if($up['started'] && !$up['finished']){
+            $column = $up['ppLeague_id'] ? 'ppLeague_id' : 'ppCupGroup_id';
+            
+            $up['currentRound'] = $this->ppRoundFindService->getCurrentRoundNumber($column, $up[$column]);
+            $up['playedInCurrentRound'] = $this->ppRoundFindService->verifiedInLatestRound($column, $up[$column]);
+            $up['user_count']= $this->userParticipationRepository->count($column, $up[$column]);
+
+            // $userCurrentRound = $this->ppRoundFindService->getUserCurrentRound($column, $up[$column], $userId);
+
+            $up['nextMatch'] = $this->matchFindService->getNextMatchInPPTournament($column, $up[$column]);
+            // if($up['nextMatch']){
+                //avoid heavy resp
+                // unset($up['nextMatch']['league']['standings']);
+            // }
+
+        }       
+        return;        
+
     }
 }
