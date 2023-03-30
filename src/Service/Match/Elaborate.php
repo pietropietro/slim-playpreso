@@ -23,7 +23,7 @@ final class Elaborate extends BaseService{
         foreach ($lsEvents as $key => $eventObj) {
             
             $ls_id = (int) $eventObj->Eid;
-            $round = (int) $eventObj->ErnInf; 
+            $round = isset($eventObj->ErnInf) ? (int) $eventObj->ErnInf : 1; 
             $homeId = $this->teamFindService->idFromExternal((int)$eventObj->T1[0]->ID);
             if(!$homeId){
                 $homeId = $this->teamCreateService->create(
