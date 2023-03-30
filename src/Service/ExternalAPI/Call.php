@@ -25,7 +25,11 @@ final class Call extends BaseService{
                 'proxy' => $_SERVER['PROXY_URL']
             ]
         );
-        $req_url = $ls_suffix.'/1';
+
+        //rusty calculation of daylight saving time
+        $utc_plus = $this->isDaylightSavingTime() ? 2 : 1;
+
+        $req_url = $ls_suffix.'/'.$utc_plus;
         $response = $client->get($req_url);
         $decoded = json_decode((string)$response->getBody());
 
@@ -49,7 +53,22 @@ final class Call extends BaseService{
         }
 
         return $match_import_result;
-
     }
+
+    function isDaylightSavingTime() {
+        // Get the current month and day in the format 'MMDD'
+        $currentDate = date('md');
+      
+        // Get the dates of the second Sunday in March and the first Sunday in November
+        $secondSundayOfMarch = date('md', strtotime('second sunday of march'));
+        $firstSundayOfNovember = date('md', strtotime('first sunday of november'));
+      
+        // Check if the current date is between the second Sunday in March and the first Sunday in November
+        if ($currentDate >= $secondSundayOfMarch && $currentDate <= $firstSundayOfNovember) {
+          return true;
+        } else {
+          return false;
+        }
+      }
     
 }
