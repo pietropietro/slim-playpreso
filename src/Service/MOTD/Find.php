@@ -59,6 +59,14 @@ final class Find  extends BaseService{
     }
 
     public function getWeeklyStandings(?int $userId=null){
-        return $this->motdRepository->getWeeklyStandings();
+        $best = $this->motdRepository->getWeeklyStandings(null,6);
+        $returnArray = array(
+            "best" => $best
+        );
+        if($userId && !in_array($userId, array_column($best,'user_id'))){
+            array_pop($returnArray['best']);
+            $returnArray['currentUserStat'] = $this->motdRepository->getWeeklyStandings($userId);
+        }
+        return $returnArray;
     }
 }

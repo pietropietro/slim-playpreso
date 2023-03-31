@@ -52,10 +52,10 @@ final class MOTDRepository extends BaseRepository
         return $this->db->getInsertId();
     }
 
-    public function getWeeklyStandings(){
+    public function getWeeklyStandings(?int $userId, int $limit=6){
         $sql = 
             "SELECT user_id, username, sum(g.points) as tot_points, count(g.id) as tot_locked
-            FROM guesses g 
+            FROM guesses g
             JOIN (
                 SELECT pprm.id 
                 FROM ppRoundMatches pprm 
@@ -67,10 +67,10 @@ final class MOTDRepository extends BaseRepository
                 LIMIT 7
             ) pprm 
             ON g.ppRoundMatch_id = pprm.id
-            INNER JOIN users u on g.user_id = u.id
-            group by user_id
-            order by tot_points desc limit 3
-        ";
+            INNER JOIN users u on g.user_id = u.id".
+            ($userId ? ' WHERE user_id='.$userId.' ' : ' ')
+            ." group by user_id
+            order by tot_points desc limit ".$limit;
         return $this->db->query($sql);
     }
 
