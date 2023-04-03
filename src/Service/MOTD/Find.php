@@ -65,7 +65,9 @@ final class Find  extends BaseService{
         );
         if($userId && !in_array($userId, array_column($best,'user_id'))){
             array_pop($returnArray['best']);
-            $returnArray['currentUserStat'] = $this->motdRepository->getWeeklyStandings($userId)[0];
+            if($userStat = $this->motdRepository->getWeeklyStandings($userId)){
+                $returnArray['currentUserStat'] = $userStat[0];
+            } 
         }
         return $returnArray;
     }
