@@ -146,4 +146,17 @@ final class PPTournamentTypeRepository extends BaseRepository
         $this->db->where('name', 'MOTD');
         return $this->db->getOne('ppTournamentTypes');
     }
+
+    public function getMostPoints($id){
+        $this->db->join('ppRoundMatches pprm', 'guesses.ppRoundMatch_id = pprm.id');
+        // $this->db->join('users u', 'guesses.user_id = u.id');
+        $this->db->join('ppRounds ppr', 'pprm.ppRound_id = ppr.id');
+        $this->db->join('ppLeagues ppl', 'ppl.id = ppr.ppLeague_id');
+        $this->db->where('ppl.ppTournamentType_id', $id);
+        $this->db->where('ppl.finished_at is not null');
+        $this->db->groupBy('guesses.user_id, ppLeague_id');
+        $this->db->orderBy('total_points');
+        return $this->db->getOne('guesses', 'user_id, ppl.id as ppLeague_id, sum(points) as total_points');
+    }    
+
 }

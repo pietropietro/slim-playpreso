@@ -54,6 +54,7 @@ final class Find  extends BaseService{
             //TODO calculate relegation logic
             $ppTT['relegate'] = null;
             $ppTT['next'] = $this->ppTournamentTypeRepository->getByNameAndLevel(name: $ppTT['name'], level: $ppTT['level']+1);
+            $ppTT['top_score'] = $this->getMostPoints($ppTT['id']);
         }
         else{
             $ppTT['cup_format'] = json_decode($ppTT['cup_format']);
@@ -94,6 +95,10 @@ final class Find  extends BaseService{
 
     public function getMOTDType(){
         return $this->ppTournamentTypeRepository->getMOTDType();
+    }
+
+    private function getMostPoints($id){
+        return $this->ppTournamentTypeRepository->getMostPoints($id);
     }
 
 }
