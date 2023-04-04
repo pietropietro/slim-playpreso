@@ -9,6 +9,7 @@ use App\Repository\PPTournamentTypeRepository;
 use App\Repository\UserParticipationRepository;
 use App\Service\Points;
 use App\Service\League;
+use App\Service\Trophies;
 use App\Service\BaseService;
 
 final class Find  extends BaseService{
@@ -18,6 +19,7 @@ final class Find  extends BaseService{
         protected UserParticipationRepository $userParticipationRepository,
         protected Points\Find $pointsService,
         protected League\Find $leagueService,
+        protected Trophies\Find $trophiesFindService,
     ){}
 
     public function getOne(int $id, bool $enrich = true){
@@ -98,7 +100,16 @@ final class Find  extends BaseService{
     }
 
     private function getMostPoints($id){
-        return $this->ppTournamentTypeRepository->getMostPoints($id);
+        //redis logic here todo
+        $stat = $this->ppTournamentTypeRepository->getMostPoints($id);
+        if($stat){
+            $stat['user'] = array(
+                'id' => $stat['user_id'],
+                'username' => $stat['username'],
+                'trophies' => $this->trophiesFindService->getTrophies($stat['user_id'])
+            );
+        }
+        return $stat;
     }
 
 }

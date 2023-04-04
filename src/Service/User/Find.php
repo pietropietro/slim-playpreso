@@ -42,15 +42,15 @@ final class Find extends Base
 
     public function getOne(int $userId, ?bool $allColumns=false) 
     {
-        if (!$allColumns && self::isRedisEnabled() === true && $cached = $this->getUserFromCache($userId)) {
-            return $cached;
-        } 
+        // if (!$allColumns && self::isRedisEnabled() === true && $cached = $this->getUserFromCache($userId)) {
+        //     return $cached;
+        // } 
         
         $user = $this->getUserFromDb($userId, $allColumns);
 
-        if (!$allColumns && self::isRedisEnabled() === true){
-            $this->saveInCache($userId, (object) $user);
-        }
+        // if (!$allColumns && self::isRedisEnabled() === true){
+        //     $this->saveInCache($userId, (object) $user);
+        // }
 
         return $user;
     }
