@@ -56,4 +56,8 @@ final class Update  extends BaseService {
     public function setStarted(string $tournamentColumn, int $tournamentId){
         $this->userParticipationRepository->setStarted($tournamentColumn, $tournamentId);
     }
+
+    public function setEBR(int $user_id, int $byPPLeague_id , int $ppTournamentType_id){
+        return $this->userParticipationRepository->setEBR($user_id, $byPPLeague_id , $ppTournamentType_id);
+    }
 }

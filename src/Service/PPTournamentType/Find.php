@@ -43,6 +43,12 @@ final class Find  extends BaseService{
         return $ppTTs;
     }
 
+    public function getPreviousLevel(int $id){ 
+        $pptt = $this->getOne($id, false);
+        return $this->ppTournamentTypeRepository->getByNameAndLevel($pptt['name'], $pptt['level'] - 1);
+    }
+
+
     public function getNextLevel(int $id){ 
         $pptt = $this->getOne($id, false);
         return $this->ppTournamentTypeRepository->getByNameAndLevel($pptt['name'], $pptt['level'] + 1);
@@ -51,10 +57,10 @@ final class Find  extends BaseService{
     private function enrich($ppTT){
         $ppTT['leagues'] = $this->leagueService->getForPPTournamentType($ppTT['id']);
         if(!$ppTT['cup_format']){
-            $ppTT['promote'] = floor($ppTT['participants']/4);
+            // TODO pptt specific values for promotions / relegations
+            $ppTT['promote'] = (int) $_SERVER['PPLEAGUE_PROMOTIONS'];
+            $ppTT['relegate'] = $ppTT['level'] > 1 ? (int) $_SERVER['PPLEAGUE_RELEGATIONS'] : null;
             $ppTT['rejoin'] = 2;
-            //TODO calculate relegation logic
-            $ppTT['relegate'] = null;
             $ppTT['next'] = $this->ppTournamentTypeRepository->getByNameAndLevel(name: $ppTT['name'], level: $ppTT['level']+1);
             $ppTT['top_up'] = $this->getMostPoints($ppTT['id']);
         }

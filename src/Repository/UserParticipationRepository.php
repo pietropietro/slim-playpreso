@@ -89,7 +89,8 @@ final class UserParticipationRepository extends BaseRepository
     function getPromotedTournamentTypesForUser(int $userId, bool $include_ppCups = false, bool $return_id_only = true){
         $this->db->where('user_id',$userId);
         $this->db->having('finished',1);
-        $this->db->where('position', $_SERVER['PPLEAGUE_TROPHY_POSITION'], "<=");
+        $this->db->where('position', $_SERVER['PPLEAGUE_PROMOTIONS'], "<=");
+        $this->db->where('EBR is null');
         if(!$include_ppCups) $this->db->where('ppLeague_id IS NOT NULL');
 
         $this->db->join('ppLeagues ppl', 'ppl.id = userParticipations.ppLeague_id', "INNER");
@@ -173,4 +174,16 @@ final class UserParticipationRepository extends BaseRepository
 
         // return $this->db->has($this->tableName);
     }
+
+    public function setEBR(int $user_id, int $byPPLeague_id , int $ppTournamentType_id){
+        $data = array(
+			"EBR" => $byPPLeague_id
+		);
+        $this->db->where('user_id', $user_id);
+        $this->db->where('ppTournamentType_id', $ppTournamentType_id);
+        $this->db->where('position', $_SERVER['PPLEAGUE_PROMOTIONS'], '<=');
+
+        return $this->db->update('userParticipations', $data, 1);
+    }
+
 }

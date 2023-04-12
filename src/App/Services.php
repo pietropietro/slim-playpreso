@@ -90,6 +90,7 @@ $container['ppleague_update_service'] = static fn (
 ):  PPLeague\Update => new  PPLeague\Update(
     $container->get('ppleague_repository'),
     $container->get('userparticipation_find_service'),
+    $container->get('userparticipation_update_service'),
     $container->get('pptournamenttype_find_service'),
     $container->get('pptournamenttype_join_service'),
     $container->get('points_update_service'),

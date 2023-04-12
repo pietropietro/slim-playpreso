@@ -14,6 +14,7 @@ final class Update  extends BaseService{
     public function __construct(
         protected PPLeagueRepository $ppLeagueRepository,
         protected UserParticipation\Find $userParticipationFindService,
+        protected UserParticipation\Update $userParticipationUpdateService,
         protected PPTournamentType\Find $ppTournamentTypeFindService,
         protected PPTournamentType\Join $ppTournamentTypeJoinService,
         protected Points\Update $pointsUpdateService,
@@ -29,60 +30,64 @@ final class Update  extends BaseService{
     
         $ups = $this->userParticipationFindService->getForTournament('ppLeague_id', $id);
     
-        // $this->rewardPoints($ups, $ppLeague['ppTournamentType_id']);
-        $this->promote($ups, $ppLeague['ppTournamentType_id']);
+        $ppTournamentType = $this->ppTournamentTypeFindService->getOne($ppLeague['ppTournamentType_id']);
+        if($ppTournamentType['next'] && $ppTournamentType['promote']){
+            $this->promote($ups, $ppTournamentType);
+        }
+
+        if($ppTournamentType['level'] > 1 && $ppTournamentType['relegate'] &&
+            $previousPTT = $this->ppTournamentTypeFindService->getPreviousLevel($ppTournamentType['id'])
+        ){
+            $this->relegate($ups, $ppTournamentType['relegate'], $id, $previousPTT['id']);
+        }
     }
 
 
-    private function promote(array $ups, int $fromPPTTId){
-        $ppTournamentType = $this->ppTournamentTypeFindService->getOne($fromPPTTId);
-        if(!$ppTournamentType['next'] || !$ppTournamentType['promote']) return;
-       
+    private function promote(array $ups, array $fromPPTT){
         //PROMOTE FIRST USERS
-        for($i = 0; $i<$ppTournamentType['promote'] ; $i++){
+        for($i = 0; $i<$fromPPTT['promote'] ; $i++){
             $this->ppTournamentTypeJoinService->joinAvailable(
                 $ups[$i]['user_id'], 
-                $ppTournamentType['next']['id'],
+                $fromPPTT['next']['id'],
                 pay: false
             );
         }
 
-        if(!$ppTournamentType['rejoin']) return;
+        if(!$fromPPTT['rejoin']) return;
+        
         //REJOIN USERS
-        $rejoinEndIndex = $ppTournamentType['promote'] + $ppTournamentType['rejoin'];
-        for($i = $ppTournamentType['promote']; $i < $rejoinEndIndex ;  $i++){
+        $rejoinEndIndex = $fromPPTT['promote'] + $fromPPTT['rejoin'];
+        for($i = $fromPPTT['promote']; $i < $rejoinEndIndex ;  $i++){
             $this->ppTournamentTypeJoinService->joinAvailable(
                 $ups[$i]['user_id'], 
-                $ppTournamentType['id'],
+                $fromPPTT['id'],
                 pay: false
             );
         }
-        
     }
 
-    // private function rewardPoints(array $ups, $ppTournamentType_id){
-        // $pointPrizes = $this->calculatePointRewards($ppTournamentType_id);
-        // foreach ($pointPrizes as $index => $prize) {
-        //     $this->pointsUpdateService->plus($ups[$index]['user_id'], $prize);
-        // }
-    // }
+    private function relegate(
+        array $ups, 
+        int $howMany, 
+        int $fromPPLeague_id, 
+        int $relegatedToPPTournamentType_id
+    ){
 
-    private function calculatePointRewards($id) {
-        $ppTournamentType = $this->ppTournamentTypeFindService->getOne($id);
+        for($i = (count($ups) - $howMany); $i < count($ups); $i++){
+            // set earlier promotion up expired – EBR
+            $this->userParticipationUpdateService->setEBR(
+                $ups[$i]['user_id'], 
+                $fromPPLeague_id,
+                $relegatedToPPTournamentType_id
+            );
 
-        $jackpot = $ppTournamentType['cost'] * ($ppTournamentType['participants'] / 2);
-        $pointsPositions = floor($ppTournamentType['participants']/3);
-        
-        $pointRewards = [];
-    
-        while ($pointsPositions > 0) {
-          $part = floor($jackpot / 2);
-          $jackpot -= $part;
-          array_push($pointRewards, $part);
-          $pointsPositions--;
+            // rejoin relegated pptt
+            $this->ppTournamentTypeJoinService->joinAvailable(
+                $ups[$i]['user_id'], 
+                $relegatedToPPTournamentType_id,
+                pay: false
+            );
         }
-
-        return $pointRewards;
     }
 
 }
