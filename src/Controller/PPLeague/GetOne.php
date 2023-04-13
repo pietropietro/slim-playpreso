@@ -27,6 +27,17 @@ final class GetOne extends Base
             throw new \App\Exception\NotFound('P-League Not Found.', 404);
         }
 
+        //specific data only added when loading p-league detail
+        $top_up =  $this->getPPTournamentTypeFindService()->getUps(
+            $ppLeague['ppTournamentType']['id']
+        );
+        if($top_up)$ppLeague['ppTournamentType']['top_up'] = $top_up[0];
+
+        $ppLeague['ppTournamentType']['userUps'] = $this->getPPTournamentTypeFindService()->getUps(
+            $ppLeague['ppTournamentType']['id'], $userId, null
+        );
+
+
         $ppLeague['userParticipations'] = $this->getUserParticipationFindService()->getForTournament('ppLeague_id', $ppLeagueId);
         $ppLeague['ppRounds'] = $this->getPPRoundFindService()->getForTournament(
             'ppLeague_id',

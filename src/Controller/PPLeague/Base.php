@@ -5,29 +5,35 @@ declare(strict_types=1);
 namespace App\Controller\PPLeague;
 
 use App\Controller\BaseController;
-use App\Service;
-// use App\Service\PPTournamentType\FindPPT;
-// use App\Service\UserParticipation\FindUP;
-// use App\Service\PPRound\FindPPR;
+use App\Service\PPTournamentType;
+use App\Service\PPLeague;
+use App\Service\UserParticipation;
+use App\Service\PPRound;
+use App\Service\Match;
 
 abstract class Base extends BaseController
 {
-    protected function getPPLeagueFindService(): Service\PPLeague\Find
+    protected function getPPLeagueFindService(): PPLeague\Find
     {
         return $this->container->get('ppleague_find_service');
     }
 
-    protected function getUserParticipationFindService(): Service\UserParticipation\Find
+    protected function getPPTournamentTypeFindService(): PPTournamentType\Find
+    {
+        return $this->container->get('pptournamenttype_find_service');
+    }
+
+    protected function getUserParticipationFindService(): UserParticipation\Find
     {
         return $this->container->get('userparticipation_find_service');
     }
 
-    protected function getPPRoundFindService(): Service\PPRound\Find
+    protected function getPPRoundFindService(): PPRound\Find
     {
         return $this->container->get('ppround_find_service');
     }
 
-    protected function getMatchFindService(): Service\Match\Find
+    protected function getMatchFindService(): Match\Find
     {
         return $this->container->get('match_find_service');
     }

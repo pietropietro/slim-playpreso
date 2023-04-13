@@ -62,7 +62,6 @@ final class Find  extends BaseService{
             $ppTT['relegate'] = $ppTT['level'] > 1 ? (int) $_SERVER['PPLEAGUE_RELEGATIONS'] : null;
             $ppTT['rejoin'] = 2;
             $ppTT['next'] = $this->ppTournamentTypeRepository->getByNameAndLevel(name: $ppTT['name'], level: $ppTT['level']+1);
-            $ppTT['top_up'] = $this->getMostPoints($ppTT['id']);
         }
         else{
             $ppTT['cup_format'] = json_decode($ppTT['cup_format']);
@@ -105,17 +104,19 @@ final class Find  extends BaseService{
         return $this->ppTournamentTypeRepository->getMOTDType();
     }
 
-    private function getMostPoints($id){
+    public function getUps(int $id, ?int $user_id=null, ?int $limit=1){
         //redis logic here todo
-        $stat = $this->ppTournamentTypeRepository->getMostPoints($id);
-        if($stat){
-            $stat['user'] = array(
-                'id' => $stat['user_id'],
-                'username' => $stat['username'],
-                'trophies' => $this->trophiesFindService->getTrophies($stat['user_id'])
-            );
+        $stats = $this->ppTournamentTypeRepository->getUps($id, $user_id, $limit);
+        if($stats){
+            foreach ($stats as &$s) {
+                $s['user'] = array(
+                    'id' => $s['user_id'],
+                    'username' => $s['username'],
+                    'trophies' => $this->trophiesFindService->getTrophies($s['user_id'])
+                );
+            }
         }
-        return $stat;
+        return $stats;
     }
 
 }

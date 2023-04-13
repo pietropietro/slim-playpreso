@@ -147,12 +147,16 @@ final class PPTournamentTypeRepository extends BaseRepository
         return $this->db->getOne('ppTournamentTypes');
     }
 
-    public function getMostPoints($id){
+    public function getUps(int $id, ?int $userId, ?int $limit=1){
         $this->db->join('users u', 'up.user_id = u.id');
         $this->db->where('ppTournamentType_id', $id);
         $this->db->where('tot_points is not null');
         $this->db->orderBy('tot_points');
-        return $this->db->getOne('userParticipations up', 'user_id, username, ppLeague_id, tot_points, tot_locked, tot_preso, tot_unox2, updated_at');
+        if($userId)$this->db->where('user_id', $userId);
+        $columns = 'user_id, username, ppLeague_id, tot_points, tot_locked, tot_preso, tot_unox2, updated_at';
+        return $this->db->get(
+            'userParticipations up', $limit, $columns
+        );
     }    
 
 }
