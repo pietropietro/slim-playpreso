@@ -44,13 +44,15 @@ final class Find  extends BaseService {
         ?string $playMode, 
         ?bool $started = null, 
         ?bool $finished = null, 
+        ?string $updatedAfter = null
     ){
         $ups = $this->userParticipationRepository->getForUser(
             $userId, 
             $playMode ? $playMode.'_id' : null,
             $started, 
             $finished, 
-            null
+            null,
+            $updatedAfter
         );        
         foreach($ups as &$up){
             $this->enrich($up, $userId);
@@ -74,16 +76,20 @@ final class Find  extends BaseService {
             $up['rounds']= $up['ppTournamentType']['rounds'];
         }
         
-        if($up['started'] && !$up['finished']){
-            $column = $up['ppLeague_id'] ? 'ppLeague_id' : 'ppCupGroup_id';
-            
+        
+        $column = $up['ppLeague_id'] ? 'ppLeague_id' : 'ppCupGroup_id';
+
+        if(!$up['started']){
+            $up['user_count']= $this->userParticipationRepository->count($column, $up[$column]);
+        }
+
+        if($up['started']){
             $up['currentRound'] = $this->ppRoundFindService->getCurrentRoundNumber($column, $up[$column]);
             $up['playedInCurrentRound'] = $this->ppRoundFindService->verifiedInLatestRound($column, $up[$column]);
-            $up['user_count']= $this->userParticipationRepository->count($column, $up[$column]);
 
             // $userCurrentRound = $this->ppRoundFindService->getUserCurrentRound($column, $up[$column], $userId);
-
-            $up['nextMatch'] = $this->matchFindService->getNextMatchInPPTournament($column, $up[$column]);
+            if(!$up['finished'])$up['nextMatch'] = $this->matchFindService->getNextMatchInPPTournament($column, $up[$column]);
+            
             // if($up['nextMatch']){
                 //avoid heavy resp
                 // unset($up['nextMatch']['league']['standings']);

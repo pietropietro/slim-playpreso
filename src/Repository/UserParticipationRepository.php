@@ -35,7 +35,8 @@ final class UserParticipationRepository extends BaseRepository
         ?string $type = null, 
         ?bool $started = null, 
         ?bool $finished = null, 
-        ?int $minPosition = null
+        ?int $minPosition = null,
+        ?string $updatedAfter = null
     ){
         $this->db->where('user_id', $userId);
 
@@ -53,6 +54,11 @@ final class UserParticipationRepository extends BaseRepository
         }
         if($type){
             $this->db->where('userParticipations.'.$type.' IS NOT NULL');
+        }
+        if($updatedAfter){
+            $dateAfter = date("Y-m-d H:i:s", strtotime($updatedAfter));
+            $this->db->where('updated_at', $dateAfter, '>');
+
         }
         // $this->db->orderBy('joined_at','desc');
 

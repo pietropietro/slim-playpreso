@@ -18,8 +18,11 @@ final class GetAll extends Base{
     ): Response {
         $userId = $this->getAndValidateUserId($request);
 
-        //TODO change type to enum
-        $ups = $this->getParticipationService()->getForUser($userId, null, started: null, finished: false);
+        $ups = array(
+            "active" => $this->getParticipationService()->getForUser($userId, null, started: true, finished: false),
+            "notStarted" => $this->getParticipationService()->getForUser($userId, null, started: false, finished: false),
+            "finished" => $this->getParticipationService()->getForUser($userId, 'ppLeague', started: null, finished: true, updatedAfter: '-10 days'),
+        );
 
         return $this->jsonResponse($response, 'success', $ups, 200);
     }
