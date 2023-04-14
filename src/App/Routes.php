@@ -38,6 +38,31 @@ return function ($app){
     $pointsService = $container->get('points_find_service');
     $admin = $container->get('user_find_service');
 
+    //STATIC IMAGES
+    $app->get('/static/teams/{filename}', function ($request, $response, $args) {
+        $filename = $args['filename'];
+        $path = dirname(dirname(__DIR__)) 
+            . DIRECTORY_SEPARATOR . 'public' 
+            . DIRECTORY_SEPARATOR . 'images' 
+            . DIRECTORY_SEPARATOR . 'teams' 
+            . DIRECTORY_SEPARATOR . $filename . '.png';
+    
+        if (!file_exists($path)) {
+            return $response->withHeader('Mimmo', $path)->withStatus(404);
+        }
+    
+        $type = mime_content_type($path);
+        $stream = new \Slim\Http\Stream(fopen($path, 'r'));
+
+        return $response
+            ->withHeader('Content-Type', $type)
+            ->withHeader('Content-Length', filesize($path))
+            ->withHeader('Cache-Control', 'public, max-age=86400')
+            ->withHeader('Expires', gmdate('D, d M Y H:i:s', time() + 86400) . ' GMT')
+            ->withBody($stream);
+    })->add(new Auth($pointsService))->setOutputBuffering(false);
+
+
     $app->group('/user', function () use ($app, $pointsService): void {
         $app->post('/signup', User\Create::class);
         $app->post('/login', User\Login::class);
