@@ -48,7 +48,7 @@ return function ($app){
             . DIRECTORY_SEPARATOR . $filename . '.png';
     
         if (!file_exists($path)) {
-            return $response->withHeader('Mimmo', $path)->withStatus(404);
+            return $response->withStatus(404);
         }
     
         $type = mime_content_type($path);
