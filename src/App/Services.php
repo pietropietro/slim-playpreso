@@ -310,14 +310,17 @@ $container['ppcupgroup_find_service'] = static fn (
     $container->get('ppround_find_service')
 );
 
-$container['external_api_service'] = static fn (
+$container['external_api_importleaguedata_service'] = static fn (
     ContainerInterface $container
-):  ExternalAPI\Call => new  ExternalAPI\Call(
+):  ExternalAPI\ImportLeagueData => new  ExternalAPI\ImportLeagueData(
     $container->get('match_elaborate_service'),
     $container->get('league_elaborate_service'),
     $container->get('team_create_service'),
-    
 );
+
+$container['external_api_importteamlogo_service'] = static fn (
+    ContainerInterface $container
+):  ExternalAPI\ImportTeamLogo => new  ExternalAPI\ImportTeamLogo();
 
 $container['match_elaborate_service'] = static fn (
     ContainerInterface $container
@@ -328,6 +331,7 @@ $container['match_elaborate_service'] = static fn (
     $container->get('match_find_service'),
     $container->get('team_find_service'),
     $container->get('team_create_service'),
+    $container->get('external_api_importteamlogo_service'),
 );
 
 $container['match_update_service'] = static fn (

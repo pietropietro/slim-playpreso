@@ -22,6 +22,11 @@ final class Find extends BaseService{
         return $this->teamRepository->idFromExternal($ls_id);
     }
 
+    // public function getInternalExternalIdPair() : ?array {
+    //     $pairs = $this->teamRepository->getInternalExternalIdPair();
+    //     return $pairs;
+    // }
+
     
     public function getOne(int $id, ?bool $is_external_id=false, ?bool $enrich=false ) : ?array {
         $team = $this->teamRepository->getOne($id, $is_external_id);

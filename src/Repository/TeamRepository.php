@@ -20,6 +20,11 @@ final class TeamRepository extends BaseRepository
         
     }
 
+    // public function getInternalExternalIdPair(){
+    //     $this->db->orderBy('rand()');
+    //     return $this->db->get('teams',null ,'id, ls_id');
+    // }
+
     public function getOne(int $id, bool $is_external_id = false){
         $column = !!$is_external_id ? 'ls_id' : 'id';
         $this->db->where($column, $id);

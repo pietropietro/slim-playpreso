@@ -7,6 +7,7 @@ namespace App\Service\Match;
 use App\Service\BaseService;
 use App\Service\Match;
 use App\Service\Team;
+use App\Service\ExternalAPI;
 
 
 final class Elaborate extends BaseService{
@@ -17,6 +18,7 @@ final class Elaborate extends BaseService{
         protected Match\Find $matchFindService,
         protected Team\Find $teamFindService,
         protected Team\Create $teamCreateService,
+        protected ExternalAPI\ImportTeamLogo $importLogoService,
     ) {}
 
     public function elaborateLsEvents(array $lsEvents, int $leagueId){        
@@ -24,6 +26,8 @@ final class Elaborate extends BaseService{
             
             $ls_id = (int) $eventObj->Eid;
             $round = isset($eventObj->ErnInf) ? (int) $eventObj->ErnInf : 1; 
+
+            //TEAM CREATION IF NEEDED
             $homeId = $this->teamFindService->idFromExternal((int)$eventObj->T1[0]->ID);
             if(!$homeId){
                 $homeId = $this->teamCreateService->create(
@@ -40,6 +44,11 @@ final class Elaborate extends BaseService{
                     country: $eventObj->T2[0]->CoNm
                 );
             }
+
+            //TEAMS LOGO IMPORT IF MISSING
+            $this->checkLogo($homeId, $eventObj->T1[0]->Img);
+            $this->checkLogo($awayId, $eventObj->T2[0]->Img);
+            
             $dateStart = (string)$eventObj->Esd;
 
             //RETRIEVE MATCH FROM DB IF EXISTS
@@ -90,6 +99,16 @@ final class Elaborate extends BaseService{
                 $this->matchUpdateService->updateNotes($match['id'], $eventObj->Eps);
             }
                
+        }
+    }
+
+    private function checkLogo(int $id, string $external_logo_suffix){
+        $path = $_ENV['STATIC_IMAGE_FOLDER'] . 'teams/' . $id . '.png';;    
+        if (!file_exists($path)) {
+            $this->importLogoService->fetch(
+                $external_logo_suffix, 
+                $id
+            );
         }
     }
 }

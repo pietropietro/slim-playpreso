@@ -10,14 +10,14 @@ use App\Service\Match;
 use App\Service\League;
 use App\Service\Team;
 
-final class Call extends BaseService{
+final class ImportLeagueData extends BaseService{
     public function __construct(
         protected Match\Elaborate $matchService,
         protected League\Elaborate $leagueService,
         protected Team\Create $teamCreateService,
     ){}
 
-    public function fetchExternalData(string $ls_suffix, int $league_id){
+    public function fetch(string $ls_suffix, int $league_id){
         //REAL FETCH
         $client = new Client([
                 'base_uri' => $_SERVER['EXTERNAL_API_BASE_URI'],
@@ -55,7 +55,7 @@ final class Call extends BaseService{
         return $match_import_result;
     }
 
-    function isDaylightSavingTime() {
+    private function isDaylightSavingTime() {
         // Get the current month and day in the format 'MMDD'
         $currentDate = date('md');
       

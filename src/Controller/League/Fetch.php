@@ -23,7 +23,7 @@ final class Fetch extends Base
         $leagueId = (int) $args['id'];
         $league = $this->getFindLeagueService()->getOne($leagueId);
        
-        $result = $this->getExternalApiService()->fetchExternalData($league['ls_suffix'], $league['id']);
+        $result = $this->getImportLeagueDataService()->fetch($league['ls_suffix'], $league['id']);
         return $this->jsonResponse($response, 'success', $result, 200);
     }
 }

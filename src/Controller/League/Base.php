@@ -22,9 +22,9 @@ abstract class Base extends BaseController
         return $this->container->get('match_find_service');
     }
     
-    protected function getExternalApiService(): ExternalAPI\Call
+    protected function getImportLeagueDataService(): ExternalAPI\ImportLeagueData
     {
-        return $this->container->get('external_api_service');
+        return $this->container->get('external_api_importleaguedata_service');
     }
 
     protected function getUpdateLeagueService(): League\Update

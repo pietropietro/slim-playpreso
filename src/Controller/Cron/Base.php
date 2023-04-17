@@ -5,20 +5,21 @@ declare(strict_types=1);
 namespace App\Controller\Cron;
 
 use App\Controller\BaseController;
-use App\Service\ExternalAPI\Call;
+use App\Service\ExternalAPI;
 use App\Service\League;
 use App\Service\Guess;
 use App\Service\PPRoundMatch;
 use App\Service\MOTD;
 use App\Service\Match;
+use App\Service\Team;
 use App\Service\EmailPreferences;
 use App\Service\EmailBuilder;
 
 abstract class Base extends BaseController
 {
-    protected function getExternalApiService(): Call
+    protected function getImportLeagueDataService(): ExternalAPI\ImportLeagueData
     {
-        return $this->container->get('external_api_service');
+        return $this->container->get('external_api_importleaguedata_service');
     }
 
     protected function getLeaguesService(): League\Find
@@ -59,6 +60,16 @@ abstract class Base extends BaseController
     protected function getMotdCreateService(): MOTD\Create
     {
         return $this->container->get('motd_create_service');
+    }
+
+    protected function getTeamFindService(): Team\Find
+    {
+        return $this->container->get('team_find_service');
+    }
+
+    protected function getImportTeamLogoService(): ExternalAPI\ImportTeamLogo
+    {
+        return $this->container->get('external_api_importteamlogo_service');
     }
 
 }

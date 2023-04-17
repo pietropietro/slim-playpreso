@@ -17,6 +17,7 @@ use App\Controller\EmailPreferences;
 use App\Controller\Cron;
 use App\Controller\Stats;
 use App\Controller\MOTD;
+use App\Controller\StaticFiles;
 use App\Middleware\Auth;
 use App\Middleware\Cors;
 use App\Middleware\InternalRequest;
@@ -32,36 +33,16 @@ return function ($app){
         return $res;
     });
 
-    $app->get('/', 'App\Controller\DefaultController:getHelp');
-
     $container = $app->getContainer();
     $pointsService = $container->get('points_find_service');
     $admin = $container->get('user_find_service');
 
     //STATIC IMAGES
-    $app->get('/static/teams/{filename}', function ($request, $response, $args) {
-        $filename = $args['filename'];
-        $path = dirname(dirname(__DIR__)) 
-            . DIRECTORY_SEPARATOR . 'public' 
-            . DIRECTORY_SEPARATOR . 'images' 
-            . DIRECTORY_SEPARATOR . 'teams' 
-            . DIRECTORY_SEPARATOR . $filename . '.png';
-    
-        if (!file_exists($path)) {
-            return $response->withStatus(404);
-        }
-    
-        $type = mime_content_type($path);
-        $stream = new \Slim\Http\Stream(fopen($path, 'r'));
+    $app->get('/static/teams/{filename}', StaticFiles\GetTeamLogo::class)
+        ->add(new Auth($pointsService))
+        ->setOutputBuffering(false);
 
-        return $response
-            ->withHeader('Content-Type', $type)
-            ->withHeader('Content-Length', filesize($path))
-            ->withHeader('Cache-Control', 'public, max-age=86400')
-            ->withHeader('Expires', gmdate('D, d M Y H:i:s', time() + 86400) . ' GMT')
-            ->withBody($stream);
-    })->add(new Auth($pointsService))->setOutputBuffering(false);
-
+    $app->get('/', 'App\Controller\DefaultController:getHelp');
 
     $app->group('/user', function () use ($app, $pointsService): void {
         $app->post('/signup', User\Create::class);
@@ -168,6 +149,7 @@ return function ($app){
         $app->get('/send-lock-reminders', Cron\ReminderLock::class);
         $app->get('/pick-motd', Cron\PickMotd::class);
     })->add(new InternalRequest());
+
 
     // Catch-all route to serve a 404 Not Found page if none of the routes match
     // NOTE: make sure this route is defined last

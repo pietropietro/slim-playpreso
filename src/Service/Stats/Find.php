@@ -90,8 +90,8 @@ final class Find extends BaseService{
         $aggregates = $this->statsRepository->getPPRMAggregates($ppRoundMatchId);
         $stats = array(
             "most_locked" => $this->statsRepository->getCommonLock($ppRoundMatchId),
-            "preso_count" => $aggregates['preso_count'],
-            "points_avg" => $aggregates['points_avg'],
+            "preso_count" => isset($aggregates['preso_count']) ? $aggregates['preso_count'] : null,
+            "points_avg" => isset($aggregates['points_avg']) ? $aggregates['points_avg'] : null,
         );
         return $stats;
     }

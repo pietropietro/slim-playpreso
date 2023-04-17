@@ -28,7 +28,7 @@ final class Start extends Base
 
         foreach ($leagues as $key => $league) {
             if(!$league['ls_suffix'])continue;
-            $this->getExternalApiService()->fetchExternalData($league['ls_suffix'], $league['id']);
+            $this->getImportLeagueDataService()->fetch($league['ls_suffix'], $league['id']);
         }
 
         $message = date('H:i:s T'). (count($leagues) > 0 ? ' count:'.count($leagues).',like: '.$leagues[0]['ls_suffix'] : ' - no leagues');
