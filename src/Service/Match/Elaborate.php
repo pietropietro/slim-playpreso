@@ -46,15 +46,15 @@ final class Elaborate extends BaseService{
             }
 
             //TEAMS LOGO IMPORT IF MISSING
-            $this->checkLogo($homeId, $eventObj->T1[0]->Img);
-            $this->checkLogo($awayId, $eventObj->T2[0]->Img);
+            // $this->checkLogo($homeId, $eventObj->T1[0]->Img);
+            // $this->checkLogo($awayId, $eventObj->T2[0]->Img);
             
             $dateStart = (string)$eventObj->Esd;
 
             //RETRIEVE MATCH FROM DB IF EXISTS
             $match = $this->matchFindService->getOne($ls_id, true, false, false);
 
-            //UPDATE LEGACY(i.e. wrong ls_id) OR CREATE
+            //CREATE MATCH OR UPDATE LEGACY(i.e. wrong ls_id)
             if(!$match && $eventObj->Eps === 'NS'){
                 //UPDATE LEGACY
                 if($homeId && $awayId && $legacyMatch = $this->matchFindService->getOneByLeagueRoundAndTeams($leagueId, $round, $homeId, $awayId)){
@@ -70,7 +70,9 @@ final class Elaborate extends BaseService{
             if($match['verified_at'])continue;
 
             //UPDATE TEAMS
-            if(!$match['home_id'] || !$match['away_id']){
+            if(!$match['home_id'] || !$match['away_id']
+                || $match['home_id'] != $homeId || $match['away_id'] != $awayId
+            ){
                 $this->matchUpdateService->updateTeams($match['id'], $homeId, $awayId, false);
             }
 
