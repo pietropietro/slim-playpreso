@@ -46,8 +46,8 @@ final class Elaborate extends BaseService{
             }
 
             //TEAMS LOGO IMPORT IF MISSING
-            // $this->checkLogo($homeId, $eventObj->T1[0]->Img);
-            // $this->checkLogo($awayId, $eventObj->T2[0]->Img);
+            $this->checkLogo($homeId, $eventObj->T1[0]->Img);
+            $this->checkLogo($awayId, $eventObj->T2[0]->Img);
             
             $dateStart = (string)$eventObj->Esd;
 

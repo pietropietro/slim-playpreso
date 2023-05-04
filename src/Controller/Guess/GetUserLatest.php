@@ -7,7 +7,7 @@ namespace App\Controller\Guess;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class GetUserLastNext extends Base
+final class GetUserLatest extends Base
 {
     /**
      * @param array<string> $args
@@ -21,8 +21,8 @@ final class GetUserLastNext extends Base
         $userId = $this->getAndValidateUserId($request);
 
         $returnArray = array(
-            "next" => $this->getFindGuessService()->getNext($userId),
-            "last" => $this->getFindGuessService()->getLast($userId, '-1 week')
+            "notVerified" => $this->getFindGuessService()->getNext($userId),
+            "verified" => $this->getFindGuessService()->getLast($userId, '-1 week')
         );
                  
         return $this->jsonResponse($response, "success", $returnArray, 200);
