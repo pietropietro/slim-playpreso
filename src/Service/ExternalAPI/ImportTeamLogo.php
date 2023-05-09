@@ -30,9 +30,9 @@ final class ImportTeamLogo extends BaseService{
             file_put_contents($imagePath, $imageData);
             return true;
     
-        } catch (\GuzzleHttp\Exception\RequestException $e) {
+        } catch (\Exception $e) {
             // Handle the exception here
-            return $e->getResponse()->getStatusCode();
+            return false;
         }
         
     }
