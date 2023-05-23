@@ -37,25 +37,20 @@ final class Find  extends BaseService{
     }
 
 
-    public function getForPPTournamentType(int $ppTTid, bool $id_only = false){
+    //TODO move in PPTT
+    public function getForPPTournamentType(int $ppTTid){
         $ppTT =  $this->ppTournamentTypeRepository->getOne($ppTTid);
-
-        if($ppTT['cup_format'] && $ppTT['name'] === 'World Cup'){
-           return $this->leagueRepository->getForArea('world', null, $id_only);
+        
+        if($ppTT['pick_tournament']){
+            return $ppTT['pick_tournament'];
         }
-        if($ppTT['cup_format']) return [];
+        if($ppTT['pick_country']){
+            return $this->leagueRepository->getForCountry($ppTT['pick_country'], $ppTT['level']);
+        }
+        if($ppTT['pick_area']){
+            return $this->leagueRepository->getForArea($ppTT['pick_area'], $ppTT['level']);
+        }
 
-        $area_ptt = array('Europe', 'America', 'Asia', 'Africa');
-        
-        if(in_array($ppTT['name'], $area_ptt)){
-            $areaLeagues = $this->leagueRepository->getForArea(strtolower($ppTT['name']), $ppTT['level']);
-            if(!$id_only) return $areaLeagues;
-            return array_column($areaLeagues, 'id');
-        }       
-        
-        if(!$ppTT['level'] && $ppTT['name']) return null;
-
-        $country = $ppTT['name'] === 'Random' ? null : strtolower($ppTT['name']);
-        return $this->leagueRepository->getForCountry($country, $ppTT['level'], $id_only);
+        return $this->leagueRepository->get(maxLevel: $ppTT['level']);       
     }
 }

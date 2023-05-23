@@ -31,7 +31,7 @@ final class Update extends Base
             // the array with all keys
             get_object_vars($data),  
             // keys to be extracted
-            array_flip(['name', 'tag', 'country', 'country_level', 'area', 'area_level', 'ls_suffix', 'parent_id'])
+            array_flip(['name', 'tag', 'country', 'level', 'ls_suffix', 'parent_id'])
         );
 
         $this->getUpdateLeagueService()->update($leagueId, $updateData);

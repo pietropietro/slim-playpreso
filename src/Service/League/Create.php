@@ -16,9 +16,7 @@ final class Create extends BaseService{
         string $name, 
         string $tag, 
         ?string $country, 
-        ?int $country_level, 
-        string $area, 
-        int $area_level, 
+        ?int $level, 
         ?int $parent_id = null,
         ?string $ls_suffix = null,
     ){
@@ -26,9 +24,7 @@ final class Create extends BaseService{
             $name, 
             substr(strtoupper($tag),0,3),
             $country,
-            $country_level,
-            $area,
-            $area_level,            
+            $level,
             $parent_id,
             $ls_suffix
         );

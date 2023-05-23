@@ -6,11 +6,12 @@ namespace App\Repository;
 
 final class LeagueRepository extends BaseRepository
 {
-    private $columnsNoStandings = "id, name, tag, country, area, ls_suffix, parent_id, area_level, country_level";
-    private $columnsWithStandings = "id, name, tag, country, area, ls_suffix, parent_id, standings";
+    private $columnsNoStandings = "id, name, tag, country, ls_suffix, parent_id, level";
+    private $columnsWithStandings = "id, name, tag, country, ls_suffix, parent_id, standings";
 
-    public function get(){
-        return $this->db->get('leagues');
+    public function get(?int $maxLevel=null){
+        if($maxLevel) $this->db->where('level', $maxLevel, '<=');
+        return $this->db->get('leagues', null, $this->columnsNoStandings);
     }
 
     public function getOne(int $id, ?bool $withStandings = false){
@@ -21,24 +22,15 @@ final class LeagueRepository extends BaseRepository
         );
     }
 
-    public function getForArea(string $area, ?int $level = null, ?bool $id_only = false)
+    public function getForArea(int $ppAreaId, ?int $level = null)
     {
-        $this->db->where('area', $area);
+        $tournamentIds = $this->db->subQuery();
+        $tournamentIds->where('ppArea_id', $ppAreaId);
+        $tournamentIds->get('tournamentAreas', null, 'id');
 
-        switch ($level) {
-			case 1:
-			case 2:
-			case 3:
-                $this->db->where('area_level',$level);
-                $this->db->where('country_level',1);
-				break;
-			case 4:
-                $this->db->where('country_level',2);
-				break;
-		}
-        if($id_only){
-            return $this->db->getValue('leagues', 'id', null);
-        }
+        $this->db->where('id',$tournamentIds,'IN');
+        $this->db->where('level', $level, '<=');
+        
         return $this->db->get('leagues', null, $this->columnsNoStandings);
     }
 
@@ -47,14 +39,11 @@ final class LeagueRepository extends BaseRepository
 		return $this->db->get('leagues', null, $this->columnsNoStandings);
     }
 
-    public function getForCountry(?string $country, int $level, bool $id_only = false){
+    public function getForCountry(?string $country, int $level){
         if($country){
             $this->db->where('country',$country);
         }
-        $this->db->where('country_level', $level, '<=');
-        if($id_only){
-            return $this->db->getValue('leagues', 'id', null);
-        }
+        $this->db->where('level', $level, '<=');
         return $this->db->get('leagues', null, $this->columnsNoStandings);
     }
 
@@ -67,9 +56,7 @@ final class LeagueRepository extends BaseRepository
         string $name, 
         string $tag, 
         ?string $country, 
-        ?int $country_level, 
-        string $area, 
-        int $area_level, 
+        ?int $level, 
         ?int $parentId = null,
         ?string $ls_suffix = null,
     ) {
@@ -77,9 +64,7 @@ final class LeagueRepository extends BaseRepository
             "name" => $name,
             "tag" => $tag,
             "country" => $country,
-            "country_level" => $country_level,
-            "area" => $area,
-            "area_level" => $area_level,
+            "level" => $level,
             "parent_id" => $parentId,
             "ls_suffix" => $ls_suffix,
             "created_at" => $this->db->now()

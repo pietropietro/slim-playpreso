@@ -47,10 +47,12 @@ final class Picker extends BaseService{
 
 
     public function nextMatchesForPPTournamentType(int $tournamentTypeId){
-        if(!$leagueIDs = $this->leagueService->getForPPTournamentType($tournamentTypeId, true)) return [];
+        if(!$leagues = $this->leagueService->getForPPTournamentType($tournamentTypeId)) return [];
+        
+        $leagueIds = array_column($leagues, 'id');
         
         $matches = array();
-        foreach ($leagueIDs as $id) {
+        foreach ($leagueIds as $id) {
             if($retrieved = $this->nextMatchesForLeague($id, 10)){
                 $matches = array_merge($matches, $retrieved);
             }
