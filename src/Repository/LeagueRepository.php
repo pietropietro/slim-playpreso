@@ -26,18 +26,23 @@ final class LeagueRepository extends BaseRepository
     {
         $tournamentIds = $this->db->subQuery();
         $tournamentIds->where('ppArea_id', $ppAreaId);
-        $tournamentIds->get('tournamentAreas', null, 'id');
+        $tournamentIds->get('ppAreaTournaments', null, 'id');
 
         $this->db->where('id',$tournamentIds,'IN');
-        $this->db->where('level', $level, '<=');
+        if($level)$this->db->where('level', $level, '<=');
         
         return $this->db->get('leagues', null, $this->columnsNoStandings);
     }
 
-    public function getUefa(){
-		$this->db->where('country','Europe');
-		return $this->db->get('leagues', null, $this->columnsNoStandings);
+    function getPPAreaExtraTournaments(int $ppAreaId){
+        $tournamentIds = $this->db->subQuery();
+        $tournamentIds->where('ppArea_id', $ppAreaId);
+        $tournamentIds->getValue('ppAreaTournaments', 'tournament_id', null);
+
+        $this->db->where('id',$tournamentIds,'IN');        
+        return $this->db->get('leagues', null, $this->columnsNoStandings);
     }
+
 
     public function getForCountry(?string $country, int $level){
         if($country){

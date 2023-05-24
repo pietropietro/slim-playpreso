@@ -48,9 +48,19 @@ final class Find  extends BaseService{
             return $this->leagueRepository->getForCountry($ppTT['pick_country'], $ppTT['level']);
         }
         if($ppTT['pick_area']){
-            return $this->leagueRepository->getForArea($ppTT['pick_area'], $ppTT['level']);
+            return $this->getForArea($ppTT['pick_area'], $ppTT['level']);
         }
 
         return $this->leagueRepository->get(maxLevel: $ppTT['level']);       
+    }
+
+    //TODO check it returns both leagues for PPArea countries and extra tournaments
+    public function getForArea($ppAreaId, ?int $level=null){
+        return $this->leagueRepository->getForArea($ppAreaId, $level);
+    }
+
+    //TODO check it returns only leagues for ppArea extra tournaments.
+    public function getPPAreaExtraTournaments($ppAreaId){
+        return $this->leagueRepository->getPPAreaExtraTournaments($ppAreaId);
     }
 }

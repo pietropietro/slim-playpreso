@@ -13,6 +13,7 @@ use App\Controller\PPCup;
 use App\Controller\PPCupGroup;
 use App\Controller\PPRound;
 use App\Controller\PPRoundMatch;
+use App\Controller\PPArea;
 use App\Controller\EmailPreferences;
 use App\Controller\Cron;
 use App\Controller\Stats;
@@ -118,6 +119,16 @@ return function ($app){
             $app->get('', PPTournamentType\GetAll::class);
             $app->post('', PPTournamentType\AdminCreate::class);
             $app->post('/{id}', PPTournamentType\AdminUpdate::class);
+        });
+
+        $app->group('/p-area', function() use($app): void {
+            $app->get('', PPArea\AdminGetAll::class);
+            $app->post('', PPArea\AdminCreate::class);
+            $app->post('/{id}', PPArea\AdminUpdate::class);
+            $app->post('/country/{id}', PPArea\AddCountry::class);
+            $app->delete('/country/{id}/{country}', PPArea\RemoveCountry::class);
+            $app->post('/tournament/{id}', PPArea\AddTournament::class);
+            $app->delete('/tournament/{id}/{tournamentId}', PPArea\RemoveTournament::class);
         });
 
         $app->group('/p-round-match', function() use($app): void {

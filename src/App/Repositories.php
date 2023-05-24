@@ -9,6 +9,7 @@ use App\Repository\PPRoundRepository;
 use App\Repository\PPRoundMatchRepository;
 use App\Repository\PPCupRepository;
 use App\Repository\PPCupGroupRepository;
+use App\Repository\PPAreaRepository;
 use App\Repository\GuessRepository;
 use App\Repository\UserRepository;
 use App\Repository\UserParticipationRepository;
@@ -52,3 +53,6 @@ $container['emailpreferences_repository'] = static fn (ContainerInterface $conta
 $container['stats_repository'] = static fn (ContainerInterface $container): StatsRepository => new StatsRepository($container->get('db'));
 
 $container['motd_repository'] = static fn (ContainerInterface $container): MOTDRepository => new MOTDRepository($container->get('db'));
+
+$container['pparea_repository'] = static fn (ContainerInterface $container): PPAreaRepository => new PPAreaRepository($container->get('db'));
+

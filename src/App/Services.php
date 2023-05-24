@@ -10,6 +10,7 @@ use App\Service\PPRound;
 use App\Service\PPRoundMatch;
 use App\Service\PPCup;
 use App\Service\PPCupGroup;
+use App\Service\PPArea;
 use App\Service\UserParticipation;
 use App\Service\League;
 use App\Service\ExternalAPI;
@@ -505,4 +506,25 @@ $container['trophies_find_service'] = static fn (
     $container->get('redis_service'),
     $container->get('userparticipation_repository'),
     $container->get('pptournamenttype_repository')
+);
+
+$container['pparea_find_service'] = static fn (
+    ContainerInterface $container
+):  PPArea\Find => new  PPArea\Find(
+    $container->get('redis_service'),
+    $container->get('league_find_service'),
+    $container->get('pparea_repository')
+);
+
+$container['pparea_create_service'] = static fn (
+    ContainerInterface $container
+):  PPArea\Create => new  PPArea\Create(
+    $container->get('pparea_repository')
+);
+
+
+$container['pparea_update_service'] = static fn (
+    ContainerInterface $container
+):  PPArea\Update => new  PPArea\Update(
+    $container->get('pparea_repository')
 );
