@@ -27,6 +27,9 @@ final class AdminCreate extends Base
             isset($data->level) ? (int) $data->level : null,
             isset($data->rounds) ? (int) $data->rounds : null,
             isset($data->participants) ? (int) $data->participants : null,
+            isset($data->pick_country) ? (string) $data->pick_country : null,
+            isset($data->pick_area) ? (int) $data->pick_area : null,
+            isset($data->pick_tournament) ? (int) $data->pick_tournament : null,
         );
         
         $status = $newId ? 'success' : 'error';

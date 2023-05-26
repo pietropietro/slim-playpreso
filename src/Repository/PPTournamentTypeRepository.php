@@ -16,6 +16,9 @@ final class PPTournamentTypeRepository extends BaseRepository
         ?int $level = null, 
         ?int $rounds = null, 
         ?int $participants = null,
+        ?string $pick_country = null,
+        ?int $pick_area = null,
+        ?int $pick_tournament = null,
     ){
         $data = array(
             "name" => $name, 
@@ -24,7 +27,10 @@ final class PPTournamentTypeRepository extends BaseRepository
             "emoji" => $emoji,
             "level" => $level, 
             "rounds" => $rounds, 
-            "participants" => $participants
+            "participants" => $participants,
+            "pick_country" => $pick_country,
+            "pick_area" => $pick_area,
+            "pick_tournament" => $pick_tournament,
         );
         return $this->db->insert('ppTournamentTypes', $data);
     }

@@ -46,6 +46,10 @@ final class AdminUpdate extends Base
         if(isset($data->participants)){
             $updateData['participants'] = $data->participants;
         }
+        $updateData['pick_country'] = $data->pick_country;
+        $updateData['pick_area'] = $data->pick_area;
+        $updateData['pick_tournament'] = $data->pick_tournament;
+        
         if(!$updateData) throw new \App\Exception\NotFound('Invalid request.', 400);
 
         $result = $this->getUpdatePPTournamentService()->update($ppTournamentTypeId, $updateData);
