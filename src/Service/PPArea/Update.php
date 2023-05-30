@@ -24,12 +24,12 @@ final class Update  extends BaseService{
         $this->ppAreaRepository->removeCountry($ppAreaId, $country);
     }
 
-    public function addTournament(int $ppAreaId, int $tournamentId){
-        $this->ppAreaRepository->addTournament($ppAreaId, $tournamentId);
+    public function addLeague(int $ppAreaId, int $leagueId){
+        $this->ppAreaRepository->addLeague($ppAreaId, $leagueId);
      }
  
-     public function removeTournament(int $ppAreaId, int $tournamentId){
-         $this->ppAreaRepository->removeTournament($ppAreaId, $tournamentId);
+     public function removeLeague(int $ppAreaId, int $leagueId){
+         $this->ppAreaRepository->removeLeague($ppAreaId, $leagueId);
      }
 
 }

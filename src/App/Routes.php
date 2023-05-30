@@ -127,8 +127,8 @@ return function ($app){
             $app->post('/{id}', PPArea\AdminUpdate::class);
             $app->post('/country/{id}', PPArea\AddCountry::class);
             $app->delete('/country/{id}/{country}', PPArea\RemoveCountry::class);
-            $app->post('/tournament/{id}', PPArea\AddTournament::class);
-            $app->delete('/tournament/{id}/{tournamentId}', PPArea\RemoveTournament::class);
+            $app->post('/league/{id}', PPArea\AddLeague::class);
+            $app->delete('/league/{id}/{leagueId}', PPArea\RemoveLeague::class);
         });
 
         $app->group('/p-round-match', function() use($app): void {

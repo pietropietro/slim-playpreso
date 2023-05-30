@@ -7,7 +7,7 @@ namespace App\Controller\PPArea;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class AddTournament extends Base
+final class AddLeague extends Base
 {
     /**
      * @param array<string> $args
@@ -21,12 +21,12 @@ final class AddTournament extends Base
         $input = (array) $request->getParsedBody();
         $data = json_decode((string) json_encode($input), false);
 
-        if (!isset($data->tournamentId)) {
+        if (!isset($data->leagueId)) {
             throw new \App\Exception\User('missing required fields', 400);
         }
 
         $ppAreaId = (int) $args['id'];
-        $result = $this->getPPAreaUpdateService()->addTournament($ppAreaId, $data->tournamentId);
+        $result = $this->getPPAreaUpdateService()->addLeague($ppAreaId, $data->leagueId);
                  
         return $this->jsonResponse($response, "success", $result, 200);
     }

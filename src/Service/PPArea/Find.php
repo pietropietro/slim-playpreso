@@ -32,11 +32,11 @@ final class Find  extends BaseService{
 
     private function enrich(&$ppArea){
         $ppArea['countries'] = $this->ppAreaRepository->getCountries($ppArea['id']);
-        $ppArea['extra_tournaments'] = $this->getExtraTournaments($ppArea['id']);
+        $ppArea['extra_leagues'] = $this->getExtraLeagues($ppArea['id']);
     }
 
-    public function getExtraTournaments($ppAreaId){
-        return $this->leagueFindService->getPPAreaExtraTournaments($ppAreaId);
+    public function getExtraLeagues($ppAreaId){
+        return $this->leagueFindService->getPPAreaExtraLeagues($ppAreaId);
     }
 
 }

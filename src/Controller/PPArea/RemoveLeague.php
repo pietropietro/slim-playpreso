@@ -7,7 +7,7 @@ namespace App\Controller\PPArea;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class RemoveTournament extends Base
+final class RemoveLeague extends Base
 {
     /**
      * @param array<string> $args
@@ -21,8 +21,8 @@ final class RemoveTournament extends Base
         $input = (array) $request->getParsedBody();
 
         $ppAreaId = (int) $args['id'];
-        $tournamentId = (int) $args['tournamentId'];
-        $result = $this->getPPAreaUpdateService()->removeTournament($ppAreaId, $tournamentId);
+        $leagueId = (int) $args['leagueId'];
+        $result = $this->getPPAreaUpdateService()->removeLeague($ppAreaId, $leagueId);
                  
         return $this->jsonResponse($response, "success", $result, 200);
     }

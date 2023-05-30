@@ -60,7 +60,7 @@ final class Find  extends BaseService{
     }
 
     //TODO check it returns only leagues for ppArea extra tournaments.
-    public function getPPAreaExtraTournaments($ppAreaId){
-        return $this->leagueRepository->getPPAreaExtraTournaments($ppAreaId);
+    public function getPPAreaExtraLeagues($ppAreaId){
+        return $this->leagueRepository->getPPAreaExtraLeagues($ppAreaId);
     }
 }

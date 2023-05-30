@@ -20,7 +20,14 @@ final class PPAreaRepository extends BaseRepository
     function getCountries(int $id){
         $this->db->where('ppArea_id', $id);
         $this->db->where('country is not null');
-        return $this->db->getValue( 'ppAreaTournaments' ,'country', null);
+        return $this->db->getValue( 'ppAreaLeagues' ,'country', null);
+    }
+
+    public function create(string $name){
+        $data = array(
+            "name" => $name, 
+        );
+        return $this->db->insert('ppAreas', $data);
     }
 
     public function update(int $id, array $data){
@@ -31,7 +38,7 @@ final class PPAreaRepository extends BaseRepository
     public function removeCountry(int $ppAreaId, string $country){
         $this->db->where('ppArea_id', $ppAreaId);
         $this->db->where('country', $country);
-        return $this->db->delete('ppAreaTournaments',1);
+        return $this->db->delete('ppAreaLeagues',1);
     }
 
     public function addCountry(int $ppAreaId, string $country){
@@ -39,21 +46,21 @@ final class PPAreaRepository extends BaseRepository
             "country" => $country,
             "ppArea_id" => $ppAreaId,
         );
-        return $this->db->insert('ppAreaTournaments', $data);
+        return $this->db->insert('ppAreaLeagues', $data);
     }
 
-    public function removeTournament(int $ppAreaId, int $tournamentId){
+    public function removeLeague(int $ppAreaId, int $leagueId){
         $this->db->where('ppArea_id', $ppAreaId);
-        $this->db->where('tournament_id', $tournamentId);
-        return $this->db->delete('ppAreaTournaments',1);
+        $this->db->where('league_id', $leagueId);
+        return $this->db->delete('ppAreaLeagues',1);
     }
 
-    public function addTournament(int $ppAreaId, int $tournamentId){
+    public function addLeague(int $ppAreaId, int $leagueId){
         $data = array(
-            "tournament_id" => $tournamentId,
+            "league_id" => $leagueId,
             "ppArea_id" => $ppAreaId,
         );
-        return $this->db->insert('ppAreaTournaments', $data);
+        return $this->db->insert('ppAreaLeagues', $data);
     }
 
 }

@@ -24,22 +24,22 @@ final class LeagueRepository extends BaseRepository
 
     public function getForArea(int $ppAreaId, ?int $level = null)
     {
-        $tournamentIds = $this->db->subQuery();
-        $tournamentIds->where('ppArea_id', $ppAreaId);
-        $tournamentIds->get('ppAreaTournaments', null, 'id');
+        $leagueIds = $this->db->subQuery();
+        $leagueIds->where('ppArea_id', $ppAreaId);
+        $leagueIds->get('ppAreaLeagues', null, 'id');
 
-        $this->db->where('id',$tournamentIds,'IN');
+        $this->db->where('id',$leagueIds,'IN');
         if($level)$this->db->where('level', $level, '<=');
         
         return $this->db->get('leagues', null, $this->columnsNoStandings);
     }
 
-    function getPPAreaExtraTournaments(int $ppAreaId){
-        $tournamentIds = $this->db->subQuery();
-        $tournamentIds->where('ppArea_id', $ppAreaId);
-        $tournamentIds->getValue('ppAreaTournaments', 'tournament_id', null);
+    function getPPAreaExtraLeagues(int $ppAreaId){
+        $leagueIds = $this->db->subQuery();
+        $leagueIds->where('ppArea_id', $ppAreaId);
+        $leagueIds->getValue('ppAreaLeagues', 'league_id', null);
 
-        $this->db->where('id',$tournamentIds,'IN');        
+        $this->db->where('id',$leagueIds,'IN');        
         return $this->db->get('leagues', null, $this->columnsNoStandings);
     }
 
