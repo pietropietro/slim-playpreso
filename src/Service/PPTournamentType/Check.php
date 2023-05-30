@@ -15,10 +15,10 @@ final class Check  extends BaseService{
         protected PPTournamentType\Find $findTournamentService,
         protected Points\Find $pointsService,
         protected PPCupRepository $ppCupRepository,
-        protected UserParticipation\Find $findUpService,
+        protected UserParticipation\Find $userParticipationFindService,
     ) {}
     
-    public function check($userId, $typeId) :bool {
+    public function check(int $userId, int $typeId) :bool {
 
         $ppTT = $this->findTournamentService->getOne($typeId);
         
@@ -29,11 +29,18 @@ final class Check  extends BaseService{
             throw new \App\Exception\User("user not allowed in p-cup", 403);
         }
 
+        $activePPLeagues = $this->userParticipationFindService->getForUser(
+            $userId, 'ppLeague', true, false
+        );
+
+        if(count($activePPLeagues) >= $_SERVER['MAX_CONCURRENT_PPLEAGUES']){
+            throw new \App\Exception\User("limit reached", 403);
+        }
+
+
         if(!$this->canAfford($userId, $typeId)){
             throw new \App\Exception\User("not enough points", 403);
         }
-
-        //TODO ALSO CHECK PPTOURNAMENT CAN START i.e. has matches
 
         return true;
     }
@@ -50,7 +57,7 @@ final class Check  extends BaseService{
     }
 
     public function isAllowedInPPCup(int $userId,int $typeId){
-        return !$this->findUpService->isUserInTournamentType($userId, $typeId);
+        return !$this->userParticipationFindService->isUserInTournamentType($userId, $typeId);
     }
 
 

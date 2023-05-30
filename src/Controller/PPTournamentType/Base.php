@@ -6,6 +6,7 @@ namespace App\Controller\PPTournamentType;
 
 use App\Controller\BaseController;
 use App\Service\PPTournamentType;
+use App\Service\UserParticipation;
 
 abstract class Base extends BaseController
 {
@@ -30,6 +31,11 @@ abstract class Base extends BaseController
     protected function getPPTournamentTypeCreateService(): PPTournamentType\Create {
         return $this->container->get('pptournamenttype_create_service');
     }
+
+    protected function getUserParticipationFindService(): UserParticipation\Find {
+        return $this->container->get('userparticipation_find_service');
+    }
+
 
     
 

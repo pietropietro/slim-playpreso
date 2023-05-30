@@ -19,6 +19,15 @@ final class GetAvailablePPLeagues extends Base
     ): Response {
         
         $userId = $this->getAndValidateUserId($request);
+
+        $activePPLeagues = $this->getUserParticipationFindService()->getForUser(
+            $userId, 'ppLeague', true, false
+        );
+
+        if(count($activePPLeagues) >= $_SERVER['MAX_CONCURRENT_PPLEAGUES']){
+            return $this->jsonResponse($response, 'limit_reached', null, 200);
+        }
+
         $availablePPTournamentTypes = $this->getPPTournamentTypeService()->getAvailablePPLeaguesForUser($userId, ids_only: false);
 
         //get ppTTs whose p-leagues have most players
