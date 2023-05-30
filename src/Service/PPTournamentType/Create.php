@@ -22,7 +22,7 @@ final class Create extends BaseService{
         ?int $participants = null,
         ?string $pick_country = null,
         ?int $pick_area = null,
-        ?int $pick_tournament = null,
+        ?int $pick_league = null,
     ){
         return $this->ppTournamentTypeRepository->create(
             $name, 
@@ -34,7 +34,7 @@ final class Create extends BaseService{
             $participants,
             $pick_country,
             $pick_area,
-            $pick_tournament,
+            $pick_league,
         );
     }
 

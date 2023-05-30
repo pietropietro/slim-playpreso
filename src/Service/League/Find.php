@@ -41,8 +41,8 @@ final class Find  extends BaseService{
     public function getForPPTournamentType(int $ppTTid){
         $ppTT =  $this->ppTournamentTypeRepository->getOne($ppTTid);
         
-        if($ppTT['pick_tournament']){
-            return $ppTT['pick_tournament'];
+        if($ppTT['pick_league']){
+            return $ppTT['pick_league'];
         }
         if($ppTT['pick_country']){
             return $this->leagueRepository->getForCountry($ppTT['pick_country'], $ppTT['level']);

@@ -48,7 +48,7 @@ final class AdminUpdate extends Base
         }
         $updateData['pick_country'] = $data->pick_country;
         $updateData['pick_area'] = $data->pick_area;
-        $updateData['pick_tournament'] = $data->pick_tournament;
+        $updateData['pick_league'] = $data->pick_league;
         
         if(!$updateData) throw new \App\Exception\NotFound('Invalid request.', 400);
 
