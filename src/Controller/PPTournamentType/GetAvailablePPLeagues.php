@@ -33,7 +33,6 @@ final class GetAvailablePPLeagues extends Base
         //FILTER OUT PPTT WITH NOT ENOUGH MATCHES IN NEAR FUTURE
         $filteredPPTTs = $this->getPPTournamentTypeFindService()->filterByMatchAvailability(array_column($availablePPTournamentTypes, 'id'));
 
-
         //get ppTTs whose p-leagues have most players. returns null otherwise.
         $withParticipants = $this->getPPTournamentTypeFindService()->getHavingParticipants(array_column($filteredPPTTs, 'id'));
 

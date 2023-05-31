@@ -123,11 +123,10 @@ final class Find  extends BaseService{
         $okIds = [];
         
         foreach ($ids as $id) {
-            $pptt = $this->getOne($id, false);
-            $leagues = $this->leagueFindService->getForPPTournamentType($id);
+            $pptt = $this->getOne($id);
             
             $countOkLeagues = 0;
-            foreach ($leagues as $league) {
+            foreach ($pptt['leagues'] as $league) {
                 //get 2 extra weeks for pause nazionali and such
                 $leagueResult = $this->leagueFindService->hasMatchesForNextWeeks(
                     $league['id'], 
@@ -141,7 +140,7 @@ final class Find  extends BaseService{
                 $countOkLeagues ++;
             }
 
-            if($countOkLeagues > 6 || $countOkLeagues >= floor(count($leagues)/2)){
+            if($countOkLeagues > 6 || $countOkLeagues >= floor(count($pptt['leagues'])/2)){
                 array_push($okIds, $id);
             }
         }
