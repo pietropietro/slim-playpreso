@@ -33,10 +33,20 @@ final class GetAvailablePPLeagues extends Base
         //FILTER OUT PPTT WITH NOT ENOUGH MATCHES IN NEAR FUTURE
         $filteredPPTTs = $this->getPPTournamentTypeFindService()->filterByMatchAvailability(array_column($availablePPTournamentTypes, 'id'));
 
-        //get ppTTs whose p-leagues have most players. returns null otherwise.
-        $ppTTtoStart = $this->getPPTournamentTypeFindService()->getCloseToStart(array_column($filteredPPTTs, 'id'));
 
-        $returnArray = !empty($ppTTtoStart) ? $ppTTtoStart : $filteredPPTTs;
-        return $this->jsonResponse($response, 'success', $returnArray, 200);
+        //get ppTTs whose p-leagues have most players. returns null otherwise.
+        $withParticipants = $this->getPPTournamentTypeFindService()->getHavingParticipants(array_column($filteredPPTTs, 'id'));
+
+        if(!empty($withParticipants)){
+            $ids = array_column($withParticipants, 'id');
+            foreach ($filteredPPTTs as $pptt) {
+                if(!in_array($pptt['id'], $ids)){
+                    array_push($withParticipants, $pptt);
+                }
+            }
+            return $this->jsonResponse($response, 'success', $withParticipants, 200);
+        }
+
+        return $this->jsonResponse($response, 'success', $filteredPPTTs, 200);
     }
 }

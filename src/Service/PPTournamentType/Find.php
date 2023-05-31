@@ -90,8 +90,8 @@ final class Find  extends BaseService{
         return $ids_only ? array_column($availablePPTTs, 'id') : $availablePPTTs;
     }
 
-    public function getCloseToStart(array $ids){
-        return $this->ppTournamentTypeRepository->getCloseToStart($ids);
+    public function getHavingParticipants(array $ids){
+        return $this->ppTournamentTypeRepository->getHavingParticipants($ids);
     }
 
     public function getFromPPRoundMatch(int $ppRoundMatchId){
@@ -137,12 +137,11 @@ final class Find  extends BaseService{
 
                 $resultCount = array_count_values($leagueResult);
                 if(!isset($resultCount[1]) || $resultCount[1] < $pptt['rounds']) continue;
-                
 
                 $countOkLeagues ++;
             }
 
-            if($countOkLeagues >= floor(count($leagues)/2)){
+            if($countOkLeagues > 6 || $countOkLeagues >= floor(count($leagues)/2)){
                 array_push($okIds, $id);
             }
         }

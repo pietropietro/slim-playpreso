@@ -106,7 +106,7 @@ final class PPTournamentTypeRepository extends BaseRepository
         return $this->db->update('ppTournamentTypes', $data, 1);        
     }
 
-    public function getCloseToStart(array $ids){
+    public function getHavingParticipants(array $ids){
         if(!$ids)return null;
         // this does not work because of the having clause
         // need to do the raw query instead
@@ -125,7 +125,7 @@ final class PPTournamentTypeRepository extends BaseRepository
             FROM userParticipations up
             inner join ppTournamentTypes pptt on up.ppTournamentType_id = pptt.id
             inner join ppLeagues ppl on up.ppLeague_id = ppl.id 
-            and ppl.started_at is null
+            where ppl.started_at is null
             and up.ppLeague_id is NOT null
             and up.ppTournamentType_id in (".implode(',', $ids).")
             GROUP BY up.ppLeague_id, up.ppTournamentType_id
