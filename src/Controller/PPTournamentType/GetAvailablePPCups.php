@@ -19,7 +19,7 @@ final class GetAvailablePPCups extends Base
     ): Response {
         
         $userId = $this->getAndValidateUserId($request);
-        $ppTournamentTypes = $this->getPPTournamentTypeService()->getAvailablePPCupsForUser($userId);
+        $ppTournamentTypes = $this->getPPTournamentTypeFindService()->getAvailablePPCupsForUser($userId);
 
         return $this->jsonResponse($response, 'success', $ppTournamentTypes, 200);
     }

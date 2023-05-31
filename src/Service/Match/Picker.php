@@ -11,7 +11,7 @@ use App\Repository\MatchRepository;
 final class Picker extends BaseService{
     public function __construct(
         protected MatchRepository $matchRepository,
-        protected League\Find $leagueService,
+        protected League\Find $leagueFindService,
     ) {}
 
     public function pickForToday(){
@@ -47,7 +47,7 @@ final class Picker extends BaseService{
 
 
     public function nextMatchesForPPTournamentType(int $tournamentTypeId){
-        if(!$leagues = $this->leagueService->getForPPTournamentType($tournamentTypeId)) return [];
+        if(!$leagues = $this->leagueFindService->getForPPTournamentType($tournamentTypeId)) return [];
         
         $leagueIds = array_column($leagues, 'id');
         

@@ -18,7 +18,7 @@ final class Find  extends BaseService{
         protected PPTournamentTypeRepository $ppTournamentTypeRepository,
         protected UserParticipationRepository $userParticipationRepository,
         protected Points\Find $pointsService,
-        protected League\Find $leagueService,
+        protected League\Find $leagueFindService,
         protected Trophies\Find $trophiesFindService,
     ){}
 
@@ -55,7 +55,7 @@ final class Find  extends BaseService{
     }
 
     private function enrich($ppTT){
-        $ppTT['leagues'] = $this->leagueService->getForPPTournamentType($ppTT['id']);
+        $ppTT['leagues'] = $this->leagueFindService->getForPPTournamentType($ppTT['id']);
         if(!$ppTT['cup_format']){
             // TODO pptt specific values for promotions / relegations
             $ppTT['promote'] = (int) $_SERVER['PPLEAGUE_PROMOTIONS'];
@@ -117,6 +117,38 @@ final class Find  extends BaseService{
             }
         }
         return $stats;
+    }
+
+    public function filterByMatchAvailability(array $ids){
+        $okIds = [];
+        
+        foreach ($ids as $id) {
+            $pptt = $this->getOne($id, false);
+            $leagues = $this->leagueFindService->getForPPTournamentType($id);
+            
+            $countOkLeagues = 0;
+            foreach ($leagues as $league) {
+                //get 2 extra weeks for pause nazionali and such
+                $leagueResult = $this->leagueFindService->hasMatchesForNextWeeks(
+                    $league['id'], 
+                    ($pptt['rounds'] + 2));
+                
+                if(!$leagueResult) continue;
+
+                $resultCount = array_count_values($leagueResult);
+                if(!isset($resultCount[1]) || $resultCount[1] < $pptt['rounds']) continue;
+                
+
+                $countOkLeagues ++;
+            }
+
+            if($countOkLeagues >= floor(count($leagues)/2)){
+                array_push($okIds, $id);
+            }
+        }
+
+        if(!$okIds) return [];
+        return $this->get($okIds);
     }
 
 }

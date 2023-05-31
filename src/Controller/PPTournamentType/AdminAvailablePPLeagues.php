@@ -19,7 +19,7 @@ final class AdminAvailablePPLeagues extends Base
     ): Response {
         
         $userId = (int) $args['userId'];
-        $ppTournamentTypes = $this->getPPTournamentTypeService()->getAvailablePPLeaguesForUser($userId, ids_only: true);
+        $ppTournamentTypes = $this->getPPTournamentTypeFindService()->getAvailablePPLeaguesForUser($userId, ids_only: true);
 
         return $this->jsonResponse($response, 'success', $ppTournamentTypes, 200);
     }

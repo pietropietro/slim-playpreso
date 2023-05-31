@@ -28,13 +28,15 @@ final class GetAvailablePPLeagues extends Base
             return $this->jsonResponse($response, 'limit_reached', null, 200);
         }
 
-        $availablePPTournamentTypes = $this->getPPTournamentTypeService()->getAvailablePPLeaguesForUser($userId, ids_only: false);
+        $availablePPTournamentTypes = $this->getPPTournamentTypeFindService()->getAvailablePPLeaguesForUser($userId, ids_only: false);
 
-        //get ppTTs whose p-leagues have most players
-        $ppTTtoStart = $this->getPPTournamentTypeService()->getCloseToStart(array_column($availablePPTournamentTypes, 'id'));
+        //FILTER OUT PPTT WITH NOT ENOUGH MATCHES IN NEAR FUTURE
+        $filteredPPTTs = $this->getPPTournamentTypeFindService()->filterByMatchAvailability(array_column($availablePPTournamentTypes, 'id'));
 
-        $returnArray = !empty($ppTTtoStart) ? $ppTTtoStart : $availablePPTournamentTypes;
+        //get ppTTs whose p-leagues have most players. returns null otherwise.
+        $ppTTtoStart = $this->getPPTournamentTypeFindService()->getCloseToStart(array_column($filteredPPTTs, 'id'));
+
+        $returnArray = !empty($ppTTtoStart) ? $ppTTtoStart : $filteredPPTTs;
         return $this->jsonResponse($response, 'success', $returnArray, 200);
     }
-
 }

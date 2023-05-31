@@ -44,7 +44,7 @@ abstract class Base extends BaseController
         return $this->container->get('guess_lock_service');
     }
 
-    protected function getPPTournamentTypeService(): PPTournamentType\Find
+    protected function getPPTournamentTypeFindService(): PPTournamentType\Find
     {
         return $this->container->get('pptournamenttype_find_service');
     }

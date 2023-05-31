@@ -12,8 +12,8 @@ use App\Service\Team;
 
 final class ImportLeagueData extends BaseService{
     public function __construct(
-        protected Match\Elaborate $matchService,
-        protected League\Elaborate $leagueService,
+        protected Match\Elaborate $matchElaborateService,
+        protected League\Elaborate $leagueElaborateService,
         protected Team\Create $teamCreateService,
     ){}
 
@@ -46,10 +46,10 @@ final class ImportLeagueData extends BaseService{
         }
         
 
-        $match_import_result = $this->matchService->elaborateLsEvents($ls_events, $league_id);
+        $match_import_result = $this->matchElaborateService->elaborateLsEvents($ls_events, $league_id);
 
         if($ls_league_table_teams){
-            $this->leagueService->elaborateLsLeagueTable($ls_league_table_teams, $league_id);
+            $this->leagueElaborateService->elaborateLsLeagueTable($ls_league_table_teams, $league_id);
         }
 
         return $match_import_result;

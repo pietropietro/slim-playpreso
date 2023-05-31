@@ -9,7 +9,13 @@ final class MatchRepository extends BaseRepository
     private $whitelistColumns = array('id','league_id','home_id','away_id','score_home','score_away','round','date_start','verified_at');
 
     //TODO REFACTOR
-    public function adminGet(array $ids=null, string $from= null, string $to= null, string $date = null) : ?array {
+    public function adminGet( 
+        array $ids=null, 
+        int $leagueId=null,
+        string $from= null, 
+        string $to= null, 
+        string $date = null,
+    ) : ?array {
         if($from && $to){
             $this->db->where('date_start', array($from, $to), 'BETWEEN');    
         }
@@ -18,6 +24,7 @@ final class MatchRepository extends BaseRepository
         }
 
         if($ids) $this->db->where('m.id', $ids, 'IN');
+        if($leagueId) $this->db->where('m.league_id', $leagueId);
 
         $this->db->join('guesses g', "g.match_id=m.id", "left");
         $this->db->join('ppRoundMatches pprm', "pprm.match_id=m.id", "left");

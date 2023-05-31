@@ -11,7 +11,7 @@ use App\Service\UserParticipation;
 abstract class Base extends BaseController
 {
 
-    protected function getPPTournamentTypeService(): PPTournamentType\Find
+    protected function getPPTournamentTypeFindService(): PPTournamentType\Find
     {
         return $this->container->get('pptournamenttype_find_service');
     }

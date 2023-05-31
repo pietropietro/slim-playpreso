@@ -12,7 +12,7 @@ use App\Service\ExternalAPI;
 
 abstract class Base extends BaseController
 {
-    protected function getFindLeagueService(): League\Find
+    protected function getLeagueFindService(): League\Find
     {
         return $this->container->get('league_find_service');
     }

@@ -232,6 +232,7 @@ $container['league_find_service'] = static fn (
     $container->get('redis_service'),
     $container->get('pptournamenttype_repository'),
     $container->get('league_repository'),
+    $container->get('match_repository'),
 );
 
 $container['league_update_service'] = static fn (

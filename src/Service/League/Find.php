@@ -7,18 +7,23 @@ namespace App\Service\League;
 use App\Service\RedisService;
 use App\Repository\LeagueRepository;
 use App\Repository\PPTournamentTypeRepository;
+use App\Repository\MatchRepository;
 use App\Service\BaseService;
-use App\Service\Match;
 
 final class Find  extends BaseService{
     public function __construct(
         protected RedisService $redisService,
         protected PPTournamentTypeRepository $ppTournamentTypeRepository,
         protected LeagueRepository $leagueRepository,
+        protected MatchRepository $matchRepository,
     ){}
 
-    public function get(){
-        return $this->leagueRepository->get();
+    public function adminGetAll(){
+        $leagues =  $this->leagueRepository->adminGet();
+        foreach ($leagues as &$league) {
+            $league['nextWeeks'] = $this->hasMatchesForNextWeeks($league['id'], 4);
+        }
+        return $leagues;
     }
 
     public function getOne(int $id, ?bool $withStandings=false){
@@ -63,4 +68,24 @@ final class Find  extends BaseService{
     public function getPPAreaExtraLeagues($ppAreaId){
         return $this->leagueRepository->getPPAreaExtraLeagues($ppAreaId);
     }
+
+
+    //TODO REDIS THIS
+    public function hasMatchesForNextWeeks(int $id, int $weeks){
+        $result = [];
+        $totdays = $weeks * 7;
+        for($i=7; $i<=$totdays; $i+=7){
+            $startDateString = date("Y-m-d", strtotime(sprintf("%+d", ($i - 7)).' days'));
+            $endDateString = date("Y-m-d", strtotime(sprintf("%+d", $i).' days'));
+            $matches = $this->matchRepository->adminGet(
+                leagueId: $id,
+                from: $startDateString,
+                to: $endDateString
+            );
+            array_push( $result, (int)!!$matches);
+        }
+        return $result;
+    }
+
+
 }

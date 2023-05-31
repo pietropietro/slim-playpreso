@@ -28,7 +28,7 @@ final class AdminPick extends Base
         $returnObj = array(
             'all_matches' =>  $this->getMatchFindService()->adminGet(ids: $all_ids),
             'picked_matches' =>  $this->getMatchFindService()->adminGet(ids: $ids),
-            'leagues' =>  $this->getFindLeagueService()->getForPPTournamentType($ppTournamentTypeId)
+            'leagues' =>  $this->getLeagueFindService()->getForPPTournamentType($ppTournamentTypeId)
         );
 
         return $this->jsonResponse($response, 'success', $returnObj, 200);

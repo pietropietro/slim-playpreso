@@ -17,7 +17,7 @@ final class AdminGetNeedData extends Base
         Response $response,
         array $args
     ): Response {
-        $leagues = $this->getFindLeagueService()->getNeedData(true);
+        $leagues = $this->getLeagueFindService()->getNeedData(true);
         return $this->jsonResponse($response, 'success', $leagues, 200);
     }
 }

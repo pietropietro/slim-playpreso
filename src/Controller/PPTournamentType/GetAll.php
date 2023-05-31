@@ -19,7 +19,7 @@ final class GetAll extends Base
     ): Response {
         
         $onlyCups = $request->getQueryParams()['onlyCups'] ?? null;
-        $ppTournamentTypes = $this->getPPTournamentTypeService()->get(null, onlyCups: !!$onlyCups, enriched: true);
+        $ppTournamentTypes = $this->getPPTournamentTypeFindService()->get(null, onlyCups: !!$onlyCups, enriched: true);
 
         return $this->jsonResponse($response, 'success', $ppTournamentTypes, 200);
     }

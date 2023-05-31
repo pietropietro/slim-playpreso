@@ -18,7 +18,7 @@ final class GetAll extends Base
         array $args
     ): Response {
 
-        $leagues = $this->getFindLeagueService()->get();
+        $leagues = $this->getLeagueFindService()->adminGetAll();
                  
         return $this->jsonResponse($response, 'success', $leagues, 200);
     }

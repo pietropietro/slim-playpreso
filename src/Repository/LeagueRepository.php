@@ -7,11 +7,16 @@ namespace App\Repository;
 final class LeagueRepository extends BaseRepository
 {
     private $columnsNoStandings = "id, name, tag, country, ls_suffix, parent_id, level";
+    private $adimnColumnsNoStandings = "id, name, tag, country, ls_suffix, parent_id, updated_at, level";
     private $columnsWithStandings = "id, name, tag, country, ls_suffix, parent_id, standings";
 
     public function get(?int $maxLevel=null){
         if($maxLevel) $this->db->where('level', $maxLevel, '<=');
         return $this->db->get('leagues', null, $this->columnsNoStandings);
+    }
+
+    public function adminGet(){
+        return $this->db->get('leagues', null, $this->adimnColumnsNoStandings);
     }
 
     public function getOne(int $id, ?bool $withStandings = false){
@@ -26,9 +31,15 @@ final class LeagueRepository extends BaseRepository
     {
         $leagueIds = $this->db->subQuery();
         $leagueIds->where('ppArea_id', $ppAreaId);
-        $leagueIds->get('ppAreaLeagues', null, 'id');
+        $leagueIds->get('ppAreaLeagues', null, 'league_id');
 
-        $this->db->where('id',$leagueIds,'IN');
+        $leagueCountries = $this->db->subQuery();
+        $leagueCountries->where('ppArea_id', $ppAreaId);
+        $leagueCountries->get('ppAreaLeagues', null, 'country');
+
+        $this->db->where('id', $leagueIds, 'IN');
+        $this->db->orWhere('country', $leagueCountries, 'IN');
+        
         if($level)$this->db->where('level', $level, '<=');
         
         return $this->db->get('leagues', null, $this->columnsNoStandings);
