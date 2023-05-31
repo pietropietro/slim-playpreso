@@ -46,7 +46,7 @@ final class GetAvailablePPLeagues extends Base
             }
             return $this->jsonResponse($response, 'success', $withParticipants, 200);
         }
-
+        
         return $this->jsonResponse($response, 'success', $filteredPPTTs, 200);
     }
 }

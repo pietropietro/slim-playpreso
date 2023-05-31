@@ -24,19 +24,36 @@ final class RedisService
         return $this->redis->exists($key);
     }
 
-    public function get(string $key): object
+    public function get(string $key)
     {
-        return json_decode((string) $this->redis->get($key));
+        $value = $this->redis->get($key);
+        if ($value !== false) {
+            $decodedValue = json_decode($value);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return $decodedValue;
+            } else {
+                return json_decode($value, true);
+            }
+        }
+        return null;
     }
 
-    public function set(string $key, object $value): void
+    public function set(string $key, $value): void
     {
-        $this->redis->set($key, json_encode($value));
+        if (is_array($value) || is_object($value)) {
+            $this->redis->set($key, json_encode($value));
+        } else {
+            throw new InvalidArgumentException("Invalid data type. Only arrays and objects are supported.");
+        }
     }
 
-    public function setex(string $key, object $value, int $ttl = 3600): void
+    public function setex(string $key, $value, int $ttl = 3600): void
     {
-        $this->redis->setex($key, $ttl, json_encode($value));
+        if (is_array($value) || is_object($value)) {
+            $this->redis->setex($key, $ttl, json_encode($value));
+        } else {
+            throw new InvalidArgumentException("Invalid data type. Only arrays and objects are supported.");
+        }
     }
 
     /**

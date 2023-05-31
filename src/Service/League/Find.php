@@ -8,9 +8,8 @@ use App\Service\RedisService;
 use App\Repository\LeagueRepository;
 use App\Repository\PPTournamentTypeRepository;
 use App\Repository\MatchRepository;
-use App\Service\BaseService;
 
-final class Find  extends BaseService{
+final class Find  extends Base{
     public function __construct(
         protected RedisService $redisService,
         protected PPTournamentTypeRepository $ppTournamentTypeRepository,
@@ -70,10 +69,15 @@ final class Find  extends BaseService{
     }
 
 
-    //TODO REDIS THIS
     public function hasMatchesForNextWeeks(int $id, int $weeks){
+
+        if (self::isRedisEnabled() === true && $cached = $this->getHasMatchesForNextWeeksFromCache($id, $weeks)) {
+            return $cached;
+        } 
+
         $result = [];
         $totdays = $weeks * 7;
+
         for($i=7; $i<=$totdays; $i+=7){
             $startDateString = date("Y-m-d", strtotime(sprintf("%+d", ($i - 7)).' days'));
             $endDateString = date("Y-m-d", strtotime(sprintf("%+d", $i).' days'));
@@ -84,6 +88,7 @@ final class Find  extends BaseService{
             );
             array_push( $result, (int)!!$matches);
         }
+        $this->saveHasMatchesForNextWeeksInCache($id, $weeks, $result);
         return $result;
     }
 
