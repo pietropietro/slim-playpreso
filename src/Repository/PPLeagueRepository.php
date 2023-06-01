@@ -24,8 +24,26 @@ final class PPLeagueRepository extends BaseRepository
             if($started)$this->db->where('started_at is not null');
             else $this->db->where('started_at is null');
         }
-        $ppLeagues=$this->db->get('ppLeagues', 50);
+        $ppLeagues=$this->db->get('ppLeagues', 100);
         return $ppLeagues;
+    }
+
+    public function getPaused(
+        ?int $ppTournamentTypeId, 
+    ) {
+        $sql = 'SELECT ppl.*
+            FROM ppLeagues ppl
+            WHERE ppl.started_at IS NOT NULL
+            AND ppl.finished_at IS NULL
+            AND NOT EXISTS (
+                SELECT 1
+                FROM ppRounds ppr
+                INNER JOIN ppRoundMatches pprm ON pprm.ppRound_id = ppr.id
+                INNER JOIN matches m ON pprm.match_id = m.id
+                WHERE ppr.ppLeague_id = ppl.id
+                AND m.verified_at IS NULL
+            )';
+        return $this->db->query($sql);
     }
 
     function getOne(int $id){
