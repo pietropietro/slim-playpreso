@@ -18,9 +18,14 @@ final class GetAll extends Base{
     ): Response {
         $userId = $this->getAndValidateUserId($request);
 
+        $activeAndPaused = $this->getParticipationService()
+            ->getActiveAndPausedPPLeaguesForUser($userId);
+
+        $notStarted = $this->getParticipationService()->getForUser($userId, null, started: false, finished: false);
+        
         $ups = array(
-            "active" => $this->getParticipationService()->getForUser($userId, null, started: true, finished: false),
-            "notStarted" => $this->getParticipationService()->getForUser($userId, null, started: false, finished: false),
+            "active" => $activeAndPaused['active'],
+            "waiting" => array_merge($activeAndPaused['paused'], $notStarted),
             "finished" => $this->getParticipationService()->getForUser(
                 $userId, 
                 'ppLeague', 

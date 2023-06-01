@@ -90,13 +90,30 @@ final class Find  extends BaseService {
             // $userCurrentRound = $this->ppRoundFindService->getUserCurrentRound($column, $up[$column], $userId);
             if(!$up['finished'])$up['nextMatch'] = $this->matchFindService->getNextMatchInPPTournament($column, $up[$column]);
             
-            // if($up['nextMatch']){
-                //avoid heavy resp
-                // unset($up['nextMatch']['league']['standings']);
-            // }
-
+            //set paused
+            if(!$up['finished'] && !$up['nextMatch']){
+                $up['paused'] = true;
+            }
         }       
         return;        
+    }
 
+    //returns started ups, dividing them in active and paused, i.e. waiting for matches
+    public function getActiveAndPausedPPLeaguesForUser($userId){
+        $ups = $this->getForUser(
+            $userId, 'ppLeague', true, false
+        );
+
+        $active = [];
+        $paused = [];
+
+        foreach ($ups as $up) {
+            if(isset($up['paused'])){
+                array_push($paused, $up);
+                continue;
+            }
+            array_push($active, $up);
+        }
+        return ['active' => $active, 'paused' => $paused];
     }
 }

@@ -29,14 +29,9 @@ final class Check  extends BaseService{
             throw new \App\Exception\User("user not allowed in p-cup", 403);
         }
 
-        $activePPLeagues = $this->userParticipationFindService->getForUser(
-            $userId, 'ppLeague', true, false
-        );
-
-        if(count($activePPLeagues) >= $_SERVER['MAX_CONCURRENT_PPLEAGUES']){
+        if(!$ppTT['cup_format'] && !$this->isBelowPPLeaguesConcurrentLimit($userId)){
             throw new \App\Exception\User("limit reached", 403);
         }
-
 
         if(!$this->canAfford($userId, $typeId)){
             throw new \App\Exception\User("not enough points", 403);
@@ -58,6 +53,16 @@ final class Check  extends BaseService{
 
     public function isAllowedInPPCup(int $userId,int $typeId){
         return !$this->userParticipationFindService->isUserInTournamentType($userId, $typeId);
+    }
+
+    public function isBelowPPLeaguesConcurrentLimit(int $userId){
+        $activeAndPaused = $this->userParticipationFindService
+            ->getActiveAndPausedPPLeaguesForUser($userId);
+
+        if(count($activeAndPaused['active']) >= $_SERVER['MAX_CONCURRENT_PPLEAGUES']){
+            return false;
+        }
+        return true;
     }
 
 
