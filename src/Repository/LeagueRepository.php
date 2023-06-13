@@ -27,17 +27,23 @@ final class LeagueRepository extends BaseRepository
         );
     }
 
+    public function getWithChildren(int $id){
+        $this->db->where('id', $id);
+        $this->db->orWhere('parent_id', $id);
+        return $this->db->get('leagues',null, $this->columnsNoStandings);
+    }
+
     public function getForArea(int $ppAreaId, ?int $level = null)
     {
-        $leagueIds = $this->db->subQuery();
-        $leagueIds->where('ppArea_id', $ppAreaId);
-        $leagueIds->get('ppAreaLeagues', null, 'league_id');
+        $this->db->where('ppArea_id', $ppAreaId);
+        $leagueIds = $this->db->getValue('ppAreaLeagues', 'league_id', null);
 
         $leagueCountries = $this->db->subQuery();
         $leagueCountries->where('ppArea_id', $ppAreaId);
         $leagueCountries->get('ppAreaLeagues', null, 'country');
 
         $this->db->where('id', $leagueIds, 'IN');
+        $this->db->orWhere('parent_id', $leagueIds, 'IN');
         $this->db->orWhere('country', $leagueCountries, 'IN');
         
         if($level)$this->db->where('level', $level, '<=');

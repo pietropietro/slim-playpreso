@@ -21,7 +21,7 @@ final class Create extends BaseService{
 
         $matchesPerRound = $matchesPerRound ?? 3;
         $picked = $this->matchPickerService->pick($tournamentTypeId, $matchesPerRound);
-        if(!$picked) throw new \App\Exception\NotFound("no matches for new round", 500);
+        if(!$picked || count($picked) < $matchesPerRound ) return false;
         if(!$newRoundId = $this->ppRoundRepository->create($tournamentColumn, $tournamentId, $newRound))return false;
         
         foreach ($picked as $key => $match) {

@@ -46,7 +46,7 @@ final class Find  extends Base{
         $ppTT =  $this->ppTournamentTypeRepository->getOne($ppTTid);
         
         if($ppTT['pick_league']){
-            return $ppTT['pick_league'];
+            return $this->leagueRepository->getWithChildren($ppTT['pick_league']);
         }
         if($ppTT['pick_country']){
             return $this->leagueRepository->getForCountry($ppTT['pick_country'], $ppTT['level']);
