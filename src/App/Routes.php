@@ -131,6 +131,11 @@ return function ($app){
             $app->delete('/league/{id}/{leagueId}', PPArea\RemoveLeague::class);
         });
 
+        $app->group('/p-round', function() use($app): void {
+            $app->post('/{tournamentId}', PPRound\AdminCreate::class);
+            // $app->delete('/{id}', PPRound\Delete::class);
+        });
+
         $app->group('/p-round-match', function() use($app): void {
             $app->post('/swap/{id}', PPRoundMatch\Swap::class);
             $app->post('/{ppRoundId}', PPRoundMatch\Create::class);

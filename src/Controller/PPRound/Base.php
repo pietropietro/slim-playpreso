@@ -6,6 +6,7 @@ namespace App\Controller\PPRound;
 
 use App\Controller\BaseController;
 use App\Service\PPRound;
+use App\Service\PPLeague;
 
 abstract class Base extends BaseController
 {
@@ -13,6 +14,17 @@ abstract class Base extends BaseController
     protected function getPPRoundFindService(): PPRound\Find
     {
         return $this->container->get('ppround_find_service');
+    }
+
+    protected function getPPRoundCreateService(): PPRound\Create
+    {
+        return $this->container->get('ppround_create_service');
+    }
+
+
+    protected function getPPLeagueFindService(): PPLeague\Find
+    {
+        return $this->container->get('ppleague_find_service');
     }
 
 }

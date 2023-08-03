@@ -81,6 +81,10 @@ final class Find  extends BaseService{
         return array( $verifiedCount, count($ppRoundMatches));
     }
 
+    public function getLast(string $type, int $typeId){
+        return $this->ppRoundRepository->getForTournament($type, $typeId, only_last: true);
+    }
+
     
     public function getForTournament(string $type, int $typeId, ?int $userId) : ?array {
         $ppRounds = $this->ppRoundRepository->getForTournament($type, $typeId);
