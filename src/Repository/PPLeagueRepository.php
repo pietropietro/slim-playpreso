@@ -29,7 +29,7 @@ final class PPLeagueRepository extends BaseRepository
     }
 
     public function getPaused(
-        ?int $ppTournamentTypeId, 
+        ?int $ppTournamentTypeId = null, 
     ) {
         $sql = 'SELECT ppl.*
             FROM ppLeagues ppl

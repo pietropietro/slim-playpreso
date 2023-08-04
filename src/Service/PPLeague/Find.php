@@ -30,7 +30,7 @@ final class Find  extends BaseService{
         return $ppLeagues;
     }
 
-    public function adminGetAllPaused(?int $ppTournamentTypeId){
+    public function adminGetAllPaused(?int $ppTournamentTypeId = null, ?bool $enrich = true){
         $ppLeagues = $this->ppLeagueRepository->getPaused($ppTournamentTypeId);
         foreach ($ppLeagues as &$ppLeague) {
             $this->enrich($ppLeague);

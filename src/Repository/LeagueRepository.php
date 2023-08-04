@@ -123,7 +123,8 @@ final class LeagueRepository extends BaseRepository
         $result = $this->db->query("select l.id from leagues l left join matches m on l.id=m.league_id where m.date_start > now() group by l.id");
         $idsWithFuture = array_column($result, 'id');       
         $this->db->where('id', $idsWithFuture, 'NOT IN');
-        return $this->db->get('leagues', null,$this->adimnColumnsNoStandings);
+        //TODO REMOVE LIMIT -- testing
+        return $this->db->get('leagues', 3,$this->adimnColumnsNoStandings);
     }
 
 }

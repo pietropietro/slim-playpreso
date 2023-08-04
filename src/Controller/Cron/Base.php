@@ -7,6 +7,8 @@ namespace App\Controller\Cron;
 use App\Controller\BaseController;
 use App\Service\ExternalAPI;
 use App\Service\League;
+use App\Service\PPLeague;
+use App\Service\PPRound;
 use App\Service\Guess;
 use App\Service\PPRoundMatch;
 use App\Service\MOTD;
@@ -25,6 +27,11 @@ abstract class Base extends BaseController
     protected function getLeaguesService(): League\Find
     {
         return $this->container->get('league_find_service');
+    }
+
+    protected function getPPLeaguesFindService(): PPLeague\Find
+    {
+        return $this->container->get('ppleague_find_service');
     }
 
     protected function getGuessVerifyService(): Guess\Verify
@@ -70,6 +77,16 @@ abstract class Base extends BaseController
     protected function getImportTeamLogoService(): ExternalAPI\ImportTeamLogo
     {
         return $this->container->get('external_api_importteamlogo_service');
+    }
+
+    protected function getPPRoundFindService(): PPRound\Find
+    {
+        return $this->container->get('ppround_find_service');
+    }
+
+    protected function getPPRoundCreateService(): PPRound\Create
+    {
+        return $this->container->get('ppround_create_service');
     }
 
 }

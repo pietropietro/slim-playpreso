@@ -7,7 +7,7 @@ namespace App\Controller\Cron;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class Start extends Base
+final class FootballImportController extends Base
 {
     /**
      * @param array<string> $args
@@ -18,13 +18,19 @@ final class Start extends Base
     ): Response {
         $this->getGuessVerifyService()->setMissed();
 
-        $havingGuesses = true;
-        if(isset($request->getQueryParams()['havingGuesses']) != null){
-            $havingGuesses = (bool) $request->getQueryParams()['havingGuesses'];
-        }
-        $fromTime = $request->getQueryParams()['fromTime'] ?? null;
+        $leagues = [];
 
-        $leagues = $this->getLeaguesService()->getNeedPastData($havingGuesses, $fromTime);
+        if(isset($request->getQueryParams()['future'])){
+            $leagues = $this->getLeaguesService()->getNeedFutureData();
+        } 
+        else {
+            $havingGuesses = true;
+            if(isset($request->getQueryParams()['havingGuesses']) != null){
+                $havingGuesses = (bool) $request->getQueryParams()['havingGuesses'];
+            }
+            $fromTime = $request->getQueryParams()['fromTime'] ?? null;
+            $leagues = $this->getLeaguesService()->getNeedPastData($havingGuesses, $fromTime);
+        }
 
         foreach ($leagues as $key => $league) {
             if(!$league['ls_suffix'])continue;
