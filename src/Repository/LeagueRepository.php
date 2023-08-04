@@ -104,15 +104,17 @@ final class LeagueRepository extends BaseRepository
         $this->db->update('leagues', $data, 1);        
     }
 
-    public function getNeedData(bool $havingGuesses = true, ?string $fromTime = null){
+
+    //does it work?
+    public function getNeedData(bool $havingGuesses = false, ?string $fromTime = null){
         $this->db->join("matches m", "m.league_id=l.id", "INNER");
         if($havingGuesses)$this->db->join("guesses g", "g.match_id=m.id", "INNER");
         $this->db->where('m.verified_at IS NULL');
         $this->db->where('m.notes IS NULL');
-        $start = date("Y-m-d H:i:s", strtotime($fromTime ?? '-400 min'));
+        $start = date("Y-m-d H:i:s", strtotime($fromTime ?? '-2 days'));
         $finish = date("Y-m-d H:i:s", strtotime('-110 minutes'));
         $this->db->where('m.date_start', array($start, $finish), 'BETWEEN');
-        return $this->db->query("select distinct ls_suffix, l.id, l.tag, l.country from leagues l");
+        return $this->db->query("select distinct ls_suffix, l.id, l.tag, l.name, l.updated_at, l.country from leagues l");
     }
 
 }

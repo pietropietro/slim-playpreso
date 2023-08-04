@@ -17,7 +17,9 @@ final class AdminGetNeedData extends Base
         Response $response,
         array $args
     ): Response {
-        $leagues = $this->getLeagueFindService()->getNeedData(true);
+
+        $withGuesses = (bool) isset($request->getQueryParams()['withGuesses']) ?? false;
+        $leagues = $this->getLeagueFindService()->getNeedData($withGuesses);
         return $this->jsonResponse($response, 'success', $leagues, 200);
     }
 }

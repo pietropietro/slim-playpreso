@@ -36,7 +36,7 @@ final class Find  extends Base{
         return $league;
     }
 
-    public function getNeedData(?bool $havingGuesses = true, ?string $fromTime = null): array{
+    public function getNeedData(?bool $havingGuesses = false, ?string $fromTime = null): array{
         return $this->leagueRepository->getNeedData($havingGuesses, $fromTime) ?? [];
     }
 
