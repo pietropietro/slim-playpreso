@@ -24,7 +24,7 @@ final class Start extends Base
         }
         $fromTime = $request->getQueryParams()['fromTime'] ?? null;
 
-        $leagues = $this->getLeaguesService()->getNeedData($havingGuesses, $fromTime);
+        $leagues = $this->getLeaguesService()->getNeedPastData($havingGuesses, $fromTime);
 
         foreach ($leagues as $key => $league) {
             if(!$league['ls_suffix'])continue;

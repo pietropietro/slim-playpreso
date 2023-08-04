@@ -51,6 +51,7 @@ final class LeagueRepository extends BaseRepository
         return $this->db->get('leagues', null, $this->columnsNoStandings);
     }
 
+    //TODO move to pparea
     function getPPAreaExtraLeagues(int $ppAreaId){
         $leagueIds = $this->db->subQuery();
         $leagueIds->where('ppArea_id', $ppAreaId);
@@ -105,8 +106,8 @@ final class LeagueRepository extends BaseRepository
     }
 
 
-    //does it work?
-    public function getNeedData(bool $havingGuesses = false, ?string $fromTime = null){
+    //retrieves leagues with unverified matches in the PAST
+    public function getNeedPastData(bool $havingGuesses = false, ?string $fromTime = null){
         $this->db->join("matches m", "m.league_id=l.id", "INNER");
         if($havingGuesses)$this->db->join("guesses g", "g.match_id=m.id", "INNER");
         $this->db->where('m.verified_at IS NULL');
@@ -115,6 +116,14 @@ final class LeagueRepository extends BaseRepository
         $finish = date("Y-m-d H:i:s", strtotime('-110 minutes'));
         $this->db->where('m.date_start', array($start, $finish), 'BETWEEN');
         return $this->db->query("select distinct ls_suffix, l.id, l.tag, l.name, l.updated_at, l.country from leagues l");
+    }
+
+    //retrieves leagues with no matches in the FUTURE
+    public function getNeedFutureData(){
+        $result = $this->db->query("select l.id from leagues l left join matches m on l.id=m.league_id where m.date_start > now() group by l.id");
+        $idsWithFuture = array_column($result, 'id');       
+        $this->db->where('id', $idsWithFuture, 'NOT IN');
+        return $this->db->get('leagues', null,$this->adimnColumnsNoStandings);
     }
 
 }

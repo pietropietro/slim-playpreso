@@ -7,7 +7,7 @@ namespace App\Controller\League;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class AdminGetNeedData extends Base
+final class AdminGetNeedPastData extends Base
 {
     /**
      * @param array<string> $args
@@ -19,7 +19,7 @@ final class AdminGetNeedData extends Base
     ): Response {
 
         $withGuesses = (bool) isset($request->getQueryParams()['withGuesses']) ?? false;
-        $leagues = $this->getLeagueFindService()->getNeedData($withGuesses);
+        $leagues = $this->getLeagueFindService()->getNeedPastData($withGuesses);
         return $this->jsonResponse($response, 'success', $leagues, 200);
     }
 }
