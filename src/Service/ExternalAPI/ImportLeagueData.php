@@ -30,8 +30,12 @@ final class ImportLeagueData extends BaseService{
         $utc_plus = $this->isDaylightSavingTime() ? 2 : 1;
 
         $req_url = $ls_suffix.'/'.$utc_plus;
-        $response = $client->get($req_url);
-        $decoded = json_decode((string)$response->getBody());
+        try {
+            $response = $client->get($req_url);
+            $decoded = json_decode((string)$response->getBody());
+        } catch (\Throwable $exception) {
+            return $exception;
+        }
 
         //CACHED FETCH
         // $str = file_get_contents('/Users/pietromini/Dev/playpreso/slim-playpreso/external-api-sample.json');
@@ -42,9 +46,8 @@ final class ImportLeagueData extends BaseService{
         $ls_league_table_teams = $ls_league_data->LeagueTable->L[0]->Tables[0]->team ?? null;
 
         if(!$ls_events){
-            throw new \App\Exception\ExternalAPI('something went wrong', 500);
+            return;
         }
-        
 
         $match_import_result = $this->matchElaborateService->elaborateLsEvents($ls_events, $league_id);
 
