@@ -31,10 +31,13 @@ final class Update  extends BaseService{
         $ups = $this->userParticipationFindService->getForTournament('ppLeague_id', $id);
     
         $ppTournamentType = $this->ppTournamentTypeFindService->getOne($ppLeague['ppTournamentType_id']);
+        
         if($ppTournamentType['next'] && $ppTournamentType['promote']){
             $this->promote($ups, $ppTournamentType);
         }
-
+        if($ppTournamentType['rejoin']){
+            $this->rejoin($ups, $ppTournamentType);
+        };
         if($ppTournamentType['level'] > 1 && $ppTournamentType['relegate'] &&
             $previousPTT = $this->ppTournamentTypeFindService->getPreviousLevel($ppTournamentType['id'])
         ){
@@ -44,7 +47,6 @@ final class Update  extends BaseService{
 
 
     private function promote(array $ups, array $fromPPTT){
-        //PROMOTE FIRST USERS
         for($i = 0; $i<$fromPPTT['promote'] ; $i++){
             $this->ppTournamentTypeJoinService->joinAvailable(
                 $ups[$i]['user_id'], 
@@ -52,15 +54,14 @@ final class Update  extends BaseService{
                 pay: false
             );
         }
+    }
 
-        if(!$fromPPTT['rejoin']) return;
-        
-        //REJOIN USERS
-        $rejoinEndIndex = $fromPPTT['promote'] + $fromPPTT['rejoin'];
-        for($i = $fromPPTT['promote']; $i < $rejoinEndIndex ;  $i++){
+    private function rejoin(array $ups, array $ppTT){
+        $rejoinEndIndex = $ppTT['promote'] + $ppTT['rejoin'];
+        for($i = $ppTT['promote']; $i < $rejoinEndIndex ;  $i++){
             $this->ppTournamentTypeJoinService->joinAvailable(
                 $ups[$i]['user_id'], 
-                $fromPPTT['id'],
+                $ppTT['id'],
                 pay: false
             );
         }
