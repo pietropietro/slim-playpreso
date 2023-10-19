@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\ExternalAPI;
 
-use GuzzleHttp\Client;
+use GuzzleHttp;
 use App\Service\BaseService;
 use App\Service\Match;
 use App\Service\League;
@@ -19,7 +19,7 @@ final class ImportLeagueData extends BaseService{
 
     public function fetch(string $ls_suffix, int $league_id){
         //REAL FETCH
-        $client = new Client([
+        $client = new GuzzleHttp\Client([
                 'base_uri' => $_SERVER['EXTERNAL_API_BASE_URI'],
                 'timeout'  => 10.0,
                 'proxy' => $_SERVER['PROXY_URL']
@@ -33,8 +33,18 @@ final class ImportLeagueData extends BaseService{
         try {
             $response = $client->get($req_url);
             $decoded = json_decode((string)$response->getBody());
-        } catch (\Throwable $exception) {
-            return $exception;
+        } catch (GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $message = $e->getMessage();
+            error_log($message);
+            $code = $response->getStatusCode();
+
+            // Create new object with the message and code
+            $errorObject = new \stdClass();
+            $errorObject->message = $message ?? 'An unexpected error occurred';
+            $errorObject->code = $code ?? 500;
+
+            return $errorObject;
         }
 
         //CACHED FETCH
