@@ -111,7 +111,7 @@ return function ($app){
 
         
         $app->group('/p-league',  function() use($app): void {
-            $app->get('', PPLeague\GetAll::class);
+            $app->get('', PPLeague\AdminGetAll::class);
             $app->get('/available/{userId}', PPTournamentType\AdminAvailablePPLeagues::class);
         });
 

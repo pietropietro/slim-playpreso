@@ -22,16 +22,23 @@ final class Find  extends BaseService{
         return $ppLeague;
     }
 
-    public function adminGetAll(?int $ppTournamentTypeId, ?bool $finished=null, ?bool $started=null){
-        $ppLeagues = $this->ppLeagueRepository->get(null, $ppTournamentTypeId, $finished, $started);
+    public function adminGetAll(?int $ppttLevel = null, ?string $ppttName, ?bool $finished=null, ?bool $started=null){
+        $ppLeagues = $this->ppLeagueRepository->get(
+            null, 
+            $ppttLevel, 
+            $ppttName,
+            $finished, 
+            $started
+        );
+
         foreach ($ppLeagues as &$ppLeague) {
             $this->enrich($ppLeague);
         }
         return $ppLeagues;
     }
 
-    public function adminGetAllPaused(?int $ppTournamentTypeId = null, ?bool $enrich = true){
-        $ppLeagues = $this->ppLeagueRepository->getPaused($ppTournamentTypeId);
+    public function adminGetAllPaused(?bool $enrich = true){
+        $ppLeagues = $this->ppLeagueRepository->getPaused();
         foreach ($ppLeagues as &$ppLeague) {
             $this->enrich($ppLeague);
         }

@@ -10,12 +10,19 @@ final class PPLeagueRepository extends BaseRepository
 {
     public function get(
         ?array $ids = null, 
-        ?int $ppTournamentTypeId, 
+        ?int $ppttLevel = null, 
+        ?string $ppttName, 
         ?bool $finished=null,
         ?bool $started=null
     ) {
         if($ids)$this->db->where('id', $ids, 'IN');
-        if($ppTournamentTypeId)$this->db->where('ppTournamentType_id', $ppTournamentTypeId);
+        // if($ppTournamentTypeId)$this->db->where('ppTournamentType_id', $ppTournamentTypeId);
+        if(isset($ppttLevel) || isset($ppttName)){
+            $this->db->join('ppTournamentTypes pptt', 'ppLeagues.ppTournamentType_id = pptt.id', 'INNER');
+            if(isset($ppttLevel))$this->db->where('pptt.level', $ppttLevel);
+            if(isset($ppttName))$this->db->where('pptt.name', $ppttName);
+        }
+
         if(isset($finished)){
             if($finished)$this->db->where('finished_at is not null');
             else $this->db->where('finished_at is null');
@@ -24,13 +31,11 @@ final class PPLeagueRepository extends BaseRepository
             if($started)$this->db->where('started_at is not null');
             else $this->db->where('started_at is null');
         }
-        $ppLeagues=$this->db->get('ppLeagues', 100);
+        $ppLeagues=$this->db->get('ppLeagues', 100, 'ppLeagues.*');
         return $ppLeagues;
     }
 
-    public function getPaused(
-        ?int $ppTournamentTypeId = null, 
-    ) {
+    public function getPaused() {
         $sql = 'SELECT ppl.*
             FROM ppLeagues ppl
             WHERE ppl.started_at IS NOT NULL

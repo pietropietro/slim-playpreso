@@ -7,7 +7,7 @@ namespace App\Controller\PPLeague;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class GetAll extends Base
+final class AdminGetAll extends Base
 {
     /**
      * @param array<string> $args
@@ -18,30 +18,34 @@ final class GetAll extends Base
         array $args
     ): Response {
 
-        $ppTournamentTypeId = $request->getQueryParams()['ppTournamentTypeId'] ?? null;
-        $ppTournamentTypeId = (int) $ppTournamentTypeId ?? null;
-
-        $finished = $request->getQueryParams()['ft'] ?? null;
-        $finishedBool = $finished === 'all' ? null : ($finished === 'finished' ? true : false);
-
-        $started = $request->getQueryParams()['st'] ?? null;
-        $startedBool = $started === 'all' ? null : ($started === 'started' ? true : false);
-
-        $paused = $request->getQueryParams()['paused'] ?? null;
+        // $ppTournamentTypeId = $request->getQueryParams()['ppTournamentTypeId'] ?? null;
+        // $ppTournamentTypeId = (int) $ppTournamentTypeId ?? null;
         
+        $paused = $request->getQueryParams()['paused'] ?? null;
+
         if((bool)$paused){
-            $ppLeagues = $this->getPPLeagueFindService()->adminGetAllPaused(
-                $ppTournamentTypeId, 
-            );
+            $ppLeagues = $this->getPPLeagueFindService()->adminGetAllPaused();
         }else{
+
+            $ppTournamentTypeName = $request->getQueryParams()['ppTournamentTypeName'] ?? null;
+            
+            $ppTournamentTypeLevel = $request->getQueryParams()['ppTournamentTypeLevel'] ?? null;
+            $ppTournamentTypeLevel = isset($ppTournamentTypeLevel) ? (int) $ppTournamentTypeLevel : null;
+
+            $finished = $request->getQueryParams()['ft'] ?? null;
+            $finishedBool = $finished === 'all' ? null : ($finished === 'finished' ? true : false);
+
+            $started = $request->getQueryParams()['st'] ?? null;
+            $startedBool = $started === 'all' ? null : ($started === 'started' ? true : false);
+
+           
             $ppLeagues = $this->getPPLeagueFindService()->adminGetAll(
-                $ppTournamentTypeId, 
+                $ppTournamentTypeLevel, 
+                $ppTournamentTypeName, 
                 $finishedBool, 
                 $startedBool
             );
         }
-
-       
 
         foreach($ppLeagues as &$ppLeague){
             $ppLeague['user_count']= $this->getUserParticipationFindService()->countInTournament('ppLeague_id', $ppLeague['id']);
