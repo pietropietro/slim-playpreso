@@ -58,9 +58,9 @@ final class Find  extends BaseService{
         $ppTT['leagues'] = $this->leagueFindService->getForPPTournamentType($ppTT['id']);
         if(!$ppTT['cup_format']){
             // TODO pptt specific values for promotions / relegations
-            $ppTT['promote'] = (int) $_SERVER['PPLEAGUE_PROMOTIONS'];
-            $ppTT['relegate'] = $ppTT['level'] > 1 ? (int) $_SERVER['PPLEAGUE_RELEGATIONS'] : null;
-            $ppTT['rejoin'] = 2;
+            $ppTT['promote'] = $ppTT['level'] > 2 ? 2 : 3;
+            $ppTT['relegate'] = $ppTT['level'] > 1 ? 5 - $ppTT['level'] : null;
+            $ppTT['rejoin'] = $ppTT['level'] > 2 ? 1 : 2;
             $ppTT['next'] = $this->ppTournamentTypeRepository->getByNameAndLevel(name: $ppTT['name'], level: $ppTT['level']+1);
         }
         else{
