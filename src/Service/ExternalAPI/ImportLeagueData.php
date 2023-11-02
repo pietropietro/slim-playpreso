@@ -74,7 +74,7 @@ final class ImportLeagueData extends BaseService{
       
         // Get the dates of the second Sunday in March and the first Sunday in November
         $secondSundayOfMarch = date('md', strtotime('second sunday of march'));
-        $firstSundayOfNovember = date('md', strtotime('first sunday of november'));
+        $firstSundayOfNovember = date('md', strtotime('last sunday of october'));
       
         // Check if the current date is between the second Sunday in March and the first Sunday in November
         if ($currentDate >= $secondSundayOfMarch && $currentDate <= $firstSundayOfNovember) {
