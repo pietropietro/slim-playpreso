@@ -33,7 +33,7 @@ final class Elaborate extends BaseService{
                 $homeId = $this->teamCreateService->create(
                     ls_id: (int)$eventObj->T1[0]->ID,
                     name: $eventObj->T1[0]->Nm,
-                    country: $eventObj->T1[0]->CoNm
+                    country: $eventObj->T1[0]->CoNm ?? "test"
                 );
             }
             $awayId = $this->teamFindService->idFromExternal((int)$eventObj->T2[0]->ID);
@@ -94,8 +94,14 @@ final class Elaborate extends BaseService{
                 continue;
             }
 
+            // NO PENALTIES
+            if(isset($eventObj->Trp1)){
+                $this->matchVerifyService->verify($match['id'], (int)$eventObj->Tr1, (int)$eventObj->Tr2, 'AP');
+                continue;
+            }
+
             //Match post/cancel./aband
-            if( in_array($eventObj->Eps, array('Aband.', 'Postp.', 'Canc.' , 'et')) &&
+            if( in_array($eventObj->Eps, array('Aband.', 'Postp.', 'Canc.' , 'et', 'AP')) &&
                 (!isset($match['notes']) || $match['notes'] != $eventObj->Eps)
             ){
                 $this->matchUpdateService->updateNotes($match['id'], $eventObj->Eps);
