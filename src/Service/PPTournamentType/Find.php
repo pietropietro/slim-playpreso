@@ -120,33 +120,48 @@ final class Find  extends BaseService{
     }
 
     public function filterByMatchAvailability(array $ids){
-        $okIds = [];
+
+        //TODO REFACTOR EACH FOREACH IN SEPARATE METHOD
+        $okPPTTids = [];
         
         foreach ($ids as $id) {
             $pptt = $this->getOne($id);
             
-            $countOkLeagues = 0;
+            $okLeagues = array();
+            $allKeys   = array();
+
             foreach ($pptt['leagues'] as $league) {
-                //get 2 extra weeks for pause nazionali and such
+                
+                $leagueKey =  $league['parent_id'] ?? $league['id'];
+                array_push($allKeys, $leagueKey);
+
+                if(in_array($leagueKey, $okLeagues)) continue;
+
                 $leagueResult = $this->leagueFindService->hasMatchesForNextWeeks(
                     $league['id'], 
-                    ($pptt['rounds'] + 2));
-                
+                    //get 2 extra weeks for pause nazionali and such
+                    ($pptt['rounds'] + 2)
+                );
+
                 if(!$leagueResult) continue;
-
                 $resultCount = array_count_values($leagueResult);
-                if(!isset($resultCount[1]) || $resultCount[1] < $pptt['rounds']) continue;
+                if(!isset($resultCount[1]) 
+                    || $resultCount[1] < $pptt['rounds']
+                ) continue;
+                
+                array_push($okLeagues, $leagueKey);
 
-                $countOkLeagues ++;
             }
 
-            if($countOkLeagues > 6 || $countOkLeagues >= floor(count($pptt['leagues'])/2)){
-                array_push($okIds, $id);
+            if(count($okLeagues) > 4 || 
+                count($okLeagues) >= floor(count( array_unique($allKeys)) / 2))
+            {
+                array_push($okPPTTids, $id);
             }
         }
 
-        if(!$okIds) return [];
-        return $this->get($okIds);
+        if(!$okPPTTids) return [];
+        return $this->get($okPPTTids);
     }
 
 }

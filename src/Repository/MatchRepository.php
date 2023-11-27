@@ -47,6 +47,25 @@ final class MatchRepository extends BaseRepository
 
         return $this->db->get('matches m', null, $columns);
     }
+    public function adminGetAggregated(string $date){
+        // Replace 'your_table_prefix' with your actual table prefix
+        $this->db->where('DATE(m.date_start) = ?', [$date]);
+    
+        $this->db->join('guesses g', 'g.match_id = m.id', 'left');
+        $this->db->join('leagues l', 'l.id = m.league_id', 'left');
+        $this->db->groupBy('l.country');
+    
+        $columns = array(
+            'l.country',
+            'l.name',
+            'count(distinct m.id) as aggregateMatches',
+            'count(m.notes) as aggregateNotes',
+            'count(m.verified_at) as aggregateVerifiedMatches',
+            'count(g.id) as aggregateGuesses',
+        );
+    
+        return $this->db->get('matches m', null, $columns);
+    }
 
     public function get(array $ids){
         if(!$ids)return;
