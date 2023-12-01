@@ -49,17 +49,17 @@ final class Find extends BaseService{
         return $this->enrichAll($matches);
     }
 
-    public function adminGetAggregatedForWeek(int $days_diff) : array {
-        $adminAggr = array();
-        for($i=$days_diff-3; $i<$days_diff+4; $i++){
-            $dateString = date("Y-m-d", strtotime(sprintf("%+d",$i).' days'));
-            $retrieved = $this->matchRepository->adminGetAggregated(
-                date: $dateString
-            );
-            $adminAggr[$dateString] = $retrieved;
-        }
-        return $adminAggr;
-    }
+    // public function adminGetAggregatedForWeek(int $days_diff) : array {
+    //     $adminAggr = array();
+    //     for($i=$days_diff-3; $i<$days_diff+4; $i++){
+    //         $dateString = date("Y-m-d", strtotime(sprintf("%+d",$i).' days'));
+    //         $retrieved = $this->matchRepository->adminGetAggregated(
+    //             date: $dateString
+    //         );
+    //         $adminAggr[$dateString] = $retrieved;
+    //     }
+    //     return $adminAggr;
+    // }
 
     public function adminGetForWeek(int $days_diff) : array {
         $adminMatches = array();

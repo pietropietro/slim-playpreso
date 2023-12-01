@@ -19,7 +19,7 @@ final class GetAll extends Base
     ): Response {
 
         $days_diff = (int)$request->getQueryParams()['days_diff'] ?? 0;
-        $matches = $this->getMatchFindService()->adminGetAggregatedForWeek($days_diff);
+        $matches = $this->getMatchFindService()->adminGetForWeek($days_diff);
                  
         return $this->jsonResponse($response, 'success', $matches, 200);
     }
