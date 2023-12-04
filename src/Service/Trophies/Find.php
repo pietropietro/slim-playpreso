@@ -17,9 +17,14 @@ final class Find extends BaseService{
         protected PPTournamentTypeRepository $ppTournamentTypeRepository,
     ){}
 
-    public function getTrophies(int $userId){
+    public function getTrophies(int $userId, ?string $afterDate = null){
         $ppLeagueUps = $this->userParticipationRepository->getForUser(
-            $userId, 'ppLeague_id', started: null, finished: true, minPosition: 1
+            $userId, 
+            'ppLeague_id', 
+            started: null, 
+            finished: true, 
+            minPosition: 1,
+            updatedAfter: $afterDate
         );  
 
         //TODO

@@ -501,6 +501,13 @@ $container['stats_find_service'] = static fn (
     $container->get('pptournamenttype_find_service'),
 );
 
+$container['stats_calculate_year_wrapped_service'] = static fn (
+    ContainerInterface $container
+):  Stats\CalculateYearWrapped => new  Stats\CalculateYearWrapped(
+    $container->get('stats_repository'),
+    $container->get('userparticipation_repository'),
+);
+
 $container['trophies_find_service'] = static fn (
     ContainerInterface $container
 ):  Trophies\Find => new  Trophies\Find(

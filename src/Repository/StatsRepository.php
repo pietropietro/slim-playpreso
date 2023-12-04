@@ -86,11 +86,22 @@ final class StatsRepository extends BaseRepository
         return $this->db->query($sql);
     }
     
-    public function getCommonLock(int $ppRoundMatchId){
-        $this->db->where('ppRoundMatch_id', $ppRoundMatchId);
+    // Array
+    // (
+    //     [result] => 1-0
+    //     [occurrances] => 134
+    // )
+    public function getCommonLock(
+        ?int $ppRoundMatchId =null,
+        ?int $userId = null,
+        ?int $year=null
+    ){
+        if($ppRoundMatchId)$this->db->where('ppRoundMatch_id', $ppRoundMatchId);
+        if($userId)$this->db->where('user_id', $userId);
+        if($year)$this->db->where('YEAR(guessed_at)', $year);
         $this->db->orderBy('occurrances');
         $this->db->groupBy('result');
-        return $this->db->getOne('guesses','concat_ws("-",home,away)as result, count(*) as occurrances');
+        return $this->db->getOne('guesses','concat_ws("-",home,away) as result, count(*) as occurrances');
     }
 
     public function getPPRMAggregates(int $ppRoundMatchId){
@@ -100,4 +111,151 @@ final class StatsRepository extends BaseRepository
         $columns = 'ROUND(avg(points),1) as points_avg, sum(PRESO) as preso_count';
         return $this->db->getOne('guesses', $columns);
     }
+
+    //  COUNT(g.PRESO) as cnt_preso
+    //This query will count the occurrences of each team as 
+    //either home or away in the guesses of the specified user and then return the top 3 teams
+    public function getUserCommonTeams(int $userId, int $year){
+        $sql = "
+            SELECT t.id, t.name, COUNT(*) as occurrences, round(AVG(subquery.points),1) as avg_points, SUM(subquery.preso) as cnt_preso
+            FROM (
+                SELECT home_id as team_id, g.points, g.preso FROM guesses g
+                JOIN matches m ON g.match_id = m.id
+                WHERE g.user_id = ? AND YEAR(g.guessed_at) = ?
+                UNION ALL
+                SELECT away_id as team_id, g.points, g.preso FROM guesses g
+                JOIN matches m ON g.match_id = m.id
+                WHERE g.user_id = ? AND YEAR(g.guessed_at) = ?
+            ) as subquery
+            JOIN teams t ON subquery.team_id = t.id
+            GROUP BY t.id, t.name
+            ORDER BY occurrences DESC
+            LIMIT 3
+        ";
+
+        $params = [$userId, $year, $userId, $year]; 
+        return $this->db->rawQuery($sql, $params);
+    }
+
+    // [0] => Array
+    // (
+    //     [id] => 216
+    //     [name] => AZ Alkmaar
+    //     [avg_points] => 9.8
+    //     [occurrences] => 5
+    // )
+    public function getUserHighestAverageTeams(int $userId, int $year){
+        $sql = "
+            SELECT t.id, t.name, round(AVG(subquery.points),1) as avg_points, COUNT(*) as occurrences
+            FROM (
+                SELECT home_id as team_id, g.points FROM guesses g
+                JOIN matches m ON g.match_id = m.id
+                WHERE g.user_id = ? AND YEAR(g.guessed_at) = ?
+                UNION ALL
+                SELECT away_id as team_id, g.points FROM guesses g
+                JOIN matches m ON g.match_id = m.id
+                WHERE g.user_id = ? AND YEAR(g.guessed_at) = ?
+            ) as subquery
+            JOIN teams t ON subquery.team_id = t.id
+            GROUP BY t.id, t.name
+            HAVING COUNT(*) >= ?
+            ORDER BY avg_points DESC
+            LIMIT 3
+        ";
+        
+        $limit = 5;
+        $params = [$userId, 2023, $userId, 2023, 5]; // Replace $userId with the actual user ID
+        return $this->db->rawQuery($sql, $params);
+    }
+
+
+    //     Array
+    // (
+        // [0] => Array
+        // (
+        //     [locks] => 705
+        //     [avg_points] => 5.0
+        //     [percentage_unox2] => 40.9
+        //     [percentage_ggng] => 46.4
+        //     [percentage_uo25] => 50.4
+        //     [count_preso] => 71
+        // )
+
+    //stats only for locked guesses
+    public function getUserMainSummary(int $userId, int $year){
+        $this->db->where('user_id', $userId);
+        $this->db->where('YEAR(guessed_at)', $year, '=');
+        $this->db->groupBy('user_id'); // Group by user_id if you want to aggregate over all records of the user
+        $columns = [
+            'COUNT(*) AS locks',
+            'round(avg(points),1) as avg_points',
+            'round(100 * SUM(UNOX2 = 1) / COUNT(*),1) AS percentage_unox2',
+            'round(100 * SUM(GGNG = 1) / COUNT(*),1) AS percentage_ggng',
+            'round(100 * SUM(UO25 = 1) / COUNT(*),1) AS percentage_uo25',
+            'SUM(PRESO = 1) AS count_preso',
+        ];
+        return $this->db->get('guesses', null, $columns);
+    }
+
+
+    public function getUserMissedCount(int $userId, int $year){
+        $this->db->where('user_id', $userId);
+        $this->db->where('YEAR(created_at)', $year, '=');
+        $this->db->groupBy('user_id');
+        $columns = ['SUM(guessed_at IS NULL) AS count_missed'];
+        return $this->db->get('guesses', null, $columns);
+    }
+
+    // (
+    // [0] => Array
+    // (
+    //     [id] => 2
+    //     [league_name] => Premier League
+    //     [total_guesses] => 63
+    //     [avg_points] => 4.0952
+    // )
+    //commonBestFlag true returns common, false returns best avg
+    public function getUserLeagues(int $userId, int $year, bool $commonBestFlag = true){
+        $this->db->join("matches m", "g.match_id = m.id", "INNER");
+        $this->db->join("leagues l", "m.league_id = l.id", "INNER");
+
+        $this->db->where("g.user_id", $userId);
+        $this->db->where("YEAR(g.guessed_at)", $year, '=');
+
+        $this->db->groupBy("m.league_id");
+
+        if($commonBestFlag) $this->db->orderBy("COUNT(*)", "DESC");
+        
+        else{
+            $this->db->orderBy("AVG(g.points)", "DESC");
+            $this->db->having('total_guesses', 5, '>=');
+        }
+
+        $columns = ["l.id, l.name as league_name", "COUNT(*) as total_guesses", "AVG(g.points) as avg_points"];
+        return $this->db->get("guesses g", 3 ,$columns);
+    }
+
+    function getExtremeMonth(int $userId, int $year, bool $isBest = true) {
+    
+        // Choose the order based on whether we want the best or worst month
+        $orderByDirection = $isBest ? 'DESC' : 'ASC';
+    
+        $this->db->where('user_id', $userId);
+        $this->db->where('guessed_at', null, 'IS NOT');
+        $this->db->where("YEAR(guessed_at)", $year, '=');
+        $this->db->groupBy('YEAR(guessed_at), MONTH(guessed_at)');
+        $this->db->having('COUNT(id)', 10, '>=');
+        $this->db->orderBy('AVG(points)', $orderByDirection);
+    
+        $columns = ['YEAR(guessed_at) AS year, 
+                    MONTH(guessed_at) AS month, 
+                    AVG(points) AS avg_points',
+                    'count(id) as locks',
+                    'sum(preso) as cnt_preso'
+                ];
+
+        return $this->db->getOne('guesses', $columns);
+    }
+
 }
+
