@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Stats;
 
 use App\Service\BaseService;
-use App\Service\Trophies;
+use App\Service\Trophy;
 use App\Repository\StatsRepository;
 
 final class CalculateYearWrapped extends BaseService{
@@ -16,7 +16,7 @@ final class CalculateYearWrapped extends BaseService{
 
     public function calculateWrapped(){
         $year = 2023;
-        $userId = 264;
+        $userId = 278;
 
         $mainSummary = $this->statsRepository->getUserMainSummary($userId, $year);
         $commonLock = $this->statsRepository->getCommonLock(null, $userId, $year);
@@ -31,8 +31,13 @@ final class CalculateYearWrapped extends BaseService{
         $bestMonth = $this->statsRepository->getExtremeMonth($userId, $year);
         $worstMonth = $this->statsRepository->getExtremeMonth($userId, $year, false);
 
-        $trophies = $this->trophyFindService->getForUser($userId, $year.'-01-01');  
-        return $trophies;
+        $trophies = $this->trophyFindService->getTrophies($userId, $year.'-01-01');  
+        $ppLeagues = $this->statsRepository->countPPLeagues($userId, $year);
+        
+        $mostUpsWith = $this->statsRepository->getUsersWithMostParticipationsWith($userId, $year);
+        $mostAdjacentPositions = $this->statsRepository->getUsersWithMostAdjacentPositions($userId, $year);
+        
+        return $mostAdjacentPositions;
     }
 
 

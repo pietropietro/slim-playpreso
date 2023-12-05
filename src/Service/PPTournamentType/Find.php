@@ -9,7 +9,7 @@ use App\Repository\PPTournamentTypeRepository;
 use App\Repository\UserParticipationRepository;
 use App\Service\Points;
 use App\Service\League;
-use App\Service\Trophies;
+use App\Service\Trophy;
 use App\Service\BaseService;
 
 final class Find  extends BaseService{
@@ -19,7 +19,7 @@ final class Find  extends BaseService{
         protected UserParticipationRepository $userParticipationRepository,
         protected Points\Find $pointsService,
         protected League\Find $leagueFindService,
-        protected Trophies\Find $trophiesFindService,
+        protected Trophy\Find $trophiesFindService,
     ){}
 
     public function getOne(int $id, bool $enrich = true){

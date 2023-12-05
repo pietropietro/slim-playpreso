@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace App\Service\Stats;
 
 use App\Service\BaseService;
-use App\Service\Trophies;
+use App\Service\Trophy;
 use App\Service\Match;
 use App\Service\PPTournamentType;
 use App\Repository\StatsRepository;
+use App\Repository\UserParticipationRepository;
 
 final class Find extends BaseService{
     public function __construct(
         protected StatsRepository $statsRepository,
-        protected Trophies\Find $trophiesFindService,
+        protected UserParticipationRepository $userParticipationRepository,
+        protected Trophy\Find $trophiesFindService,
         protected Match\Find $matchFindService,
         protected PPTournamentType\Find $ppTournamentTypeFindService,
     ) {}

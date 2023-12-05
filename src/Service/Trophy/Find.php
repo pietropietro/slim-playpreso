@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Trophies;
+namespace App\Service\Trophy;
 
 use App\Service\BaseService;
 use App\Service\RedisService;

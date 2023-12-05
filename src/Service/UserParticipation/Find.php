@@ -10,7 +10,7 @@ use App\Repository\PPTournamentTypeRepository;
 use App\Repository\PPLeagueRepository;
 use App\Service\PPRound;
 use App\Service\Match;
-use App\Service\Trophies;
+use App\Service\Trophy;
 
 final class Find  extends BaseService {
 
@@ -21,7 +21,7 @@ final class Find  extends BaseService {
         protected PPLeagueRepository $ppLeagueRepository,
         protected PPRound\Find $ppRoundFindService,
         protected Match\Find $matchFindService,
-        protected Trophies\Find $trophiesFindService,
+        protected Trophy\Find $trophiesFindService,
     ){}
 
 
