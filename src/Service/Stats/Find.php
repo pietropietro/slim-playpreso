@@ -9,13 +9,11 @@ use App\Service\Trophy;
 use App\Service\Match;
 use App\Service\PPTournamentType;
 use App\Repository\StatsRepository;
-use App\Repository\UserParticipationRepository;
 
 final class Find extends BaseService{
     public function __construct(
         protected StatsRepository $statsRepository,
-        protected UserParticipationRepository $userParticipationRepository,
-        protected Trophy\Find $trophiesFindService,
+        protected Trophy\Find $trophyFindService,
         protected Match\Find $matchFindService,
         protected PPTournamentType\Find $ppTournamentTypeFindService,
     ) {}
@@ -108,7 +106,7 @@ final class Find extends BaseService{
         $userStat['user'] = array(
             "username" => $userStat['username'],
             "id" => $userStat['user_id'],
-            "trophies" => $this->trophiesFindService->getTrophies($userStat['user_id'])
+            "trophies" => $this->trophyFindService->getTrophies($userStat['user_id'])
         );
     }
 

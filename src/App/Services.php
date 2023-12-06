@@ -496,10 +496,15 @@ $container['stats_find_service'] = static fn (
     ContainerInterface $container
 ):  Stats\Find => new  Stats\Find(
     $container->get('stats_repository'),
-    $container->get('userparticipation_repository'),
     $container->get('trophy_find_service'),
     $container->get('match_find_service'),
     $container->get('pptournamenttype_find_service'),
+);
+
+$container['stats_find_adjacent_ups_service'] = static fn (
+    ContainerInterface $container
+):  Stats\FindAdjacentUps => new  Stats\FindAdjacentUps(
+    $container->get('userparticipation_repository'),
 );
 
 $container['stats_calculate_year_wrapped_service'] = static fn (
@@ -507,6 +512,7 @@ $container['stats_calculate_year_wrapped_service'] = static fn (
 ):  Stats\CalculateYearWrapped => new  Stats\CalculateYearWrapped(
     $container->get('stats_repository'),
     $container->get('trophy_find_service'),
+    $container->get('stats_find_adjacent_ups_service')
 );
 
 $container['trophy_find_service'] = static fn (

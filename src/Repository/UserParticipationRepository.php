@@ -36,7 +36,8 @@ final class UserParticipationRepository extends BaseRepository
         ?bool $started = null, 
         ?bool $finished = null, 
         ?int $minPosition = null,
-        ?string $updatedAfter = null
+        ?string $updatedAfter = null,
+        ?string $updatedBefore = null
     ){
         $this->db->where('user_id', $userId);
 
@@ -58,7 +59,10 @@ final class UserParticipationRepository extends BaseRepository
         if($updatedAfter){
             $dateAfter = date("Y-m-d H:i:s", strtotime($updatedAfter));
             $this->db->where('updated_at', $dateAfter, '>');
-
+        }
+        if($updatedBefore){
+            $dateBefore = date("Y-m-d H:i:s", strtotime($updatedBefore));
+            $this->db->where('updated_at', $dateBefore, '<');
         }
         // $this->db->orderBy('joined_at','desc');
 
@@ -190,6 +194,24 @@ final class UserParticipationRepository extends BaseRepository
         $this->db->where('position', $_SERVER['PPLEAGUE_PROMOTIONS'], '<=');
 
         return $this->db->update('userParticipations', $data, 1);
+    }
+
+    //this function returns ups which ended up in position next/before to the original up
+    public function findAdjacentParticipants(int $userId, array $participation){
+        // Prepare the query for adjacent positions
+        $this->db->join('users u', 'up2.user_id=u.id', 'INNER');
+        $this->db->where('up2.user_id', $userId, '!=');
+        $this->db->where('up2.position', [$participation['position'] - 1, $participation['position'] + 1], 'IN');
+        
+        if ($participation['ppLeague_id'] !== null) {
+            $this->db->where('up2.ppLeague_id', $participation['ppLeague_id']);
+        } else if ($participation['ppCupGroup_id'] !== null) {
+            $this->db->where('up2.ppCupGroup_id', $participation['ppCupGroup_id']);
+        }
+
+        $adjacentParticipations = $this->db->get('userParticipations up2', null, 'up2.user_id, username, up2.position, tot_points');
+        
+        return $adjacentParticipations;
     }
 
 }
