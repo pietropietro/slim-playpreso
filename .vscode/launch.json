@@ -62,6 +62,19 @@
             "env": {
                 "ALLOW_URL_REQUEST": "http://192.168.1.75:3000"
             }
+        },
+        {
+            "name": "PHP CLI",
+            "type": "php",
+            "request": "launch",
+            "program": "${file}",
+            "cwd": "${workspaceFolder}",
+            "port": 9003,
+            "runtimeArgs": [
+                "-dxdebug.mode=debug",
+                "-dxdebug.start_with_request=yes"
+            ],
+            "externalConsole": false
         }
     ]
 }
