@@ -7,11 +7,13 @@ namespace App\Service\Stats;
 use App\Service\BaseService;
 use App\Service\Trophy;
 use App\Service\Stats;
+use App\Repository\UserParticipationRepository;
 use App\Repository\StatsRepository;
 
 final class CalculateYearWrapped extends BaseService{
     public function __construct(
         protected StatsRepository $statsRepository,
+        protected UserParticipationRepository $userParticipationRepository,
         protected Trophy\Find $trophyFindService,
         protected Stats\FindAdjacentUps $statsFindAdjacentUpsService,
     ) {}
@@ -20,27 +22,35 @@ final class CalculateYearWrapped extends BaseService{
         $year = 2023;
         $userId = 264;
 
-        $mainSummary = $this->statsRepository->getUserMainSummary($userId, $year);
-        $commonLock = $this->statsRepository->getCommonLock(null, $userId, $year);
-        $missedCount = $this->statsRepository->getUserMissedCount($userId,$year);
-        
-        $commonTeams = $this->statsRepository->getUserCommonTeams($userId, $year);
-        $highestAvgTeams = $this->statsRepository->getUserHighestAverageTeams($userId, $year);
-        
-        $commonLeagues = $this->statsRepository->getUserLeagues($userId, $year);
-        $bestLeagues = $this->statsRepository->getUserLeagues($userId, $year, false);
+        $returnArr = array();
 
-        $bestMonth = $this->statsRepository->getExtremeMonth($userId, $year);
-        $worstMonth = $this->statsRepository->getExtremeMonth($userId, $year, false);
+        $returnArr['mainSummary'] = $this->statsRepository->getUserMainSummary($userId, $year);
+        if(isset($returnArr['mainSummary'][0]['locks']) && $returnArr['mainSummary'][0]['locks'] < 50) return;
+        $returnArr['commonLock'] = $this->statsRepository->getCommonLock(null, $userId, $year);
+        $returnArr['missedCount'] = $this->statsRepository->getUserMissedCount($userId,$year);
+        
+        $returnArr['commonTeams'] = $this->statsRepository->getUserCommonTeams($userId, $year);
+        $returnArr['highestAvgTeams'] = $this->statsRepository->getUserHighestAverageTeams($userId, $year);
+        
+        $returnArr['commonLeagues'] = $this->statsRepository->getUserLeagues($userId, $year);
+        $returnArr['bestLeagues'] = $this->statsRepository->getUserLeagues($userId, $year, false);
 
-        $trophies = $this->trophyFindService->getTrophies($userId, $year.'-01-01');  
-        $ppLeagues = $this->statsRepository->countPPLeagues($userId, $year);
+        $returnArr['bestMonth'] = $this->statsRepository->getExtremeMonth($userId, $year);
+        $returnArr['worstMonth'] = $this->statsRepository->getExtremeMonth($userId, $year, false);
+
+        $returnArr['trophies'] = $this->trophyFindService->getTrophies($userId, $year.'-01-01');  
         
-        $mostUpsWith = $this->statsRepository->getUsersWithMostParticipationsWith($userId, $year);
-        $mostAdjacentPositions = $this->statsFindAdjacentUpsService->getUsersWithMostAdjacentPositions($userId, $year);
-        // $mostAdjacentPositions = $this->statsRepository->getUsersWithMostAdjacentPositions($userId, $year);
+        $ppLeaguesParticipations = $this->userParticipationRepository->getForUser($userId, 'ppLeague_id', true, null, null, $year.'-01-01', $year.'-12-31');
+        if(is_array($ppLeaguesParticipations)){
+            $returnArr['ppl_ups_count'] = count($ppLeaguesParticipations);
+            $returnArr['ppl_ups_most'] = $this->statsRepository->mostPPLeagueParticipations($userId, $year);
+            //TODO use $returnArr['ppl_ups_most']['ppl_ids'] to retrieve ups from up repo
+        }
         
-        return $mostAdjacentPositions;
+        $returnArr['mostUpsWith'] = $this->statsRepository->getUsersWithMostParticipationsWith($userId, $year);
+        $returnArr['mostAdjacentPositions'] = $this->statsFindAdjacentUpsService->getUsersWithMostAdjacentPositions($userId, $year);
+        
+        return   $returnArr['ppl_ups_most'];
     }
 
 

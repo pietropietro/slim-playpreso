@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Service\Stats;
 
 use App\Service\BaseService;
+use App\Service\PPTournamentType;
 use App\Repository\UserParticipationRepository;
 
 final class FindAdjacentUps extends BaseService{
     public function __construct(
         protected UserParticipationRepository $userParticipationRepository,
+        protected PPTournamentType\Find $ppTournamentTypeFindService,
     ) {}
 
 
@@ -63,6 +65,13 @@ final class FindAdjacentUps extends BaseService{
         $userParticipations = array_filter($userParticipations, function($up) {
             return !empty($up['adjacent']);
         });
+
+        // after filtered useless elements, add ptt data 
+        foreach ($userParticipations as &$up) {
+            $up['ppTournamentType'] = $this->ppTournamentTypeFindService->getOne(
+                $up['ppTournamentType_id'], false
+            );
+        }
 
     }
 }

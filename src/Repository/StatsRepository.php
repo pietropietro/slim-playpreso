@@ -193,6 +193,7 @@ final class StatsRepository extends BaseRepository
             'round(100 * SUM(GGNG = 1) / COUNT(*),1) AS percentage_ggng',
             'round(100 * SUM(UO25 = 1) / COUNT(*),1) AS percentage_uo25',
             'SUM(PRESO = 1) AS count_preso',
+            'SUM(points) AS tot_points',
         ];
         return $this->db->get('guesses', null, $columns);
     }
@@ -231,7 +232,7 @@ final class StatsRepository extends BaseRepository
             $this->db->having('total_guesses', 5, '>=');
         }
 
-        $columns = ["l.id, l.name as league_name", "COUNT(*) as total_guesses", "AVG(g.points) as avg_points"];
+        $columns = ["l.id, country ,l.name as league_name", "COUNT(*) as total_guesses", "AVG(g.points) as avg_points"];
         return $this->db->get("guesses g", 3 ,$columns);
     }
 
@@ -257,11 +258,27 @@ final class StatsRepository extends BaseRepository
         return $this->db->getOne('guesses', $columns);
     }
 
-    function countPPLeagues(int $userId, int $year){
+    function countPPLeagueParticipations(int $userId, int $year){
+        // Count the total number of participations in leagues
         $this->db->where("YEAR(updated_at)", $year, '=');
         $this->db->where('user_id', $userId);
         $this->db->where('ppLeague_id IS NOT NULL');
-        return $this->db->get('userParticipations', null,'count(id)');
+        $totalParticipations = $this->db->getValue('userParticipations', 'count(id)');
+
+        return  $totalParticipations;
+        
+    }
+
+    public function mostPPLeagueParticipations(int $userId, int $year){
+        // Find the most joined ppTournamentType_id
+        $this->db->where("YEAR(updated_at)", $year, '=');
+        $this->db->where('user_id', $userId);
+        $this->db->where('ppLeague_id IS NOT NULL');
+        $this->db->join('ppTournamentTypes ppts', 'userParticipations.ppTournamentType_id=ppts.id');
+        $this->db->groupBy('name');
+        $this->db->orderBy('count(name)', 'DESC');
+        $mostJoinedTournamentType = $this->db->getOne('userParticipations', 'name, count(name) as count, group_concat(ppLeague_id) as ppl_ids');
+        return $mostJoinedTournamentType;
     }
 
     //FIND USER that has more ups with specific user
@@ -299,73 +316,6 @@ final class StatsRepository extends BaseRepository
         return $mostParticipations;
     }
 
-    function getUsersWithMostAdjacentPositions(int $userId, int $year) {
-        // First, get the league and cup group IDs where the user participated
-        $this->db->where('user_id', $userId);
-        $this->db->where("YEAR(joined_at)", $year, '=');
-        //only finished tournaments
-        $this->db->having('finished', 1);
-        $this->db->join('ppLeagues ppl', 'ppl.id = userParticipations.ppLeague_id', "LEFT");
-        $this->db->join('ppCupGroups ppcg', 'ppcg.id = userParticipations.ppCupGroup_id', "LEFT");
-
-        $userParticipations = $this->db->get('userParticipations', null, 
-            'userParticipations.id, ppLeague_id, ppCupGroup_id, position, tot_points, 
-            if(ppl.finished_at IS NOT NULL or ppcg.finished_at IS NOT NULL, 1, 0) as finished'
-        );
-    
-        if (!$userParticipations) return []; 
-    
-        $adjacentUsers = [];
-        foreach ($userParticipations as &$participation) {
-            // Prepare the query for adjacent positions
-            $this->db->join('users u', 'up2.user_id=u.id', 'INNER');
-            $this->db->where('up2.user_id', $userId, '!=');
-            $this->db->where('up2.position', [$participation['position'] - 1, $participation['position'] + 1], 'IN');
-            
-            if ($participation['ppLeague_id'] !== null) {
-                $this->db->where('up2.ppLeague_id', $participation['ppLeague_id']);
-            } else if ($participation['ppCupGroup_id'] !== null) {
-                $this->db->where('up2.ppCupGroup_id', $participation['ppCupGroup_id']);
-            }
-    
-            $adjacentParticipations = $this->db->get('userParticipations up2', null, 'up2.user_id, up2.position, tot_points');
-            
-            // Edit PARTICIPATION var adding adjacents ups
-            $participation['adjacent'] = $adjacentParticipations;
-    
-            // Count occurrences
-            foreach ($adjacentParticipations as $adjParticipation) {
-                if (!isset($adjacentUsers[$adjParticipation['user_id']])) {
-                    $adjacentUsers[$adjParticipation['user_id']] = 0;
-                }
-                $adjacentUsers[$adjParticipation['user_id']]++;
-            }
-        }
-    
-        // Find the user with the most adjacent participations
-        arsort($adjacentUsers);
-        $mostAdjacentUserId = key($adjacentUsers);
-    
-        // Iterate the user ups and eliminate the adjacent ups where the user_id is not mostAdjacentUserId
-        foreach ($userParticipations as &$up) {
-            $up['adjacent'] = array_filter($up['adjacent'], function($adj) use ($mostAdjacentUserId) {
-                return $adj['user_id'] == $mostAdjacentUserId;
-            });
-        }
-    
-        // Eliminate ups where no adjacent so to return only the userParticipations with adjacent
-        $userParticipations = array_filter($userParticipations, function($up) {
-            return !empty($up['adjacent']);
-        });
-    
-        return [
-            'mostAdjacentUserId' => $mostAdjacentUserId,
-            'totalAdjacentCount' => $adjacentUsers[$mostAdjacentUserId],
-            'adjacentParticipations' => array_values($userParticipations) // Reindex array
-        ];
-    }
-    
-    
     
 }
 
