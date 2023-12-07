@@ -277,7 +277,7 @@ final class StatsRepository extends BaseRepository
         $this->db->join('ppTournamentTypes ppts', 'userParticipations.ppTournamentType_id=ppts.id');
         $this->db->groupBy('name');
         $this->db->orderBy('count(name)', 'DESC');
-        $mostJoinedTournamentType = $this->db->getOne('userParticipations', 'name, count(name) as count, group_concat(ppLeague_id) as ppl_ids');
+        $mostJoinedTournamentType = $this->db->getOne('userParticipations', 'name, count(name) as count, group_concat(userParticipations.id) as ups_ids');
         return $mostJoinedTournamentType;
     }
 

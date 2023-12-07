@@ -513,6 +513,7 @@ $container['stats_calculate_year_wrapped_service'] = static fn (
 ):  Stats\CalculateYearWrapped => new  Stats\CalculateYearWrapped(
     $container->get('stats_repository'),
     $container->get('userparticipation_repository'),
+    $container->get('pptournamenttype_repository'),
     $container->get('trophy_find_service'),
     $container->get('stats_find_adjacent_ups_service')
 );

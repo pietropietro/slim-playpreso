@@ -9,11 +9,13 @@ use App\Service\Trophy;
 use App\Service\Stats;
 use App\Repository\UserParticipationRepository;
 use App\Repository\StatsRepository;
+use App\Repository\PPTournamentTypeRepository;
 
 final class CalculateYearWrapped extends BaseService{
     public function __construct(
         protected StatsRepository $statsRepository,
         protected UserParticipationRepository $userParticipationRepository,
+        protected PPTournamentTypeRepository $ppTournamentTypeRepository,
         protected Trophy\Find $trophyFindService,
         protected Stats\FindAdjacentUps $statsFindAdjacentUpsService,
     ) {}
@@ -40,17 +42,33 @@ final class CalculateYearWrapped extends BaseService{
 
         $returnArr['trophies'] = $this->trophyFindService->getTrophies($userId, $year.'-01-01');  
         
-        $ppLeaguesParticipations = $this->userParticipationRepository->getForUser($userId, 'ppLeague_id', true, null, null, $year.'-01-01', $year.'-12-31');
-        if(is_array($ppLeaguesParticipations)){
-            $returnArr['ppl_ups_count'] = count($ppLeaguesParticipations);
-            $returnArr['ppl_ups_most'] = $this->statsRepository->mostPPLeagueParticipations($userId, $year);
-            //TODO use $returnArr['ppl_ups_most']['ppl_ids'] to retrieve ups from up repo
-        }
+        $returnArr['pplStats'] = $this->getPPLStats($userId, $year);
         
         $returnArr['mostUpsWith'] = $this->statsRepository->getUsersWithMostParticipationsWith($userId, $year);
         $returnArr['mostAdjacentPositions'] = $this->statsFindAdjacentUpsService->getUsersWithMostAdjacentPositions($userId, $year);
         
-        return   $returnArr['ppl_ups_most'];
+        return $returnArr;
+    }
+
+    private function getPPLStats(int $userId, int $year){
+        $ppLeaguesParticipations = $this->userParticipationRepository->getForUser(
+            $userId, 'ppLeague_id', true, null, null, $year.'-01-01', $year.'-12-31'
+        );
+        
+        if(!is_array($ppLeaguesParticipations)) return null;
+        
+        $pplArr = array();
+        $pplArr['count'] = count($ppLeaguesParticipations);
+        $pplArr['most_ppt_kind'] = $this->statsRepository->mostPPLeagueParticipations($userId, $year);
+        $mostPPTKindUps= $this->userParticipationRepository->get( 
+            explode(',', $pplArr['most_ppt_kind']['ups_ids'])
+        );
+        foreach($mostPPTKindUps as &$up){
+            $up['ppTournamentType'] = $this->ppTournamentTypeRepository->getOne($up['ppTournamentType_id']);
+        }
+        $pplArr['most_ppt_kind']['ups'] = $mostPPTKindUps;
+        
+        return $pplArr;
     }
 
 
