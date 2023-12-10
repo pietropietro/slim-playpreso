@@ -22,8 +22,13 @@ final class UserRepository extends BaseRepository
     }
 
     public function adminGet(){
-        return $this->db->get('users', 100);
+        return $this->db->get('users');
     }
+
+    public function getValue(string $column){
+        return $this->db->getValue('users', $column, null);
+    }
+
 
     public function getOne(int $userId, ?bool $allColumns=false)
     {

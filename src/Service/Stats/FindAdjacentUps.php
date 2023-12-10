@@ -37,9 +37,9 @@ final class FindAdjacentUps extends BaseService{
         $this->filterResults($userParticipations, $mostAdjacentUserId);
         
         return [
-            'mostAdjacentUserId' => $mostAdjacentUserId,
-            'totalAdjacentCount' => $countedAdjacentUsers[$mostAdjacentUserId],
-            'adjacentParticipations' => array_values($userParticipations) // Reindex array
+            'most_adjacent_ups_user_id' => $mostAdjacentUserId,
+            'most_adjacent_ups_tot' => $countedAdjacentUsers[$mostAdjacentUserId],
+            'most_adjacent_ups' => json_encode(array_values($userParticipations)) // Reindex array
         ];
 
     }

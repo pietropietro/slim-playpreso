@@ -86,6 +86,7 @@ final class StatsRepository extends BaseRepository
         return $this->db->query($sql);
     }
     
+
     // Array
     // (
     //     [result] => 1-0
@@ -99,9 +100,11 @@ final class StatsRepository extends BaseRepository
         if($ppRoundMatchId)$this->db->where('ppRoundMatch_id', $ppRoundMatchId);
         if($userId)$this->db->where('user_id', $userId);
         if($year)$this->db->where('YEAR(guessed_at)', $year);
-        $this->db->orderBy('occurrances');
-        $this->db->groupBy('result');
-        return $this->db->getOne('guesses','concat_ws("-",home,away) as result, count(*) as occurrances');
+        $this->db->orderBy('most_lock_combination_tot');
+        $this->db->groupBy('most_lock_combination');
+        return $this->db->getOne('guesses',
+            'concat_ws("-",home,away) as most_lock_combination, count(*) as most_lock_combination_tot'
+        );
     }
 
     public function getPPRMAggregates(int $ppRoundMatchId){
@@ -117,7 +120,7 @@ final class StatsRepository extends BaseRepository
     //either home or away in the guesses of the specified user and then return the top 3 teams
     public function getUserCommonTeams(int $userId, int $year){
         $sql = "
-            SELECT t.id, t.name, COUNT(*) as occurrences, round(AVG(subquery.points),1) as avg_points, SUM(subquery.preso) as cnt_preso
+            SELECT t.id, t.name, COUNT(*) as tot_locks, round(AVG(subquery.points),1) as avg_points, SUM(subquery.preso) as tot_preso
             FROM (
                 SELECT home_id as team_id, g.points, g.preso FROM guesses g
                 JOIN matches m ON g.match_id = m.id
@@ -129,7 +132,7 @@ final class StatsRepository extends BaseRepository
             ) as subquery
             JOIN teams t ON subquery.team_id = t.id
             GROUP BY t.id, t.name
-            ORDER BY occurrences DESC
+            ORDER BY tot_locks DESC
             LIMIT 3
         ";
 
@@ -146,7 +149,7 @@ final class StatsRepository extends BaseRepository
     // )
     public function getUserHighestAverageTeams(int $userId, int $year){
         $sql = "
-            SELECT t.id, t.name, round(AVG(subquery.points),1) as avg_points, COUNT(*) as occurrences
+            SELECT t.id, t.name, round(AVG(subquery.points),1) as avg_points, COUNT(*) as tot_locks
             FROM (
                 SELECT home_id as team_id, g.points FROM guesses g
                 JOIN matches m ON g.match_id = m.id
@@ -175,9 +178,9 @@ final class StatsRepository extends BaseRepository
         // (
         //     [locks] => 705
         //     [avg_points] => 5.0
-        //     [percentage_unox2] => 40.9
-        //     [percentage_ggng] => 46.4
-        //     [percentage_uo25] => 50.4
+        //     [perc_unox2] => 40.9
+        //     [perc_ggng] => 46.4
+        //     [perc_uo25] => 50.4
         //     [count_preso] => 71
         // )
 
@@ -187,24 +190,26 @@ final class StatsRepository extends BaseRepository
         $this->db->where('YEAR(guessed_at)', $year, '=');
         $this->db->groupBy('user_id'); // Group by user_id if you want to aggregate over all records of the user
         $columns = [
-            'COUNT(*) AS locks',
+            'COUNT(*) AS tot_locks',
             'round(avg(points),1) as avg_points',
-            'round(100 * SUM(UNOX2 = 1) / COUNT(*),1) AS percentage_unox2',
-            'round(100 * SUM(GGNG = 1) / COUNT(*),1) AS percentage_ggng',
-            'round(100 * SUM(UO25 = 1) / COUNT(*),1) AS percentage_uo25',
-            'SUM(PRESO = 1) AS count_preso',
+            'round(100 * SUM(UNOX2 = 1) / COUNT(*),1) AS perc_unox2',
+            'round(100 * SUM(GGNG = 1) / COUNT(*),1) AS perc_ggng',
+            'round(100 * SUM(UO25 = 1) / COUNT(*),1) AS perc_uo25',
+            'SUM(PRESO = 1) AS tot_preso',
             'SUM(points) AS tot_points',
         ];
-        return $this->db->get('guesses', null, $columns);
+        return $this->db->getOne('guesses', $columns);
     }
 
 
     public function getUserMissedCount(int $userId, int $year){
         $this->db->where('user_id', $userId);
         $this->db->where('YEAR(created_at)', $year, '=');
+        $this->db->where('verified_at IS NOT NULL');
         $this->db->groupBy('user_id');
-        $columns = ['SUM(guessed_at IS NULL) AS count_missed'];
-        return $this->db->get('guesses', null, $columns);
+        $column = 'SUM(guessed_at IS NULL) AS tot_missed';
+        $res = $this->db->getOne('guesses', $column);
+        return $res;
     }
 
     // (
@@ -223,17 +228,32 @@ final class StatsRepository extends BaseRepository
         $this->db->where("g.user_id", $userId);
         $this->db->where("YEAR(g.guessed_at)", $year, '=');
 
-        $this->db->groupBy("m.league_id");
+        $this->db->groupBy("COALESCE(l.parent_id, l.id)");
 
         if($commonBestFlag) $this->db->orderBy("COUNT(*)", "DESC");
         
         else{
             $this->db->orderBy("AVG(g.points)", "DESC");
-            $this->db->having('total_guesses', 5, '>=');
+            $this->db->having('tot_locks', 5, '>=');
         }
 
-        $columns = ["l.id, country ,l.name as league_name", "COUNT(*) as total_guesses", "AVG(g.points) as avg_points"];
-        return $this->db->get("guesses g", 3 ,$columns);
+        $columns = [
+            "ANY_VALUE(l.id) as id", 
+            "ANY_VALUE(l.parent_id) as parent_id", 
+            "ANY_VALUE(country) as country", 
+            "ANY_VALUE(l.name) as name", 
+            "COUNT(*) as tot_locks", 
+            "AVG(g.points) as avg_points"
+        ];
+        // $columns = ["l.id, country ,l.name as name", "COUNT(*) as tot_locks", "AVG(g.points) as avg_points"];
+        
+        $result = $this->db->get("guesses g", 3 ,$columns);
+        if(isset($result[0]['parent_id'])){
+            $result[0]['id'] = $result[0]['parent_id'];
+            $this->db->where('id',$result[0]['parent_id']);
+            $result[0]['name'] = $this->db->getValue('leagues', 'name');
+        }
+        return $result;
     }
 
     function getExtremeMonth(int $userId, int $year, bool $isBest = true) {
@@ -242,7 +262,7 @@ final class StatsRepository extends BaseRepository
         $orderByDirection = $isBest ? 'DESC' : 'ASC';
     
         $this->db->where('user_id', $userId);
-        $this->db->where('guessed_at', null, 'IS NOT');
+        $this->db->where('guessed_at IS NOT NULL');
         $this->db->where("YEAR(guessed_at)", $year, '=');
         $this->db->groupBy('YEAR(guessed_at), MONTH(guessed_at)');
         $this->db->having('COUNT(id)', 10, '>=');
@@ -251,8 +271,8 @@ final class StatsRepository extends BaseRepository
         $columns = ['YEAR(guessed_at) AS year, 
                     MONTH(guessed_at) AS month, 
                     AVG(points) AS avg_points',
-                    'count(id) as locks',
-                    'sum(preso) as cnt_preso'
+                    'count(id) as tot_locks',
+                    'sum(preso) as tot_preso'
                 ];
 
         return $this->db->getOne('guesses', $columns);
@@ -277,7 +297,12 @@ final class StatsRepository extends BaseRepository
         $this->db->join('ppTournamentTypes ppts', 'userParticipations.ppTournamentType_id=ppts.id');
         $this->db->groupBy('name');
         $this->db->orderBy('count(name)', 'DESC');
-        $mostJoinedTournamentType = $this->db->getOne('userParticipations', 'name, count(name) as count, group_concat(userParticipations.id) as ups_ids');
+        $mostJoinedTournamentType = $this->db->getOne('userParticipations', 
+            'name as ppl_most_kind_name, 
+                count(name) as ppl_most_kind_tot, 
+                group_concat(userParticipations.id) as ups_ids
+            '
+        );
         return $mostJoinedTournamentType;
     }
 
@@ -306,14 +331,21 @@ final class StatsRepository extends BaseRepository
         $this->db->orderBy('COUNT(ups.id)', 'DESC');
         $this->db->join('users u', 'ups.user_id=u.id', 'INNER');
         $columns = 
-            ['user_id', 'username', 
-                'COUNT(ups.id) AS total_participations', 
-                'group_concat(ppLeague_id) as grc_ppl',
-                'group_concat(ppCupGroup_id) as grc_ppcg'
+            ['user_id as most_ups_with_user_id', 'username as most_ups_with_username', 
+                'COUNT(ups.id) AS most_ups_with_tot', 
+                // 'group_concat(ppLeague_id) as most_ups_with_ppl_grpcnct',
+                // 'group_concat(ppCupGroup_id) as most_ups_with_ppcg_grpcnct'
             ];
         $mostParticipations = $this->db->get('userParticipations ups', 10, $columns);
 
         return $mostParticipations;
+    }
+
+    public function saveWrapped(array $data){
+        if(!$result= $this->db->insert('stats_wrapped_2023', $data)){
+            print_r($this->db->getLastError());
+        }
+        return $result;
     }
 
     
