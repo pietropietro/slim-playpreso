@@ -95,6 +95,7 @@ return function ($app){
     $app->group('/stats', function () use ($app): void {
         $app->get('/best-users', Stats\BestUsers::class);
         $app->get('/last-preso', Stats\LastPreso::class);
+        $app->get('/wrapped', Stats\GetWrapped::class);
     })->add(new Auth($pointsService));
 
     $app->group('/admin', function () use ($app): void {

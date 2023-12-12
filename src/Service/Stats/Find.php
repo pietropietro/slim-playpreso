@@ -110,5 +110,13 @@ final class Find extends BaseService{
         );
     }
 
+    public function getWrapped(int $userId){
+        $wrapped= $this->statsRepository->getWrapped($userId);
+        $wrapped['most_adjacent_ups'] = json_decode($wrapped['most_adjacent_ups']);
+        $wrapped['ppl_most_kind_ups'] = json_decode($wrapped['ppl_most_kind_ups']);
+        $wrapped['trophy_list'] = json_decode($wrapped['trophy_list']);
+        return $wrapped;
+    }
+
 
 }

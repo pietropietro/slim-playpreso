@@ -348,6 +348,31 @@ final class StatsRepository extends BaseRepository
         return $result;
     }
 
-    
-}
+    public function getWrapped(int $userId, int $year = 2023){
+        $query = "SELECT 
+                * 
+              FROM (
+                SELECT 
+                    *,
+                    RANK() OVER (ORDER BY tot_points DESC) as tot_points_rank,
+                    RANK() OVER (ORDER BY tot_locks DESC) as tot_locks_rank,
+                    RANK() OVER (ORDER BY tot_preso DESC) as tot_preso_rank,
+                    RANK() OVER (ORDER BY tot_missed ASC) as tot_missed_rank,
+                    RANK() OVER (ORDER BY avg_points DESC) as avg_points_rank,
+                    RANK() OVER (ORDER BY perc_unox2 DESC) as perc_unox2_rank,
+                    RANK() OVER (ORDER BY perc_ggng DESC) as perc_ggng_rank,
+                    RANK() OVER (ORDER BY perc_uo25 DESC) as perc_uo25_rank
+                FROM 
+                    stats_wrapped_".$year."
+              ) as ranked_users
+              CROSS JOIN (
+                SELECT COUNT(DISTINCT user_id) as ranked_users FROM stats_wrapped_2023
+              ) as count_users_ranked
+              WHERE 
+                user_id = ?";
 
+        $params = [$userId]; // Parameters to bind to the query
+        $result = $this->db->rawQuery($query, $params);
+        if($result) return $result[0];
+    }
+}
