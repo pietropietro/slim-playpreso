@@ -25,8 +25,11 @@ final class Find  extends BaseService {
     ){}
 
 
-    public function getForTournament(string $tournamentColumn, int $tournamentId) :array{
+    public function getForTournament(string $tournamentColumn, int $tournamentId,?int $level = null,?bool $enriched = true) :array{
         $ups = $this->userParticipationRepository->getForTournament($tournamentColumn, $tournamentId); 
+        
+        if(!$enriched) return $ups;
+
         foreach ($ups as &$up) {
             $up['user']['id'] = $up['user_id'];
             $up['user']['username'] = $up['username'];

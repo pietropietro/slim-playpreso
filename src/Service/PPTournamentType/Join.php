@@ -9,7 +9,6 @@ use App\Service\PPLeague;
 use App\Service\PPCup;
 use App\Service\PPCupGroup;
 use App\Service\PPTournamentType;
-use App\Service\PPTournament;
 use App\Service\Points;
 use App\Service\UserParticipation;
 
@@ -21,7 +20,6 @@ final class Join  extends BaseService{
         protected UserParticipation\Create $createUpService,
         protected PPCup\Find $findPPCupService,
         protected PPCupGroup\Find $findPPCupGroupService,
-        protected PPTournament\VerifyAfterJoin $verify,
     ) {}
 
     public function joinAvailable(int $userId, int $ppTypeId, bool $pay = true){
@@ -49,8 +47,6 @@ final class Join  extends BaseService{
             throw new \App\Exception\User("something went wrong", 500);
         };
         
-        $this->verify->afterJoined($tournamentColumn, $ppTournamentGroup['id'] ?? $ppTournament['id'], $ppTournamentType['id']);
-
         return $ppTournament['id'];
     }
     
