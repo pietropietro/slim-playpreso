@@ -45,7 +45,7 @@ final class PPCupGroupRepository extends BaseRepository
         return $level[0]['level'] ?? 1;
     }
 
-    function getNotFull(int $ppCupId, int $level){
+    function getNotFull(int $ppCupId, int $level = 1){
         //raw query because of the 'having' clause
         //which otherwise (OO) wrongly translates 'participants' as a string
         //and not as the table column value
@@ -60,6 +60,22 @@ final class PPCupGroupRepository extends BaseRepository
             order by count(ups.id) ASC',
         1);
 
+    }
+
+    public function getPaused() {
+        $sql = 'SELECT ppcg.*
+            FROM ppCupGroups ppcg
+            WHERE ppcg.started_at IS NOT NULL
+            AND ppcg.finished_at IS NULL
+            AND NOT EXISTS (
+                SELECT 1
+                FROM ppRounds ppr
+                INNER JOIN ppRoundMatches pprm ON pprm.ppRound_id = ppr.id
+                INNER JOIN matches m ON pprm.match_id = m.id
+                WHERE ppr.ppCupGroup_id = ppcg.id
+                AND m.verified_at IS NULL
+            )';
+        return $this->db->query($sql);
     }
 
     function create(int $ppCupId, int $ppTournamentType_id, int $level, int $rounds, string $tag, int $participants){

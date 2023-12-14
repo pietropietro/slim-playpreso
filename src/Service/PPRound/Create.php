@@ -16,7 +16,10 @@ final class Create extends BaseService{
         protected PPRoundMatch\Create $ppRoundMatchCreateService,
     ){}
     
-    public function create(string $tournamentColumn, int $tournamentId, int $tournamentTypeId, int $newRound , ?int $matchesPerRound = null) : bool{
+    public function create(
+        string $tournamentColumn, int $tournamentId, int $tournamentTypeId, 
+        int $newRound , ?int $matchesPerRound = null) : bool
+    {
         if($this->ppRoundRepository->has($tournamentColumn, $tournamentId, $newRound))return false;
 
         $matchesPerRound = $matchesPerRound ?? 3;

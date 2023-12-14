@@ -8,6 +8,7 @@ use App\Controller\BaseController;
 use App\Service\ExternalAPI;
 use App\Service\League;
 use App\Service\PPLeague;
+use App\Service\PPCupGroup;
 use App\Service\PPRound;
 use App\Service\Guess;
 use App\Service\PPRoundMatch;
@@ -88,5 +89,12 @@ abstract class Base extends BaseController
     {
         return $this->container->get('ppround_create_service');
     }
+
+    protected function getPPCupGroupsFindService(): PPCupGroup\Find
+    {
+        return $this->container->get('ppcupgroup_find_service');
+    }
+
+    
 
 }

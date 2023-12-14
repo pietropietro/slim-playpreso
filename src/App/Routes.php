@@ -164,7 +164,7 @@ return function ($app){
 
     $app->group('/cron', function () use ($app): void {
         $app->get('/fetch-football', Cron\FootballImportController::class);
-        $app->get('/check-paused-pp-leagues', Cron\CheckPausedPPLeagues::class);
+        $app->get('/check-paused-pp-leagues', Cron\CheckPausedPPTournaments::class);
         $app->get('/send-lock-reminders', Cron\ReminderLock::class);
         $app->get('/pick-motd', Cron\PickMotd::class);
     })->add(new InternalRequest());

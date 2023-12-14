@@ -69,6 +69,10 @@ final class Find  extends BaseService{
         return $levels;
     }
 
+    public function getPaused(){
+        return $this->ppCupGroupRepository->getPaused();
+    }
+
     public function enrich(array $group, ?bool $withRounds=false, ?int $userId=null){
         $group['userParticipations'] = $this->userParticipationService->getForTournament('ppCupGroup_id', $group['id']);
         if($group['started_at'] && !$group['finished_at'] ){

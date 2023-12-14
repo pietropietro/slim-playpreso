@@ -7,7 +7,7 @@ namespace App\Controller\Cron;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class CheckPausedPPLeagues extends Base
+final class CheckPausedPPTournaments extends Base
 {
     /**
      * @param array<string> $args
@@ -18,13 +18,19 @@ final class CheckPausedPPLeagues extends Base
     ): Response {
 
         $ppLeagues = $this->getPPLeaguesFindService()->adminGetAllPaused();
+        $ppCupGroups = $this->getPPCupGroupsFindService()->getPaused();
+        
+        $together = array_merge($ppLeagues, $ppCupGroups);
         $results = [];
-        foreach ($ppLeagues as $ppl) {
-            $lastRound = $this->getPPRoundFindService()->getLast('ppLeague_id', $ppl['id'])['round'] ?? 0;
+
+        foreach ($together as $ppt) {
+            $column = isset($ppt['ppCup_id']) ? 'ppCupGroup_id' : 'ppLeague_id';
+            $lastRound = $this->getPPRoundFindService()->getLast($column, $ppt['id'])['round'] ?? 0;
+
             $res = $this->getPPRoundCreateService()->create(
-                'ppLeague_id', 
-                $ppl['id'], 
-                $ppl['ppTournamentType_id'], 
+                $column, 
+                $ppt['id'], 
+                $ppt['ppTournamentType_id'], 
                 $lastRound + 1
             );
             array_push($results, $res);
