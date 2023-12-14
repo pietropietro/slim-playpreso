@@ -90,8 +90,8 @@ final class Find  extends BaseService{
         return $group;
     }
     
-    public function getNotFull(int $ppCupId, int $level) : ?array{
-        $ppCupGroup = $this->ppCupGroupRepository->getNotFull($ppCupId, $level);
+    public function getNotFull(int $ppCupId, int $level, ?string $avoidFromTag = null) : ?array{
+        $ppCupGroup = $this->ppCupGroupRepository->getNotFull($ppCupId, $level, $avoidFromTag);
         return $ppCupGroup ? $ppCupGroup[0] : null;
     }
 }

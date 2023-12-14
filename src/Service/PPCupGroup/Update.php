@@ -96,18 +96,24 @@ final class Update  extends BaseService{
             return $item['position'] == 2;
         });
 
-        $this->joinFirstAvailable($ppCupId, $level, $upsOne);
-        $this->joinFirstAvailable($ppCupId, $level, $upsTwo);
+        $this->joinAvoidingOldOpponent($ppCupId, $level, $upsOne);
+        $this->joinAvoidingOldOpponent($ppCupId, $level, $upsTwo);
     }
 
-    private function joinFirstAvailable(int $ppCupId, int $level, array $ups){
+    private function joinAvoidingOldOpponent(int $ppCupId, int $level, array $ups){
         foreach ($ups as $up) {
-            $ppcg = $this->ppCupGroupFindService->getNotFull($ppCupId, $level + 1);
+            $ppcg = $this->ppCupGroupFindService->getNotFull(
+                $ppCupId, 
+                $level + 1, 
+                avoidFromTag: (string) $up['ppCupGroup_id']
+            );
+
             $this->createUpService->create(
                 $up['user_id'], 
                 $up['ppTournamentType_id'],
                 $ppCupId, 
-                $ppcg['id']
+                $ppcg['id'],
+                (string) $up['ppCupGroup_id']
             );
         }
     }

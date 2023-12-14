@@ -43,22 +43,42 @@ final class PPCupGroupRepository extends BaseRepository
         return $level ?? 1;
     }
 
-    function getNotFull(int $ppCupId, int $level = 1){
-        //raw query because of the 'having' clause
-        //which otherwise (OO) wrongly translates 'participants' as a string
-        //and not as the table column value
+    function getNotFull(int $ppCupId, int $level = 1, ?string $avoidFromTag = null){
+       // Base query
+        $query = "
+            SELECT ppCupGroups.id, participants, COUNT(ups.id) 
+            FROM ppCupGroups
+            LEFT JOIN userParticipations ups ON ups.ppCupGroup_id = ppCupGroups.id 
+            WHERE ppCupGroups.level = ? AND ppCupGroups.ppCup_id = ?
+        ";
 
-        return $this->db->query('
-            select ppCupGroups.id, participants, count(ups.id) 
-            from ppCupGroups
-            left  join userParticipations ups on ups.ppCupGroup_id=ppCupGroups.id 
-            where ppCupGroups.level='.$level.' and ppCupGroups.ppCup_id='.$ppCupId.' 
-            group by ppCupGroups.id 
-            having count(ups.id) < participants
-            order by count(ups.id) ASC',
-        1);
+        // Parameters for the base query
+        $params = [$level, $ppCupId];
 
+        // Conditional part of the query based on 'avoidFromTag'
+        if ($avoidFromTag !== null) {
+            $query .= "
+                AND ppCupGroups.id NOT IN (
+                    SELECT ppCupGroup_id 
+                    FROM userParticipations 
+                    WHERE ppCup_id = ? AND level = ? AND from_tag = ?
+                )
+            ";
+            // Adding parameters for the conditional part
+            array_push($params, $ppCupId, $level, $avoidFromTag);
+        }
+
+        // Finalizing the query
+        $query .= "
+            GROUP BY ppCupGroups.id 
+            HAVING COUNT(ups.id) < participants 
+            ORDER BY COUNT(ups.id) ASC
+        ";
+
+        // Execute the query with parameter binding
+        return $this->db->rawQuery($query, $params);
     }
+
 
     public function getPaused() {
         $sql = 'SELECT ppcg.*
