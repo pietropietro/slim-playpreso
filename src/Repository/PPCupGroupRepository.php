@@ -35,14 +35,12 @@ final class PPCupGroupRepository extends BaseRepository
     }
 
     public function getCurrentCupLevel(int $ppCupId) :int {
-        $level = $this->db->query(
-            'select level from ppCupGroups where id IN 
-                (select ppCupGroup_id from ppRounds where ppCupGroup_id IN 
-                    (select id from ppCupGroups where ppCup_id = '.$ppCupId.')
-                )
-            order by level desc limit 1;      
-        ');
-        return $level[0]['level'] ?? 1;
+        $this->db->where('ppCup_id', $ppCupId);
+        $this->db->where('started_at', true);
+        $this->db->orderBy('level', 'desc');
+        $level = $this->db->getValue('ppCupGroups', 'level', 1);
+       
+        return $level ?? 1;
     }
 
     function getNotFull(int $ppCupId, int $level = 1){
