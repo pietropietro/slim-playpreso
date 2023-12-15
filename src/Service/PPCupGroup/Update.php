@@ -36,47 +36,47 @@ final class Update  extends BaseService{
             return;
         }
         
-        //check promotion type
         $ppTournamentType = $this->findPPTournamentTypeService->getOne($ppCupGroup['ppTournamentType_id']);
-        $tierDraw = $ppTournamentType['cup_format'][$ppCupGroup['level']]->tier_one_tier_two_draw ?? null;
+        $promotionsPerGroup = $ppTournamentType['cup_format'][$ppCupGroup['level'] - 1]->promotions ?? null;
 
-        //schema promotion
-        if(!$tierDraw){
-            $this->handleSchemaPromotions($id);
+         //i.e. final
+        if(!$promotionsPerGroup) return;
+        
+        //check promotion type
+        $randomDraw = $ppTournamentType['cup_format'][$ppCupGroup['level']]->random_draw ?? null;
+        
+        //schema promotion, no need to wait all other groups
+        if(!$randomDraw){
+            $this->handleSchemaPromotions($id, $promotionsPerGroup);
             return;
         }
 
-        //random tier 1 vs tier 2 promotions
+        //random draw. need all previous groups to be over.
         $levelUnfinishedGroups = $this->ppCupGroupRepository->getForCup(
             $ppCupGroup['ppCup_id'],
             level: $ppCupGroup['level'], 
             finished: false
         );
+        if(count($levelUnfinishedGroups) !== 0) return;
 
-        if(count($levelUnfinishedGroups) === 0){
-            $this->handleRandomTieredPromotions($ppCupGroup['ppCup_id'], $ppCupGroup['level']);
-            //TODO EMAIL NOTIFY
-        }
-        
+        $avoidPreviousLevelUsers = $ppTournamentType['cup_format'][$ppCupGroup['level']]->avoid_previous_level_users ?? null;
+
+        $this->handleRandomDraw($ppCupGroup['ppCup_id'], $ppCupGroup['level'], $promotionsPerGroup, $avoidPreviousLevelUsers);
     }
 
-    private function handleSchemaPromotions(int $id){
+    private function handleSchemaPromotions(int $ppCupGroupId, int $promotionsPerGroup){
         $ppCupGroup = $this->ppCupGroupRepository->getOne($id);
-        $ppTournamentType = $this->findPPTournamentTypeService->getOne($ppCupGroup['ppTournamentType_id']);
+        // $ppTournamentType = $this->findPPTournamentTypeService->getOne($ppCupGroup['ppTournamentType_id']);
         $ups = $this->findUpService->getForTournament('ppCupGroup_id',$id);
-
-        $promotions = $ppTournamentType['cup_format'][$ppCupGroup['level'] - 1]->promotions ?? null;
-        //i.e. final
-        if(!$promotions) return;
-
-        for ($i=0; $i < $promotions; $i++) { 
+        
+        for ($i=0; $i < $promotionsPerGroup; $i++) { 
             if(!$nextGroup = $this->ppCupGroupFindService->getNextGroup($id, positionIndex: $i)){
                 throw new \App\Exception\NotFound('next group not found', 500);
             };
 
             $this->createUpService->create(
                 $ups[$i]['user_id'], 
-                $ppTournamentType['id'],
+                $ppCupGroup['ppTournamentType_id'],
                 $nextGroup['ppCup_id'], 
                 $nextGroup['id'], 
                 fromTag: $ppCupGroup['tag']
@@ -85,28 +85,37 @@ final class Update  extends BaseService{
         }
     }
 
-    //random user from tier 1 against random user tier 2
-    private function handleRandomTieredPromotions(int $ppCupId, int $level){
-        $ups = $this->findUpService->getForTournament('ppCup_id', $ppCupId, $level, false);
+    private function handleRandomDraw(int $ppCupId, int $fromLevel, int $promotionsPerGroup, bool $avoidPreviousLevelUsers){
+        $ups = $this->findUpService->getForTournament('ppCup_id', $ppCupId, $fromLevel, false);
         
-        $upsOne = array_filter($ups, function($item) {
-            return $item['position'] == 1;
-        });
-        $upsTwo = array_filter($ups, function($item) {
-            return $item['position'] == 2;
-        });
-
-        $this->joinAvoidingOldOpponent($ppCupId, $level, $upsOne);
-        $this->joinAvoidingOldOpponent($ppCupId, $level, $upsTwo);
+        //random user from tier 1 against random user tier 2
+        for ($i=1; $i <= $promotionsPerGroup; $i++) { 
+            $filteredUps = array_filter($ups, function($item) use($i) {
+                return $item['position'] == $i;
+            });
+            $this->putUsersInGroups($ppCupId, $fromLevel + 1, $filteredUps, $avoidPreviousLevelUsers);
+        }
+        
     }
 
-    private function joinAvoidingOldOpponent(int $ppCupId, int $level, array $ups){
+    private function putUsersInGroups(
+        int $ppCupId, 
+        int $toLevel,
+        array $ups, 
+        bool $avoidPreviousLevelUsers
+    ){
+        shuffle($ups);
+
         foreach ($ups as $up) {
             $ppcg = $this->ppCupGroupFindService->getNotFull(
                 $ppCupId, 
-                $level + 1, 
-                avoidFromTag: (string) $up['ppCupGroup_id']
+                $toLevel, 
+                avoidFromTag: $avoidPreviousLevelUsers ? (string) $up['ppCupGroup_id'] : null
             );
+
+            if(!$ppcg){
+                return null;
+            }
 
             $this->createUpService->create(
                 $up['user_id'], 

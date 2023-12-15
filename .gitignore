@@ -13,6 +13,7 @@
 /.DS_Store
 
 /cup-format-sample.json
+/cup-format-champions-sample.json
 /external-api-sample.json
 /alter-tables.sql
 /schema.sql
