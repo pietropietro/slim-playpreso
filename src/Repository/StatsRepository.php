@@ -243,7 +243,7 @@ final class StatsRepository extends BaseRepository
             "ANY_VALUE(country) as country", 
             "ANY_VALUE(l.name) as name", 
             "COUNT(*) as tot_locks", 
-            "AVG(g.points) as avg_points"
+            "round(AVG(g.points),1) as avg_points"
         ];
         // $columns = ["l.id, country ,l.name as name", "COUNT(*) as tot_locks", "AVG(g.points) as avg_points"];
         
@@ -270,7 +270,7 @@ final class StatsRepository extends BaseRepository
     
         $columns = ['YEAR(guessed_at) AS year, 
                     MONTH(guessed_at) AS month, 
-                    AVG(points) AS avg_points',
+                    ROUND(AVG(points),1) AS avg_points',
                     'count(id) as tot_locks',
                     'sum(preso) as tot_preso'
                 ];

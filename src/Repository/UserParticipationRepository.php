@@ -30,9 +30,10 @@ final class UserParticipationRepository extends BaseRepository
     }
 
     public function get(array $ids){
-        $this->db->join('ppTournamentTypes ppts', 'ppts.id='.$this->tableName.'.ppTournamentType_id', 'INNER');
         $this->db->where($this->tableName.'.id', $ids, 'IN');
-        return $this->db->get($this->tableName, null);
+        $this->db->join('ppLeagues ppl', 'ppl.id = userParticipations.ppLeague_id', "LEFT");
+        $this->db->join('ppCupGroups ppcg', 'ppcg.id = userParticipations.ppCupGroup_id', "LEFT");
+        return $this->db->get($this->tableName, null, $this->columnsJoined3);
     }
 
     //TODO change type to ENUM 'ppLeague_id', 'ppCupGroup_id'
