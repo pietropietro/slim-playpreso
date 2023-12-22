@@ -147,7 +147,8 @@ final class StatsRepository extends BaseRepository
     //     [avg_points] => 9.8
     //     [occurrences] => 5
     // )
-    public function getUserHighestAverageTeams(int $userId, int $year){
+    //true best, false worse
+    public function getUserExtremeAverageTeams(int $userId, int $year, bool $bestWorseFlag = true){
         $sql = "
             SELECT t.id, t.name, round(AVG(subquery.points),1) as avg_points, COUNT(*) as tot_locks
             FROM (
@@ -162,7 +163,7 @@ final class StatsRepository extends BaseRepository
             JOIN teams t ON subquery.team_id = t.id
             GROUP BY t.id, t.name
             HAVING COUNT(*) >= ?
-            ORDER BY avg_points DESC
+            ORDER BY avg_points ".($bestWorseFlag ? "DESC" : "ASC")."
             LIMIT 3
         ";
         
@@ -221,7 +222,7 @@ final class StatsRepository extends BaseRepository
     //     [avg_points] => 4.0952
     // )
     //commonBestFlag true returns common, false returns best avg
-    public function getUserLeagues(int $userId, int $year, bool $commonBestFlag = true){
+    public function getUserLeagues(int $userId, int $year, int $commonHighLow){
         $this->db->join("matches m", "g.match_id = m.id", "INNER");
         $this->db->join("leagues l", "m.league_id = l.id", "INNER");
 
@@ -230,11 +231,11 @@ final class StatsRepository extends BaseRepository
 
         $this->db->groupBy("COALESCE(l.parent_id, l.id)");
 
-        if($commonBestFlag) $this->db->orderBy("COUNT(*)", "DESC");
+        if($commonHighLow === 0) $this->db->orderBy("COUNT(*)", "DESC");
         
         else{
-            $this->db->orderBy("AVG(g.points)", "DESC");
             $this->db->having('tot_locks', 5, '>=');
+            $this->db->orderBy("AVG(g.points)", $commonHighLow === 1 ? "DESC" : 'ASC');
         }
 
         $columns = [

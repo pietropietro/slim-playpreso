@@ -47,10 +47,12 @@ final class CalculateYearWrapped extends BaseService{
         $dataArray = array_merge($dataArray, $this->statsRepository->getUserMissedCount($userId,$year));
         
         $dataArray = array_merge($dataArray, $this->getCommonTeamsData($userId, $year));
-        $dataArray = array_merge($dataArray, $this->getHighestTeamsData($userId, $year));
+        $dataArray = array_merge($dataArray, $this->getExtremeTeamsData($userId, $year, true));
+        $dataArray = array_merge($dataArray, $this->getExtremeTeamsData($userId, $year, false));
         
-        $dataArray = array_merge($dataArray, $this->getCommonLeagueData($userId,$year));
-        $dataArray = array_merge($dataArray, $this->getHighestLeagueData($userId,$year));
+        $dataArray = array_merge($dataArray, $this->getExtremeLeagueData($userId,$year, 0));
+        $dataArray = array_merge($dataArray, $this->getExtremeLeagueData($userId,$year, 1));
+        $dataArray = array_merge($dataArray, $this->getExtremeLeagueData($userId,$year, 2));
 
         $dataArray = array_merge($dataArray, $this->getBestMonthData($userId,$year));
         $dataArray = array_merge($dataArray, $this->getWorstMonthData($userId,$year));
@@ -100,40 +102,33 @@ final class CalculateYearWrapped extends BaseService{
         return $returnData;
     }
 
-    private function getHighestTeamsData(int $userId, int $year){
-        $data = $this->statsRepository->getUserHighestAverageTeams($userId, $year);
+    private function getExtremeTeamsData(int $userId, int $year, bool $bestWorseFlag = true){
+        $data = $this->statsRepository->getUserExtremeAverageTeams($userId, $year, $bestWorseFlag);
         if(!is_array($data)|| count($data)==0){
             return [];
         }
         $data = $data[0];
+
+        $prefix = $bestWorseFlag ? 'high' : 'low';
         $returnData = array();
-        $returnData['high_team_id'] = $data['id'];
-        $returnData['high_team_name'] = $data['name'];
-        $returnData['high_team_tot_locks'] = $data['tot_locks'];
-        $returnData['high_team_avg_points'] = $data['avg_points'];
+        $returnData[$prefix.'_team_id'] = $data['id'];
+        $returnData[$prefix.'_team_name'] = $data['name'];
+        $returnData[$prefix.'_team_tot_locks'] = $data['tot_locks'];
+        $returnData[$prefix.'_team_avg_points'] = $data['avg_points'];
         // $returnData['high_team_tot_preso'] = $data['tot_preso'];
         return $returnData;
     }
 
-    private function getCommonLeagueData(int $userId, int $year){
-        $data = $this->statsRepository->getUserLeagues($userId, $year)[0];
+    //0 is common, 1 is highest, 2 is lowest
+    private function getExtremeLeagueData(int $userId, int $year, int $commonHighLow){
+        $data = $this->statsRepository->getUserLeagues($userId, $year, $commonHighLow)[0];
+        $prefix = $commonHighLow === 0 ? 'most' : ($commonHighLow === 1 ? 'high' : 'low');
         $returnData = array();
-        $returnData['most_league_id'] = $data['id'];
-        $returnData['most_league_name'] = $data['name'];
-        $returnData['most_league_country'] = $data['country'];
-        $returnData['most_league_tot_locks'] = $data['tot_locks'];
-        $returnData['most_league_avg_points'] = $data['avg_points'];
-        return $returnData;
-    }
-
-    private function getHighestLeagueData(int $userId, int $year){
-        $data = $this->statsRepository->getUserLeagues($userId, $year,false)[0];
-        $returnData = array();
-        $returnData['high_league_id'] = $data['id'];
-        $returnData['high_league_name'] = $data['name'];
-        $returnData['high_league_country'] = $data['country'];
-        $returnData['high_league_tot_locks'] = $data['tot_locks'];
-        $returnData['high_league_avg_points'] = $data['avg_points'];
+        $returnData[$prefix.'_league_id'] = $data['id'];
+        $returnData[$prefix.'_league_name'] = $data['name'];
+        $returnData[$prefix.'_league_country'] = $data['country'];
+        $returnData[$prefix.'_league_tot_locks'] = $data['tot_locks'];
+        $returnData[$prefix.'_league_avg_points'] = $data['avg_points'];
         return $returnData;
     }
 
