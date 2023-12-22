@@ -56,7 +56,8 @@ return function ($app){
 
     $app->group('/guess', function () use ($app): void {
         $app->get('', Guess\GetUserLatest::class);
-        $app->get('/for-team/{id}', Guess\GetForTeam::class);
+        $app->get('/team/{id}', Guess\GetForTeam::class);
+        $app->get('/league/{id}', Guess\GetForLeague::class);
         $app->post('/lock/{id}', Guess\Lock::class);
     })->add(new Auth($pointsService));
     
