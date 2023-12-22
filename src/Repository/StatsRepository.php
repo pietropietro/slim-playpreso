@@ -343,7 +343,7 @@ final class StatsRepository extends BaseRepository
     }
 
     public function saveWrapped(array $data){
-        if(!$result= $this->db->insert('stats_wrapped_2023', $data)){
+        if(!$result= $this->db->insert('stats_wrapped', $data)){
             print_r($this->db->getLastError());
         }
         return $result;
@@ -364,10 +364,10 @@ final class StatsRepository extends BaseRepository
                     RANK() OVER (ORDER BY perc_ggng DESC) as perc_ggng_rank,
                     RANK() OVER (ORDER BY perc_uo25 DESC) as perc_uo25_rank
                 FROM 
-                    stats_wrapped_".$year."
+                    stats_wrapped where stats_year =".$year."
               ) as ranked_users
               CROSS JOIN (
-                SELECT COUNT(DISTINCT user_id) as ranked_users FROM stats_wrapped_2023
+                SELECT COUNT(DISTINCT user_id) as ranked_users FROM stats_wrapped
               ) as count_users_ranked
               WHERE 
                 user_id = ?";

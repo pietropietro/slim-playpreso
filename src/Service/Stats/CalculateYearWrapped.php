@@ -22,18 +22,17 @@ final class CalculateYearWrapped extends BaseService{
         protected Stats\FindAdjacentUps $statsFindAdjacentUpsService,
     ) {}
 
-    public function start(){
-        $year = 2023;
+    public function start(int $year){
         $ids = $this->userRepository->getValue('id');
         foreach ($ids as $id) {
             $this->getData($id, $year);
         }
-        echo('ciao');
     }
 
     private function getData(int $userId, int $year){
         $dataArray = array();
         $dataArray['user_id'] = $userId;
+        $dataArray['stats_year'] = $year;
 
         $mainSummary = $this->statsRepository->getUserMainSummary($userId, $year);
         if(!isset($mainSummary['tot_locks']) || $mainSummary['tot_locks'] < 50) return;
