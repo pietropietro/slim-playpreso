@@ -56,6 +56,20 @@ final class GuessRepository extends BaseRepository
         return $this->db->get('guesses');
     }
 
+    public function getForTeam(int $teamId, int $userId, ?string $before=null, ?string $after=null){
+        $this->db->join("matches m", "m.id=guesses.match_id", "INNER");
+
+        $this->db->where('user_id', $userId);
+
+        if($before) $this->db->where('m.verified_at', date("Y-m-d H:i:s", strtotime($before)), "<");
+        if($after) $this->db->where('m.verified_at', date("Y-m-d H:i:s", strtotime($after)), ">");
+
+        $teamIdCondition = "(home_id = " . $this->db->escape($teamId) . " OR away_id = " . $this->db->escape($teamId) . ")";
+        $this->db->where($teamIdCondition);
+
+        return $this->db->get('guesses', null, 'guesses.*');
+    }
+
     public function lock(int $id, int $home, int $away){
         $data = array(
             "home" => $home,
