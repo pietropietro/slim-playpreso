@@ -36,8 +36,12 @@ final class FindAdjacentUps extends BaseService{
     
         $this->filterResults($userParticipations, $mostAdjacentUserId);
         
+        $userParticipations = array_values($userParticipations);
+        $most_adjacent_ups_username = $userParticipations[0]['adjacent']['username'];
+        
         return [
             'most_adjacent_ups_user_id' => $mostAdjacentUserId,
+            'most_adjacent_ups_username' => $most_adjacent_ups_username,
             'most_adjacent_ups_tot' => $countedAdjacentUsers[$mostAdjacentUserId],
             'most_adjacent_ups' => json_encode(array_values($userParticipations)) // Reindex array
         ];
@@ -56,9 +60,10 @@ final class FindAdjacentUps extends BaseService{
     private function filterResults(array &$userParticipations, int $mostAdjacentUserId){
         // Iterate the user ups and eliminate the adjacent ups where the user_id is not mostAdjacentUserId
         foreach ($userParticipations as &$up) {
-            $up['adjacent'] = array_filter($up['adjacent'], function($adj) use ($mostAdjacentUserId) {
+            $filteredAdjacent = array_filter($up['adjacent'], function($adj) use ($mostAdjacentUserId) {
                 return $adj['user_id'] == $mostAdjacentUserId;
             });
+            $up['adjacent'] = !empty($filteredAdjacent) ? array_values($filteredAdjacent)[0] : null;
         }
     
         // Eliminate ups where no adjacent so to return only the userParticipations with adjacent
@@ -68,6 +73,7 @@ final class FindAdjacentUps extends BaseService{
 
         // after filtered useless elements, add ptt data 
         foreach ($userParticipations as &$up) {
+            $up['adjacent']['user'] = array('user_id' => $up['adjacent']['user_id'], 'username' => $up['adjacent']['username']);
             $up['ppTournamentType'] = $this->ppTournamentTypeFindService->getOne(
                 $up['ppTournamentType_id'], false
             );
