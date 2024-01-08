@@ -23,21 +23,50 @@ final class Update  extends BaseService {
                 $upItem['tot_locked'] = (int)$user_participation_result['tot_locked'] ?? 0;
                 $upItem['tot_preso'] = (int)$user_participation_result['tot_preso'] ?? 0;
                 $upItem['tot_unox2'] = (int)$user_participation_result['tot_unox2'] ?? 0;
+                $upItem['tot_uo25'] = (int)$user_participation_result['tot_uo25'] ?? 0;
+                $upItem['tot_ggng'] = (int)$user_participation_result['tot_ggng'] ?? 0;
+            }
+            
+            $user_score_diff = $this->guessRepository->countScoreDifference($tournamentColumn, $tournamentId, $upItem['user_id']);
+            if($user_score_diff){
+                $upItem['tot_score_diff'] = (int)$user_score_diff['tot_score_diff'] ?? 0;
             }
             
             if($tournamentColumn === 'ppCupGroup_id'){
-                $previousGroupsPoints = $this->userParticipationRepository->getOverallPPCupPoints($upItem['user_id'], $upItem['ppCup_id'], joinedBefore: $upItem['joined_at']) ?? null;
+                $previousGroupsPoints = $this->userParticipationRepository->getOverallPPCupPoints(
+                    $upItem['user_id'],
+                    $upItem['ppCup_id'], 
+                    joinedBefore: $upItem['joined_at']
+                ) ?? null;
+                
                 if(!$previousGroupsPoints)continue;
                 $upItem['tot_cup_points'] =  $previousGroupsPoints + $upItem['tot_points'];
             }
         }
        
         usort($ups, fn($a, $b) =>
-            [$b['tot_points'], $b['tot_cup_points'], $b['tot_locked'], $b['tot_preso'], $b['tot_unox2']] 
-                <=> 
-            [$a['tot_points'], $a['tot_cup_points'], $a['tot_locked'], $a['tot_preso'], $a['tot_unox2']]
+            [
+                $b['tot_points'], 
+                $b['tot_cup_points'], 
+                $b['tot_locked'], 
+                $b['tot_preso'], 
+                $b['tot_unox2'], 
+                $b['tot_uo25'], 
+                $b['tot_ggng'],
+                $a['tot_score_diff'] // Note the reversed order for 'tot_score_diff'
+            ] 
+            <=> 
+            [
+                $a['tot_points'], 
+                $a['tot_cup_points'], 
+                $a['tot_locked'], 
+                $a['tot_preso'], 
+                $a['tot_unox2'], 
+                $a['tot_uo25'], 
+                $a['tot_ggng'],
+                $b['tot_score_diff'] // Note the reversed order for 'tot_score_diff'
+            ]
         );
-
 
         foreach($ups as $index => $up){
             $this->userParticipationRepository->update(
@@ -46,6 +75,9 @@ final class Update  extends BaseService {
                 tot_unox2:  $up['tot_unox2'],
                 tot_locked: $up['tot_locked'],
                 tot_preso:  $up['tot_preso'],
+                tot_uo25:  $up['tot_uo25'],
+                tot_ggng:  $up['tot_ggng'],
+                tot_score_diff:  $up['tot_score_diff'],
                 tot_cup_points:  (int)$up['tot_cup_points'] ?? null,
                 position: $index + 1
             );

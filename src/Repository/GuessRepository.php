@@ -134,9 +134,9 @@ final class GuessRepository extends BaseRepository
     }
 
     //TODO CHANGE COLUMN TO ENUM ['league_id', 'cup_group_id']
-    public function countUpNumbers(int $userId, string $column, int $valueId) {
+    public function countUpNumbers(int $userId, string $tournamentColumn, int $tournamentId) {
         $ids = $this->db->subQuery();
-        $ids->where($column, $valueId);
+        $ids->where($tournamentColumn, $tournamentId);
         $ids->get('ppRounds', null, 'id');
 
         $this->db->where('ppRound_id',$ids,'IN');
@@ -146,12 +146,47 @@ final class GuessRepository extends BaseRepository
             $this->db->where('ppRoundMatch_id', $ppRMIds,'in');
             $this->db->where("verified_at IS NOT NULL");
             $this->db->where("guessed_at IS NOT NULL");
-            $columns = array('sum(points) as tot_points', 'sum(preso) as tot_preso', 'sum(UNOX2) as tot_unox2', 'count(id) as tot_locked');
+            
+            $columns = array(
+                'sum(points) as tot_points', 
+                'sum(preso) as tot_preso', 
+                'sum(UNOX2) as tot_unox2',
+                'sum(UO25) as tot_uo25',
+                'sum(GGNG) as tot_ggng', 
+                'count(id) as tot_locked'
+            );
 
             if($upResult = $this->db->getOne('guesses', $columns)){
                 return $upResult;
             }
         }
+    }
+
+    public function countScoreDifference(string $tournamentColumn, int $tournamentId, int $userId){
+        if(!in_array($tournamentColumn, array('ppLeague_id', 'ppCupGroup_id')) ) return;
+
+        $sql = "
+                SELECT (ABS(SUM(realHome) - SUM(home)) + ABS(SUM(realAway) - SUM(away))) AS tot_score_diff 
+                FROM (
+                    SELECT user_id, home, away, 
+                        IF(matches.score_home <= 3, matches.score_home, 3) AS realHome, 
+                        IF(matches.score_away <= 3, matches.score_away, 3) AS realAway, 
+                        matches.verified_at 
+                    FROM guesses  
+                    INNER JOIN matches ON matches.id=guesses.match_id 
+                    INNER JOIN ppRoundMatches pprm ON pprm.id=guesses.ppRoundMatch_id 
+                    INNER JOIN ppRounds ppr ON ppr.id=pprm.ppRound_id
+                    WHERE guesses.user_id = ?
+                    AND matches.verified_at IS NOT NULL 
+                    AND ppr.".$tournamentColumn." = ?
+                ) AS q1 
+                INNER JOIN users ON q1.user_id = users.id
+                GROUP BY user_id;
+            ";
+
+            // Execute the query
+            $result = $this->db->rawQuery($sql, array($userId, $tournamentId));
+            if($result) return $result[0];
     }
 
     public function changePPRMMatch(int $ppRoundMatch_id, int $newMatchId){
