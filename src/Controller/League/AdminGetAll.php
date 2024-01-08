@@ -7,7 +7,7 @@ namespace App\Controller\League;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class GetAll extends Base
+final class AdminGetAll extends Base
 {
     /**
      * @param array<string> $args

@@ -6,9 +6,9 @@ namespace App\Repository;
 
 final class LeagueRepository extends BaseRepository
 {
-    private $columnsNoStandings = "id, name, tag, country, ls_suffix, parent_id, level";
+    private $columnsNoStandings = "id, name, tag, country, parent_id, level";
     private $adimnColumnsNoStandings = "id, name, tag, country, ls_suffix, parent_id, updated_at, level";
-    private $columnsWithStandings = "id, name, tag, country, ls_suffix, parent_id, standings";
+    private $columnsWithStandings = "id, name, tag, country, parent_id, standings";
 
     public function get(?int $maxLevel=null){
         if($maxLevel) $this->db->where('level', $maxLevel, '<=');
@@ -19,11 +19,12 @@ final class LeagueRepository extends BaseRepository
         return $this->db->get('leagues', null, $this->adimnColumnsNoStandings);
     }
 
-    public function getOne(int $id, ?bool $withStandings = false){
+    public function getOne(int $id,  ?bool $admin = false ,?bool $withStandings = false){
         $this->db->where('id', $id);
         return $this->db->getOne(
             'leagues', 
-            $withStandings ? $this->columnsWithStandings : $this->columnsNoStandings
+            $admin ? $this->adimnColumnsNoStandings :
+            ($withStandings ? $this->columnsWithStandings : $this->columnsNoStandings)
         );
     }
 

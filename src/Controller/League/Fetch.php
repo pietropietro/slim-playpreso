@@ -21,7 +21,7 @@ final class Fetch extends Base
         $data = json_decode((string) json_encode($input), false);
 
         $leagueId = (int) $args['id'];
-        $league = $this->getLeagueFindService()->getOne($leagueId);
+        $league = $this->getLeagueFindService()->getOne($leagueId, admin: true);
        
         $result = $this->getImportLeagueDataService()->fetch($league['ls_suffix'], $league['id']);
         

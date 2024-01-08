@@ -25,8 +25,9 @@ final class Find  extends Base{
         return $leagues;
     }
 
-    public function getOne(int $id, ?bool $withStandings=false){
-        $league = $this->leagueRepository->getOne($id, $withStandings);
+    //admin flag to return ls_suffix or not
+    public function getOne(int $id, ?bool $admin=false, ?bool $withStandings=false){
+        $league = $this->leagueRepository->getOne($id, $admin, $withStandings);
         if(!$withStandings) return $league;
         return $this->enrich($league);
     }

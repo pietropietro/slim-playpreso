@@ -153,11 +153,11 @@ return function ($app){
         });
 
         $app->group('/league', function() use($app): void {
-            $app->get('', League\GetAll::class);
+            $app->get('', League\AdminGetAll::class);
             $app->post('', League\Create::class);
             $app->get('/need-past-data', League\AdminGetNeedPastData::class);
             $app->get('/need-future-data', League\AdminGetNeedFutureData::class);
-            $app->get('/{id}', League\GetOne::class);
+            $app->get('/{id}', League\AdminGetOne::class);
             $app->post('/{id}', League\Update::class);
             $app->post('/fetch/{id}', League\Fetch::class);
         });

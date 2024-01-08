@@ -7,7 +7,7 @@ namespace App\Controller\League;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class GetOne extends Base
+final class AdminGetOne extends Base
 {
     /**
      * @param array<string> $args
@@ -18,7 +18,7 @@ final class GetOne extends Base
         array $args
     ): Response {
         $id = (int) $args['id'];
-        $league = $this->getLeagueFindService()->getOne(id: $id);
+        $league = $this->getLeagueFindService()->getOne(id: $id, admin: true);
         $league['last_next_matches'] = $this->getMatchFindService()->adminGetForLeague($id);
 
         return $this->jsonResponse($response, 'success', $league, 200);
