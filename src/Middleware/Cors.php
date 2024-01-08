@@ -32,11 +32,22 @@ final class Cors extends Base
 
 
         return $response
-            ->withHeader('Access-Control-Allow-Origin', $_ENV['ALLOW_URL_REQUEST'])
+            ->withHeader('Access-Control-Allow-Origin', $this->getAllowedOrigin($request))
             ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
             ->withHeader('Access-Control-Allow-Credentials', 'true')
             ->withHeader('Access-Control-Expose-Headers', 'Authorization');
             
+    }
+
+    private function getAllowedOrigin(Request $request): string {
+        $allowedOrigins = ['https://playpreso.com', 'capacitor://localhost', 'http://localhost:3000'];
+        $origin = $request->getHeaderLine('Origin');
+    
+        if (in_array($origin, $allowedOrigins)) {
+            return $origin;
+        }
+    
+        return 'https://playpreso.com'; // Default origin if not matched
     }
 }
