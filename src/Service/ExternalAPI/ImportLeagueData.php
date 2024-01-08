@@ -28,8 +28,8 @@ final class ImportLeagueData extends BaseService{
 
         //rusty calculation of daylight saving time
         $utc_plus = $this->isDaylightSavingTime() ? 2 : 1;
-
         $req_url = $ls_suffix.'/'.$utc_plus;
+        
         try {
             $response = $client->get($req_url);
             $decoded = json_decode((string)$response->getBody());
@@ -45,22 +45,29 @@ final class ImportLeagueData extends BaseService{
             $errorObject->code = $code ?? 500;
 
             return $errorObject;
+        } catch (GuzzleHttp\Exception\ConnectException $e) {
+            // Handle connection issues
+            $message = $e->getMessage();
+            error_log($message);
+        
+            $errorObject = new \stdClass();
+            $errorObject->message = $message ?? 'Connection error';
+            $errorObject->code = 0; // You can choose an appropriate code
+        
+            return $errorObject;
         }
 
-        //CACHED FETCH
-        // $str = file_get_contents('/Users/pietromini/Dev/playpreso/slim-playpreso/external-api-sample.json');
-        // $decoded = json_decode($str); // decode the JSON into an associative array
+        $this->leagueElaborateService->setFetched($league_id);
 
         $ls_league_data = $decoded->Stages[0];
         $ls_events = $ls_league_data->Events ?? null;
         $ls_league_table_teams = $ls_league_data->LeagueTable->L[0]->Tables[0]->team ?? null;
 
+
         if(!$ls_events){
             return;
         }
-
         $match_import_result = $this->matchElaborateService->elaborateLsEvents($ls_events, $league_id);
-
         if($ls_league_table_teams){
             $this->leagueElaborateService->elaborateLsLeagueTable($ls_league_table_teams, $league_id);
         }

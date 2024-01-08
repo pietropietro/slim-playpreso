@@ -32,7 +32,9 @@ echo(count($leagues).', starting..'.PHP_EOL);
 
 foreach ($leagues as $key => $league) {
     $parent_id = isset($league['parent_id']) ? $league['parent_id'] : '';
-    echo('fetching '.$league['name'].', '.$league['id'].'-'. $parent_id .PHP_EOL); 
+    $country = isset($league['country']) ? $league['country'] : '';
+    
+    echo('fetching '.$league['name'].', '.$country.', '.$league['id'].'-'. $parent_id .PHP_EOL); 
     if(!$league['ls_suffix'])continue;
     $res = $importService->fetch($league['ls_suffix'], $league['id']);
     echo('result:'.PHP_EOL);

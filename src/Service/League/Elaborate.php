@@ -15,6 +15,10 @@ final class Elaborate extends BaseService{
         protected TeamRepository $teamRepository,
     ) {}
 
+    public function setFetched(int $id){
+        $this->leagueRepository->setFetched($id);
+    }
+
     public function elaborateLsLeagueTable(array $ls_teams, int $league_id){
         $league_standings = [];
         foreach ($ls_teams as $key => $team_obj) {

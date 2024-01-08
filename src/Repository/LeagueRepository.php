@@ -96,10 +96,19 @@ final class LeagueRepository extends BaseRepository
         return $this->db->insert('leagues', $data);
     }
 
+    //it means the http external api call was successful
+    //it does NOT mean there was new data
+    public function setFetched(int $id){
+        $data = array(
+            "updated_at" => $this->db->now()
+        );
+        $this->db->where('id', $id);
+        $this->db->update('leagues', $data, 1);        
+    }
+
     public function updateStandings(int $id, string $standings_json){
         $data = array(
-            "standings" => $standings_json,
-            "updated_at" => $this->db->now()
+            "standings" => $standings_json
         );
 
         $this->db->where('id', $id);
@@ -124,6 +133,11 @@ final class LeagueRepository extends BaseRepository
         $result = $this->db->query("select l.id from leagues l left join matches m on l.id=m.league_id where m.date_start > now() group by l.id");
         $idsWithFuture = array_column($result, 'id');       
         $this->db->where('id', $idsWithFuture, 'NOT IN');
+
+        $after = date("Y-m-d H:i:s", strtotime('5 days ago'));
+        $this->db->where('updated_at', $after, '<');
+        $this->db->orWhere('updated_at IS NULL');
+
         return $this->db->get('leagues', null,$this->adimnColumnsNoStandings);
     }
 
