@@ -19,6 +19,7 @@ use App\Repository\UserRecoverRepository;
 use App\Repository\EmailPreferencesRepository;
 use App\Repository\StatsRepository;
 use App\Repository\MOTDRepository;
+use App\Repository\ExternalApiSessionRepository;
 
 use Psr\Container\ContainerInterface;
 
@@ -55,4 +56,6 @@ $container['stats_repository'] = static fn (ContainerInterface $container): Stat
 $container['motd_repository'] = static fn (ContainerInterface $container): MOTDRepository => new MOTDRepository($container->get('db'));
 
 $container['pparea_repository'] = static fn (ContainerInterface $container): PPAreaRepository => new PPAreaRepository($container->get('db'));
+
+$container['externalapisession_repository'] = static fn (ContainerInterface $container): ExternalApiSessionRepository => new ExternalApiSessionRepository($container->get('db'));
 

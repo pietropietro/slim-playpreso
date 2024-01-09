@@ -23,6 +23,7 @@ use App\Service\EmailBuilder;
 use App\Service\Stats;
 use App\Service\Trophy;
 use App\Service\MOTD;
+use App\Service\HttpClientService;
 use Psr\Container\ContainerInterface;
 
 
@@ -317,11 +318,14 @@ $container['external_api_importleaguedata_service'] = static fn (
     $container->get('match_elaborate_service'),
     $container->get('league_elaborate_service'),
     $container->get('team_create_service'),
+    $container->get('http_client_service'),
 );
 
 $container['external_api_importteamlogo_service'] = static fn (
     ContainerInterface $container
-):  ExternalAPI\ImportTeamLogo => new  ExternalAPI\ImportTeamLogo();
+):  ExternalAPI\ImportTeamLogo => new  ExternalAPI\ImportTeamLogo(
+    $container->get('http_client_service')
+);
 
 $container['match_elaborate_service'] = static fn (
     ContainerInterface $container
@@ -332,7 +336,6 @@ $container['match_elaborate_service'] = static fn (
     $container->get('match_find_service'),
     $container->get('team_find_service'),
     $container->get('team_create_service'),
-    $container->get('external_api_importteamlogo_service'),
 );
 
 $container['match_update_service'] = static fn (
@@ -546,3 +549,7 @@ $container['pparea_update_service'] = static fn (
 ):  PPArea\Update => new  PPArea\Update(
     $container->get('pparea_repository')
 );
+
+$container['http_client_service'] = static fn (
+    ContainerInterface $container
+):  HttpClientService => new  HttpClientService();

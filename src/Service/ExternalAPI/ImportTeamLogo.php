@@ -6,35 +6,35 @@ namespace App\Service\ExternalAPI;
 
 use GuzzleHttp\Client;
 use App\Service\BaseService;
+use App\Service\HttpClientService;
 
 final class ImportTeamLogo extends BaseService{
-    public function __construct(){}
+    public function __construct(
+        protected HttpClientService $httpClientService
+    ){}
 
-    public function fetch(string $external_logo_suffix, int $internal_team_id){
-        $client = new Client([
-                'base_uri' => $_SERVER['EXTERNAL_STATIC_BASE_URI'],
-                'timeout'  => 10.0,
-                'proxy' => $_SERVER['PROXY_URL']
-            ]
-        );
-
+    public function fetchAndSave(string $external_logo_suffix, int $internal_team_id){
         $req_url = $external_logo_suffix;
 
-        try{
-            $response = $client->get($req_url);
-            $imageData = $response->getBody()->getContents();
-
-            $imagePath = $_ENV['STATIC_IMAGE_FOLDER'] . 'teams/' . $internal_team_id . '.png';
+        try {
+            $response = $this->httpClientService->get(
+                $req_url, 
+                ['base_uri' => $_SERVER['EXTERNAL_STATIC_BASE_URI']]
+            );
+            if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+                $imageData = $response->getBody()->getContents();
+                $imagePath = $_ENV['STATIC_IMAGE_FOLDER'] . 'teams/' . $internal_team_id . '.png';
+        
+                // Save the image to disk
+                file_put_contents($imagePath, $imageData);
+                return true;
     
-            // Save the image to disk
-            file_put_contents($imagePath, $imageData);
-            return true;
-    
-        } catch (\Exception $e) {
-            // Handle the exception here
+            }
+        } catch (\Throwable $t) {
+            error_log($t->getMessage());
             return false;
         }
-        
+
     }
 
 }
