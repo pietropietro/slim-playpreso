@@ -317,6 +317,7 @@ $container['external_api_importleaguedata_service'] = static fn (
 ):  ExternalAPI\ImportLeagueData => new  ExternalAPI\ImportLeagueData(
     $container->get('match_elaborate_service'),
     $container->get('league_elaborate_service'),
+    $container->get('league_update_service'),
     $container->get('team_create_service'),
     $container->get('http_client_service'),
 );

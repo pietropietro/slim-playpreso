@@ -16,5 +16,6 @@ final class Update extends BaseService
     public function update(int $id, array $data){
         $this->leagueRepository->update($id, $data);
     }
+
 }
 

@@ -7,7 +7,7 @@ namespace App\Repository;
 final class LeagueRepository extends BaseRepository
 {
     private $columnsNoStandings = "id, name, tag, country, parent_id, level";
-    private $adimnColumnsNoStandings = "id, name, tag, country, ls_suffix, parent_id, updated_at, level";
+    private $adimnColumnsNoStandings = "id, name, tag, country, ls_suffix, ls_410, parent_id, updated_at, level";
     private $columnsWithStandings = "id, name, tag, country, parent_id, standings";
 
     public function get(?int $maxLevel=null){

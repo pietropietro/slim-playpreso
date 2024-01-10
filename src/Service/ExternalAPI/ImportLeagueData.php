@@ -15,6 +15,7 @@ final class ImportLeagueData extends BaseService{
     public function __construct(
         protected Match\Elaborate $matchElaborateService,
         protected League\Elaborate $leagueElaborateService,
+        protected League\Update $leagueUpdateService,
         protected Team\Create $teamCreateService,
         protected HttpClientService $httpClientService
     ){}
@@ -29,8 +30,11 @@ final class ImportLeagueData extends BaseService{
                 $req_url, 
                 ['base_uri' => $_SERVER['EXTERNAL_API_BASE_URI']]
             );
-            if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+            $statusCode = $response->getStatusCode();
+            if ($statusCode  >= 200 && $statusCode  < 300) {
                 $decoded = json_decode((string)$response->getBody());
+            } else if($statusCode == 410){
+                $this->setLeague410($leagueId);
             }
         } catch (\Throwable $t) {
             error_log($t->getMessage());
@@ -73,6 +77,13 @@ final class ImportLeagueData extends BaseService{
         } else {
           return false;
         }
-      }
+    }
+
+    private function setLeague410(int $leagueId){
+        $data = array(
+            "ls_410" => 1
+        );
+        $this->leagueUpdateService->update($leagueId, $data);
+    }
     
 }
