@@ -130,7 +130,14 @@ final class LeagueRepository extends BaseRepository
 
     //retrieves leagues with no matches in the FUTURE
     public function getNeedFutureData(){
-        $result = $this->db->query("select l.id from leagues l left join matches m on l.id=m.league_id where m.date_start > now() group by l.id");
+        $sql = '
+                select l.id from leagues l 
+                left join matches m on l.id=m.league_id 
+                where m.date_start > now() 
+                and l.ls_410 is not true
+                group by l.id
+        ';
+        $result = $this->db->query($sql);
         $idsWithFuture = array_column($result, 'id');       
         $this->db->where('id', $idsWithFuture, 'NOT IN');
 
