@@ -19,7 +19,7 @@ final class Find extends BaseService{
     private function enrich(array $match, ?bool $withStats=true){
         $match['homeTeam'] = $match['home_id'] ? $this->teamFindService->getOne($match['home_id'], false, $withStats) : null;
         $match['awayTeam'] = $match['away_id'] ? $this->teamFindService->getOne($match['away_id'], false, $withStats) : null;
-        $match['league'] = $this->leagueFindService->getOne($match['league_id'], $withStats);
+        $match['league'] = $this->leagueFindService->getOne($match['league_id'], false,$withStats);
         return $match;
     }
 
