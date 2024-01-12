@@ -194,8 +194,9 @@ $container['userparticipation_find_service'] = static fn (
 ):  UserParticipation\Find => new  UserParticipation\Find(
     $container->get('redis_service'),
     $container->get('userparticipation_repository'),
-    $container->get('pptournamenttype_repository'),
+    $container->get('pptournamenttype_find_service'),
     $container->get('ppleague_repository'),
+    $container->get('ppcupgroup_repository'),
     $container->get('ppround_find_service'),
     $container->get('match_find_service'),
     $container->get('trophy_find_service')

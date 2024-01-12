@@ -17,9 +17,26 @@ final class PPLeagues extends Base{
         array $args
     ): Response {
         $userId = $this->getAndValidateUserId($request);
+        $ups = array();
 
-        //TODO change type to enum
-        $ups = $this->getParticipationService()->getForUser($userId, 'ppLeague', started: null, finished: false);
+        $activeAndPaused = $this->getParticipationService()
+            ->getActiveAndPausedPPLeaguesForUser($userId);
+
+        $notStarted = $this->getParticipationService()->getForUser($userId, 'ppLeague', started: false, finished: false);
+        
+        $active = $activeAndPaused['active'];
+        $waiting = array_merge($activeAndPaused['paused'], $notStarted);
+        $finished = $this->getParticipationService()->getForUser(
+            $userId, 
+            'ppLeague', 
+            started: null, 
+            finished: true, 
+            updatedAfter: '-1 month'
+        );
+
+        if($active) $ups['active'] = $active;
+        if($waiting) $ups['waiting'] = $waiting;
+        if($finished) $ups['finished'] = $finished;
 
         return $this->jsonResponse($response, 'success', $ups, 200);
     }

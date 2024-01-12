@@ -7,18 +7,22 @@ use App\Service\BaseService;
 use App\Service\RedisService;
 use App\Repository\UserParticipationRepository;
 use App\Repository\PPTournamentTypeRepository;
+use App\Repository\PPCupGroupRepository;
 use App\Repository\PPLeagueRepository;
 use App\Service\PPRound;
 use App\Service\Match;
 use App\Service\Trophy;
+use App\Service\PPTournamentType;
 
 final class Find  extends BaseService {
 
     public function __construct(
         protected RedisService $redisService,
         protected UserParticipationRepository $userParticipationRepository,
-        protected PPTournamentTypeRepository $ppTournamentTypeRepository,
+        // protected PPTournamentTypeRepository $ppTournamentTypeRepository,
+        protected PPTournamentType\Find $ppTournamentTypeFindService,
         protected PPLeagueRepository $ppLeagueRepository,
+        protected PPCupGroupRepository $ppCupGroupRepository,
         protected PPRound\Find $ppRoundFindService,
         protected Match\Find $matchFindService,
         protected Trophy\Find $trophiesFindService,
@@ -72,11 +76,16 @@ final class Find  extends BaseService {
     }
 
     protected function enrich(array &$up, int $userId){
-        $up['ppTournamentType'] = $this->ppTournamentTypeRepository->getOne($up['ppTournamentType_id']);
+        // $up['ppTournamentType'] = $this->ppTournamentTypeRepository->getOne($up['ppTournamentType_id']);
+        $up['ppTournamentType'] = $this->ppTournamentTypeFindService->getOne($up['ppTournamentType_id']);
         
         if($up['ppLeague_id']){
             $ppLeague = $this->ppLeagueRepository->getOne($up['ppLeague_id']);      
             $up['rounds']= $up['ppTournamentType']['rounds'];
+        }
+        else if($up['ppCupGroup_id']){
+            $ppCupGroup = $this->ppCupGroupRepository->getOne($up['ppCupGroup_id']);
+            $up['levelFormat'] = $up['ppTournamentType']['cup_format'][$ppCupGroup['level'] - 1];
         }
         
         
