@@ -20,7 +20,8 @@ use App\Repository\EmailPreferencesRepository;
 use App\Repository\StatsRepository;
 use App\Repository\MOTDRepository;
 use App\Repository\ExternalApiSessionRepository;
-
+use App\Repository\DeviceTokenRepository;
+use App\Repository\UserNotificationRepository;
 use Psr\Container\ContainerInterface;
 
 $container['user_repository'] = static fn (ContainerInterface $container): UserRepository => new UserRepository($container->get('db'));
@@ -58,4 +59,8 @@ $container['motd_repository'] = static fn (ContainerInterface $container): MOTDR
 $container['pparea_repository'] = static fn (ContainerInterface $container): PPAreaRepository => new PPAreaRepository($container->get('db'));
 
 $container['externalapisession_repository'] = static fn (ContainerInterface $container): ExternalApiSessionRepository => new ExternalApiSessionRepository($container->get('db'));
+
+$container['devicetoken_repository'] = static fn (ContainerInterface $container): DeviceTokenRepository => new DeviceTokenRepository($container->get('db'));
+
+$container['usernotification_repository'] = static fn (ContainerInterface $container): UserNotificationRepository => new UserNotificationRepository($container->get('db'));
 

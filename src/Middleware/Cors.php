@@ -41,7 +41,7 @@ final class Cors extends Base
     }
 
     private function getAllowedOrigin(Request $request): string {
-        $allowedOrigins = ['https://playpreso.com', 'capacitor://localhost', 'http://localhost:3000'];
+        $allowedOrigins = ['https://playpreso.com', 'capacitor://localhost', 'http://localhost:3000', 'http://192.168.1.75:3000'];
         $origin = $request->getHeaderLine('Origin');
     
         if (in_array($origin, $allowedOrigins)) {

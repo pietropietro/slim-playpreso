@@ -16,6 +16,7 @@ use App\Controller\PPRoundMatch;
 use App\Controller\PPArea;
 use App\Controller\EmailPreferences;
 use App\Controller\Cron;
+use App\Controller\DeviceToken;
 use App\Controller\Stats;
 use App\Controller\MOTD;
 use App\Controller\StaticFiles;
@@ -91,7 +92,8 @@ return function ($app){
         $app->post('/lock', MOTD\Lock::class);
     })->add(new Auth($pointsService));
 
-    
+    $app->post('/save-device-token', DeviceToken\Save::class)->add(new Auth($pointsService));
+
     $app->post('/email-preferences', EmailPreferences\Update::class)->add(new Auth($pointsService));
 
     $app->group('/stats', function () use ($app): void {

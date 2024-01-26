@@ -8,16 +8,16 @@ final class ExternalApiSessionRepository extends BaseRepository
 {
 
     public function getSession(){
-        return $this->db->getValue('external_api_session', 'session');
+        return $this->db->getValue('externalApiSession', 'session');
     }
 
     public function updateSession($newSession){
         $data = array('session' => $newSession);
 
         if(!$this->getSession()){
-            return $this->db->insert('external_api_session', $data);
+            return $this->db->insert('externalApiSession', $data);
         }
-        return $this->db->update('external_api_session', $data, 1);
+        return $this->db->update('externalApiSession', $data, 1);
     }
 
 }
