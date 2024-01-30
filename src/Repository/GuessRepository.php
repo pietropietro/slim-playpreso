@@ -13,15 +13,28 @@ final class GuessRepository extends BaseRepository
         return $this->db->getOne('guesses');
     }
 
-    public function getNext(int $userId, ?int $limit = null) : array {
-        $this->db->where('user_id', $userId);
+    public function getUnlockedForUser(int $userId){
         $this->db->join('matches m ', 'm.id=guesses.match_id', 'INNER');
 
+        $this->db->where('user_id', $userId);
         $this->db->where('guesses.verified_at IS NULL');
-        $this->db->orderBy('guessed_at is null', 'desc');
+        $this->db->where('m.verified_at IS NULL');
+        $this->db->where('guessed_at is null');
         $this->db->orderBy('m.date_start', 'asc');
+        
+        return $this->db->get('guesses', null, 'guesses.*');
+    }
 
-        return $this->db->get('guesses', $limit, 'guesses.*');
+    public function getLockedForUser(int $userId){
+        $this->db->join('matches m ', 'm.id=guesses.match_id', 'INNER');
+
+        $this->db->where('user_id', $userId);
+        $this->db->where('guesses.verified_at IS NULL');
+        $this->db->where('m.verified_at IS NULL');
+        $this->db->where('guessed_at is NOT null');
+        $this->db->orderBy('m.date_start', 'asc');
+        
+        return $this->db->get('guesses', null, 'guesses.*');
     }
 
     public function getLast(int $userId, ?string $afterString = null, ?int $limit = null) : array {

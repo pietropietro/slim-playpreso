@@ -21,14 +21,29 @@ final class Find extends BaseService{
         $guess['match'] = $this->matchFindService->getOne($guess['match_id']);
         $guess['ppTournamentType'] = $this->ppTournamentTypeFindService->getFromPPRoundMatch($guess['ppRoundMatch_id']);
     }
+
+    public function getOne(int $id){
+        $guess = $this->guessRepository->getOne($id);
+        if(!$guess)return;
+        $this->enrich($guess);
+        return $guess;
+    }
     
 
     public function lastLock(int $userId){
         return $this->guessRepository->lastLock($userId);
     }
 
-    public function getNext(int $userId){
-        $guesses = $this->guessRepository->getNext($userId);
+    public function getUnlockedForUser(int $userId){
+        $guesses = $this->guessRepository->getUnlockedForUser($userId);
+        foreach($guesses as &$guess){
+            $this->enrich($guess);
+        }
+        return $guesses;
+    }
+
+    public function getLockedForUser(int $userId){
+        $guesses = $this->guessRepository->getLockedForUser($userId);
         foreach($guesses as &$guess){
             $this->enrich($guess);
         }
