@@ -41,11 +41,18 @@ final class Cors extends Base
     }
 
     private function getAllowedOrigin(Request $request): string {
-        $allowedOrigins = ['https://playpreso.com', 'capacitor://localhost', 'http://localhost:3000', 'http://192.168.1.75:3000'];
-        $origin = $request->getHeaderLine('Origin');
-    
-        if (in_array($origin, $allowedOrigins)) {
+        if($_SERVER['DEBUG']){
+            //'capacitor://localhost', 'http://localhost:3000', 'http://0.0.0.0:3000'
+            $origin = $request->getHeaderLine('Origin');
             return $origin;
+        }
+        else{
+            $allowedOrigins = ['https://playpreso.com', ];
+            $origin = $request->getHeaderLine('Origin');
+        
+            if (in_array($origin, $allowedOrigins)) {
+                return $origin;
+            }
         }
     
         return 'https://playpreso.com'; // Default origin if not matched
