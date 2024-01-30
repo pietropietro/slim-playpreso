@@ -30,6 +30,11 @@ final class DeviceTokenRepository extends BaseRepository
         }
     }
 
+    public function hasToken(int $userId){
+        $this->db->where('user_id', $userId);
+        return $this->db->has('deviceTokens');
+    }
+
     public function getTokensByUserId(int $userId)
     {
         $this->db->where('user_id', $userId);
