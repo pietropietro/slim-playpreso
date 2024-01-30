@@ -22,8 +22,12 @@ final class Send extends BaseService{
     public function __construct(
         protected DeviceTokenRepository $deviceTokenRepository,
     ) {
-        //ANDROID TO DO
+        //ANDROID TODO
         // $this->firebaseMessaging = (new FcmFactory)->withServiceAccount($_SERVER['FCM_SERVICE_ACCOUNT'])->createMessaging();
+    }
+
+    public function hasToken(int $userId){
+        return $this->deviceTokenRepository->hasToken($userId);
     }
 
     public function send(int $userId, string $title, string $body)

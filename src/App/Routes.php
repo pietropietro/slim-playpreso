@@ -20,6 +20,7 @@ use App\Controller\DeviceToken;
 use App\Controller\Stats;
 use App\Controller\MOTD;
 use App\Controller\StaticFiles;
+use App\Controller\UserNotification;
 use App\Middleware\Auth;
 use App\Middleware\Cors;
 use App\Middleware\InternalRequest;
@@ -56,7 +57,7 @@ return function ($app){
     });
 
     $app->group('/guess', function () use ($app): void {
-        $app->get('', Guess\GetUserLatest::class);
+        $app->get('', Guess\GetUserCurrent::class);
         $app->get('/team/{id}', Guess\GetForTeam::class);
         $app->get('/league/{id}', Guess\GetForLeague::class);
         $app->post('/lock/{id}', Guess\Lock::class);
@@ -100,6 +101,11 @@ return function ($app){
         $app->get('/best-users', Stats\BestUsers::class);
         $app->get('/last-preso', Stats\LastPreso::class);
         $app->get('/wrapped', Stats\GetWrapped::class);
+    })->add(new Auth($pointsService));
+
+    $app->group('/notification', function () use ($app): void {
+        $app->get('', UserNotification\GetAll::class);
+        $app->put('/read', UserNotification\Read::class);
     })->add(new Auth($pointsService));
 
     $app->group('/admin', function () use ($app): void {

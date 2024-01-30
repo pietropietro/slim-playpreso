@@ -25,6 +25,7 @@ use App\Service\Trophy;
 use App\Service\MOTD;
 use App\Service\HttpClientService;
 use App\Service\PushNotifications;
+use App\Service\UserNotification;
 use Psr\Container\ContainerInterface;
 
 
@@ -387,7 +388,7 @@ $container['guess_verify_service'] = static fn (
     $container->get('guess_repository'),
     $container->get('points_calculate_service'),
     $container->get('points_update_service'),
-    $container->get('pushnotifications_send_service')
+    $container->get('usernotification_create_service')
 );
 
 $container['guess_find_service'] = static fn (
@@ -562,4 +563,19 @@ $container['pushnotifications_send_service'] = static fn (
     ContainerInterface $container
 ):  PushNotifications\Send => new  PushNotifications\Send(
     $container->get('devicetoken_repository')
+);
+
+$container['usernotification_create_service'] = static fn (
+    ContainerInterface $container
+):  UserNotification\Create => new  UserNotification\Create(
+    $container->get('usernotification_repository'),
+    $container->get('guess_find_service'),
+    $container->get('pushnotifications_send_service'),
+);
+
+$container['usernotification_find_service'] = static fn (
+    ContainerInterface $container
+):  UserNotification\Find => new  UserNotification\Find(
+    $container->get('usernotification_repository'),
+    $container->get('guess_find_service')
 );
