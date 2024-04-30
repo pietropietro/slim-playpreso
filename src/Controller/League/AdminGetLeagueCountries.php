@@ -7,7 +7,7 @@ namespace App\Controller\League;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class AdminGetAll extends Base
+final class AdminGetLeagueCountries extends Base
 {
     /**
      * @param array<string> $args
@@ -18,11 +18,8 @@ final class AdminGetAll extends Base
         array $args
     ): Response {
 
-        $country = $country = (string)($request->getQueryParams()['country'] ?? null);
-
-        $leagues = $this->getLeagueFindService()->adminGetAll($country);
-
+        $countries = $this->getLeagueFindService()->adminGetCountries();
                  
-        return $this->jsonResponse($response, 'success', $leagues, 200);
+        return $this->jsonResponse($response, 'success', $countries, 200);
     }
 }

@@ -8,15 +8,24 @@ final class LeagueRepository extends BaseRepository
 {
     private $columnsNoStandings = "id, name, tag, country, parent_id, level";
     private $adimnColumnsNoStandings = "id, name, tag, country, ls_suffix, ls_410, parent_id, updated_at, level";
-    private $columnsWithStandings = "id, name, tag, country, parent_id, standings";
+    private $columnsWithStandings = "id, name, tag, country, parent_id, standings, level";
 
     public function get(?int $maxLevel=null){
         if($maxLevel) $this->db->where('level', $maxLevel, '<=');
         return $this->db->get('leagues', null, $this->columnsNoStandings);
     }
 
-    public function adminGet(){
-        return $this->db->get('leagues', null, $this->adimnColumnsNoStandings);
+    public function adminGet(?string $country=null){
+        if($country && $country != 'ALL'){
+            $this->db->where('country', $country);
+        }
+        $leagues = $this->db->get('leagues', null, $this->adimnColumnsNoStandings);
+        return $leagues;
+    }
+
+    public function adminGetCountries(){
+        $countries = $this->db->rawQuery("SELECT DISTINCT country FROM leagues where country is not null ORDER BY country ASC");
+        return array_column($countries, 'country');
     }
 
     public function getOne(int $id,  ?bool $admin = false ,?bool $withStandings = false){

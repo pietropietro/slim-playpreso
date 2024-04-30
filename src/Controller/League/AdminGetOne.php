@@ -19,7 +19,8 @@ final class AdminGetOne extends Base
     ): Response {
         $id = (int) $args['id'];
         $league = $this->getLeagueFindService()->getOne(id: $id, admin: true);
-        $league['last_next_matches'] = $this->getMatchFindService()->adminGetForLeague($id);
+        $league['last_matches'] = $this->getMatchFindService()->adminGetForLeague(leagueId: $id, next: false);
+        $league['next_matches'] = $this->getMatchFindService()->adminGetForLeague(leagueId: $id, next: true);
 
         return $this->jsonResponse($response, 'success', $league, 200);
     }

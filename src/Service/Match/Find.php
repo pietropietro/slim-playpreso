@@ -49,17 +49,6 @@ final class Find extends BaseService{
         return $this->enrichAll($matches);
     }
 
-    // public function adminGetAggregatedForWeek(int $days_diff) : array {
-    //     $adminAggr = array();
-    //     for($i=$days_diff-3; $i<$days_diff+4; $i++){
-    //         $dateString = date("Y-m-d", strtotime(sprintf("%+d",$i).' days'));
-    //         $retrieved = $this->matchRepository->adminGetAggregated(
-    //             date: $dateString
-    //         );
-    //         $adminAggr[$dateString] = $retrieved;
-    //     }
-    //     return $adminAggr;
-    // }
 
     public function adminGetForWeek(int $days_diff) : array {
         $adminMatches = array();
@@ -73,14 +62,16 @@ final class Find extends BaseService{
         return $adminMatches;
     }
 
-    public function adminGetForLeague(int $leagueId){
-        $lastMatch=$this->matchRepository->getMatchesForLeagues(array($leagueId), null, 0, 'DESC', 1);
-        $nextMatch=$this->matchRepository->getMatchesForLeagues(array($leagueId), 0, null, 'ASC', 1);
-        
-        return array(
-            $lastMatch ? $this->enrich($lastMatch[0]) : null,
-            $nextMatch ? $this->enrich($nextMatch[0]) : null
+    public function adminGetForLeague(int $leagueId, bool $next = true){
+        $matches=$this->matchRepository->getMatchesForLeagues(
+            array($leagueId), 
+            $next ? 0 : null, 
+            $next ? null : 0, 
+            $next ? 'ASC' : 'DESC', 
+            10
         );
+        
+        return $this->enrichAll($matches);
     }
 
     public function hasLiveMatch(array $ids){

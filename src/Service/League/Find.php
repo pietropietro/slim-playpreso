@@ -17,17 +17,27 @@ final class Find  extends Base{
         protected MatchRepository $matchRepository,
     ){}
 
-    public function adminGetAll(){
-        $leagues =  $this->leagueRepository->adminGet();
+    public function adminGetAll(?string $country = null){
+        $leagues =  $this->leagueRepository->adminGet($country);
         foreach ($leagues as &$league) {
             $league['nextWeeks'] = $this->hasMatchesForNextWeeks($league['id'], 4);
         }
         return $leagues;
     }
 
+    public function adminGetCountries(): array{
+        return $this->leagueRepository->adminGetCountries();
+    }
+
     //admin flag to return ls_suffix or not
     public function getOne(int $id, ?bool $admin=false, ?bool $withStandings=false){
         $league = $this->leagueRepository->getOne($id, $admin, $withStandings);
+
+        if(isset($league['parent_id']) && $league['parent_id'] != $league['id']){
+            $league['parent'] = $this->leagueRepository->getOne($league['parent_id'], false, false);
+            $league['level'] = $league['parent']['level'];
+        }
+
         if(!$withStandings) return $league;
         return $this->enrich($league);
     }
@@ -44,6 +54,7 @@ final class Find  extends Base{
     public function getNeedFutureData(): array{
         return $this->leagueRepository->getNeedFutureData() ?? [];
     }
+
 
 
     //TODO move in PPTT
