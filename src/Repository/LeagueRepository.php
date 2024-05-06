@@ -15,13 +15,24 @@ final class LeagueRepository extends BaseRepository
         return $this->db->get('leagues', null, $this->columnsNoStandings);
     }
 
-    public function adminGet(?string $country=null){
-        if($country && $country != 'ALL'){
+    public function adminGet(?string $country = null, int $offset = 0, int $limit = 50)
+    {
+        if ($country && $country != 'ALL') {
             $this->db->where('country', $country);
         }
-        $leagues = $this->db->get('leagues', null, $this->adimnColumnsNoStandings);
-        return $leagues;
+    
+        $leagues = $this->db->withTotalCount()->get(
+            'leagues', 
+            [$offset, $limit], 
+            $this->adimnColumnsNoStandings
+        );
+    
+        return [
+            'leagues' => $leagues,
+            'total' => $this->db->totalCount,
+        ];
     }
+    
 
     public function adminGetCountries(){
         $countries = $this->db->rawQuery("SELECT DISTINCT country FROM leagues where country is not null ORDER BY country ASC");

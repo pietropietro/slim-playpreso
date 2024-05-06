@@ -17,12 +17,15 @@ final class Find  extends Base{
         protected MatchRepository $matchRepository,
     ){}
 
-    public function adminGetAll(?string $country = null){
-        $leagues =  $this->leagueRepository->adminGet($country);
-        foreach ($leagues as &$league) {
+    public function adminGetAll(?string $country = null, int $page = 1, int $limit = 50)
+    {
+        $offset = ($page - 1) * $limit;
+        $result = $this->leagueRepository->adminGet($country, $offset, $limit);
+
+        foreach ($result['leagues'] as &$league) {
             $league['nextWeeks'] = $this->hasMatchesForNextWeeks($league['id'], 4);
         }
-        return $leagues;
+        return $result;
     }
 
     public function adminGetCountries(): array{
