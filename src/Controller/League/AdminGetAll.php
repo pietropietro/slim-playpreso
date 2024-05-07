@@ -20,9 +20,10 @@ final class AdminGetAll extends Base
 
         $country = $country = (string)($request->getQueryParams()['country'] ?? null);
         $page = (int) $request->getQueryParam('page', 1); // Default to page 1
-        $limit = $request->getQueryParam('limit', 50); // Default limit to 50
+        $limit = (int) $request->getQueryParam('limit', null); // Default limit to 50
+        $parentOnly = (bool) $request->getQueryParam('parentOnly', false); // Default limit to 50
 
-        $result = $this->getLeagueFindService()->adminGetAll($country, $page, $limit);
+        $result = $this->getLeagueFindService()->adminGetAll($country, $page, $limit, $parentOnly);
 
                  
         return $this->jsonResponse($response, 'success', $result, 200);

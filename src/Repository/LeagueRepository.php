@@ -8,6 +8,7 @@ final class LeagueRepository extends BaseRepository
 {
     private $columnsNoStandings = "id, name, tag, country, parent_id, level";
     private $adimnColumnsNoStandings = "id, name, tag, country, ls_suffix, ls_410, parent_id, updated_at, level";
+    private $adimnColumnsL = "l.id, l.name, l.tag, l.country, l.ls_suffix, l.ls_410, l.parent_id, l.updated_at, l.level";
     private $columnsWithStandings = "id, name, tag, country, parent_id, standings, level";
 
     public function get(?int $maxLevel=null){
@@ -15,16 +16,26 @@ final class LeagueRepository extends BaseRepository
         return $this->db->get('leagues', null, $this->columnsNoStandings);
     }
 
-    public function adminGet(?string $country = null, int $offset = 0, int $limit = 50)
-    {
+    public function adminGet(
+        ?string $country = null, 
+        ?int $offset = null, 
+        ?int $limit = 200,
+        ?bool $parentOnly = null
+    ){
         if ($country && $country != 'ALL') {
-            $this->db->where('country', $country);
+            $this->db->where('l.country', $country);
+        }
+
+        if ($parentOnly) {
+            // $offset = 0;
+            $limit = 100;
+            $this->db->where('id = parent_id');
         }
     
         $leagues = $this->db->withTotalCount()->get(
-            'leagues', 
+            'leagues l', 
             [$offset, $limit], 
-            $this->adimnColumnsNoStandings
+            $this->adimnColumnsL
         );
     
         return [
