@@ -21,8 +21,20 @@ final class UserRepository extends BaseRepository
         return $userId;
     }
 
-    public function adminGet(){
-        return $this->db->get('users');
+    public function adminGet(
+        ?int $offset = null, 
+        ?int $limit = 200
+    ){
+
+        $users = $this->db->withTotalCount()->get(
+            'users', 
+            [$offset, $limit]
+        );
+    
+        return [
+            'users' => $users,
+            'total' => $this->db->totalCount,
+        ];
     }
 
     public function getValue(string $column){

@@ -23,16 +23,23 @@ final class Find extends Base
         return $this->userRepository->isAdmin($userId);
     }
     
-    public function adminGet() : ?array {
-        $users = $this->userRepository->adminGet();
-        foreach ($users as &$user) {
+    public function adminGet(
+        ?int $page = null, 
+        ?int $limit = null
+    ) : ?array {
+
+        $offset = ($page - 1) * $limit;
+
+        $data = $this->userRepository->adminGet($offset, $limit);
+        
+        foreach ($data['users'] as &$user) {
             $user['activeUserParticipations'] = $this->userParticipationFindService->getForUser(
                 $user['id'], null, started: null, finished:false
             );
             $user['lastVerifiedGuesses'] = $this->guessFindService->getLast($user['id'], null, 5);
             $user['lastLock'] = $this->guessFindService->lastLock($user['id']);
         }
-        return $users;
+        return $data;
     }
     
     public function getOneFromUsername(string $username, ?bool $allColumns=false){

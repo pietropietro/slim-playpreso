@@ -17,10 +17,16 @@ final class AdminGetAll extends Base
         Response $response,
         array $args
     ): Response {
-        if(!$users = $this->getFindUserService()->adminGet()){
+
+        $page = (int) $request->getQueryParam('page', 1); // Default to page 1
+        $limit = (int) $request->getQueryParam('limit', null); // Default limit to 50
+
+
+        //data{'users': [], 'total':22}
+        if(!$data = $this->getFindUserService()->adminGet($page, $limit)){
             throw new \App\Exception\User('no users', 404);
         }
 
-        return $this->jsonResponse($response, 'success', $users, 200);
+        return $this->jsonResponse($response, 'success', $data, 200);
     }
 }
