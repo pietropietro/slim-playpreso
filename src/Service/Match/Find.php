@@ -62,6 +62,10 @@ final class Find extends BaseService{
         return $adminMatches;
     }
 
+    public function adminGetForMonth(int $month_diff) : array {
+        return $this->matchRepository->getCountByMonth($month_diff);
+    }
+
     public function adminGetForLeague(int $leagueId, bool $next = true){
         $matches=$this->matchRepository->getMatchesForLeagues(
             array($leagueId), 
