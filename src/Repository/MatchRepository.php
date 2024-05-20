@@ -47,25 +47,24 @@ final class MatchRepository extends BaseRepository
 
         return $this->db->get('matches m', null, $columns);
     }
-    // public function adminGetAggregated(string $date){
-    //     // Replace 'your_table_prefix' with your actual table prefix
-    //     $this->db->where('DATE(m.date_start) = ?', [$date]);
+
+
+
+    public function getCountByMonth(int $month_diff): array {
+        // Calculate the first and last day of the month based on month_diff
+        $firstDayOfMonth = date('Y-m-01', strtotime("first day of $month_diff month"));
+        $lastDayOfMonth = date('Y-m-t 23:59:59', strtotime("last day of $month_diff month"));
     
-    //     $this->db->join('guesses g', 'g.match_id = m.id', 'left');
-    //     $this->db->join('leagues l', 'l.id = m.league_id', 'left');
-    //     $this->db->groupBy('l.country');
+        // Prepare and execute the query
+        $this->db->where('date_start', $firstDayOfMonth, '>=');
+        $this->db->where('date_start', $lastDayOfMonth, '<=');
+        $this->db->groupBy("DATE(date_start)");
+        $result = $this->db->get('matches', null, "DATE(date_start) AS match_day, COUNT(*) AS match_count");
     
-    //     $columns = array(
-    //         'l.country',
-    //         'l.name',
-    //         'count(distinct m.id) as aggregateMatches',
-    //         'count(m.notes) as aggregateNotes',
-    //         'count(m.verified_at) as aggregateVerifiedMatches',
-    //         'count(g.id) as aggregateGuesses',
-    //     );
-    
-    //     return $this->db->get('matches m', null, $columns);
-    // }
+        return $result;
+    }
+  
+
 
     public function get(array $ids){
         if(!$ids)return;
