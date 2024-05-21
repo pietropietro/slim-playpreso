@@ -49,21 +49,39 @@ final class MatchRepository extends BaseRepository
     }
 
 
-
     public function getCountByMonth(int $month_diff): array {
         // Calculate the first and last day of the month based on month_diff
         $firstDayOfMonth = date('Y-m-01', strtotime("first day of $month_diff month"));
-        $lastDayOfMonth = date('Y-m-t 23:59:59', strtotime("last day of $month_diff month"));
+        $lastDayOfMonth = date('Y-m-t 23:59:59', strtotime("last day of $month_diff month")); // Include full last day
     
-        // Prepare and execute the query
-        $this->db->where('date_start', $firstDayOfMonth, '>=');
-        $this->db->where('date_start', $lastDayOfMonth, '<=');
-        $this->db->groupBy("DATE(date_start)");
-        $result = $this->db->get('matches', null, "DATE(date_start) AS match_day, COUNT(*) AS match_count");
+        // Construct the query
+        $this->db->where('m.date_start', $firstDayOfMonth, '>=');
+        $this->db->where('m.date_start', $lastDayOfMonth, '<=');
     
-        return $result;
+        // Self-join to get parent league names if necessary
+        $this->db->join("leagues l", "m.league_id = l.id", "LEFT");
+        $this->db->join("leagues lp", "l.parent_id = lp.id AND l.parent_id != l.id", "LEFT");
+    
+        $this->db->groupBy("DATE(m.date_start)");
+        $this->db->orderBy("DATE(m.date_start)", "asc");
+    
+        $fields = [
+            "DATE(m.date_start) AS match_day",
+            "COUNT(*) AS match_count",
+            "JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    'country', l.country, 
+                    'league', l.name, 
+                    'parent_id', IF(l.parent_id = l.id, NULL, l.parent_id), 
+                    'league_id', l.id, 
+                    'parent_name', lp.name
+                )
+            ) AS match_from"
+        ];
+    
+        $matchSummary = $this->db->get("matches m", null, $fields);
+        return $matchSummary;
     }
-  
 
 
     public function get(array $ids){

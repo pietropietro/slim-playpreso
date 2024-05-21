@@ -62,9 +62,81 @@ final class Find extends BaseService{
         return $adminMatches;
     }
 
-    public function adminGetForMonth(int $month_diff) : array {
-        return $this->matchRepository->getCountByMonth($month_diff);
+
+    public function adminGetSummaryForMonth(int $month_diff) : array {
+        $matchSummary = $this->matchRepository->getCountByMonth($month_diff);
+    
+        // Decode JSON data and build hierarchy for each match
+        foreach ($matchSummary as &$match) {
+            $entries = json_decode($match['match_from'], true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $matchFromMap = [];
+                foreach ($entries as $entry) {
+                    $country = $entry['country'];
+                    $league = $entry['league'];
+                    $parentId = $entry['parent_id'];
+                    $leagueId = $entry['league_id'];
+                    $parentName = $entry['parent_name'];
+    
+                    if (!isset($matchFromMap[$country])) {
+                        $matchFromMap[$country] = [];
+                    }
+    
+                    if ($parentId === null) {
+                        // It's a top-level league
+                        if (!isset($matchFromMap[$country][$leagueId])) {
+                            $matchFromMap[$country][$leagueId] = [
+                                'name' => $league,
+                                'id' => $leagueId
+                            ];
+                        }
+                    } else {
+                        // It's a child league
+                        if (!isset($matchFromMap[$country][$parentId])) {
+                            $matchFromMap[$country][$parentId] = [
+                                'name' => $parentName,
+                                'id' => $parentId,
+                                'subLeagues' => []
+                            ];
+                        }
+                        // Check if subLeague already exists
+                        $subLeagueExists = false;
+                        foreach ($matchFromMap[$country][$parentId]['subLeagues'] as $subLeague) {
+                            if ($subLeague['id'] === $leagueId) {
+                                $subLeagueExists = true;
+                                break;
+                            }
+                        }
+                        if (!$subLeagueExists) {
+                            $matchFromMap[$country][$parentId]['subLeagues'][] = [
+                                'name' => $league,
+                                'id' => $leagueId
+                            ];
+                        }
+                    }
+                }
+    
+                // Convert associative array to indexed array
+                foreach ($matchFromMap as &$leagues) {
+                    $leagues = array_values($leagues);
+                    foreach ($leagues as &$league) {
+                        if (isset($league['subLeagues']) && empty($league['subLeagues'])) {
+                            unset($league['subLeagues']);
+                        }
+                    }
+                }
+    
+                $match['match_from'] = $matchFromMap;
+            } else {
+                // Handle JSON decode error
+                $match['match_from'] = [];
+            }
+        }
+    
+        return $matchSummary;
     }
+    
+
 
     public function adminGetForLeague(int $leagueId, bool $next = true){
         $matches=$this->matchRepository->getMatchesForLeagues(
