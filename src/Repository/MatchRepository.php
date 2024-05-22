@@ -80,9 +80,10 @@ final class MatchRepository extends BaseRepository
             ) AS match_from"
         ];
     
-        $matches = $this->db->get("matches m", null, $fields);
-        return $matches;
+        $matchSummary = $this->db->get("matches m", null, $fields);
+        return $matchSummary;
     }
+    
     
     
 

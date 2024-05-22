@@ -63,7 +63,7 @@ final class Find extends BaseService{
     }
 
 
-    public function adminGetSummaryForMonth(int $month_diff) : array {
+    public function adminGetSummaryForMonth(int $month_diff): array {
         $matchSummary = $this->matchRepository->getCountByMonth($month_diff);
     
         // Decode JSON data and build hierarchy for each match
@@ -82,7 +82,12 @@ final class Find extends BaseService{
                     if (!isset($matchFromMap[$country])) {
                         $matchFromMap[$country] = [];
                     }
-    
+
+                    // dDEBUG SERIE D
+                    if($leagueId === 176){
+                        $cacca='la';
+                    }
+
                     if ($parentId === null || $parentId === $leagueId) {
                         // It's a top-level league or the parent_id is the same as league_id
                         if (!isset($matchFromMap[$country][$leagueId])) {
@@ -94,15 +99,17 @@ final class Find extends BaseService{
                             ];
                         }
                     } else {
-                        // It's a child league
+                        // add Parent League if not created yet
+                        //i.e. group a of Serie D will go through and add Serie D
                         if (!isset($matchFromMap[$country][$parentId])) {
                             $matchFromMap[$country][$parentId] = [
                                 'name' => $parentName,
                                 'id' => $parentId,
+                                'level' => $level, // Set level to null if not provided
                                 'subLeagues' => []
                             ];
                         }
-                        // Check if subLeague already exists
+                        //Then add the subleague if not there
                         $subLeagueExists = false;
                         foreach ($matchFromMap[$country][$parentId]['subLeagues'] as $subLeague) {
                             if ($subLeague['id'] === $leagueId) {
@@ -138,6 +145,8 @@ final class Find extends BaseService{
     
         return $matchSummary;
     }
+    
+    
     
     
 
