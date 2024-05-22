@@ -72,16 +72,19 @@ final class MatchRepository extends BaseRepository
                 JSON_OBJECT(
                     'country', l.country, 
                     'league', l.name, 
-                    'parent_id', IF(l.parent_id = l.id, NULL, l.parent_id), 
+                    'parent_id', l.parent_id, 
                     'league_id', l.id, 
-                    'parent_name', lp.name
+                    'parent_name', IFNULL(lp.name, l.name),
+                    'level', l.level
                 )
             ) AS match_from"
         ];
     
-        $matchSummary = $this->db->get("matches m", null, $fields);
-        return $matchSummary;
+        $matches = $this->db->get("matches m", null, $fields);
+        return $matches;
     }
+    
+    
 
 
     public function get(array $ids){
