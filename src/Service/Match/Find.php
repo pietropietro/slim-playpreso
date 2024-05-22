@@ -64,86 +64,74 @@ final class Find extends BaseService{
 
 
     public function adminGetSummaryForMonth(int $month_diff): array {
-        $matchSummary = $this->matchRepository->getCountByMonth($month_diff);
+        $monthSummary = $this->matchRepository->getCountByMonth($month_diff);
     
         // Decode JSON data and build hierarchy for each match
-        foreach ($matchSummary as &$match) {
-            $entries = json_decode($match['match_from'], true);
-            if (json_last_error() === JSON_ERROR_NONE) {
-                $matchFromMap = [];
-                foreach ($entries as $entry) {
-                    $country = $entry['country'];
-                    $league = $entry['league'];
-                    $parentId = $entry['parent_id'];
-                    $leagueId = $entry['league_id'];
-                    $parentName = $entry['parent_name'];
-                    $level = $entry['level'];
-    
-                    if (!isset($matchFromMap[$country])) {
-                        $matchFromMap[$country] = [];
-                    }
+        foreach ($monthSummary as &$daySummary) {
+            $dayLeagues = json_decode($daySummary['matches_from'], true);
+            // TODO here I have as many leagues serie b for as many matches of serie b in that day
+            //I can use this data to send back the numebr of matches for each league
+            $monthCountryMap = [];
+            foreach ($dayLeagues as $dayLeague) {
+                $country = $dayLeague['country'];
+                $league = $dayLeague['league'];
+                $parentId = $dayLeague['parent_id'];
+                $leagueId = $dayLeague['league_id'];
+                $parentName = $dayLeague['parent_name'];
+                $level = $dayLeague['level'];
 
-                    // dDEBUG SERIE D
-                    if($leagueId === 176){
-                        $cacca='la';
-                    }
+                if (!isset($monthCountryMap[$country])) {
+                    $monthCountryMap[$country] = [];
+                }
 
-                    if ($parentId === null || $parentId === $leagueId) {
-                        // It's a top-level league or the parent_id is the same as league_id
-                        if (!isset($matchFromMap[$country][$leagueId])) {
-                            $matchFromMap[$country][$leagueId] = [
-                                'name' => $league,
-                                'id' => $leagueId,
-                                'level' => $level,
-                                'subLeagues' => []
-                            ];
+
+                if ($parentId === null || $parentId === $leagueId) {
+                    // It's a top-level league or the parent_id is the same as league_id
+                    if (!isset($monthCountryMap[$country][$leagueId])) {
+                        $monthCountryMap[$country][$leagueId] = [
+                            'name' => $league,
+                            'id' => $leagueId,
+                            'level' => $level,
+                            'subLeagues' => []
+                        ];
+                    }
+                } else {
+                    // add Parent League if not created yet
+                    //i.e. group a of Serie D will go through and add Serie D
+                    if (!isset($monthCountryMap[$country][$parentId])) {
+                        $monthCountryMap[$country][$parentId] = [
+                            'name' => $parentName,
+                            'id' => $parentId,
+                            'level' => $level, // Set level to null if not provided
+                            'subLeagues' => []
+                        ];
+                    }
+                    //Then add the subleague if not there
+                    $subLeagueExists = false;
+                    foreach ($monthCountryMap[$country][$parentId]['subLeagues'] as $subLeague) {
+                        if ($subLeague['id'] === $leagueId) {
+                            $subLeagueExists = true;
+                            break;
                         }
-                    } else {
-                        // add Parent League if not created yet
-                        //i.e. group a of Serie D will go through and add Serie D
-                        if (!isset($matchFromMap[$country][$parentId])) {
-                            $matchFromMap[$country][$parentId] = [
-                                'name' => $parentName,
-                                'id' => $parentId,
-                                'level' => $level, // Set level to null if not provided
-                                'subLeagues' => []
-                            ];
-                        }
-                        //Then add the subleague if not there
-                        $subLeagueExists = false;
-                        foreach ($matchFromMap[$country][$parentId]['subLeagues'] as $subLeague) {
-                            if ($subLeague['id'] === $leagueId) {
-                                $subLeagueExists = true;
-                                break;
-                            }
-                        }
-                        if (!$subLeagueExists) {
-                            $matchFromMap[$country][$parentId]['subLeagues'][] = [
-                                'name' => $league,
-                                'id' => $leagueId,
-                            ];
-                        }
+                    }
+                    if (!$subLeagueExists) {
+                        $monthCountryMap[$country][$parentId]['subLeagues'][] = [
+                            'name' => $league,
+                            'id' => $leagueId,
+                        ];
                     }
                 }
-    
-                // Convert associative array to indexed array
-                foreach ($matchFromMap as &$leagues) {
-                    $leagues = array_values($leagues);
-                    foreach ($leagues as &$league) {
-                        if (isset($league['subLeagues']) && empty($league['subLeagues'])) {
-                            unset($league['subLeagues']);
-                        }
-                    }
-                }
-    
-                $match['match_from'] = $matchFromMap;
-            } else {
-                // Handle JSON decode error
-                $match['match_from'] = [];
             }
+
+            // Convert associative array to indexed array
+            foreach ($monthCountryMap as &$leaguesInCountry) {
+                $leaguesInCountry = array_values($leaguesInCountry);
+            }
+
+            $daySummary['matches_from'] = $monthCountryMap;
         }
     
-        return $matchSummary;
+        return $monthSummary;
     }
     
     
