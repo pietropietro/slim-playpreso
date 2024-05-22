@@ -77,17 +77,20 @@ final class Find extends BaseService{
                     $parentId = $entry['parent_id'];
                     $leagueId = $entry['league_id'];
                     $parentName = $entry['parent_name'];
+                    $level = $entry['level'];
     
                     if (!isset($matchFromMap[$country])) {
                         $matchFromMap[$country] = [];
                     }
     
-                    if ($parentId === null) {
-                        // It's a top-level league
+                    if ($parentId === null || $parentId === $leagueId) {
+                        // It's a top-level league or the parent_id is the same as league_id
                         if (!isset($matchFromMap[$country][$leagueId])) {
                             $matchFromMap[$country][$leagueId] = [
                                 'name' => $league,
-                                'id' => $leagueId
+                                'id' => $leagueId,
+                                'level' => $level,
+                                'subLeagues' => []
                             ];
                         }
                     } else {
@@ -110,7 +113,7 @@ final class Find extends BaseService{
                         if (!$subLeagueExists) {
                             $matchFromMap[$country][$parentId]['subLeagues'][] = [
                                 'name' => $league,
-                                'id' => $leagueId
+                                'id' => $leagueId,
                             ];
                         }
                     }
@@ -135,6 +138,7 @@ final class Find extends BaseService{
     
         return $matchSummary;
     }
+    
     
 
 
