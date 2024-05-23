@@ -15,6 +15,12 @@ abstract class Base extends BaseController
     {
         return $this->container->get('match_find_service');
     }
+
+    protected function getMatchExtractSummaryService(): Match\ExtractSummary
+    {
+        return $this->container->get('match_extract_summary_service');
+    }
+
     
     protected function getVerifyMatchService(): Match\Verify
     {

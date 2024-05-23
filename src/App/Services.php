@@ -419,6 +419,12 @@ $container['match_find_service'] = static fn (
     $container->get('team_find_service'),
 );
 
+$container['match_extract_summary_service'] = static fn (
+    ContainerInterface $container
+):  Match\ExtractSummary => new Match\ExtractSummary(
+    $container->get('match_repository'),
+);
+
 $container['ppround_create_service'] = static fn (
     ContainerInterface $container
 ):  PPRound\Create => new  PPRound\Create(

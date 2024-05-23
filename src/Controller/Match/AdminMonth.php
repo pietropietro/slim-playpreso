@@ -20,7 +20,7 @@ final class AdminMonth extends Base
 
         $year = (int)($request->getQueryParams()['year'] ?? date('Y'));
         $month = (int)($request->getQueryParams()['month'] ?? date('m'));
-        $matchSummary = $this->getMatchFindService()->adminGetSummaryForMonth($year, $month);
+        $matchSummary = $this->getMatchExtractSummaryService()->adminGetForMonth($year, $month);
 
         return $this->jsonResponse($response, 'success', $matchSummary, 200);
     }
