@@ -62,119 +62,6 @@ final class Find extends BaseService{
         return $adminMatches;
     }
 
-
-    public function adminGetSummaryForMonth(int $year, int $month): array {
-        $monthSummary = $this->matchRepository->getCountByMonth($year, $month);
-    
-        foreach ($monthSummary as &$daySummary) {
-            $dayLeagues = json_decode($daySummary['matches_from'], true);
-            $monthCountryMap = [];
-            $leagueMatchCount = [];
-    
-            // First, count all matches for each league and sub-league
-            foreach ($dayLeagues as $dayLeague) {
-                $leagueId = $dayLeague['league_id'];
-                if (!isset($leagueMatchCount[$leagueId])) {
-                    $leagueMatchCount[$leagueId] = 0;
-                }
-                $leagueMatchCount[$leagueId]++;
-            }
-    
-            // Now, build the hierarchy and assign match counts
-            foreach ($dayLeagues as $dayLeague) {
-                $country = $dayLeague['country'];
-                $leagueId = $dayLeague['league_id'];
-                $parentId = $dayLeague['parent_id'];
-                $league = $dayLeague['league'];
-                $parentName = $dayLeague['parent_name'];
-                $level = $dayLeague['level'];
-    
-                if (!isset($monthCountryMap[$country])) {
-                    $monthCountryMap[$country] = [];
-                }
-    
-                if ($parentId === null || $parentId === $leagueId) {
-                    // It's a top-level league or the parent_id is the same as league_id
-                    if (!isset($monthCountryMap[$country][$leagueId])) {
-                        $monthCountryMap[$country][$leagueId] = [
-                            'name' => $league,
-                            'id' => $leagueId,
-                            'level' => $level,
-                            'subLeagues' => [],
-                            'league_day_count' => 0
-                        ];
-                    }
-                    $monthCountryMap[$country][$leagueId]['league_day_count'] = $leagueMatchCount[$leagueId];
-                } else {
-                    // Initialize parent league if not created yet
-                    if (!isset($monthCountryMap[$country][$parentId])) {
-                        $monthCountryMap[$country][$parentId] = [
-                            'name' => $parentName,
-                            'id' => $parentId,
-                            'level' => $level,
-                            'subLeagues' => [],
-                            'league_day_count' => 0
-                        ];
-                    }
-    
-                    // Add sub-league if not there
-                    $subLeagueExists = false;
-                    foreach ($monthCountryMap[$country][$parentId]['subLeagues'] as &$subLeague) {
-                        if ($subLeague['id'] === $leagueId) {
-                            $subLeagueExists = true;
-                            break;
-                        }
-                    }
-                    if (!$subLeagueExists) {
-                        $monthCountryMap[$country][$parentId]['subLeagues'][] = [
-                            'name' => $league,
-                            'id' => $leagueId,
-                            'league_day_count' => $leagueMatchCount[$leagueId]
-                        ];
-                    }
-    
-                    // Update the parent league's match count by summing sub-leagues correctly
-                    $monthCountryMap[$country][$parentId]['league_day_count'] += $leagueMatchCount[$leagueId];
-                }
-            }
-    
-            // Correct the parent league's match count by including direct matches
-            foreach ($monthCountryMap as $country => &$leagues) {
-                foreach ($leagues as $parentId => &$parentLeague) {
-                    if (!empty($parentLeague['subLeagues'])) {
-                        $parentLeagueCount = 0;
-                        foreach ($parentLeague['subLeagues'] as $subLeague) {
-                            $parentLeagueCount += $subLeague['league_day_count'];
-                        }
-                        // Add direct matches of the parent league itself
-                        $parentLeagueCount += $leagueMatchCount[$parentId] ?? 0;
-                        $parentLeague['league_day_count'] = $parentLeagueCount;
-                    }
-                }
-            }
-    
-            // Convert associative array to indexed array
-            foreach ($monthCountryMap as &$leaguesInCountry) {
-                $leaguesInCountry = array_values($leaguesInCountry);
-            }
-    
-            $daySummary['matches_from'] = $monthCountryMap;
-        }
-    
-        return $monthSummary;
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-
     public function adminGetForLeague(int $leagueId, bool $next = true){
         $matches=$this->matchRepository->getMatchesForLeagues(
             array($leagueId), 
@@ -219,6 +106,132 @@ final class Find extends BaseService{
     public function isBeforeStartTime(int $id){
         return $this->matchRepository->isBeforeStartTime($id);
     }
+
+    public function adminGetSummaryForMonth(int $year, int $month): array {
+        $monthSummary = $this->matchRepository->getCountByMonth($year, $month);
+    
+        foreach ($monthSummary as &$daySummary) {
+            $dayLeagues = json_decode($daySummary['matches_from'], true);
+    
+            // Count matches for each league
+            $leagueMatchCount = $this->countMatches($dayLeagues);
+    
+            // Build the hierarchical structure and assign match counts
+            $monthCountryMap = $this->buildHierarchy($dayLeagues, $leagueMatchCount);
+    
+            // Adjust parent league match counts
+            $this->adjustParentLeagueCounts($monthCountryMap, $leagueMatchCount);
+    
+            // Convert associative array to indexed array
+            $this->convertAssociativeToIndexed($monthCountryMap);
+    
+            $daySummary['matches_from'] = $monthCountryMap;
+        }
+    
+        return $monthSummary;
+    }
+    
+    private function countMatches(array $dayLeagues): array {
+        $leagueMatchCount = [];
+    
+        foreach ($dayLeagues as $dayLeague) {
+            $leagueId = $dayLeague['league_id'];
+            if (!isset($leagueMatchCount[$leagueId])) {
+                $leagueMatchCount[$leagueId] = 0;
+            }
+            $leagueMatchCount[$leagueId]++;
+        }
+    
+        return $leagueMatchCount;
+    }
+    
+    private function buildHierarchy(array $dayLeagues, array $leagueMatchCount): array {
+        $monthCountryMap = [];
+    
+        foreach ($dayLeagues as $dayLeague) {
+            $country = $dayLeague['country'];
+            $leagueId = $dayLeague['league_id'];
+            $parentId = $dayLeague['parent_id'];
+            $league = $dayLeague['league'];
+            $parentName = $dayLeague['parent_name'];
+            $level = $dayLeague['level'];
+    
+            if (!isset($monthCountryMap[$country])) {
+                $monthCountryMap[$country] = [];
+            }
+    
+            if ($parentId === null || $parentId === $leagueId) {
+                // Top-level league or parent_id is the same as league_id
+                $this->initializeParentLeague($monthCountryMap[$country], $leagueId, $league, $level);
+                $monthCountryMap[$country][$leagueId]['league_day_count'] = $leagueMatchCount[$leagueId];
+            } else {
+                // Parent league initialization
+                $this->initializeParentLeague($monthCountryMap[$country], $parentId, $parentName, $level);
+    
+                // Add sub-league if not present
+                if (!$this->subLeagueExists($monthCountryMap[$country][$parentId]['subLeagues'], $leagueId)) {
+                    $this->addSubLeague($monthCountryMap[$country][$parentId]['subLeagues'], $league, $leagueId, $leagueMatchCount[$leagueId]);
+                }
+    
+                // Update the parent league's match count
+                $monthCountryMap[$country][$parentId]['league_day_count'] += $leagueMatchCount[$leagueId];
+            }
+        }
+    
+        return $monthCountryMap;
+    }
+    
+    private function initializeParentLeague(array &$countryLeagues, int $parentId, string $parentName, int $level): void {
+        if (!isset($countryLeagues[$parentId])) {
+            $countryLeagues[$parentId] = [
+                'name' => $parentName,
+                'id' => $parentId,
+                'level' => $level,
+                'subLeagues' => [],
+                'league_day_count' => 0
+            ];
+        }
+    }
+    
+    private function subLeagueExists(array $subLeagues, int $leagueId): bool {
+        foreach ($subLeagues as $subLeague) {
+            if ($subLeague['id'] === $leagueId) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private function addSubLeague(array &$subLeagues, string $leagueName, int $leagueId, int $leagueDayCount): void {
+        $subLeagues[] = [
+            'name' => $leagueName,
+            'id' => $leagueId,
+            'league_day_count' => $leagueDayCount
+        ];
+    }
+    
+    private function adjustParentLeagueCounts(array &$monthCountryMap, array $leagueMatchCount): void {
+        foreach ($monthCountryMap as $country => &$leagues) {
+            foreach ($leagues as $parentId => &$parentLeague) {
+                if (!empty($parentLeague['subLeagues'])) {
+                    $parentLeagueCount = 0;
+                    foreach ($parentLeague['subLeagues'] as $subLeague) {
+                        $parentLeagueCount += $subLeague['league_day_count'];
+                    }
+                    // Add direct matches of the parent league itself
+                    $parentLeagueCount += $leagueMatchCount[$parentId] ?? 0;
+                    $parentLeague['league_day_count'] = $parentLeagueCount;
+                }
+            }
+        }
+    }
+    
+    private function convertAssociativeToIndexed(array &$monthCountryMap): void {
+        foreach ($monthCountryMap as &$leaguesInCountry) {
+            $leaguesInCountry = array_values($leaguesInCountry);
+        }
+    }
+    
     
 }
 
