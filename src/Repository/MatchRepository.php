@@ -49,15 +49,18 @@ final class MatchRepository extends BaseRepository
     }
 
 
-    public function getCountByMonth(int $month_diff): array {
-        // Calculate the first and last day of the month based on month_diff
-        $firstDayOfMonth = date('Y-m-01', strtotime("first day of $month_diff month"));
-        $lastDayOfMonth = date('Y-m-t 23:59:59', strtotime("last day of $month_diff month")); // Include full last day
-    
+    public function getCountByMonth(int $year, int $month): array {
+        // Ensure month is zero-padded
+        $month = str_pad((string)$month, 2, '0', STR_PAD_LEFT);
+
+        // Calculate the first and last day of the month
+        $firstDayOfMonth = "$year-$month-01";
+        $lastDayOfMonth = date('Y-m-t 23:59:59', strtotime($firstDayOfMonth)); // Include full last day
+
         // Construct the query
         $this->db->where('m.date_start', $firstDayOfMonth, '>=');
         $this->db->where('m.date_start', $lastDayOfMonth, '<=');
-    
+
         // Self-join to get parent league names if necessary
         $this->db->join("leagues l", "m.league_id = l.id", "LEFT");
         $this->db->join("leagues lp", "l.parent_id = lp.id AND l.parent_id != l.id", "LEFT");
@@ -77,7 +80,7 @@ final class MatchRepository extends BaseRepository
                     'parent_name', IFNULL(lp.name, l.name),
                     'level', l.level
                 )
-            ) AS match_from"
+            ) AS matches_from"
         ];
     
         $matchSummary = $this->db->get("matches m", null, $fields);

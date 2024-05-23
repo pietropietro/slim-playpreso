@@ -63,8 +63,8 @@ final class Find extends BaseService{
     }
 
 
-    public function adminGetSummaryForMonth(int $month_diff): array {
-        $monthSummary = $this->matchRepository->getCountByMonth($month_diff);
+    public function adminGetSummaryForMonth(int $year, int $month): array {
+        $monthSummary = $this->matchRepository->getCountByMonth($year, $month);
     
         // Decode JSON data and build hierarchy for each match
         foreach ($monthSummary as &$daySummary) {

@@ -18,31 +18,9 @@ final class AdminMonth extends Base
         array $args
     ): Response {
 
-        $month_diff = (int)$request->getQueryParams()['month_diff'] ?? 0;
-        $matchSummary = $this->getMatchFindService()->adminGetSummaryForMonth($month_diff);
-
-        // EXAMPLE OUTPUT
-        // {
-        //     "match_day": "2024-03-09",
-        //     "match_count": 273,
-        //     "countries": {
-        //         "Germany": [
-        //             {
-        //                 "name": "3. Liga",
-        //                 "id": 12,
-        //                 "subLeagues": [
-        //                     {"name": "Nord", "id": 18},
-        //                     {"name": "Nordost", "id": 321}
-        //                 ]
-        //             },
-        //             {
-        //                 "name": "4a Liga",
-        //                 "id": 21,
-        //                 "subLeagues": []
-        //             }
-        //         ]
-        //     }
-        // }
+        $year = (int)($request->getQueryParams()['year'] ?? date('Y'));
+        $month = (int)($request->getQueryParams()['month'] ?? date('m'));
+        $matchSummary = $this->getMatchFindService()->adminGetSummaryForMonth($year, $month);
 
         return $this->jsonResponse($response, 'success', $matchSummary, 200);
     }
