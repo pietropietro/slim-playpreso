@@ -9,44 +9,60 @@ final class MatchRepository extends BaseRepository
     private $whitelistColumns = array('id','league_id','home_id','away_id','score_home','score_away','round','date_start','verified_at');
 
     //TODO REFACTOR
-    public function adminGet( 
-        array $ids=null, 
-        int $leagueId=null,
-        string $from= null, 
-        string $to= null, 
-        string $date = null,
-    ) : ?array {
-        if($from && $to){
+    public function adminGet(
+        ?array $ids = null,
+        ?string $country = null,
+        ?int $leagueId = null,
+        ?string $from = null,
+        ?string $to = null
+    ): array {
+
+        if ($country) {
+            $this->db->join('leagues l', 'm.league_id = l.id', 'INNER');
+            $this->db->where('l.country', $country);
+        }
+
+        // Handle leagueId and sub-leagues
+        if ($leagueId) {
+            $subLeagueIds = $this->db->rawQuery("SELECT id FROM leagues WHERE parent_id = ? OR id = ?", [$leagueId, $leagueId]);
+            $subLeagueIds = array_column($subLeagueIds, 'id');
+            $this->db->where('m.league_id', $subLeagueIds, 'IN');
+        }
+
+        if ($from && $to) {
             $this->db->where('date_start', array($from, $to), 'BETWEEN');    
         }
-        else if($date){
-            $this->db->where('DATE(date_start) = "'.$date.'"');    
+
+        // Add condition for ids if provided
+        if ($ids) {
+            $this->db->where('m.id', $ids, 'IN');
         }
 
-        if($ids) $this->db->where('m.id', $ids, 'IN');
-        if($leagueId) $this->db->where('m.league_id', $leagueId);
-
-        $this->db->join('guesses g', "g.match_id=m.id", "left");
+        // $this->db->join('guesses g', "g.match_id=m.id", "left");
         $this->db->join('ppRoundMatches pprm', "pprm.match_id=m.id", "left");
 
         $this->db->groupBy('m.id');
         $this->db->orderBy('date_start', 'ASC');
 
         $columns = array(
-            'm.id', 'm.ls_id', 'm.league_id', 'm.home_id', 'm.away_id', 'm.score_home','m.score_away', 
+            'm.id', 'm.ls_id', 'm.league_id', 
+            'm.home_id', 'm.away_id', 'm.score_home','m.score_away', 
             'm.round', 'm.date_start', 'm.created_at', 'm.verified_at', 'm.notes',
-            // 'count(distinct g.ppRoundMatch_id) as ppRMcount', 
-            'count(distinct pprm.id) as aggregatePPRM',
             'count(distinct pprm.motd) as motd',
-            'count(g.id) as aggregateGuesses',
-            'ROUND(sum(g.UNOX2)/count(guessed_at) * 100) as aggregateUNOX2',
-            'ROUND(sum(g.GGNG)/count(guessed_at) * 100) as aggregateGGNG',
-            'ROUND(sum(g.UO25)/count(guessed_at) * 100) as aggregateUO25',
-            'ROUND(sum(g.PRESO)/count(guessed_at) * 100) as aggregatePRESO',
         );
 
         return $this->db->get('matches m', null, $columns);
     }
+
+    // TODO admin if needed can get this extra data
+    // 'count(distinct g.ppRoundMatch_id) as ppRMcount', 
+    // 'count(distinct pprm.id) as aggregatePPRM',
+    // 'count(distinct pprm.motd) as motd',
+    // 'count(g.id) as aggregateGuesses',
+    // 'ROUND(sum(g.UNOX2)/count(guessed_at) * 100) as aggregateUNOX2',
+    // 'ROUND(sum(g.GGNG)/count(guessed_at) * 100) as aggregateGGNG',
+    // 'ROUND(sum(g.UO25)/count(guessed_at) * 100) as aggregateUO25',
+    // 'ROUND(sum(g.PRESO)/count(guessed_at) * 100) as aggregatePRESO',
 
 
     public function getCountByMonth(int $year, int $month): array {
@@ -80,7 +96,8 @@ final class MatchRepository extends BaseRepository
                     'parent_name', IFNULL(lp.name, l.name),
                     'level', l.level
                 )
-            ) AS matches_from"
+            ) AS matches_from",
+            "(CASE WHEN COUNT(m.verified_at) = COUNT(*) THEN 1 ELSE 0 END) AS all_matches_verified"
         ];
     
         $matchSummary = $this->db->get("matches m", null, $fields);

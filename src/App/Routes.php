@@ -154,7 +154,8 @@ return function ($app){
         });
 
         $app->group('/match', function() use($app): void {
-            $app->get('', Match\AdminWeek::class);
+            // $app->get('/week', Match\AdminWeek::class);
+            $app->get('', Match\AdminGet::class);
             $app->get('/month', Match\AdminMonth::class);
             $app->get('/pick/{id}', Match\AdminPick::class);
             $app->post('/{id}', Match\Verify::class);

@@ -43,23 +43,34 @@ final class Find extends BaseService{
         return $this->matchRepository->getOneByLeagueRoundAndTeams($leagueId, $round, $homeId, $awayId);
     }
 
-    public function adminGet(array $ids) : ?array {
-        if(!$ids)return [];
-        $matches = $this->matchRepository->adminGet(ids: $ids);
-        return $this->enrichAll($matches);
+    public function adminGet(?array $ids = null,
+        ?string $country = null,
+        ?int $leagueId = null,
+        ?string $from = null,
+        ?string $to = null
+    ):?array {
+        // Check if at least one parameter is provided
+        if (is_null($ids) && is_null($country) && is_null($leagueId) && is_null($from) && is_null($to)) {
+            return [];
+        }
+    
+        // Get matches from the repository with the provided parameters
+        $matches = $this->matchRepository->adminGet(
+            ids: $ids,
+            country: $country,
+            leagueId: $leagueId,
+            from: $from,
+            to: $to
+        );
+    
+        return $this->enrichAll($matches, false);
     }
 
-
-    public function adminGetForWeek(int $days_diff) : array {
-        $adminMatches = array();
-        for($i=$days_diff-3; $i<$days_diff+4; $i++){
-            $dateString = date("Y-m-d", strtotime(sprintf("%+d",$i).' days'));
-            $retrieved = $this->matchRepository->adminGet(
-                date: $dateString
-            );
-            $adminMatches[$dateString] = $this->enrichAll($retrieved);
+    private function enrichAll($matches, ?bool $withStats=true){
+        foreach ($matches as &$match) {
+            $match = $this->enrich($match, $withStats);
         }
-        return $adminMatches;
+        return $matches;
     }
 
     public function adminGetForLeague(int $leagueId, bool $next = true){
@@ -96,12 +107,7 @@ final class Find extends BaseService{
         return $this->enrich($match, false);
     }
 
-    private function enrichAll($matches){
-        foreach ($matches as &$match) {
-            $match = $this->enrich($match);
-        }
-        return $matches;
-    }
+   
 
     public function isBeforeStartTime(int $id){
         return $this->matchRepository->isBeforeStartTime($id);

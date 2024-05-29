@@ -32,6 +32,7 @@ final class Elaborate extends BaseService{
                 "id" => $team_id,
                 "points" =>  $team_obj->pts,
                 "position" =>  $team_obj->rnk,
+                "played" =>  $team_obj->pld,
                 "W" =>  $team_obj->win,
                 "D" =>  $team_obj->drw,
                 "L" =>  $team_obj->lst,
