@@ -39,6 +39,9 @@ final class VerifyAfterRound extends BaseService{
         
         //prevent double round creation when recalculating a round.
         $nextRound = $round_just_finished + 1;
+
+        //TODO there might be an error here. could not test
+        //problem was in quarter finals UCL 3 rounds were created
         if($tournamentRounds > $round_just_finished){
             $this->createPPRoundService->create(
                 $tournamentColumn, 

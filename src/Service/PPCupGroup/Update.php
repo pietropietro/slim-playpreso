@@ -65,12 +65,12 @@ final class Update  extends BaseService{
     }
 
     private function handleSchemaPromotions(int $ppCupGroupId, int $promotionsPerGroup){
-        $ppCupGroup = $this->ppCupGroupRepository->getOne($id);
+        $ppCupGroup = $this->ppCupGroupRepository->getOne($ppCupGroupId);
         // $ppTournamentType = $this->findPPTournamentTypeService->getOne($ppCupGroup['ppTournamentType_id']);
-        $ups = $this->findUpService->getForTournament('ppCupGroup_id',$id);
+        $ups = $this->findUpService->getForTournament('ppCupGroup_id',$ppCupGroupId);
         
         for ($i=0; $i < $promotionsPerGroup; $i++) { 
-            if(!$nextGroup = $this->ppCupGroupFindService->getNextGroup($id, positionIndex: $i)){
+            if(!$nextGroup = $this->ppCupGroupFindService->getNextGroup($ppCupGroupId, positionIndex: $i)){
                 throw new \App\Exception\NotFound('next group not found', 500);
             };
 
