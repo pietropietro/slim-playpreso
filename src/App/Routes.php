@@ -58,6 +58,7 @@ return function ($app){
 
     $app->group('/guess', function () use ($app): void {
         $app->get('', Guess\GetUserCurrent::class);
+        $app->get('/extra-data/{id}', Guess\ExtraData::class);
         $app->get('/team/{id}', Guess\GetForTeam::class);
         $app->get('/league/{id}', Guess\GetForLeague::class);
         $app->post('/lock/{id}', Guess\Lock::class);

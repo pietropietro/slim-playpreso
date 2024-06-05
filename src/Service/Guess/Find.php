@@ -17,8 +17,11 @@ final class Find extends BaseService{
         protected PPTournamentType\Find $ppTournamentTypeFindService,
     ){}
 
-    private function enrich(&$guess){
-        $guess['match'] = $this->matchFindService->getOne($guess['match_id']);
+    private function enrich(&$guess, ?bool $withMatchStats = true){
+        $guess['match'] = $this->matchFindService->getOne(
+            id: $guess['match_id'], 
+            withStats: $withMatchStats
+        );
         $guess['ppTournamentType'] = $this->ppTournamentTypeFindService->getFromPPRoundMatch($guess['ppRoundMatch_id']);
     }
 
@@ -37,7 +40,10 @@ final class Find extends BaseService{
     public function getUnlockedForUser(int $userId){
         $guesses = $this->guessRepository->getUnlockedForUser($userId);
         foreach($guesses as &$guess){
-            $this->enrich($guess);
+            $this->enrich(
+                guess: $guess, 
+                withMatchStats: false
+            );
         }
         return $guesses;
     }
@@ -45,7 +51,10 @@ final class Find extends BaseService{
     public function getLockedForUser(int $userId){
         $guesses = $this->guessRepository->getLockedForUser($userId);
         foreach($guesses as &$guess){
-            $this->enrich($guess);
+            $this->enrich(
+                guess: $guess, 
+                withMatchStats: false
+            );
         }
         return $guesses;
     }

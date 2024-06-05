@@ -105,12 +105,15 @@ final class Find extends BaseService{
         $match = $this->matchRepository->getNextInPPTournament($type, $typeId);
         if(!$match)return null;
         return $this->enrich($match, false);
-    }
-
-   
+    }   
 
     public function isBeforeStartTime(int $id){
         return $this->matchRepository->isBeforeStartTime($id);
+    }
+
+    public function getLastForTeam(int $id, int $limit = 5){
+        $matches = $this->matchRepository->getLastForTeam($id, $limit);
+        return $this->enrichAll($matches, false);
     }
 
     

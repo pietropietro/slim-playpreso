@@ -24,7 +24,7 @@ final class GetForTeam extends Base
         $before = $request->getQueryParams()['before'] ?? null;
         $after = $request->getQueryParams()['after'] ?? null;
 
-        $guesses = $this->getFindGuessService()->getForTeam(
+        $guesses = $this->getGuessFindService()->getForTeam(
             $teamId, $userId, $before, $after
         );
                  

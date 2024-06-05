@@ -338,4 +338,10 @@ final class MatchRepository extends BaseRepository
         return $this->db->get('matches', $limit);
     }
 
+    public function getLastForTeam(int $id, int $limit = 5){
+        $this->db->where("(home_id={$id} or away_id={$id}) and verified_at is not null");
+        $this->db->orderBy('date_start');
+        return $this->db->get('matches', $limit);
+    }
+
 }

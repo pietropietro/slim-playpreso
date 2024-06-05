@@ -33,4 +33,23 @@ final class Find extends BaseService{
         return $enrich ? $this->enrich($team) : $team;
     }
 
+
+    public function addNameToStandings(array &$standings) {
+        $teamIds = array_column($standings, 'id'); // Extract team IDs
+        $teams = $this->teamRepository->get($teamIds, ['id', 'name']); // Fetch team names
+
+        // Create an associative array with team ID as the key and team name as the value
+        $teamNames = [];
+        foreach ($teams as $team) {
+            $teamNames[$team['id']] = $team['name'];
+        }
+
+        // Merge team names into standings
+        foreach ($standings as &$standing) {
+            $standing->name = $teamNames[$standing->id] ?? 'Unknown';
+        }
+
+        return $standings;
+    }
+
 }

@@ -19,8 +19,8 @@ final class GetUserCurrent extends Base
     ): Response {
 
         $userId = $this->getAndValidateUserId($request);
-        $unlocked = $this->getFindGuessService()->getUnlockedForUser($userId);
-        $locked = $this->getFindGuessService()->getLockedForUser($userId);
+        $unlocked = $this->getGuessFindService()->getUnlockedForUser($userId);
+        $locked = $this->getGuessFindService()->getLockedForUser($userId);
 
         $data = [];
         if (!empty($unlocked)) {

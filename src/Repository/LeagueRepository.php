@@ -179,4 +179,11 @@ final class LeagueRepository extends BaseRepository
         return $this->db->get('leagues', null,$this->adimnColumnsNoStandings);
     }
 
+    public function getStandingsFromGuess(int $guessId){
+        $this->db->join("matches m", "m.league_id=leagues.id", "INNER");
+        $this->db->join("guesses g", "g.match_id=m.id", "INNER");
+        $this->db->where('g.id', $guessId);
+        return $this->db->getValue('leagues', 'standings');
+    }
+
 }

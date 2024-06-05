@@ -33,6 +33,21 @@ final class TeamRepository extends BaseRepository
         return $this->db->getOne('teams', $columns);
     }
 
+    public function get(array $ids, $columns) {
+        if (empty($ids)) {
+            return [];
+        }
+
+        // Ensure IDs are unique to avoid redundant queries
+        $ids = array_unique($ids);
+
+        // Fetch teams where id is in the provided list of ids
+        $this->db->where('id', $ids, 'IN');
+        $teams = $this->db->get('teams', null, $columns);
+        
+        return $teams;
+    }
+
     public function idFromExternal(int $ls_id) : ?int{
         $this->db->where('ls_id',$ls_id);
         $team = $this->db->getOne('teams');
