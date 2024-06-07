@@ -128,4 +128,13 @@ final class Find  extends BaseService {
         }
         return ['active' => $active, 'paused' => $paused];
     }
+
+    public function getOne(int $userId,  string $tournamentColumn, int $tournamentId){
+        $up = $this->userParticipationRepository->getOne(
+            $userId, $tournamentColumn, $tournamentId
+        );
+        $this->enrich($up, $userId);
+        return $up;
+    }
+
 }

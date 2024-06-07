@@ -34,7 +34,8 @@ final class Find extends BaseService{
     }
 
 
-    public function addNameToStandings(array &$standings) {
+    public function addNameToStandings(?array &$standings) {
+        if(!$standings) return;
         $teamIds = array_column($standings, 'id'); // Extract team IDs
         $teams = $this->teamRepository->get($teamIds, ['id', 'name']); // Fetch team names
 

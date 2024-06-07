@@ -9,6 +9,8 @@ use App\Service\Guess;
 use App\Service\League;
 use App\Service\Match;
 use App\Service\Team;
+use App\Service\PPRound;
+use App\Service\UserParticipation;
 
 abstract class Base extends BaseController
 {
@@ -32,10 +34,19 @@ abstract class Base extends BaseController
         return $this->container->get('league_find_service');
     }
 
+    protected function getPPRoundFindService(): PPRound\Find
+    {
+        return $this->container->get('ppround_find_service');
+    }
 
     protected function getTeamFindService(): Team\Find
     {
         return $this->container->get('team_find_service');
+    }
+
+    protected function getUserParticipationFindService(): UserParticipation\Find
+    {
+        return $this->container->get('userparticipation_find_service');
     }
 
 }

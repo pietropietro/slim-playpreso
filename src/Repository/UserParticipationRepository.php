@@ -29,6 +29,14 @@ final class UserParticipationRepository extends BaseRepository
         return true;
     }
 
+    public function getOne(int $userId,  string $tournamentColumn, int $tournamentId){
+        $this->db->where('user_id', $userId);
+        $this->db->where('userParticipations.'.$tournamentColumn, $tournamentId);
+        $this->db->join('ppLeagues ppl', 'ppl.id = userParticipations.ppLeague_id', "LEFT");
+        $this->db->join('ppCupGroups ppcg', 'ppcg.id = userParticipations.ppCupGroup_id', "LEFT");
+        return $this->db->getOne('userParticipations', $this->columnsJoined3);
+    }
+
     public function get(array $ids){
         $this->db->where($this->tableName.'.id', $ids, 'IN');
         $this->db->join('ppLeagues ppl', 'ppl.id = userParticipations.ppLeague_id', "LEFT");

@@ -18,6 +18,8 @@ final class ExtraData extends Base
         array $args
     ): Response {
 
+        $userId = $this->getAndValidateUserId($request);
+
         $guessId = (int) $args['id'];
         $guess = $this->getGuessFindService()->getOne($guessId);
 
@@ -31,9 +33,19 @@ final class ExtraData extends Base
             'away' => $lastFiveAway,
         );
 
+        $ppTournamentType = $guess['ppTournamentType'];
+        $tournamentColumn = $ppTournamentType['is_cup'] ? 'ppCupGroup_id' : 'ppLeague_id' ;
+        $ppRound = $this->getPPRoundFindService()->getFromPPRM($guess['ppRoundMatch_id']);
+        $tournamentId = $ppRound[$tournamentColumn];
+        $userParticipation = $this->getUserParticipationFindService()->getOne(
+            $userId, $tournamentColumn, $tournamentId
+        );
+
+
         $extraData = array(
             'leagueStandings' => $leagueStandings,
-            'lastMatches' => $lastFive
+            'lastMatches' => $lastFive,
+            'userParticipation' => $userParticipation
         );
 
 

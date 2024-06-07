@@ -134,20 +134,32 @@ final class PPTournamentTypeRepository extends BaseRepository
         return $this->db->query($sql);
     }
 
-    public function getFromPPRoundMatch(int $ppRoundMatchId){
-        $sql = "SELECT id,name,level,emoji,rgb,tournament_id from ppTournamentTypes 
+    public function getFromPPRoundMatch(int $ppRoundMatchId) {
+        $sql = "SELECT 
+                    ppTournamentTypes.id,
+                    ppTournamentTypes.name,
+                    ppTournamentTypes.level,
+                    ppTournamentTypes.emoji,
+                    ppTournamentTypes.rgb,
+                    tournament_id,
+                    CASE 
+                        WHEN ppTournamentTypes.cup_format IS NOT NULL THEN 1 
+                        ELSE 0 
+                    END AS is_cup
+                FROM ppTournamentTypes 
                 INNER JOIN 
-                    (SELECT if(ppLeague_id, ppLeague_id, ppCupGroup_id) as tournament_id, 
-                    if(ppl.ppTournamentType_id,ppl.ppTournamentType_id, ppcg.ppTournamentType_id) as ppTournamentType_id
-                    from ppRounds ppr 
-                    left join ppLeagues ppl on ppl.id=ppr.ppLeague_id  
-                    left join ppCupGroups ppcg on ppcg.id=ppr.ppCupGroup_id
-                    where ppr.id=(select ppRound_id from ppRoundMatches where id=".$ppRoundMatchId.")) aggr
-                on aggr.ppTournamentType_id = ppTournamentTypes.id";
+                    (SELECT 
+                        IF(ppLeague_id, ppLeague_id, ppCupGroup_id) AS tournament_id, 
+                        IF(ppl.ppTournamentType_id, ppl.ppTournamentType_id, ppcg.ppTournamentType_id) AS ppTournamentType_id
+                     FROM ppRounds ppr 
+                     LEFT JOIN ppLeagues ppl ON ppl.id = ppr.ppLeague_id  
+                     LEFT JOIN ppCupGroups ppcg ON ppcg.id = ppr.ppCupGroup_id
+                     WHERE ppr.id = (SELECT ppRound_id FROM ppRoundMatches WHERE id = ".$ppRoundMatchId.")) aggr
+                ON aggr.ppTournamentType_id = ppTournamentTypes.id";
         $result = $this->db->query($sql);
         return $result[0] ?? null;
     }
-
+    
     public function getMOTDType(){
         $this->db->where('name', 'MOTD');
         return $this->db->getOne('ppTournamentTypes');

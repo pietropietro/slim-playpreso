@@ -44,5 +44,12 @@ final class PPRoundRepository extends BaseRepository
         return $this->db->getInsertId();
     }
 
+    public function getFromPPRM(int $ppRoundMatch_id){
+        $this->db->join('ppRoundMatches pprm', 'pprm.ppRound_id=ppRounds.id', 'INNER');
+        $this->db->where('pprm.id',$ppRoundMatch_id);
+        return $this->db->getOne('ppRounds');
+    }
+
+
 
 }
