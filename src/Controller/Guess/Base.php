@@ -9,6 +9,7 @@ use App\Service\Guess;
 use App\Service\League;
 use App\Service\Match;
 use App\Service\Team;
+use App\Service\MOTD;
 use App\Service\PPRound;
 use App\Service\UserParticipation;
 
@@ -42,6 +43,11 @@ abstract class Base extends BaseController
     protected function getTeamFindService(): Team\Find
     {
         return $this->container->get('team_find_service');
+    }
+
+    protected function getMotdFindService(): MOTD\Find
+    {
+        return $this->container->get('motd_find_service');
     }
 
     protected function getUserParticipationFindService(): UserParticipation\Find

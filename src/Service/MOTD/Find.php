@@ -48,7 +48,7 @@ final class Find  extends BaseService{
                 $motdPPRM,
                 userId: $userId, 
                 withUserGuess: true,
-                withMatchStats: false
+                withMatchStats: true
             );
         }
         return $motdPPRM;

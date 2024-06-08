@@ -20,8 +20,18 @@ final class ExtraData extends Base
 
         $userId = $this->getAndValidateUserId($request);
 
-        $guessId = (int) $args['id'];
-        $guess = $this->getGuessFindService()->getOne($guessId);
+        //handle motd case
+        $isMotd = $args['id'] == 'motd' ?? false;
+        if($isMotd){
+            // it's a workaround, not actually a guess
+            $guess = $this->getMotdFindService()->getMotd(
+                dateString: null,
+                userId: $userId 
+            );
+        } else{
+            $guessId = (int) $args['id'];
+            $guess = $this->getGuessFindService()->getOne($guessId);    
+        }
 
         $leagueStandings = $guess['match']['league']['standings'];
         $this->getTeamFindService()->addNameToStandings($leagueStandings);
@@ -33,22 +43,21 @@ final class ExtraData extends Base
             'away' => $lastFiveAway,
         );
 
-        $ppTournamentType = $guess['ppTournamentType'];
-        $tournamentColumn = $ppTournamentType['is_cup'] ? 'ppCupGroup_id' : 'ppLeague_id' ;
-        $ppRound = $this->getPPRoundFindService()->getFromPPRM($guess['ppRoundMatch_id']);
-        $tournamentId = $ppRound[$tournamentColumn];
-        $userParticipation = $this->getUserParticipationFindService()->getOne(
-            $userId, $tournamentColumn, $tournamentId
-        );
-
+        if(!$isMotd){
+            $ppTournamentType = $guess['ppTournamentType'];
+            $tournamentColumn = $ppTournamentType['is_cup'] ? 'ppCupGroup_id' : 'ppLeague_id' ;
+            $ppRound = $this->getPPRoundFindService()->getFromPPRM($guess['ppRoundMatch_id']);
+            $tournamentId = $ppRound[$tournamentColumn];
+            $userParticipation = $this->getUserParticipationFindService()->getOne(
+                $userId, $tournamentColumn, $tournamentId
+            );
+        }
 
         $extraData = array(
             'leagueStandings' => $leagueStandings,
             'lastMatches' => $lastFive,
-            'userParticipation' => $userParticipation
+            'userParticipation' => $userParticipation ?? null
         );
-
-
                  
         return $this->jsonResponse($response, "success", $extraData, 200);
     }

@@ -75,7 +75,8 @@ final class Find  extends BaseService {
         return $this->userParticipationRepository->isUserInTournamentType($userId, $ppTournamentType_id);
     }
 
-    protected function enrich(array &$up, int $userId){
+    protected function enrich(&$up, int $userId){
+        if(!$up) return;
         // $up['ppTournamentType'] = $this->ppTournamentTypeRepository->getOne($up['ppTournamentType_id']);
         $up['ppTournamentType'] = $this->ppTournamentTypeFindService->getOne($up['ppTournamentType_id']);
         
