@@ -25,14 +25,20 @@ final class GuessRepository extends BaseRepository
         return $this->db->get('guesses', null, 'guesses.*');
     }
 
-    public function getLockedForUser(int $userId){
+    public function getLockedForUser(int $userId, bool $includeMotd){
         $this->db->join('matches m ', 'm.id=guesses.match_id', 'INNER');
+
+        if(!$includeMotd){
+            $this->db->join('ppRoundMatches pprm', 'pprm.id= guesses.ppRoundMatch_id', 'INNER');
+            $this->db->where('pprm.motd is null');
+        }
 
         $this->db->where('user_id', $userId);
         $this->db->where('guesses.verified_at IS NULL');
         $this->db->where('m.verified_at IS NULL');
         $this->db->where('guessed_at is NOT null');
         $this->db->orderBy('m.date_start', 'asc');
+        
         
         return $this->db->get('guesses', null, 'guesses.*');
     }

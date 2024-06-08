@@ -48,8 +48,11 @@ final class Find extends BaseService{
         return $guesses;
     }
 
-    public function getLockedForUser(int $userId){
-        $guesses = $this->guessRepository->getLockedForUser($userId);
+    public function getLockedForUser(
+        int $userId,
+        ?bool $includeMotd = true
+    ){
+        $guesses = $this->guessRepository->getLockedForUser($userId, $includeMotd);
         foreach($guesses as &$guess){
             $this->enrich(
                 guess: $guess, 
