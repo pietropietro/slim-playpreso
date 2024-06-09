@@ -115,9 +115,15 @@ return function ($app){
             $app->get('', User\AdminGetAll::class);
         });
 
-        
-        $app->post('/p-cup/{id}', PPCup\Create::class);
-        $app->get('/p-cup', PPCup\GetAll::class);
+        $app->group('/p-cup',  function() use($app): void {
+            $app->post('/{id}', PPCup\Create::class);
+            $app->get('', PPCup\GetAll::class);
+            $app->get('/{id}', PPCup\AdminGetOne::class);    
+        });
+
+        $app->group('/p-cup-group',  function() use($app): void {
+            $app->get('/{id}', PPCupGroup\AdminGetOne::class);    
+        });
 
         $app->post('/motd/{matchId}', MOTD\AdminSet::class);
 

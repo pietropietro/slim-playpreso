@@ -18,8 +18,10 @@ final class GetAll extends Base
         array $args
     ): Response {
 
-        $ppTournamentTypeId = $request->getQueryParams()['ppTournamentTypeId'] ?? null;
-
+        $ppTournamentTypeId = isset($request->getQueryParams()['ppTournamentTypeId']) 
+            ? (int) $request->getQueryParams()['ppTournamentTypeId'] 
+             : null;
+        
         $ppCups = $this->getFindCupService()->getAll($ppTournamentTypeId);
                  
         return $this->jsonResponse($response, 'success', $ppCups, 200);
