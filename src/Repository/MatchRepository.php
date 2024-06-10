@@ -269,7 +269,7 @@ final class MatchRepository extends BaseRepository
 
         $minTimeInterval = date("Y-m-d H:i:s", strtotime('+1 days'));
         $this->db->where('date_start', $minTimeInterval, '>');
-
+        $this->db->where('verified_at is null');
         $this->db->orderBy('date_start', 'asc');
         
         return $this->db->get('matches', $limit);
