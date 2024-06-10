@@ -43,6 +43,11 @@ final class PPCupGroupRepository extends BaseRepository
         return $level ?? 1;
     }
 
+    function getTag(int $ppCupGroupId){
+        $this->db->where('id', $ppCupGroupId);
+        return $this->db->getValue('ppCupGroups','tag');
+    }
+
     function getNotFull(int $ppCupId, int $level = 1, ?string $avoidFromTag = null){
        // Base query
         $query = "

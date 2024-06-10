@@ -30,19 +30,33 @@ final class Find  extends BaseService{
     }
 
     //positionIndex is 0 based
-    public function getNextGroup(int $id, int $positionIndex){
-        $ppCupGroup = $this->getOne($id);
+    public function getNextGroup(int $fromPPCupGroup_id, int $positionIndex, ){
+        $fromPPCupGroup = $this->getOne($fromPPCupGroup_id);
 
-        $nextGroups = $this->getForCup($ppCupGroup['ppCup_id'], level: $ppCupGroup['level'] + 1);
+        $nextGroups = $this->getForCup($fromPPCupGroup['ppCup_id'], level: $fromPPCupGroup['level'] + 1);
         if(!$nextGroups)return;
 
-        if($ppCupGroup['level']==1){
+        if($fromPPCupGroup['level']==1){
             foreach ($nextGroups as $group) {
-                if($group['tag'][$positionIndex]==$ppCupGroup['tag'])return $group;
+                //this handles the base case
+                if($group['tag'][$positionIndex]==$fromPPCupGroup['tag']){
+                    return $group;
+                }
+            }
+            //TO DELETE – terrible code but here is a fallback
+            //for euro 25 the schema was terrible, so here 
+            //I am looking for groups of that level that at least conatin the old group tag. 
+            //opposite direction so the second users is not going in same group with first user
+            $positionIndex = $positionIndex == 0 ? 1 : 0; 
+            foreach (array_reverse($nextGroups) as $group) {
+                //this handles the base case
+                if($group['tag'][$positionIndex]==$fromPPCupGroup['tag']){
+                    return $group;
+                }
             }
         }
         else{
-            $previoustaglength = strlen($ppCupGroup['tag']);
+            $previoustaglength = strlen($fromPPCupGroup['tag']);
             foreach ($nextGroups as $group) {
                 if(substr($group['tag'],0,$previoustaglength) === $ppCupGroup['tag'])return $group;
                 if(substr($group['tag'], $previoustaglength, $previoustaglength) === $ppCupGroup['tag'])return $group;

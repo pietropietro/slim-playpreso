@@ -87,14 +87,23 @@ final class UserParticipationRepository extends BaseRepository
         return $this->db->get($this->tableName, null, $this->columnsJoined3);
     }
 
-    function getForTournament(string $tournamentColumn, int $tournamentId, ?int $level=null){
+    function getForTournament(
+        string $tournamentColumn, 
+        int $tournamentId, 
+        ?int $level=null, 
+        ?int $position=null,
+        ?int $limit=null,
+        ?bool $orderByPoints=null
+    ){
         $this->db->join("users u", "u.id=userParticipations.user_id", "INNER");
         $this->db->join('ppLeagues ppl', 'ppl.id = userParticipations.ppLeague_id', "LEFT");
         $this->db->join('ppCupGroups ppcg', 'ppcg.id = userParticipations.ppCupGroup_id', "LEFT");
         $this->db->orderBy('userParticipations.position','asc');
         $this->db->where('userParticipations.'.$tournamentColumn, $tournamentId);
         if($level)$this->db->where('level', $level);
-        return $this->db->get('userParticipations', null, $this->columnsJoined3.',u.username');
+        if($position) $this->db->where('position',$position);
+        if($orderByPoints) $this->db->orderBy('tot_points', 'desc');
+        return $this->db->get('userParticipations', $limit, $this->columnsJoined3.',u.username');
     }
 
     public function getCupWins(int $userId){

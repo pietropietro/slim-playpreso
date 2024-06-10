@@ -42,26 +42,64 @@ final class Update  extends BaseService{
          //i.e. final
         if(!$promotionsPerGroup) return;
         
-        //check promotion type
+        //check promotion type of next level 
         $randomDraw = $ppTournamentType['cup_format'][$ppCupGroup['level']]->random_draw ?? null;
         
-        //schema promotion, no need to wait all other groups
-        if(!$randomDraw){
-            $this->handleSchemaPromotions($id, $promotionsPerGroup);
-            return;
-        }
-
-        //random draw. need all previous groups to be over.
+        //check if groups of same level are all over.
         $levelUnfinishedGroups = $this->ppCupGroupRepository->getForCup(
             $ppCupGroup['ppCup_id'],
             level: $ppCupGroup['level'], 
             finished: false
         );
+
+        //schema promotion, no need to wait all other groups
+        if(!$randomDraw){
+            $this->handleSchemaPromotions($id, $promotionsPerGroup);
+            //if the cup_format requires extra promotions check that.
+            //like groups of euro cup where 6 groups need to provide 16 users.
+            // so 3rd best positions are qualified for 4 spots
+            //i.e extraPromotionsSlots =4  && extraPromotionPosition=3
+            $extraPromotionsSlots = $ppTournamentType['cup_format'][$ppCupGroup['level'] - 1]->extra_promotions_slots ?? null;
+            $extraPromotionPosition = $ppTournamentType['cup_format'][$ppCupGroup['level'] - 1]->extra_promotions_position ?? null;
+            if( $extraPromotionsSlots && count($levelUnfinishedGroups) == 0){
+                //TODO
+                $this->handleExtraPromotions(
+                    $ppCupGroup['ppCup_id'], 
+                    $ppCupGroup['level'], 
+                    $extraPromotionsSlots, 
+                    $extraPromotionPosition
+                );
+            }
+            return;
+        }
+
+       
         if(count($levelUnfinishedGroups) !== 0) return;
 
         $avoidPreviousLevelUsers = $ppTournamentType['cup_format'][$ppCupGroup['level']]->avoid_previous_level_users ?? null;
 
         $this->handleRandomDraw($ppCupGroup['ppCup_id'], $ppCupGroup['level'], $promotionsPerGroup, $avoidPreviousLevelUsers);
+    }
+
+    //TODO refactor all the promotion logics in separate service
+    private function handleExtraPromotions(int $ppCupId, int $fromLevel, $extraSlots, $extraPosition){
+        // 1. get best 3rd position for extraslots limit
+        $upsInPosition = $this->findUpService->getForTournament(
+            tournamentColumn: 'ppCup_id',
+            tournamentId: $ppCupId,
+            level: $fromLevel,
+            enriched: false,
+            position: $extraPosition,
+            limit: $extraSlots,
+            orderByPoints: true
+        );
+
+        $this->putUsersInGroups(
+            $ppCupId, 
+            $fromLevel + 1, 
+            $upsInPosition, 
+            true
+        );
     }
 
     private function handleSchemaPromotions(int $ppCupGroupId, int $promotionsPerGroup){
@@ -70,7 +108,8 @@ final class Update  extends BaseService{
         $ups = $this->findUpService->getForTournament('ppCupGroup_id',$ppCupGroupId);
         
         for ($i=0; $i < $promotionsPerGroup; $i++) { 
-            if(!$nextGroup = $this->ppCupGroupFindService->getNextGroup($ppCupGroupId, positionIndex: $i)){
+            $nextGroup = $this->ppCupGroupFindService->getNextGroup($ppCupGroupId, positionIndex: $i);
+            if(!$nextGroup){
                 throw new \App\Exception\NotFound('next group not found', 500);
             };
 
@@ -81,7 +120,6 @@ final class Update  extends BaseService{
                 $nextGroup['id'], 
                 fromTag: $ppCupGroup['tag']
             );
-            
         }
     }
 
@@ -107,10 +145,16 @@ final class Update  extends BaseService{
         shuffle($ups);
 
         foreach ($ups as $up) {
+
+            $fromTag = null;
+            if($avoidPreviousLevelUsers){
+                $fromTag = $this->ppCupGroupRepository->getTag($up['ppCupGroup_id']);
+            }
+
             $ppcg = $this->ppCupGroupFindService->getNotFull(
                 $ppCupId, 
                 $toLevel, 
-                avoidFromTag: $avoidPreviousLevelUsers ? (string) $up['ppCupGroup_id'] : null
+                avoidFromTag: $fromTag
             );
 
             if(!$ppcg){

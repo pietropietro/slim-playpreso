@@ -29,8 +29,23 @@ final class Find  extends BaseService {
     ){}
 
 
-    public function getForTournament(string $tournamentColumn, int $tournamentId,?int $level = null,?bool $enriched = true) :array{
-        $ups = $this->userParticipationRepository->getForTournament($tournamentColumn, $tournamentId); 
+    public function getForTournament(
+        string $tournamentColumn,
+        int $tournamentId,
+        ?int $level = null,
+        ?bool $enriched = true,
+        ?int $position = null,
+        ?int $limit=null,
+        ?bool $orderByPoints=null
+    ) :array {
+        $ups = $this->userParticipationRepository->getForTournament(
+            $tournamentColumn,
+            $tournamentId,
+            $level,
+            $position,
+            $limit,
+            $orderByPoints
+        ); 
         
         if(!$enriched) return $ups;
 
