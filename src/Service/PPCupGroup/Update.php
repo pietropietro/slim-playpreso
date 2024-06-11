@@ -55,9 +55,8 @@ final class Update  extends BaseService{
         //schema promotion, no need to wait all other groups
         if(!$randomDraw){
             $this->handleSchemaPromotions($id, $promotionsPerGroup);
-            //if the cup_format requires extra promotions check that.
-            //like groups of euro cup where 6 groups need to provide 16 users.
-            // so 3rd best positions are qualified for 4 spots
+            //if the cup_format requires extra promotions 
+            //like groups of euro cup where in level 1: 3° best are qualified for 4 spots
             //i.e extraPromotionsSlots =4  && extraPromotionPosition=3
             $extraPromotionsSlots = $ppTournamentType['cup_format'][$ppCupGroup['level'] - 1]->extra_promotions_slots ?? null;
             $extraPromotionPosition = $ppTournamentType['cup_format'][$ppCupGroup['level'] - 1]->extra_promotions_position ?? null;
@@ -94,7 +93,7 @@ final class Update  extends BaseService{
             orderByPoints: true
         );
 
-        $this->putUsersInGroups(
+        $this->putUsersInAvailableGroups(
             $ppCupId, 
             $fromLevel + 1, 
             $upsInPosition, 
@@ -131,12 +130,12 @@ final class Update  extends BaseService{
             $filteredUps = array_filter($ups, function($item) use($i) {
                 return $item['position'] == $i;
             });
-            $this->putUsersInGroups($ppCupId, $fromLevel + 1, $filteredUps, $avoidPreviousLevelUsers);
+            $this->putUsersInAvailableGroups($ppCupId, $fromLevel + 1, $filteredUps, $avoidPreviousLevelUsers);
         }
         
     }
 
-    private function putUsersInGroups(
+    private function putUsersInAvailableGroups(
         int $ppCupId, 
         int $toLevel,
         array $ups, 
@@ -146,15 +145,15 @@ final class Update  extends BaseService{
 
         foreach ($ups as $up) {
 
-            $fromTag = null;
-            if($avoidPreviousLevelUsers){
-                $fromTag = $this->ppCupGroupRepository->getTag($up['ppCupGroup_id']);
-            }
+            $fromTag = $this->ppCupGroupRepository->getTag($up['ppCupGroup_id']);
+            //some ppTournaments like euro cup might have + inside tag string
+            //we do not need to consider it here
+            $fromTagClean = str_replace('+', '', $fromTag);
 
             $ppcg = $this->ppCupGroupFindService->getNotFull(
                 $ppCupId, 
                 $toLevel, 
-                avoidFromTag: $fromTag
+                avoidFromTag: $avoidPreviousLevelUsers ? $fromTagClean : null
             );
 
             if(!$ppcg){
@@ -166,7 +165,7 @@ final class Update  extends BaseService{
                 $up['ppTournamentType_id'],
                 $ppCupId, 
                 $ppcg['id'],
-                (string) $up['ppCupGroup_id']
+                $fromTagClean
             );
         }
     }

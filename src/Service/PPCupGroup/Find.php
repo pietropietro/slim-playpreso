@@ -36,30 +36,36 @@ final class Find  extends BaseService{
         $nextGroups = $this->getForCup($fromPPCupGroup['ppCup_id'], level: $fromPPCupGroup['level'] + 1);
         if(!$nextGroups)return;
 
-        if($fromPPCupGroup['level']==1){
+        $fromTag = $fromPPCupGroup['tag'];
+
+        // Level 1 handling with special character '+' consideration
+        //DE means 1st post of group D against 2nd of group E but
+        //+DE means that 2nd pos of group D against 2nd of group E
+        if ($fromPPCupGroup['level'] == 1) {
             foreach ($nextGroups as $group) {
-                //this handles the base case
-                if($group['tag'][$positionIndex]==$fromPPCupGroup['tag']){
+                $groupTag = $group['tag'];
+                $cleanTag = str_replace('+', '', $groupTag);
+    
+                // Check if the position directly matches the tag
+                if ($groupTag[$positionIndex] == $fromTag) {
+                    return $group;
+                }
+
+                // Check if there's a '+' indicating a position shift
+                $hasPlus = strpos($groupTag, '+') !== false;
+                $containsFromTag = strpos($cleanTag, $fromTag) !== false;
+
+                if ($hasPlus && $containsFromTag && $positionIndex === 1) {
                     return $group;
                 }
             }
-            //TO DELETE – terrible code but here is a fallback
-            //for euro 25 the schema was terrible, so here 
-            //I am looking for groups of that level that at least conatin the old group tag. 
-            //opposite direction so the second users is not going in same group with first user
-            $positionIndex = $positionIndex == 0 ? 1 : 0; 
-            foreach (array_reverse($nextGroups) as $group) {
-                //this handles the base case
-                if($group['tag'][$positionIndex]==$fromPPCupGroup['tag']){
-                    return $group;
-                }
-            }
-        }
-        else{
-            $previoustaglength = strlen($fromPPCupGroup['tag']);
+        } else {
+            // Higher level handling: clean the tags before comparison
+            $previoustaglength = strlen($fromTag);
             foreach ($nextGroups as $group) {
-                if(substr($group['tag'],0,$previoustaglength) === $ppCupGroup['tag'])return $group;
-                if(substr($group['tag'], $previoustaglength, $previoustaglength) === $ppCupGroup['tag'])return $group;
+                $cleanTag = str_replace('+', '', $group['tag']);
+                if(substr($cleanTag, 0, $previoustaglength) === $ppCupGroup['tag'])return $group;
+                if(substr($cleanTag, $previoustaglength, $previoustaglength) === $ppCupGroup['tag'])return $group;
             }
         }
     }

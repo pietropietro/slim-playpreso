@@ -31,6 +31,9 @@ final class Join  extends BaseService{
         }else{
             $tournamentColumn = 'ppCupGroup_id';
             $ppTournament = $this->findPPCupService->getJoinable($ppTypeId, $userId);
+            if(!$ppTournament){
+                throw new \App\Exception\User("could not join", 400);
+            }
             $ppTournamentGroup =  $this->findPPCupGroupService->getNotFull($ppTournament['id'], level: 1);
         }
 
