@@ -9,6 +9,7 @@ use App\Service\UserParticipation;
 use App\Service\PPRound;
 use App\Service\BaseService;
 use App\Repository\PPCupGroupRepository;
+use App\Repository\PPTournamentTypeRepository;
 
 
 final class Find  extends BaseService{
@@ -17,6 +18,7 @@ final class Find  extends BaseService{
         protected PPCupGroupRepository $ppCupGroupRepository,
         protected UserParticipation\Find $userParticipationService,
         protected PPRound\Find $ppRoundFindService,
+        protected PPTournamentTypeRepository $ppTournamentTypeRepository,
     ) {}
 
     public function getOne(int $id, ?bool $enriched=false, ?int $userId = null){
@@ -95,10 +97,46 @@ final class Find  extends BaseService{
 
     public function enrich(array $group, ?bool $withRounds=false, ?int $userId=null){
         $group['userParticipations'] = $this->userParticipationService->getForTournament('ppCupGroup_id', $group['id']);
-        if($group['started_at'] && !$group['finished_at'] ){
-            $group['isLive'] = $this->ppRoundFindService->hasLiveMatch('ppCupGroup_id', $group['id']);
-            $group['currentRound'] = $this->ppRoundFindService->getCurrentRoundNumber('ppCupGroup_id', $group['id']);
-            $group['playedInCurrentRound'] = $this->ppRoundFindService->verifiedInLatestRound('ppCupGroup_id', $group['id']);    
+        if($group['started_at']){   
+            //best third place logic like euro 24
+            $ppTT= $this->ppTournamentTypeRepository->getOne($group['ppTournamentType_id']);
+            $cupFormat = json_decode($ppTT['cup_format']);
+            $levelConfig = $cupFormat[$group['level'] - 1];
+            $extraPromotionsSlots = property_exists($levelConfig, 'extra_promotions_slots') ? $levelConfig->extra_promotions_slots : null;
+            $extraPromotionsPosition = property_exists($levelConfig, 'extra_promotions_position') ? $levelConfig->extra_promotions_position : null;
+
+            if($extraPromotionsSlots){
+                
+                //calculate best three
+                $upsInPosition = $this->userParticipationService->getForTournament(
+                    tournamentColumn: 'ppCup_id',
+                    tournamentId: $group['ppCup_id'],
+                    level: $group['level'],
+                    enriched: false,
+                    position: $extraPromotionsPosition,
+                    limit: $extraPromotionsSlots,
+                    orderByPoints: true
+                );
+                // Extract user IDs from userParticipations
+                $groupUPUserIds = array_map(function($participation) {
+                    return $participation['user_id'];
+                }, $group['userParticipations']);
+
+                // Check if any item in upsInPosition has a user_id in userParticipationIds
+                $matchingUsers = array_filter($upsInPosition, function($up) use ($groupUPUserIds) {
+                    return in_array($up['user_id'], $groupUPUserIds);
+                });
+                if (!empty($matchingUsers)) {
+                    $group['best_third_up'] = true;
+                }
+
+            }
+
+            if(!$group['finished_at']){
+                $group['isLive'] = $this->ppRoundFindService->hasLiveMatch('ppCupGroup_id', $group['id']);
+                $group['currentRound'] = $this->ppRoundFindService->getCurrentRoundNumber('ppCupGroup_id', $group['id']);
+                $group['playedInCurrentRound'] = $this->ppRoundFindService->verifiedInLatestRound('ppCupGroup_id', $group['id']);    
+            }
         }
         if($withRounds){
             $group['ppRounds'] = $this->ppRoundFindService->getForTournament('ppCupGroup_id', $group['id'], $userId);

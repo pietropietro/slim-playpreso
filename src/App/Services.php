@@ -312,7 +312,8 @@ $container['ppcupgroup_find_service'] = static fn (
     $container->get('redis_service'),
     $container->get('ppcupgroup_repository'),
     $container->get('userparticipation_find_service'),
-    $container->get('ppround_find_service')
+    $container->get('ppround_find_service'),
+    $container->get('pptournamenttype_repository')
 );
 
 $container['external_api_importleaguedata_service'] = static fn (
