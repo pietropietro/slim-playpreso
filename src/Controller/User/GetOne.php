@@ -17,11 +17,17 @@ final class GetOne extends Base
         Response $response,
         array $args
     ): Response {
-        if(!$user = $this->getFindUserService()->getOneFromUsername((string) $args['username'])){
+
+        $user = $this->getFindUserService()->getOneFromUsername(
+            username:(string) $args['username'],
+            sensitiveColumns: false
+        );
+
+        if(!$user){
             throw new \App\Exception\User('User not found.', 404);
         }
         
-        // $user['trophies'] = $this->getParticipationService()->getTrophies($id);
+        $user['ppDex'] = $this->getParticipationService()->getUserPPDex($user['id']);
 
         return $this->jsonResponse($response, 'success', $user, 200);
     }

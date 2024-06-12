@@ -253,4 +253,48 @@ final class UserParticipationRepository extends BaseRepository
         return $adjacentParticipations;
     }
 
+    
+    public function getUserPPDex(int $userId): array
+    {
+        // Define the subquery as a plain SQL string
+        $subQuery = "
+            SELECT 
+                up.*,
+                ROW_NUMBER() OVER (PARTITION BY up.ppTournamentType_id ORDER BY up.tot_points DESC, up.position ASC) AS rn
+            FROM 
+                userParticipations up
+            WHERE 
+                up.user_id = $userId
+                AND up.ppLeague_id IS NOT NULL
+        ";
+
+        // Join the subquery with the main query
+        $this->db->join("($subQuery) up", "pptt.id = up.ppTournamentType_id AND up.rn = 1", "LEFT");
+
+        // Add where condition and order by clauses
+        $this->db->where('pptt.cup_format', null, 'IS');
+        $this->db->where('pptt.name', 'MOTD', '!=');
+        $this->db->orderBy('pptt.name', 'ASC');
+        $this->db->orderBy('pptt.level', 'ASC');
+
+        // Define the columns to retrieve
+        $columns = [
+            'pptt.id AS pptt_id',
+            'pptt.name AS pptt_name',
+            'pptt.level AS pptt_level',
+            'pptt.emoji AS pptt_emoji',
+            'up.user_id AS up_user_id',
+            'up.id AS up_id',
+            'up.ppLeague_id AS up_ppLeague_id',
+            'up.updated_at AS up_updated_at',
+            'up.tot_points AS up_tot_points',
+            'up.position AS up_best_position'
+        ];
+
+        // Execute the query
+        $results = $this->db->get('ppTournamentTypes pptt', null, $columns);
+
+        return $results;
+    }
+
 }

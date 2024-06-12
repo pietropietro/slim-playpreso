@@ -12,6 +12,7 @@ use App\Service\User\Find;
 use App\Service\User\Login;
 use App\Service\User\Update;
 use App\Service\User\Recover;
+use App\Service\Trophy;
 use App\Service\UserParticipation;
 
 abstract class Base extends BaseController
@@ -45,6 +46,12 @@ abstract class Base extends BaseController
     {
         return $this->container->get('userparticipation_find_service');
     }
+
+    protected function getTrophiesFindService(): Trophy\Find
+    {
+        return $this->container->get('trophy_find_service');
+    }
+
 
     protected function getUserRecoverService(): Recover
     {

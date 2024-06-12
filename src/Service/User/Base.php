@@ -51,9 +51,9 @@ abstract class Base extends BaseService
     }
 
     
-    protected function getUserFromDb(int $userId)
+    protected function getUserFromDb(int $userId, ?bool $sensitiveColumns= false)
     {
-        $user =  $this->userRepository->getOne($userId);
+        $user =  $this->userRepository->getOne($userId, $sensitiveColumns);
         return $user;
     }
 

@@ -42,11 +42,11 @@ final class UserRepository extends BaseRepository
     }
 
 
-    public function getOne(int $userId, ?bool $allColumns=false)
+    public function getOne(int $userId, ?bool $sensitiveColumns=false)
     {
         $this->db->where('id',$userId);
         $columns = array("username, id, created_at");
-        $user = $this->db->getOne('users', $allColumns ?? $columns);
+        $user = $this->db->getOne('users', $sensitiveColumns ? '*' : $columns);
 
         if (! $user) {
             throw new \App\Exception\User('User not found.', 404);

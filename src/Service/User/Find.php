@@ -42,20 +42,20 @@ final class Find extends Base
         return $data;
     }
     
-    public function getOneFromUsername(string $username, ?bool $allColumns=false){
+    public function getOneFromUsername(string $username, ?bool $sensitiveColumns=false){
         if(!$id = $this->idFromUsername($username)) return null;
-        return $this->getOne($id, $allColumns);
+        return $this->getOne($id, $sensitiveColumns);
     }
 
-    public function getOne(int $userId, ?bool $allColumns=false) 
+    public function getOne(int $userId, ?bool $sensitiveColumns=false) 
     {
-        // if (!$allColumns && self::isRedisEnabled() === true && $cached = $this->getUserFromCache($userId)) {
+        // if (!$sensitiveColumns && self::isRedisEnabled() === true && $cached = $this->getUserFromCache($userId)) {
         //     return $cached;
         // } 
         
-        $user = $this->getUserFromDb($userId, $allColumns);
+        $user = $this->getUserFromDb($userId, $sensitiveColumns);
 
-        // if (!$allColumns && self::isRedisEnabled() === true){
+        // if (!$sensitiveColumns && self::isRedisEnabled() === true){
         //     $this->saveInCache($userId, (object) $user);
         // }
 

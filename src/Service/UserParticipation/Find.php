@@ -153,4 +153,38 @@ final class Find  extends BaseService {
         return $up;
     }
 
+
+    public function getUserPPDex(int $userId): array
+    {
+
+        $rawData = $this->userParticipationRepository->getUserPPDex($userId);
+        $structuredData = [];
+
+        foreach ($rawData as $row) {
+            $ppttName = $row['pptt_name'];
+            if (!isset($structuredData[$ppttName])) {
+                $structuredData[$ppttName] = [];
+            }
+
+            $structuredData[$ppttName][] = [
+                'ppTournamentType' => [
+                    'id' => $row['pptt_id'],
+                    'name' => $row['pptt_name'],
+                    'level' => $row['pptt_level'],
+                    'emoji' => $row['pptt_emoji']
+                ],
+                'userParticipation' => [
+                    'user_id' => $row['up_user_id'],
+                    'id' => $row['up_id'],
+                    'ppLeague_id' => $row['up_ppLeague_id'],
+                    'updated_at' => $row['up_updated_at'],
+                    'tot_points' => $row['up_tot_points'],
+                    'position' => $row['up_best_position']
+                ]
+            ];
+        }
+
+        return $structuredData;
+    }
+
 }
