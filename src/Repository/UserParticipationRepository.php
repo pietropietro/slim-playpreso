@@ -311,6 +311,7 @@ final class UserParticipationRepository extends BaseRepository
             SELECT 
                 up.*,
                 ppcg.level AS up_cup_level,
+                up.ppCupGroup_id AS up_ppCupGroup_id,
                 pl.started_at AS up_started_at,
                 pl.finished_at AS up_finished_at,
                 ROW_NUMBER() OVER (PARTITION BY up.ppTournamentType_id ORDER BY ppcg.level DESC, up.position ASC) AS rn
@@ -348,12 +349,14 @@ final class UserParticipationRepository extends BaseRepository
             'up_cups.position AS up_position',
             'up_cups.up_started_at AS up_started_at',
             'up_cups.up_finished_at AS up_finished_at',
-            'up_cups.up_cup_level AS up_cup_level'
+            'up_cups.up_cup_level AS up_cup_level',
+            'up_cups.up_ppCupGroup_id AS up_ppCupGroup_id'
         ];
 
         // Execute the query
         return $this->db->get('ppTournamentTypes pptt', null, $columns);
     }
+
 
 
 
