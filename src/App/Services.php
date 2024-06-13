@@ -26,6 +26,7 @@ use App\Service\MOTD;
 use App\Service\HttpClientService;
 use App\Service\PushNotifications;
 use App\Service\UserNotification;
+use App\Service\PPDex;
 use Psr\Container\ContainerInterface;
 
 
@@ -585,4 +586,12 @@ $container['usernotification_find_service'] = static fn (
 ):  UserNotification\Find => new  UserNotification\Find(
     $container->get('usernotification_repository'),
     $container->get('guess_find_service')
+);
+
+$container['ppdex_find_service'] = static fn (
+    ContainerInterface $container
+):  PPDex\Find => new  PPDex\Find(
+    $container->get('redis_service'),
+    $container->get('userparticipation_repository'),
+    $container->get('pptournamenttype_find_service')
 );

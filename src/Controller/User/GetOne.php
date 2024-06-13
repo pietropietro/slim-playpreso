@@ -27,7 +27,7 @@ final class GetOne extends Base
             throw new \App\Exception\User('User not found.', 404);
         }
         
-        $user['ppDex'] = $this->getParticipationService()->getUserPPDex($user['id']);
+        $user['ppDex'] = $this->getPPDexFindService()->getUserPPDex($user['id']);
 
         return $this->jsonResponse($response, 'success', $user, 200);
     }

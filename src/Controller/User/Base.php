@@ -14,6 +14,7 @@ use App\Service\User\Update;
 use App\Service\User\Recover;
 use App\Service\Trophy;
 use App\Service\UserParticipation;
+use App\Service\PPDex;
 
 abstract class Base extends BaseController
 {
@@ -56,6 +57,11 @@ abstract class Base extends BaseController
     protected function getUserRecoverService(): Recover
     {
         return $this->container->get('user_recover_service');
+    }
+
+    protected function getPPDexFindService(): PPDex\Find
+    {
+        return $this->container->get('ppdex_find_service');
     }
 
 

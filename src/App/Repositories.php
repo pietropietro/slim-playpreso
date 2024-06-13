@@ -22,6 +22,7 @@ use App\Repository\MOTDRepository;
 use App\Repository\ExternalApiSessionRepository;
 use App\Repository\DeviceTokenRepository;
 use App\Repository\UserNotificationRepository;
+use App\Repository\PPDexRepository;
 use Psr\Container\ContainerInterface;
 
 $container['user_repository'] = static fn (ContainerInterface $container): UserRepository => new UserRepository($container->get('db'));
@@ -64,3 +65,4 @@ $container['devicetoken_repository'] = static fn (ContainerInterface $container)
 
 $container['usernotification_repository'] = static fn (ContainerInterface $container): UserNotificationRepository => new UserNotificationRepository($container->get('db'));
 
+$container['ppdexrepository_repository'] = static fn (ContainerInterface $container): PPDexRepository => new PPDexRepository($container->get('db'));
