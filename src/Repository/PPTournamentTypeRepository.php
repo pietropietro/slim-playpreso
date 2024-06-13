@@ -36,9 +36,10 @@ final class PPTournamentTypeRepository extends BaseRepository
     }
 
 
-    function get(?array $ids, ?bool $onlyCups = false){
+    function get(?array $ids, ?bool $onlyCups = false, ?bool $onlyLeagues = false){
         if($ids)$this->db->where('id',$ids,'IN');
         if($onlyCups)$this->db->where('cup_format IS NOT NULL');
+        else if($onlyLeagues)$this->db->where('cup_format IS NULL');
         $this->db->orderBy('name', 'asc');
         $this->db->orderBy('level', 'asc');
         return $this->db->get('ppTournamentTypes');

@@ -254,22 +254,26 @@ final class UserParticipationRepository extends BaseRepository
     }
 
     
-    public function getUserPPDex(int $userId): array
+    public function getUserSchemaPPLeagues(int $userId): array
     {
-        // Define the subquery as a plain SQL string
-        $subQuery = "
+        // Subquery for leagues
+        $subQueryLeagues = "
             SELECT 
                 up.*,
+                pl.started_at AS up_started_at,
+                pl.finished_at AS up_finished_at,
                 ROW_NUMBER() OVER (PARTITION BY up.ppTournamentType_id ORDER BY up.tot_points DESC, up.position ASC) AS rn
             FROM 
                 userParticipations up
+            JOIN 
+                ppLeagues pl ON up.ppLeague_id = pl.id
             WHERE 
                 up.user_id = $userId
                 AND up.ppLeague_id IS NOT NULL
         ";
 
-        // Join the subquery with the main query
-        $this->db->join("($subQuery) up", "pptt.id = up.ppTournamentType_id AND up.rn = 1", "LEFT");
+        // Main query
+        $this->db->join("($subQueryLeagues) up_leagues", "pptt.id = up_leagues.ppTournamentType_id AND up_leagues.rn = 1", "LEFT");
 
         // Add where condition and order by clauses
         $this->db->where('pptt.cup_format', null, 'IS');
@@ -283,18 +287,75 @@ final class UserParticipationRepository extends BaseRepository
             'pptt.name AS pptt_name',
             'pptt.level AS pptt_level',
             'pptt.emoji AS pptt_emoji',
-            'up.user_id AS up_user_id',
-            'up.id AS up_id',
-            'up.ppLeague_id AS up_ppLeague_id',
-            'up.updated_at AS up_updated_at',
-            'up.tot_points AS up_tot_points',
-            'up.position AS up_best_position'
+            'up_leagues.user_id AS up_user_id',
+            'up_leagues.id AS up_id',
+            'up_leagues.ppLeague_id AS up_ppLeague_id',
+            'up_leagues.updated_at AS up_updated_at',
+            'up_leagues.tot_points AS up_tot_points',
+            'up_leagues.position AS up_position',
+            'up_leagues.up_started_at',
+            'up_leagues.up_finished_at'
         ];
 
         // Execute the query
-        $results = $this->db->get('ppTournamentTypes pptt', null, $columns);
-
-        return $results;
+        return $this->db->get('ppTournamentTypes pptt', null, $columns);
     }
+
+
+
+
+    public function getUserSchemaPPCups(int $userId): array
+    {
+        // Subquery for cups
+        $subQueryCups = "
+            SELECT 
+                up.*,
+                ppcg.level AS cup_level,
+                pl.started_at AS pl_started_at,
+                pl.finished_at AS pl_finished_at,
+                ROW_NUMBER() OVER (PARTITION BY up.ppTournamentType_id ORDER BY ppcg.level DESC, up.position ASC) AS rn
+            FROM 
+                userParticipations up
+            JOIN 
+                ppCupGroups ppcg ON up.ppCupGroup_id = ppcg.id
+            JOIN 
+                ppCups pl ON up.ppCup_id = pl.id
+            WHERE 
+                up.user_id = $userId
+                AND up.ppCup_id IS NOT NULL
+        ";
+
+        // Main query
+        $this->db->join("($subQueryCups) up_cups", "pptt.id = up_cups.ppTournamentType_id AND up_cups.rn = 1", "LEFT");
+
+        // Add where condition and order by clauses
+        $this->db->where('pptt.cup_format', null, 'IS NOT');
+        $this->db->where('pptt.name', 'MOTD', '!=');
+        $this->db->orderBy('pptt.name', 'ASC');
+
+        // Define the columns to retrieve
+        $columns = [
+            'pptt.id AS pptt_id',
+            'pptt.name AS pptt_name',
+            'pptt.level AS pptt_level',
+            'pptt.emoji AS pptt_emoji',
+            'pptt.cup_format AS pptt_cup_format',
+            'up_cups.user_id AS up_user_id',
+            'up_cups.id AS up_id',
+            'up_cups.ppCup_id AS up_ppCup_id',
+            'up_cups.updated_at AS up_updated_at',
+            'up_cups.tot_points AS up_tot_points',
+            'up_cups.position AS up_position',
+            'up_cups.pl_started_at AS up_started_at',
+            'up_cups.pl_finished_at AS up_finished_at',
+            'up_cups.cup_level AS up_cup_level'
+        ];
+
+        // Execute the query
+        return $this->db->get('ppTournamentTypes pptt', null, $columns);
+    }
+
+
+
 
 }

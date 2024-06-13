@@ -155,36 +155,84 @@ final class Find  extends BaseService {
 
 
     public function getUserPPDex(int $userId): array
-    {
+{
+    $ppDex = [
+        'ppCups' => [],
+        'ppLeagues' => []
+    ];
 
-        $rawData = $this->userParticipationRepository->getUserPPDex($userId);
-        $structuredData = [];
-
-        foreach ($rawData as $row) {
-            $ppttName = $row['pptt_name'];
-            if (!isset($structuredData[$ppttName])) {
-                $structuredData[$ppttName] = [];
+    // Helper function to fetch and populate tournament types
+    $fetchAndPopulateTypes = function (bool $onlyCups) use (&$ppDex) {
+        $tournamentTypes = $this->ppTournamentTypeFindService->get(null, $onlyCups, false, !$onlyCups);
+        foreach ($tournamentTypes as $tournamentType) {
+            if ($tournamentType['name'] !== 'MOTD') {
+                $key = $onlyCups ? 'ppCups' : 'ppLeagues';
+                if (!isset($ppDex[$key][$tournamentType['name']])) {
+                    $ppDex[$key][$tournamentType['name']] = [];
+                }
+                $ppDex[$key][$tournamentType['name']][] = [
+                    'ppTournamentType' => [
+                        'id' => $tournamentType['id'],
+                        'name' => $tournamentType['name'],
+                        'level' => $tournamentType['level'],
+                        'emoji' => $tournamentType['emoji'],
+                        'cup_format' => $onlyCups ? json_decode($tournamentType['cup_format'], true) : null
+                    ],
+                    'userParticipation' => null
+                ];
             }
-
-            $structuredData[$ppttName][] = [
-                'ppTournamentType' => [
-                    'id' => $row['pptt_id'],
-                    'name' => $row['pptt_name'],
-                    'level' => $row['pptt_level'],
-                    'emoji' => $row['pptt_emoji']
-                ],
-                'userParticipation' => [
-                    'user_id' => $row['up_user_id'],
-                    'id' => $row['up_id'],
-                    'ppLeague_id' => $row['up_ppLeague_id'],
-                    'updated_at' => $row['up_updated_at'],
-                    'tot_points' => $row['up_tot_points'],
-                    'position' => $row['up_best_position']
-                ]
-            ];
         }
+    };
 
-        return $structuredData;
+    // Fetch and populate tournament types for leagues and cups
+    $fetchAndPopulateTypes(true);  // For Cups
+    $fetchAndPopulateTypes(false); // For Leagues
+
+    // Fetch user participations for leagues
+    $leagueParticipations = $this->userParticipationRepository->getUserSchemaPPLeagues($userId);
+    foreach ($leagueParticipations as $participation) {
+        $name = $participation['pptt_name'];
+        foreach ($ppDex['ppLeagues'][$name] as &$tournament) {
+            if ($tournament['ppTournamentType']['id'] === $participation['pptt_id']) {
+                $tournament['userParticipation'] = [
+                    'user_id' => $participation['up_user_id'],
+                    'id' => $participation['up_id'],
+                    'ppLeague_id' => $participation['up_ppLeague_id'],
+                    'updated_at' => $participation['up_updated_at'],
+                    'tot_points' => $participation['up_tot_points'],
+                    'position' => $participation['up_position'],
+                    'started_at' => $participation['up_started_at'],
+                    'finished_at' => $participation['up_finished_at'],
+                    'is_live' => isset($participation['up_started_at']) && is_null($participation['up_finished_at']),
+                ];
+            }
+        }
     }
+
+    // Fetch user participations for cups
+    $cupParticipations = $this->userParticipationRepository->getUserSchemaPPCups($userId);
+    foreach ($cupParticipations as $participation) {
+        $name = $participation['pptt_name'];
+        foreach ($ppDex['ppCups'][$name] as &$tournament) {
+            if ($tournament['ppTournamentType']['id'] === $participation['pptt_id']) {
+                $tournament['userParticipation'] = [
+                    'user_id' => $participation['up_user_id'],
+                    'id' => $participation['up_id'],
+                    'ppCup_id' => $participation['up_ppCup_id'],
+                    'updated_at' => $participation['up_updated_at'],
+                    'tot_points' => $participation['up_tot_points'],
+                    'position' => $participation['up_position'],
+                    'started_at' => $participation['up_started_at'],
+                    'finished_at' => $participation['up_finished_at'],
+                    'is_live' => isset($participation['up_started_at']) && is_null($participation['up_finished_at']),
+                ];
+            }
+        }
+    }
+
+    return $ppDex;
+}
+
+
 
 }
