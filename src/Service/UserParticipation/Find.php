@@ -176,7 +176,7 @@ final class Find  extends BaseService {
                         'name' => $tournamentType['name'],
                         'level' => $tournamentType['level'],
                         'emoji' => $tournamentType['emoji'],
-                        'cup_format' => $onlyCups ? json_decode($tournamentType['cup_format'], true) : null
+                        'is_cup' => $onlyCups,
                     ],
                     'userParticipation' => null
                 ];
@@ -215,6 +215,10 @@ final class Find  extends BaseService {
         $name = $participation['pptt_name'];
         foreach ($ppDex['ppCups'][$name] as &$tournament) {
             if ($tournament['ppTournamentType']['id'] === $participation['pptt_id']) {
+                $cupFormat = json_decode($participation['pptt_cup_format'], true);
+                $levelIndex = $participation['up_cup_level'] - 1;
+                $reachedLevelString = isset($cupFormat[$levelIndex]) ? $cupFormat[$levelIndex]['name'] : null;
+
                 $tournament['userParticipation'] = [
                     'user_id' => $participation['up_user_id'],
                     'id' => $participation['up_id'],
@@ -225,6 +229,8 @@ final class Find  extends BaseService {
                     'started_at' => $participation['up_started_at'],
                     'finished_at' => $participation['up_finished_at'],
                     'is_live' => isset($participation['up_started_at']) && is_null($participation['up_finished_at']),
+                    'reached_level' => $participation['up_cup_level'],
+                    'reached_level_string' => $reachedLevelString,
                 ];
             }
         }
@@ -232,6 +238,7 @@ final class Find  extends BaseService {
 
     return $ppDex;
 }
+
 
 
 
