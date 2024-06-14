@@ -29,7 +29,12 @@ final class AdminCreate extends Base
 
         }else {
             //TODO handle ppcup 
-            throw new \App\Exception\NotFound("invalid data", 400);
+            $ppCupGroup = $this->getPPCupGroupFindService()->getOne($tournamentId);
+            if (!$ppCupGroup || isset($ppCupGroup['finished_at']))
+            {
+                throw new \App\Exception\NotFound("can't edit ppCupGroup", 400);
+            }
+            $ppTournamentTypeId = $ppCupGroup['ppTournamentType_id'];
         }
 
         $lastRound = $this->getPPRoundFindService()->getLast($tournamentColumn, $tournamentId)['round'] ?? 0;
