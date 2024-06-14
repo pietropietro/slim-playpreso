@@ -27,4 +27,11 @@ abstract class Base extends BaseController
         return $this->container->get('ppleague_find_service');
     }
 
+    protected function getPPCupGroupFindService(): PPCupGroup\Find
+    {
+        return $this->container->get('ppcupgroup_find_service');
+    }
+
+    
+
 }

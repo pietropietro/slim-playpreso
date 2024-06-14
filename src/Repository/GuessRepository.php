@@ -13,35 +13,36 @@ final class GuessRepository extends BaseRepository
         return $this->db->getOne('guesses');
     }
 
-    public function getUnlockedForUser(int $userId){
-        $this->db->join('matches m ', 'm.id=guesses.match_id', 'INNER');
-
-        $this->db->where('user_id', $userId);
-        $this->db->where('guesses.verified_at IS NULL');
-        $this->db->where('m.verified_at IS NULL');
-        $this->db->where('guessed_at is null');
-        $this->db->orderBy('m.date_start', 'asc');
-        
-        return $this->db->get('guesses', null, 'guesses.*');
-    }
-
-    public function getLockedForUser(int $userId, bool $includeMotd){
-        $this->db->join('matches m ', 'm.id=guesses.match_id', 'INNER');
-
-        if(!$includeMotd){
-            $this->db->join('ppRoundMatches pprm', 'pprm.id= guesses.ppRoundMatch_id', 'INNER');
-            $this->db->where('pprm.motd is null');
+    public function getForUser(
+        int $userId, 
+        ?bool $includeMotd = true, 
+        ?bool $locked = null, 
+        ?bool $verified = null,
+        ?int $offset = null, 
+        ?int $limit = 200
+    ) {
+        $this->db->join('matches m', 'm.id=guesses.match_id', 'INNER');
+    
+        if (!$includeMotd) {
+            $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
+            $this->db->where('pprm.motd IS NULL');
         }
-
+    
+        if (isset($locked)) {
+            $this->db->where('guesses.verified_at IS NULL');
+            $this->db->where('guessed_at ' . ($locked ? 'IS NOT' : 'IS') . ' NULL');
+        }
+    
+        if (isset($verified)) {
+            $this->db->where('m.verified_at ' . ($verified ? 'IS NOT' : 'IS') . ' NULL');
+        }
+    
         $this->db->where('user_id', $userId);
-        $this->db->where('guesses.verified_at IS NULL');
-        $this->db->where('m.verified_at IS NULL');
-        $this->db->where('guessed_at is NOT null');
         $this->db->orderBy('m.date_start', 'asc');
-        
-        
-        return $this->db->get('guesses', null, 'guesses.*');
+    
+        return $this->db->get('guesses',[$offset, $limit], 'guesses.*');
     }
+    
 
     public function getLast(int $userId, ?string $afterString = null, ?int $limit = null) : array {
         $this->db->where('user_id', $userId);

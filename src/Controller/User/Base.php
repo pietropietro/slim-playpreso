@@ -15,6 +15,7 @@ use App\Service\User\Recover;
 use App\Service\Trophy;
 use App\Service\UserParticipation;
 use App\Service\PPDex;
+use App\Service\Guess;
 
 abstract class Base extends BaseController
 {
@@ -62,6 +63,11 @@ abstract class Base extends BaseController
     protected function getPPDexFindService(): PPDex\Find
     {
         return $this->container->get('ppdex_find_service');
+    }
+
+    protected function getGuessFindService(): Guess\Find
+    {
+        return $this->container->get('guess_find_service');
     }
 
 

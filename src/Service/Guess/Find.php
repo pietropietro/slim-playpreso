@@ -37,22 +37,25 @@ final class Find extends BaseService{
         return $this->guessRepository->lastLock($userId);
     }
 
-    public function getUnlockedForUser(int $userId){
-        $guesses = $this->guessRepository->getUnlockedForUser($userId);
-        foreach($guesses as &$guess){
-            $this->enrich(
-                guess: $guess, 
-                withMatchStats: false
-            );
-        }
-        return $guesses;
-    }
-
-    public function getLockedForUser(
-        int $userId,
-        ?bool $includeMotd = true
+    public function getForUser(
+        int $userId, 
+        ?bool $includeMotd = true, 
+        ?bool $locked = null, 
+        ?bool $verified = null,
+        ?int $page = 1, 
+        ?int $limit = 200
     ){
-        $guesses = $this->guessRepository->getLockedForUser($userId, $includeMotd);
+        $offset = ($page - 1) * $limit;
+
+        $guesses = $this->guessRepository->getForUser(
+            $userId, 
+            $includeMotd, 
+            $locked, 
+            $verified,
+            $offset,
+            $limit
+        );
+
         foreach($guesses as &$guess){
             $this->enrich(
                 guess: $guess, 

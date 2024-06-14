@@ -27,7 +27,20 @@ final class GetOne extends Base
             throw new \App\Exception\User('User not found.', 404);
         }
         
+        $page = (int) $request->getQueryParam('page', 1); // Default to page 1
+        $limit = (int) $request->getQueryParam('limit', 200); // Default limit 
+
+
         $user['ppDex'] = $this->getPPDexFindService()->getUserPPDex($user['id']);
+        $user['trophies'] = $this->getTrophiesFindService()->getTrophies($user['id'], null);  
+        $user['verified_guesses'] = $this->getGuessFindService()->getForUser(
+            userId: $user['id'],
+            includeMotd: true,
+            locked: null,
+            verified: true,
+            page: 1,
+            limit:20
+        );
 
         return $this->jsonResponse($response, 'success', $user, 200);
     }
