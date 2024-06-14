@@ -18,6 +18,7 @@ final class GuessRepository extends BaseRepository
         ?bool $includeMotd = true, 
         ?bool $locked = null, 
         ?bool $verified = null,
+        ?string $order = 'asc',
         ?int $offset = null, 
         ?int $limit = 200
     ) {
@@ -38,7 +39,7 @@ final class GuessRepository extends BaseRepository
         }
     
         $this->db->where('user_id', $userId);
-        $this->db->orderBy('m.date_start', 'asc');
+        $this->db->orderBy('m.date_start', $order);
     
         return $this->db->get('guesses',[$offset, $limit], 'guesses.*');
     }
