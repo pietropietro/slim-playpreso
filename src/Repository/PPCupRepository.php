@@ -53,5 +53,5 @@ final class PPCupRepository extends BaseRepository
         $this->db->where('id', $id);
         $this->db->update('ppCups', $data, 1);
     }
-
+        
 }

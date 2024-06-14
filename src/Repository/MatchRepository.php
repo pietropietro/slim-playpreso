@@ -303,7 +303,7 @@ final class MatchRepository extends BaseRepository
         else if($finish){
             $this->db->where('date_start', $finish, '<');    
         }
-        if($verified !== null)$this->db->where('verified_at IS '.($verified ? ' NOT ' : '').' NULL');    
+        if(isset($verified))$this->db->where('verified_at IS '.($verified ? ' NOT ' : '').' NULL');    
 
         $this->db->where('league_id', $league_ids, 'IN');
         $this->db->orderBy('date_start', $sort);

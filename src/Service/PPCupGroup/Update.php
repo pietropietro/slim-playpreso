@@ -57,11 +57,15 @@ final class Update  extends BaseService{
             $this->handleSchemaPromotions($id, $promotionsPerGroup);
             //if the cup_format requires extra promotions 
             //like groups of euro cup where in level 1: 3° best are qualified for 4 spots
-            //i.e extraPromotionsSlots =4  && extraPromotionPosition=3
-            $extraPromotionsSlots = $ppTournamentType['cup_format'][$ppCupGroup['level'] - 1]->extra_promotions_slots ?? null;
             $extraPromotionPosition = $ppTournamentType['cup_format'][$ppCupGroup['level'] - 1]->extra_promotions_position ?? null;
-            if( $extraPromotionsSlots && count($levelUnfinishedGroups) == 0){
-                //TODO
+            if( $extraPromotionPosition && count($levelUnfinishedGroups) == 0){
+
+                $extraPromotionsSlots = $this->ppCupGroupFindService->calculateExtraPromotionSlots(
+                    $ppCupGroup['ppCup_id'],
+                    $ppCupGroup['level'],
+                    $ppCupGroup['ppTournamentType_id']['ppTournamentType']
+                );
+
                 $this->handleExtraPromotions(
                     $ppCupGroup['ppCup_id'], 
                     $ppCupGroup['level'], 

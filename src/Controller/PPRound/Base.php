@@ -7,6 +7,7 @@ namespace App\Controller\PPRound;
 use App\Controller\BaseController;
 use App\Service\PPRound;
 use App\Service\PPLeague;
+use App\Service\PPCupGroup;
 
 abstract class Base extends BaseController
 {

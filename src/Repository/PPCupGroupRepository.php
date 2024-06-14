@@ -132,4 +132,15 @@ final class PPCupGroupRepository extends BaseRepository
 
 
 
+    public function sumParticipantsOfLevel($ppCupId, $level){
+        $this->db->where('ppCup_id', $ppCupId);
+        $this->db->where('level', $level);
+        return $this->db->getValue('ppCupGroups','sum(participants)');
+    }
+
+    public function countGroupsOfLevel($ppCupId, $level){
+        $this->db->where('ppCup_id', $ppCupId);
+        $this->db->where('level', $level);
+        return $this->db->getValue('ppCupGroups','count(*)');
+    }
 }

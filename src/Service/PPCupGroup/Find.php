@@ -95,6 +95,15 @@ final class Find  extends BaseService{
         return $this->ppCupGroupRepository->getPaused();
     }
 
+    // function instead of static value in cup_format for agility (i.e. euro 24 28 users..)
+    private function calculateExtraPromotionSlots($ppCupId, $level, $cupFormat){
+        $participantsNextLevel = (int) $this->ppCupGroupRepository->sumParticipantsOfLevel($ppCupId, $level +1);
+        $promotions = $cupFormat[$level -1]->promotions;
+        //do not rely on cup_format
+        $groupsThisLevel = $this->ppCupGroupRepository->countGroupsOfLevel($ppCupId, $level);
+        return $participantsNextLevel - ($promotions * $groupsThisLevel);
+    }
+
     public function enrich(array $group, ?bool $withRounds=false, ?int $userId=null){
         $group['userParticipations'] = $this->userParticipationService->getForTournament('ppCupGroup_id', $group['id']);
         if($group['started_at']){   
@@ -102,11 +111,13 @@ final class Find  extends BaseService{
             $ppTT= $this->ppTournamentTypeRepository->getOne($group['ppTournamentType_id']);
             $cupFormat = json_decode($ppTT['cup_format']);
             $levelConfig = $cupFormat[$group['level'] - 1];
-            $extraPromotionsSlots = property_exists($levelConfig, 'extra_promotions_slots') ? $levelConfig->extra_promotions_slots : null;
+            // $extraPromotionsSlots = property_exists($levelConfig, 'extra_promotions_slots') ? $levelConfig->extra_promotions_slots : null;
             $extraPromotionsPosition = property_exists($levelConfig, 'extra_promotions_position') ? $levelConfig->extra_promotions_position : null;
 
-            if($extraPromotionsSlots){
-                
+            if($extraPromotionsPosition){
+                //calculate extra slots available
+                $extraPromotionsSlots = $this->calculateExtraPromotionSlots($group['ppCup_id'], $group['level'], $cupFormat);
+
                 //calculate best three
                 $upsInPosition = $this->userParticipationService->getForTournament(
                     tournamentColumn: 'ppCup_id',
