@@ -32,7 +32,7 @@ final class Find  extends BaseService{
     }
 
     //positionIndex is 0 based
-    public function getNextGroup(int $fromPPCupGroup_id, int $positionIndex, ){
+    public function getNextGroup(int $fromPPCupGroup_id, int $positionIndex){
         $fromPPCupGroup = $this->getOne($fromPPCupGroup_id);
 
         $nextGroups = $this->getForCup($fromPPCupGroup['ppCup_id'], level: $fromPPCupGroup['level'] + 1);
@@ -46,7 +46,7 @@ final class Find  extends BaseService{
         if ($fromPPCupGroup['level'] == 1) {
             foreach ($nextGroups as $group) {
                 $groupTag = $group['tag'];
-                $cleanTag = str_replace('+', '', $groupTag);
+                $cleanTag = str_replace(['+', '-'], '', $groupTag);
     
                 // Check if the position directly matches the tag
                 if ($groupTag[$positionIndex] == $fromTag) {
@@ -55,9 +55,13 @@ final class Find  extends BaseService{
 
                 // Check if there's a '+' indicating a position shift
                 $hasPlus = strpos($groupTag, '+') !== false;
+                $hasMinus = strpos($groupTag, '-') !== false;
                 $containsFromTag = strpos($cleanTag, $fromTag) !== false;
 
                 if ($hasPlus && $containsFromTag && $positionIndex === 1) {
+                    return $group;
+                }
+                if($hasMinus && $containsFromTag && $positionIndex == 0){
                     return $group;
                 }
             }
@@ -65,7 +69,7 @@ final class Find  extends BaseService{
             // Higher level handling: clean the tags before comparison
             $previoustaglength = strlen($fromTag);
             foreach ($nextGroups as $group) {
-                $cleanTag = str_replace('+', '', $group['tag']);
+                $cleanTag = str_replace(['+', '-'], '', $group['tag']);
                 if(substr($cleanTag, 0, $previoustaglength) === $ppCupGroup['tag'])return $group;
                 if(substr($cleanTag, $previoustaglength, $previoustaglength) === $ppCupGroup['tag'])return $group;
             }
@@ -104,6 +108,56 @@ final class Find  extends BaseService{
         return $participantsNextLevel - ($promotions * $groupsThisLevel);
     }
 
+    private function enrichWithExtraPromotionFlags($group, $extraPromotionSlots, $cupFormat){
+        $levelConf = $cupFormat[$group['level']-1];
+        if($extraPromotionSlots > 0){
+            $upsInPosition = $this->userParticipationService->getForTournament(
+                tournamentColumn: 'ppCup_id',
+                tournamentId: $group['ppCup_id'],
+                level: $group['level'],
+                enriched: false,
+                position: $levelConf->promotions + 1,
+                limit: $extraPromotionSlots,
+                orderByPoints: true
+            );
+        }
+
+        else if($extraPromotionSlots < 0){
+            $upsInPosition = $this->userParticipationService->getForTournament(
+                tournamentColumn: 'ppCup_id',
+                tournamentId: $group['ppCup_id'],
+                level: $group['level'],
+                enriched: false,
+                position: $levelConf->promotions,
+                limit: null,
+                orderByPoints: true
+            );
+
+            $nextLevelConf = $cupFormat[$group['level']];
+
+            $numToRemove = count($upsInPosition) - count($nextLevelConf->group_tags) + 1;
+            if($numToRemove > 0){
+                $upsInPosition = array_slice($upsInPosition, 0, -$numToRemove);
+            }
+        }
+
+        // Extract user IDs from userParticipations
+        $groupUPUserIds = array_map(function($participation) {
+            return $participation['user_id'];
+        }, $group['userParticipations']);
+
+        // Check if any item in upsInPosition has a user_id in userParticipationIds
+        $matchingUsers = array_filter($upsInPosition, function($up) use ($groupUPUserIds) {
+            return in_array($up['user_id'], $groupUPUserIds);
+        });
+        if ($extraPromotionSlots > 0 && !empty($matchingUsers)) {
+            $group['extra_promotion'] = true;
+        }else if($extraPromotionSlots < 0 && empty($matchingUsers)){
+            $group['less_promotion'] = true;
+        }
+        return $group;
+    }
+
     public function enrich(array $group, ?bool $withRounds=false, ?int $userId=null){
         $group['userParticipations'] = $this->userParticipationService->getForTournament('ppCupGroup_id', $group['id']);
         if($group['started_at']){   
@@ -111,37 +165,12 @@ final class Find  extends BaseService{
             $ppTT= $this->ppTournamentTypeRepository->getOne($group['ppTournamentType_id']);
             $cupFormat = json_decode($ppTT['cup_format']);
             $levelConfig = $cupFormat[$group['level'] - 1];
-            // $extraPromotionsSlots = property_exists($levelConfig, 'extra_promotions_slots') ? $levelConfig->extra_promotions_slots : null;
-            $extraPromotionsPosition = property_exists($levelConfig, 'extra_promotions_position') ? $levelConfig->extra_promotions_position : null;
 
-            if($extraPromotionsPosition){
-                //calculate extra slots available
-                $extraPromotionsSlots = $this->calculateExtraPromotionSlots($group['ppCup_id'], $group['level'], $cupFormat);
-                $extraPromotionsSlots = $extraPromotionsSlots > 0 ? $extraPromotionsSlots : 0;
-
-                //calculate best three
-                $upsInPosition = $this->userParticipationService->getForTournament(
-                    tournamentColumn: 'ppCup_id',
-                    tournamentId: $group['ppCup_id'],
-                    level: $group['level'],
-                    enriched: false,
-                    position: $extraPromotionsPosition,
-                    limit: $extraPromotionsSlots,
-                    orderByPoints: true
-                );
-                // Extract user IDs from userParticipations
-                $groupUPUserIds = array_map(function($participation) {
-                    return $participation['user_id'];
-                }, $group['userParticipations']);
-
-                // Check if any item in upsInPosition has a user_id in userParticipationIds
-                $matchingUsers = array_filter($upsInPosition, function($up) use ($groupUPUserIds) {
-                    return in_array($up['user_id'], $groupUPUserIds);
-                });
-                if (!empty($matchingUsers)) {
-                    $group['best_third_up'] = true;
-                }
-
+            //this value can be negative (if less positions than planned promote) or positive (if more positions need to promote)
+            //or 0 if exactly the cup_format.level.promotions need to pass
+            $extraPromotionSlots = $this->calculateExtraPromotionSlots($group['ppCup_id'], $group['level'], $cupFormat);
+            if($extraPromotionSlots != 0){
+                $group = $this->enrichWithExtraPromotionFlags($group, $extraPromotionSlots, $cupFormat);
             }
 
             if(!$group['finished_at']){
@@ -152,9 +181,6 @@ final class Find  extends BaseService{
         }
         if($withRounds){
             $group['ppRounds'] = $this->ppRoundFindService->getForTournament('ppCupGroup_id', $group['id'], $userId);
-            // $group['userCurrentRound'] = $userId ? 
-            //     $this->ppRoundFindService->getUserCurrentRound('ppCupGroup_id', $group['id'], $userId) 
-            //     : null;
         }
     
         return $group;

@@ -211,6 +211,16 @@ final class UserParticipationRepository extends BaseRepository
         return $this->db->has($this->tableName);
     }
 
+    public function isUserInPPCupLevel(int $userId, int $ppCupId, int $level){
+        $ids = $this->db->subQuery();
+        $ids->where('level', $level);
+        $ids->where('ppCup_id', $ppCupId);
+        $ids->get('ppCupGroups', null, 'id');
+        $this->db->where('ppCupGroup_id',$ids,'IN');
+        $this->db->where('user_id', $userId);
+        return $this->db->has('userParticipations');
+    }
+
     public function isUserInTournamentType(int $userId, int $ppTournamentType_id){
         $this->db->where($this->tableName.'.ppTournamentType_id',$ppTournamentType_id);
         $this->db->where('user_id', $userId);

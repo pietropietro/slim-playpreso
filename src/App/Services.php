@@ -209,6 +209,7 @@ $container['userparticipation_create_service'] = static fn (
     ContainerInterface $container
 ):  UserParticipation\Create => new  UserParticipation\Create(
     $container->get('userparticipation_repository'),
+    $container->get('ppcupgroup_repository'),
     $container->get('pptournament_verifyafterjoin_service'),
 );
 
