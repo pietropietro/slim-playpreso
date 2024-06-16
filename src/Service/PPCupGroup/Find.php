@@ -117,6 +117,7 @@ final class Find  extends BaseService{
             if($extraPromotionsPosition){
                 //calculate extra slots available
                 $extraPromotionsSlots = $this->calculateExtraPromotionSlots($group['ppCup_id'], $group['level'], $cupFormat);
+                $extraPromotionsSlots = $extraPromotionsSlots > 0 ? $extraPromotionsSlots : 0;
 
                 //calculate best three
                 $upsInPosition = $this->userParticipationService->getForTournament(
