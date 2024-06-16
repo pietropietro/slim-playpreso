@@ -9,7 +9,7 @@ use Slim\Http\Response;
 
 final class DefaultController extends BaseController
 {
-    private const API_VERSION = '1.43d' ;
+    private const API_VERSION = '1.43e' ;
 
     public function getHelp(Request $request, Response $response): Response
     {
