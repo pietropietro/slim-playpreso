@@ -61,7 +61,10 @@ final class Update  extends BaseService{
         if(count($levelUnfinishedGroups) != 0 ) return;
 
         //after schema promotion was done for all groups, try random promotion if there are available slots
-        $avoidPreviousLevelUsers = $ppTournamentType['cup_format'][$ppCupGroup['level']]->avoid_previous_level_users ?? false;
+        if($ppCupGroup['level'] == 1)$avoidPreviousLevelUsers = true;
+        else{
+            $avoidPreviousLevelUsers = $ppTournamentType['cup_format'][$ppCupGroup['level']]->avoid_previous_level_users ?? false;
+        }
         $this->handleRandomPromotions($ppCupGroup['ppCup_id'], $ppCupGroup['level'], $avoidPreviousLevelUsers);
     }
 
@@ -97,10 +100,12 @@ final class Update  extends BaseService{
             true
         );
         
-        $availableSlots = count($this->ppCupGroupFindService->getNotFull(
+        $groupsNotFull = $this->ppCupGroupFindService->getNotFull(
             $ppCupId,
-            $fromLevel +1
-        )) > 0;
+            $fromLevel +1,
+            limitOne: false
+        );
+        $availableSlots = count($groupsNotFull) > 0;
 
         $position = 1;
 
@@ -108,15 +113,23 @@ final class Update  extends BaseService{
             $filteredUps = array_filter($ups, function($item) use($position) {
                 return $item['position'] == $position;
             });
+
+            $numToRemove = abs(count($groupsNotFull) - count($filteredUps));
+            if($numToRemove > 0){
+                $filteredUps = array_slice($filteredUps, 0, -$numToRemove);
+            }
+
             $this->putUsersInAvailableGroups(
                 $ppCupId, 
                 $fromLevel + 1, 
                 $filteredUps, 
                 $avoidPreviousLevelUsers
             );
+
             $groupsNotFull = $this->ppCupGroupFindService->getNotFull(
                 $ppCupId,
-                $fromLevel +1
+                $fromLevel +1,
+                limitOne: false
             );
             $availableSlots = $groupsNotFull && count($groupsNotFull) > 0 ? true : false;
             $position ++;
@@ -141,7 +154,8 @@ final class Update  extends BaseService{
             $ppcg = $this->ppCupGroupFindService->getNotFull(
                 $ppCupId, 
                 $toLevel, 
-                avoidFromTag: $avoidPreviousLevelUsers ? $fromTagClean : null
+                avoidFromTag: $avoidPreviousLevelUsers ? $fromTagClean : null,
+                limitOne: true
             );
 
             if(!$ppcg){

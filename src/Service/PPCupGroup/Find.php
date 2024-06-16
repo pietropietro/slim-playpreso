@@ -186,8 +186,9 @@ final class Find  extends BaseService{
         return $group;
     }
     
-    public function getNotFull(int $ppCupId, int $level, ?string $avoidFromTag = null) : ?array{
-        $ppCupGroup = $this->ppCupGroupRepository->getNotFull($ppCupId, $level, $avoidFromTag);
-        return $ppCupGroup ? $ppCupGroup[0] : null;
+    public function getNotFull(int $ppCupId, int $level, ?string $avoidFromTag = null, ?bool $limitOne = true) : ?array{
+        $ppCupGroups = $this->ppCupGroupRepository->getNotFull($ppCupId, $level, $avoidFromTag);
+        if($limitOne) return $ppCupGroups ? $ppCupGroups[0] : null;
+        return $ppCupGroups;
     }
 }
