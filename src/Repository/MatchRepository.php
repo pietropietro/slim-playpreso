@@ -266,13 +266,14 @@ final class MatchRepository extends BaseRepository
         
         $this->db->where('round', $nextRoundNumber);
         $this->db->where('league_id', $league_id);
+        $this->db->join('leagues l', 'l.id = matches.league_id', 'INNER');
 
         $minTimeInterval = date("Y-m-d H:i:s", strtotime('+1 days'));
         $this->db->where('date_start', $minTimeInterval, '>');
         $this->db->where('verified_at is null');
         $this->db->orderBy('date_start', 'asc');
         
-        return $this->db->get('matches', $limit);
+        return $this->db->get('matches', $limit, 'matches.*, l.parent_id as league_parent_id');
     }
 
     public function isBeforeStartTime(int $id):bool{
@@ -330,12 +331,14 @@ final class MatchRepository extends BaseRepository
 
         $minTimeInterval = date("Y-m-d H:i:s", strtotime('+1 days'));
         
+        $this->db->join('leagues l', 'l.id = matches.league_id', 'INNER');
+
         $this->db->where('date_start', $minTimeInterval, '>');
         $this->db->where('verified_at is null');
 
         $this->db->orderBy('date_start', 'asc');
         
-        return $this->db->get('matches', $limit);
+        return $this->db->get('matches', $limit, 'matches.*, l.parent_id as league_parent_id');
     }
 
     public function getLastForTeam(int $id, int $limit = 5){

@@ -53,27 +53,60 @@ final class Picker extends BaseService{
         
         $matches = array();
         foreach ($leagueIds as $id) {
-            if($retrieved = $this->nextMatchesForLeague($id, 10)){
+            if($retrieved = $this->nextRoundForLeague($id)){
                 $matches = array_merge($matches, $retrieved);
             }
         }
-        if(!$matches) return [];
+        if(!$matches || $matches < 3){
+            $matches = array();
+            foreach ($leagueIds as $id) {
+                if($retrieved = $this->nextMatchesForLeague($id)){
+                    $matches = array_merge($matches, $retrieved);
+                }
+            }
+        }
+
+        // Group matches by parent_id
+        $groupedMatches = [];
+        foreach ($matches as $match) {
+            $parentId = $match['league_parent_id'];
+            if (!isset($groupedMatches[$parentId])) {
+                $groupedMatches[$parentId] = [];
+            }
+            $groupedMatches[$parentId][] = $match;
+        }
+
+        // Filter matches to keep only the highest round for each group
+        $filteredMatches = [];
+        foreach ($groupedMatches as $parentId => $group) {
+            usort($group, function ($a, $b) {
+                return $b['round'] - $a['round']; // Sort by round in descending order
+            });
+            $highestRound = $group[0]['round'];
+            $filteredMatches = array_merge($filteredMatches, array_filter($group, function ($match) use ($highestRound) {
+                return $match['round'] == $highestRound;
+            }));
+        }
         
-        $reasonableMatches = array_filter($matches, 
+        $reasonableMatches = array_filter($filteredMatches, 
             function ($e){
                 return $e['date_start'] < date("Y-m-d H:i:s", strtotime('+8 days'));
             }
         );
 
         if(count($reasonableMatches) > 2) return $reasonableMatches;
+        if(count($filteredMatches) > 2) return $filteredMatches;
         return $matches;
     }
 
     private function nextMatchesForLeague(int $leagueId){
-        //limit to 10 matches in case of wrong round value (i.e. some league matches all round=1)
-        if($retrieved = $this->matchRepository->getNextRoundForLeague($leagueId, 10)) return $retrieved;
         //to easily solve the no round sequence
         return $this->matchRepository->nextMatches($leagueId, 10);
+    }
+
+    private function nextRoundForLeague(int $leagueId){
+        //limit to 10 matches in case of wrong round value (i.e. some league matches all round=1)
+        return $this->matchRepository->getNextRoundForLeague($leagueId, 10);
     }
 
 }
