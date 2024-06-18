@@ -102,7 +102,7 @@ final class Find  extends BaseService{
     // function instead of static value in cup_format for agility (i.e. euro 24 28 users..)
     private function calculateExtraPromotionSlots($ppCupId, $level, $cupFormat){
         $participantsNextLevel = (int) $this->ppCupGroupRepository->sumParticipantsOfLevel($ppCupId, $level +1);
-        $promotions = $cupFormat[$level -1]->promotions;
+        $promotions = $cupFormat[$level -1]->promotions ?? 0;
         //do not rely on cup_format
         $groupsThisLevel = $this->ppCupGroupRepository->countGroupsOfLevel($ppCupId, $level);
         return $participantsNextLevel - ($promotions * $groupsThisLevel);
