@@ -120,13 +120,19 @@ final class MatchRepository extends BaseRepository
         return $this->db->getOne('matches', $this->whitelistColumns);
     }
 
-    public function getOneByLeagueRoundAndTeams(int $leagueId, int $round, int $homeId, int $awayId){
+    public function getOneByLeagueRoundAndTeams(
+        int $leagueId, 
+        int $round, 
+        int $homeId, 
+        int $awayId,
+        ?string $date_start_condition = ' > now()'
+    ){
         $this->db->where('league_id', $leagueId);
         $this->db->where('round', $round);
         $this->db->where('home_id', $homeId);
         $this->db->where('away_id', $awayId);
         $this->db->where('verified_at IS NULL');
-        $this->db->where('date_start > now()');
+        $this->db->where('date_start '.$date_start_condition);
         $match= $this->db->getOne('matches');
         return $match;
     }

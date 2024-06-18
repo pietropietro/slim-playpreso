@@ -39,8 +39,8 @@ final class Find extends BaseService{
         return $withTeams ? $this->enrich($match, $withStats) : $match;
     }
 
-    public function getOneByLeagueRoundAndTeams(int $leagueId, int $round, int $homeId, int $awayId){
-        return $this->matchRepository->getOneByLeagueRoundAndTeams($leagueId, $round, $homeId, $awayId);
+    public function getOneByLeagueRoundAndTeams(int $leagueId, int $round, int $homeId, int $awayId, string $date_start_condition = ' > now()'){
+        return $this->matchRepository->getOneByLeagueRoundAndTeams($leagueId, $round, $homeId, $awayId, $date_start_condition);
     }
 
     public function adminGet(?array $ids = null,

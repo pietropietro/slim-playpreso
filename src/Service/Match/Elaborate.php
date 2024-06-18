@@ -57,20 +57,48 @@ final class Elaborate extends BaseService{
             $match = $this->matchFindService->getOne($ls_id, true, false, false);
 
             //CREATE MATCH OR UPDATE LEGACY(i.e. wrong ls_id)
-            if(!$match && $eventObj->Eps === 'NS'){
-                //UPDATE LEGACY
-                if($homeId && $awayId && $legacyMatch = $this->matchFindService->getOneByLeagueRoundAndTeams($leagueId, $round, $homeId, $awayId)){
-                    $this->matchUpdateService->updateExternalId($legacyMatch['id'], $ls_id);
-                    $modified_flag = true;
-                    continue;
+            if(!$match){
+                if($eventObj->Eps === 'NS'){
+                    $legacyMatchFuture = $this->matchFindService->getOneByLeagueRoundAndTeams(
+                        $leagueId, 
+                        $round, 
+                        $homeId, 
+                        $awayId
+                    );
+
+                    //UPDATE LEGACY
+                    if($homeId && $awayId && $legacyMatchFuture){
+                        $this->matchUpdateService->updateExternalId($legacyMatchFuture['id'], $ls_id);
+                        $modified_flag = true;
+                        continue;
+                    }
+                    //CREATE
+                    if($this->matchCreateService->create($ls_id, $leagueId, $homeId, $awayId, $round, $dateStart)){
+                        $created_counter ++;
+                        continue;
+                    }
                 }
-                //CREATE
-                if($this->matchCreateService->create($ls_id, $leagueId, $homeId, $awayId, $round, $dateStart)){
-                    $created_counter ++;
+                else if($eventObj->Eps === 'FT' && $homeId && $awayId){
+                    $dateOneMonthAgo = date('Y-m-d H:i:s', strtotime('-1 month'));
+
+                    $legacyMatchPast = $this->matchFindService->getOneByLeagueRoundAndTeams(
+                        $leagueId, 
+                        $round, 
+                        $homeId, 
+                        $awayId,
+                        " between '$dateOneMonthAgo' and now()"                    
+                    );
+
+                    if($legacyMatchPast && isset($legacyMatchPast['ls_id'])){
+                        if($this->matchUpdateService->updateExternalId($legacyMatchPast['id'], $ls_id)){
+                            $modified_flag = true;
+                            $match = $legacyMatchPast;
+                        }
+                    }
                 }
-                continue;
             }
 
+                
             if(!$match) continue;
             if($match['verified_at'])continue;
 
@@ -122,6 +150,7 @@ final class Elaborate extends BaseService{
                 $modified_counter ++;
             }
         }
+
         return array(
             "created" => $created_counter,
             "modified" => $modified_counter,
