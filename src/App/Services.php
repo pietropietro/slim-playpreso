@@ -27,6 +27,7 @@ use App\Service\HttpClientService;
 use App\Service\PushNotifications;
 use App\Service\UserNotification;
 use App\Service\PPDex;
+use App\Service\PPRanking;
 use Psr\Container\ContainerInterface;
 
 
@@ -39,6 +40,8 @@ $container['user_find_service'] = static fn (
     $container->get('redis_service'),
     $container->get('userparticipation_find_service'),
     $container->get('guess_find_service'),
+    $container->get('trophy_find_service'),
+    $container->get('ppranking_find_service')  
 );
 
 $container['user_create_service'] = static fn (
@@ -595,4 +598,16 @@ $container['ppdex_find_service'] = static fn (
     $container->get('redis_service'),
     $container->get('userparticipation_repository'),
     $container->get('pptournamenttype_find_service')
+);
+
+$container['ppranking_calculate_service'] = static fn (
+    ContainerInterface $container
+):  PPRanking\Calculate => new  PPRanking\Calculate(
+    $container->get('ppranking_repository'),
+);
+
+$container['ppranking_find_service'] = static fn (
+    ContainerInterface $container
+):  PPRanking\Find => new  PPRanking\Find(
+    $container->get('ppranking_repository'),
 );
