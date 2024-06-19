@@ -23,10 +23,10 @@ final class Get extends Base
         $limit = (int) $request->getQueryParam('limit', null); // Default limit to 50
 
         // $date = date('Y-m-d'); // Assuming you want today's rankings.
-        $ppRankings = $this->getPPRankingFindService()->getRankingsForDate(null, $page ,$limit);
-        foreach ($ppRankings as &$ranking) {
+        $result = $this->getPPRankingFindService()->getRankingsForDate(null, $page ,$limit);
+        foreach ($result['ppRankings'] as &$ranking) {
             $ranking['user'] = $this->getUserFindService()->getOne($ranking['user_id']);
         }
-        return $this->jsonResponse($response, 'success', $ppRankings, 200);
+        return $this->jsonResponse($response, 'success', $result, 200);
     }
 }
