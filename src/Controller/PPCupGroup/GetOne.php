@@ -26,6 +26,11 @@ final class GetOne extends Base
             userId: $this->getUserParticipationService()->isUserInTournament($userId, 'ppCupGroup_id', $groupId) ? $userId 
                 : null
         );
+        
+        foreach ($ppCupGroup['userParticipations'] as &$participation) {
+            $participation['user']=$this->getUserFindService()->getOne($participation['user_id']);
+        }
+
 
         $ppCupGroup['ppTournamentType'] = $this->getTournamentTypeService()->getOne($ppCupGroup['ppTournamentType_id']);
         

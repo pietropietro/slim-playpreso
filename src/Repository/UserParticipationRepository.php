@@ -95,7 +95,6 @@ final class UserParticipationRepository extends BaseRepository
         ?int $limit=null,
         ?bool $orderByPoints=null
     ){
-        $this->db->join("users u", "u.id=userParticipations.user_id", "INNER");
         $this->db->join('ppLeagues ppl', 'ppl.id = userParticipations.ppLeague_id', "LEFT");
         $this->db->join('ppCupGroups ppcg', 'ppcg.id = userParticipations.ppCupGroup_id', "LEFT");
         $this->db->orderBy('userParticipations.position','asc');
@@ -103,7 +102,7 @@ final class UserParticipationRepository extends BaseRepository
         if($level)$this->db->where('level', $level);
         if($position) $this->db->where('position',$position);
         if($orderByPoints) $this->db->orderBy('tot_points', 'desc');
-        return $this->db->get('userParticipations', $limit, $this->columnsJoined3.',u.username');
+        return $this->db->get('userParticipations', $limit, $this->columnsJoined3);
     }
 
     public function getCupWins(int $userId){

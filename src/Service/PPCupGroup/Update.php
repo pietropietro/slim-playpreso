@@ -94,7 +94,6 @@ final class Update  extends BaseService{
             'ppCup_id', 
             $ppCupId, 
             $fromLevel, 
-            false,
             null,
             null,
             true

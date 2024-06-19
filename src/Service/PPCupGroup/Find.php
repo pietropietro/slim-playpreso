@@ -115,7 +115,6 @@ final class Find  extends BaseService{
                 tournamentColumn: 'ppCup_id',
                 tournamentId: $group['ppCup_id'],
                 level: $group['level'],
-                enriched: false,
                 position: $levelConf->promotions + 1,
                 limit: $extraPromotionSlots,
                 orderByPoints: true
@@ -127,7 +126,6 @@ final class Find  extends BaseService{
                 tournamentColumn: 'ppCup_id',
                 tournamentId: $group['ppCup_id'],
                 level: $group['level'],
-                enriched: false,
                 position: $levelConf->promotions,
                 limit: null,
                 orderByPoints: true

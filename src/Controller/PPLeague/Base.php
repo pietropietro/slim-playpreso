@@ -10,6 +10,7 @@ use App\Service\PPLeague;
 use App\Service\UserParticipation;
 use App\Service\PPRound;
 use App\Service\Match;
+use App\Service\User;
 
 abstract class Base extends BaseController
 {
@@ -36,6 +37,11 @@ abstract class Base extends BaseController
     protected function getMatchFindService(): Match\Find
     {
         return $this->container->get('match_find_service');
+    }
+
+    protected function getUserFindService(): User\Find
+    {
+        return $this->container->get('user_find_service');
     }
 
 }

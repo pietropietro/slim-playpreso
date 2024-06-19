@@ -19,13 +19,11 @@ final class Find  extends BaseService {
     public function __construct(
         protected RedisService $redisService,
         protected UserParticipationRepository $userParticipationRepository,
-        // protected PPTournamentTypeRepository $ppTournamentTypeRepository,
         protected PPTournamentType\Find $ppTournamentTypeFindService,
         protected PPLeagueRepository $ppLeagueRepository,
         protected PPCupGroupRepository $ppCupGroupRepository,
         protected PPRound\Find $ppRoundFindService,
         protected Match\Find $matchFindService,
-        protected Trophy\Find $trophiesFindService,
     ){}
 
 
@@ -33,12 +31,11 @@ final class Find  extends BaseService {
         string $tournamentColumn,
         int $tournamentId,
         ?int $level = null,
-        ?bool $enriched = true,
         ?int $position = null,
         ?int $limit=null,
         ?bool $orderByPoints=null
     ) :array {
-        $ups = $this->userParticipationRepository->getForTournament(
+        return $this->userParticipationRepository->getForTournament(
             $tournamentColumn,
             $tournamentId,
             $level,
@@ -46,15 +43,6 @@ final class Find  extends BaseService {
             $limit,
             $orderByPoints
         ); 
-        
-        if(!$enriched) return $ups;
-
-        foreach ($ups as &$up) {
-            $up['user']['id'] = $up['user_id'];
-            $up['user']['username'] = $up['username'];
-            $up['user']['trophies'] = $this->trophiesFindService->getTrophies($up['user']['id']);
-        }
-        return $ups;
     }
 
     public function countInTournament(string $tournamentColumn, int $tournamentId){

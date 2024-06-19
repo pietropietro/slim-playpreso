@@ -17,7 +17,7 @@ final class Find extends BaseService{
         protected PPTournamentTypeRepository $ppTournamentTypeRepository,
     ){}
 
-    public function getTrophies(int $userId, ?string $afterDate = null){
+    public function getTrophies(int $userId, ?string $afterDate = null, ?bool $just_count=false){
         $ppLeagueUps = $this->userParticipationRepository->getForUser(
             $userId, 
             'ppLeague_id', 
@@ -31,10 +31,10 @@ final class Find extends BaseService{
         $ppCupWins = $this->userParticipationRepository->getCupWins($userId);
 
         $trophiesUP = array_merge($ppLeagueUps, $ppCupWins);
+        if($just_count) return count($trophiesUP);
         foreach ($trophiesUP as &$trophyUP) {
             $trophyUP['ppTournamentType'] = $this->ppTournamentTypeRepository->getOne($trophyUP['ppTournamentType_id']);
         }
-        
         return $trophiesUP;
     }
 

@@ -39,6 +39,10 @@ final class GetOne extends Base
 
 
         $ppLeague['userParticipations'] = $this->getUserParticipationFindService()->getForTournament('ppLeague_id', $ppLeagueId);
+        foreach ($ppLeague['userParticipations'] as &$participation) {
+            $participation['user']=$this->getUserFindService()->getOne($participation['user_id']);
+        }
+
         $ppLeague['ppRounds'] = $this->getPPRoundFindService()->getForTournament(
             'ppLeague_id',
             $ppLeagueId,

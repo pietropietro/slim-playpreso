@@ -23,7 +23,15 @@ final class GetOne extends Base
         $userId = $this->getAndValidateUserId($request);
 
         $ppCup = $this->getFindCupService()->getOne($ppCupId, $is_slug, $userId);
-                
+       
+        foreach ($ppCup['levels'] as &$level) {
+            foreach ($level as &$group) {
+                foreach ($group['userParticipations'] as &$participation) {
+                    $participation['user']=$this->getUserFindService()->getOne($participation['user_id']);
+                }
+            }
+        }
+       
         return $this->jsonResponse($response, 'success', $ppCup, 200);
     }
 }

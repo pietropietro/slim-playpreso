@@ -27,16 +27,18 @@ final class RedisService
     public function get(string $key)
     {
         $value = $this->redis->get($key);
-        if ($value !== false) {
-            $decodedValue = json_decode($value);
-            if (json_last_error() === JSON_ERROR_NONE) {
-                return $decodedValue;
-            } else {
-                return json_decode($value, true);
-            }
+        // Check for false to handle non-existing keys
+        if ($value === false) {
+            return null;
         }
+        // Ensure the value is actually a string before trying to decode it
+        if (is_string($value)) {
+            return json_decode($value, true);  // Decode as associative array
+        }
+        // Return null if the value isn't a string (safety check, though it should always be a string if not false)
         return null;
     }
+    
 
     public function set(string $key, $value): void
     {

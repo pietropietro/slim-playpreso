@@ -8,6 +8,8 @@ use App\Repository\UserRepository;
 use App\Service\RedisService;
 use App\Service\UserParticipation;
 use App\Service\Guess;
+use App\Service\Trophy;
+use App\Service\PPRanking;
 
 final class Find extends Base
 {
@@ -15,7 +17,9 @@ final class Find extends Base
         protected UserRepository $userRepository,
         protected RedisService $redisService,
         protected UserParticipation\Find $userParticipationFindService,
-        protected Guess\Find $guessFindService
+        protected Guess\Find $guessFindService,
+        protected Trophy\Find $trophyFindService,
+        protected PPRanking\Find $ppRankingFindService
     ) {
     }
 
@@ -47,20 +51,39 @@ final class Find extends Base
         return $this->getOne($id, $sensitiveColumns);
     }
 
+    private const REDIS_KEY_USER = 'user:%s';
+
     public function getOne(int $userId, ?bool $sensitiveColumns=false) 
     {
-        // if (!$sensitiveColumns && self::isRedisEnabled() === true && $cached = $this->getUserFromCache($userId)) {
-        //     return $cached;
-        // } 
+        if (!$sensitiveColumns && self::isRedisEnabled() === true ) {
+            $cachedUser = $this->getUserFromCache($userId);
+            if ($cachedUser !== null) {
+                return $cachedUser;
+            }
+        } 
         
         $user = $this->getUserFromDb($userId, $sensitiveColumns);
 
-        // if (!$sensitiveColumns && self::isRedisEnabled() === true){
-        //     $this->saveInCache($userId, (object) $user);
-        // }
+        $user['ppRanking'] = $this->ppRankingFindService->getForUser($userId);
+        $user['trophies_count'] = $this->trophyFindService->getTrophies($userId, null, true);
+        
+        if (!$sensitiveColumns && self::isRedisEnabled() === true){
+            $this->saveUserInCache($userId, $user);
+        }
 
         return $user;
     }
 
+    protected function getUserFromCache(int $userId)
+    {
+        $redisKey = $this->redisService->generateKey(sprintf(self::REDIS_KEY_USER, $userId));
+        return $this->redisService->get($redisKey); // This returns null if not found or the user data if found
+    }
+
+    protected function saveUserInCache(int $userId, array $user): void
+    {
+        $redisKey = $this->redisService->generateKey(sprintf(self::REDIS_KEY_USER, $userId));
+        $this->redisService->setex($redisKey, $user, 14400); // Set the data with a 4-hour expiration
+    }
 
 }
