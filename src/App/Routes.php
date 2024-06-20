@@ -92,7 +92,9 @@ return function ($app){
     $app->get('/p-round/{id}', PPRound\GetOne::class)->add(new Auth($pointsService));
     
     $app->group('/motd', function () use ($app): void {
-        $app->get('', MOTD\GetLatest::class);
+        $app->get('', MOTD\GetToday::class);
+        $app->get('/chart', MOTD\GetChart::class);
+        // $app->get('', MOTD\GetLatest::class);
         $app->post('/lock', MOTD\Lock::class);
     })->add(new Auth($pointsService));
 

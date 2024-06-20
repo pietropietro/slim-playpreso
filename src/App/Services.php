@@ -41,7 +41,8 @@ $container['user_find_service'] = static fn (
     $container->get('userparticipation_find_service'),
     $container->get('guess_find_service'),
     $container->get('trophy_find_service'),
-    $container->get('ppranking_find_service')  
+    $container->get('ppranking_find_service'),
+    $container->get('motd_leader_service')  
 );
 
 $container['user_create_service'] = static fn (
@@ -183,6 +184,12 @@ $container['motd_create_service'] = static fn (
     $container->get('motd_repository'),
 );
 
+$container['motd_leader_service'] = static fn (
+    ContainerInterface $container
+):  MOTD\Leader => new  MOTD\Leader(
+    $container->get('redis_service'),
+    $container->get('motd_repository'),
+);
 
 $container['ppround_verify_service'] = static fn (
     ContainerInterface $container
@@ -386,6 +393,7 @@ $container['match_verify_service'] = static fn (
     $container->get('match_repository'),
     $container->get('guess_verify_service'),
     $container->get('ppround_verify_service'),
+    $container->get('motd_leader_service'),
 );
 
 $container['guess_verify_service'] = static fn (

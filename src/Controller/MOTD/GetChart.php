@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\PPRanking;
+namespace App\Controller\MOTD;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-final class Get extends Base
+final class GetChart extends Base
 {
     /**
      * @param array<string> $args
@@ -15,21 +15,21 @@ final class Get extends Base
     public function __invoke(
         Request $request,
         Response $response,
+        array $args
     ): Response {
-
-        $userId = $this->getAndValidateUserId($request);
 
         $page = (int) $request->getQueryParam('page', 1); // Default to page 1
         $limit = (int) $request->getQueryParam('limit', null); // Default limit to 50
 
-        // $date = date('Y-m-d'); // Assuming you want today's rankings.
-        $result = $this->getPPRankingFindService()->getRankingsForDate(null, $page ,$limit);
+        $result = $this->getMotdLeaderService()->getChart($page, $limit);
         if(!$result){
-            throw new \App\Exception\NotFound('P-Ranking not found.', 404);
+            throw new \App\Exception\NotFound('chart Not Found.', 404);
         }
-        foreach ($result['ppRankings'] as &$ranking) {
-            $ranking['user'] = $this->getUserFindService()->getOne($ranking['user_id']);
+
+        foreach ($result['chart'] as &$item) {
+            $item['user'] = $this->getUserFindService()->getOne($item['user_id']);
         }
+
         return $this->jsonResponse($response, 'success', $result, 200);
     }
 }

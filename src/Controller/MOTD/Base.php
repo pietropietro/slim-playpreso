@@ -10,6 +10,7 @@ use App\Service\Guess;
 use App\Service\Match;
 use App\Service\MOTD;
 use App\Service\PPTournamentType;
+use App\Service\User;
 
 
 abstract class Base extends BaseController
@@ -48,5 +49,17 @@ abstract class Base extends BaseController
     {
         return $this->container->get('pptournamenttype_find_service');
     }
+
+    protected function getMotdLeaderService(): MOTD\Leader
+    {
+        return $this->container->get('motd_leader_service');
+    }
+
+    protected function getUserFindService(): User\Find
+    {
+        return $this->container->get('user_find_service');
+    }
+
+    
 
 }

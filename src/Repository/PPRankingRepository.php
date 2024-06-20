@@ -12,7 +12,7 @@ final class PPRankingRepository extends BaseRepository
      * @param string $fromTime A relative time string compatible with strtotime().
      * @return array An array of user rankings with total and average points.
      */
-    public function fetchPointsFromGuesses(string $fromTime = '-26 week'): array
+    public function fetchPointsFromGuesses(string $fromTime = '-13 week'): array
     {
         // Calculate the date from the relative time string.
         $dateFrom = date('Y-m-d H:i:s', strtotime($fromTime));
@@ -41,7 +41,7 @@ final class PPRankingRepository extends BaseRepository
      * @param string $fromTime A relative time string compatible with strtotime().
      * @return array An array of user league trophy points.
      */
-    public function fetchPointsFromPPLeagues(string $fromTime = '-26 week'): array
+    public function fetchPointsFromPPLeagues(string $fromTime = '-13 week'): array
     {
         // Calculate the date from the relative time string.
         $dateFrom = date('Y-m-d H:i:s', strtotime($fromTime));
@@ -57,9 +57,9 @@ final class PPRankingRepository extends BaseRepository
 
         // Custom select for calculated trophy points.
         $select = "ups.user_id, SUM(CASE 
-            WHEN ups.position = 1 THEN pptt.cost * 2
-            WHEN ups.position = 2 THEN pptt.cost
-            WHEN ups.position = 3 THEN pptt.cost / 2
+            WHEN ups.position = 1 THEN pptt.cost * 1.5
+            WHEN ups.position = 2 THEN pptt.cost  / 2
+            WHEN ups.position = 3 THEN pptt.cost / 3
             ELSE 0
         END) AS total_trophy_points";
         
@@ -80,7 +80,7 @@ final class PPRankingRepository extends BaseRepository
      * @param string $fromTime A relative time string compatible with strtotime().
      * @return array An array of user cup points.
      */
-    public function fetchPointsFromPPCups(string $fromTime = '-26 week'): array
+    public function fetchPointsFromPPCups(string $fromTime = '-13 week'): array
     {
         // Calculate the date from the relative time string.
         $dateFrom = date('Y-m-d H:i:s', strtotime($fromTime));
@@ -116,8 +116,8 @@ final class PPRankingRepository extends BaseRepository
                     WHEN pcg.level = 4 THEN pptt.cost / 2
                     WHEN pcg.level = 5 THEN 
                         CASE 
-                            WHEN ups.position = 1 THEN pptt.cost * 2
-                            WHEN ups.position = 2 THEN pptt.cost
+                            WHEN ups.position = 1 THEN pptt.cost * 4
+                            WHEN ups.position = 2 THEN pptt.cost * 1.5
                             ELSE 0
                         END
                     ELSE 0
@@ -193,6 +193,7 @@ final class PPRankingRepository extends BaseRepository
             // If no date is provided, fetch the most recent ranking date
             $this->db->orderBy("ppRankings.calculated_at", "DESC");
             $mostRecent = $this->db->getOne('ppRankings', 'ppRankings.calculated_at');
+            if(!$mostRecent)return[];
             $date = $mostRecent['calculated_at']; // Setting the date to the most recent available
         }
 

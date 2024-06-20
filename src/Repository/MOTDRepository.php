@@ -52,26 +52,55 @@ final class MOTDRepository extends BaseRepository
         return $this->db->getInsertId();
     }
 
-    public function getWeeklyStandings(?int $userId, int $limit=6){
-        $sql = 
-            "SELECT user_id, username, sum(g.points) as tot_points, count(g.id) as tot_locked
-            FROM guesses g
-            JOIN (
-                SELECT pprm.id 
-                FROM ppRoundMatches pprm 
-                INNER JOIN matches m 
-                ON pprm.match_id = m.id 
-                WHERE motd IS NOT NULL 
-                AND m.verified_at IS NOT NULL 
-                ORDER BY motd DESC
-                LIMIT 7
-            ) pprm 
-            ON g.ppRoundMatch_id = pprm.id
-            INNER JOIN users u on g.user_id = u.id".
-            ($userId ? ' WHERE user_id='.$userId.' ' : ' ')
-            ." group by user_id
-            order by tot_points desc limit ".$limit;
-        return $this->db->query($sql);
+    // public function getWeeklyStandings(?int $userId, int $limit=6){
+    //     $sql = 
+    //         "SELECT user_id, username, sum(g.points) as tot_points, count(g.id) as tot_locked
+    //         FROM guesses g
+    //         JOIN (
+    //             SELECT pprm.id 
+    //             FROM ppRoundMatches pprm 
+    //             INNER JOIN matches m 
+    //             ON pprm.match_id = m.id 
+    //             WHERE motd IS NOT NULL 
+    //             AND m.verified_at IS NOT NULL 
+    //             ORDER BY motd DESC
+    //             LIMIT 7
+    //         ) pprm 
+    //         ON g.ppRoundMatch_id = pprm.id
+    //         INNER JOIN users u on g.user_id = u.id".
+    //         ($userId ? ' WHERE user_id='.$userId.' ' : ' ')
+    //         ." group by user_id
+    //         order by tot_points desc limit ".$limit;
+    //     return $this->db->query($sql);
+    // }
+
+    public function insertLeader(int $userId, int $points){
+        $data = array(
+            'user_id' => $userId,
+            'tot_points' => $points,
+            'calculated_at' => $this->db->now()
+        );
+        return $this->db->insert('motdLeader', $data);
+    }
+
+    public function getMotdLeader(){
+        $this->db->orderBy('calculated_at', 'desc');
+        return $this->db->getOne('motdLeader');
+    }
+
+    public function retrieveMotdChart($offset = 0, $limit = 10) {
+        $dateAgo = date("Y-m-d", strtotime('-1 month'));
+    
+        $this->db->join("ppRoundMatches pprm", "pprm.id = guesses.ppRoundMatch_id", "INNER");
+        $this->db->where("pprm.motd", $dateAgo, ">=");
+        $this->db->groupBy("guesses.user_id");
+        $this->db->orderBy("tot_points", "desc");
+        $chart = $this->db->withTotalCount()->get("guesses", [$offset, $limit], "guesses.user_id, SUM(guesses.points) as tot_points");
+        
+        return [
+            'chart' => $chart,
+            'total' => (int) $this->db->totalCount,
+        ];
     }
 
     

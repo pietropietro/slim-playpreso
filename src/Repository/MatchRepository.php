@@ -284,8 +284,12 @@ final class MatchRepository extends BaseRepository
 
     public function isBeforeStartTime(int $id):bool{
         $this->db->where('id', $id);
-        $now = date("Y-m-d H:i:s");
-        $this->db->where('date_start', $now, '>');
+
+        $minutesAllowed = $_SERVER['ALLOW_LOCK_MINUTES_BEFORE_START'] ?? 10;
+        $offsetTime = '-' . $minutesAllowed . ' minutes';
+        $adjustedNow = date("Y-m-d H:i:s", strtotime($offsetTime));
+        $this->db->where('date_start', $adjustedNow, '>');
+    
         return $this->db->has('matches');
     }
 
