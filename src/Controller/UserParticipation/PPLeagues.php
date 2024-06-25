@@ -16,7 +16,9 @@ final class PPLeagues extends Base{
         Response $response,
         array $args
     ): Response {
-        $userId = $this->getAndValidateUserId($request);
+        // $userId = $this->getAndValidateUserId($request);
+        
+        $userId = (int) $args['id'];
         $ups = array();
 
         $activeAndPaused = $this->getParticipationService()

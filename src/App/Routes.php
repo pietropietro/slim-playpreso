@@ -82,8 +82,8 @@ return function ($app){
     })->add(new Auth($pointsService));
 
     $app->group('/user-participation', function () use ($app): void {
-        $app->get('/p-leagues', UserParticipation\PPLeagues::class);
-        $app->get('/p-cup-groups', UserParticipation\PPCupGroups::class);
+        $app->get('/p-leagues/{id}', UserParticipation\PPLeagues::class);
+        $app->get('/p-cup-groups/{id}', UserParticipation\PPCupGroups::class);
         $app->get('', UserParticipation\GetAll::class);
     })->add(new Auth($pointsService));
 

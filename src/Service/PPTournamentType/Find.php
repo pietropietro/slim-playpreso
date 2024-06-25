@@ -24,6 +24,10 @@ final class Find  extends BaseService{
 
     public function getOne(int $id, bool $enrich = true){
         $ppTT =  $this->ppTournamentTypeRepository->getOne($id);
+        if($ppTT['cup_format']){
+            $ppTT['cup_format'] = json_decode($ppTT['cup_format']);
+        }
+        
         if(!$enrich) return $ppTT;
         return $this->enrich($ppTT);
     }
@@ -67,9 +71,6 @@ final class Find  extends BaseService{
             $ppTT['relegate'] = $ppTT['level'] > 1 ? 5 - $ppTT['level'] : null;
             $ppTT['rejoin'] = $ppTT['level'] > 2 ? 1 : 2;
             $ppTT['next'] = $this->ppTournamentTypeRepository->getByNameAndLevel(name: $ppTT['name'], level: $ppTT['level']+1);
-        }
-        else{
-            $ppTT['cup_format'] = json_decode($ppTT['cup_format']);
         }
         return $ppTT;
     }

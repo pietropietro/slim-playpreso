@@ -65,7 +65,7 @@ final class Find  extends BaseService {
             $updatedAfter
         );        
         foreach($ups as &$up){
-            $this->enrich($up, $userId);
+            $this->enrich($up, $userId, false);
         }
         return $ups;
     }
@@ -78,10 +78,10 @@ final class Find  extends BaseService {
         return $this->userParticipationRepository->isUserInTournamentType($userId, $ppTournamentType_id);
     }
 
-    protected function enrich(&$up, int $userId){
+    protected function enrich(&$up, int $userId, ?bool $ppttEnriched = true){
         if(!$up) return;
         // $up['ppTournamentType'] = $this->ppTournamentTypeRepository->getOne($up['ppTournamentType_id']);
-        $up['ppTournamentType'] = $this->ppTournamentTypeFindService->getOne($up['ppTournamentType_id']);
+        $up['ppTournamentType'] = $this->ppTournamentTypeFindService->getOne($up['ppTournamentType_id'], $ppttEnriched);
         
         if($up['ppLeague_id']){
             $ppLeague = $this->ppLeagueRepository->getOne($up['ppLeague_id']);      

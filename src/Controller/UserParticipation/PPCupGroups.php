@@ -16,7 +16,9 @@ final class PPCupGroups extends Base{
         Response $response,
         array $args
     ): Response {
-        $userId = $this->getAndValidateUserId($request);
+        // $userId = $this->getAndValidateUserId($request);
+        $userId = (int) $args['id'];
+
         $ups = array();
 
         $active = $this->getParticipationService()->getForUser($userId, 'ppCupGroup',  started: null, finished: false);
