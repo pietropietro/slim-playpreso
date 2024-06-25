@@ -18,6 +18,7 @@ final class GuessRepository extends BaseRepository
         ?bool $includeMotd = true, 
         ?bool $locked = null, 
         ?bool $verified = null,
+        ?string $verified_after = null,
         ?string $order = 'asc',
         ?int $offset = null, 
         ?int $limit = 200
@@ -36,6 +37,9 @@ final class GuessRepository extends BaseRepository
     
         if (isset($verified)) {
             $this->db->where('m.verified_at ' . ($verified ? 'IS NOT' : 'IS') . ' NULL');
+            if(isset($verified_after)){
+                $this->db->where('guesses.verified_at', $verified_after, '>=');
+            }
         }
     
         $this->db->where('user_id', $userId);
@@ -57,8 +61,8 @@ final class GuessRepository extends BaseRepository
         return $this->db->get('guesses', $limit);
     }
 
-    public function getForPPRoundMatch(int $ppRMId, ?int $userId=null){
-        $this->db->where('ppRoundMatch_id', $ppRMId);
+    public function getForPPRoundMatch(int $ppRoundMatchId, ?int $userId=null){
+        $this->db->where('ppRoundMatch_id', $ppRoundMatchId);
         if($userId){
             $this->db->where('user_id', $userId);
             return $this->db->getOne('guesses');
@@ -67,6 +71,11 @@ final class GuessRepository extends BaseRepository
         $this->db->orderBy('g.points','desc');
         $this->db->orderBy('g.guessed_at','desc');
         return $this->db->get('guesses g', null, array('g.*, u.username'));
+    }
+
+    public function countForPPRoundMatch(int $ppRoundMatchId){
+        $this->db->where('ppRoundMatch_id', $ppRoundMatchId);
+        return $this->db->getValue('guesses', 'count(id)');
     }
 
     public function getForMatch(int $matchId, bool $not_verified){

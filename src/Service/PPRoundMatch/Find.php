@@ -67,6 +67,10 @@ final class Find  extends BaseService{
         }
     }
 
+    public function countPPRMGuesses(int $id){
+        return $this->guessRepository->countForPPRoundMatch($id);
+    }
+
     private function getPPRMGuesses(int $id, ?int $userId = null){
         $guesses = $this->guessRepository->getForPPRoundMatch($id);
 

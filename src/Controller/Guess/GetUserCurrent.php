@@ -32,12 +32,23 @@ final class GetUserCurrent extends Base
             verified: false
         );
 
+        $verified = $this->getGuessFindService()->getForUser(
+            userId: $userId, 
+            includeMotd: true,
+            locked: null,
+            verified: true,
+            verified_after:  date("Y-m-d", strtotime('- 4 days'))
+        );
+
         $data = [];
         if (!empty($unlocked)) {
             $data['unlocked'] = $unlocked;
         }
         if (!empty($locked)) {
             $data['locked'] = $locked;
+        }
+        if (!empty($verified)) {
+            $data['finished'] = $verified;
         }
 
         return $this->jsonResponse(

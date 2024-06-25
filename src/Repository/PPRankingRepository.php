@@ -57,9 +57,9 @@ final class PPRankingRepository extends BaseRepository
 
         // Custom select for calculated trophy points.
         $select = "ups.user_id, SUM(CASE 
-            WHEN ups.position = 1 THEN pptt.cost * 1.5
-            WHEN ups.position = 2 THEN pptt.cost  / 2
-            WHEN ups.position = 3 THEN pptt.cost / 3
+            WHEN ups.position = 1 THEN pptt.cost * 2
+            WHEN ups.position = 2 THEN pptt.cost  
+            WHEN ups.position = 3 THEN pptt.cost * 0.5
             ELSE 0
         END) AS total_trophy_points";
         

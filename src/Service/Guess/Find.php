@@ -42,6 +42,7 @@ final class Find extends BaseService{
         ?bool $includeMotd = true, 
         ?bool $locked = null, 
         ?bool $verified = null,
+        ?string $verified_after = null,
         ?string $order = 'asc',
         ?int $page = 1, 
         ?int $limit = 200
@@ -53,6 +54,7 @@ final class Find extends BaseService{
             $includeMotd, 
             $locked, 
             $verified,
+            $verified_after,
             $order,
             $offset,
             $limit

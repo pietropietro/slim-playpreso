@@ -24,6 +24,8 @@ final class GetToday extends Base
             throw new \App\Exception\NotFound('MOTD Not Found.', 404);
         }
 
+        $motd['tot_locks'] = $this->getPPRoundMatchFindService()->countPPRMGuesses($motd['id']);
+
 
         $motdLeader = $this->getMotdLeaderService()->getMotdLeader();
         $motdLeader['user'] = $this->getUserFindService()->getOne($motdLeader['user_id']);
@@ -39,6 +41,8 @@ final class GetToday extends Base
                 'verified_at' => $this->getMatchFindService()->isBeforeStartTime($motd['match']['id']) ? null : 'cantlock'
             );
         }
+
+        $motd['guess']['ppTournamentType'] = $motdPPtt;
 
         $returnArray = array(
             "motd" => $motd, 
