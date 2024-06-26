@@ -27,8 +27,10 @@ final class GetToday extends Base
         $motd['tot_locks'] = $this->getPPRoundMatchFindService()->countPPRMGuesses($motd['id']);
 
 
-        $motdLeader = $this->getMotdLeaderService()->getMotdLeader();
-        $motdLeader['user'] = $this->getUserFindService()->getOne($motdLeader['user_id']);
+        $motdChart = $this->getMotdLeaderService()->getChart(1,1);
+        foreach ($motdChart['chart'] as &$motdStanding) {
+            $motdStanding['user'] = $this->getUserFindService()->getOne($motdStanding['user_id']);
+        }
 
         $motdPPtt = $this->getPPTournamentTypeFindService()->getMOTDType();
 
@@ -46,7 +48,7 @@ final class GetToday extends Base
 
         $returnArray = array(
             "motd" => $motd, 
-            "motdLeader" => $motdLeader,
+            "motdChart" => $motdChart,
             "ppTournamentType" => $motdPPtt
         );
 
