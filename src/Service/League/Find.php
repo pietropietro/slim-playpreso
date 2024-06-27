@@ -59,7 +59,11 @@ final class Find  extends Base{
     }
 
     public function getNeedFutureData(): array{
-        return $this->leagueRepository->getNeedFutureData() ?? [];
+        $leaguesNoFutureMatches = $this->leagueRepository->getNeedFutureData() ?? [];
+        $leaguesWithSuspectTeamNames = $this->leagueRepository->getSuspectTeamNameLeagues() ?? [];
+        $mergedLeagues = array_merge($leaguesNoFutureMatches, $leaguesWithSuspectTeamNames);
+
+        return $mergedLeagues;
     }
 
 

@@ -186,4 +186,30 @@ final class LeagueRepository extends BaseRepository
         return $this->db->getValue('leagues', 'standings');
     }
 
+    public function getSuspectTeamNameLeagues() {
+        $current_date = date('Y-m-d H:i:s');
+        
+        // Initialize the database connection (assuming $this->db is the instance of the database connection)
+        $this->db->join("teams as home_team", "matches.home_id = home_team.id", "INNER");
+        $this->db->join("teams as away_team", "matches.away_id = away_team.id", "INNER");
+        $this->db->join("leagues l", "matches.league_id = l.id", "INNER");
+        $this->db->where("matches.date_start", $current_date, ">");
+        
+        // Add the conditions for suspect team names
+        $this->db->where("(home_team.name LIKE '%group%' OR away_team.name LIKE '%group%')");
+        
+        // Correcting the not like which was blocking the whole result
+        // $this->db->where("home_team.name NOT LIKE '%group%_%'");
+        // $this->db->where("away_team.name NOT LIKE '%group%_%'");
+        
+        // Select leagues that match the criteria and group by league ID
+        $this->db->groupBy("l.id");
+        
+        // Select leagues that match the criteria
+        $results = $this->db->get("matches", null, "l.*");
+        
+        return $results;
+    }
+    
+
 }
