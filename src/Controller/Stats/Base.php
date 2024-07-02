@@ -15,5 +15,10 @@ abstract class Base extends BaseController
         return $this->container->get('stats_find_service');
     }
 
+    protected function getStatsUserService(): Stats\User
+    {
+        return $this->container->get('stats_user_service');
+    }
+
 
 }

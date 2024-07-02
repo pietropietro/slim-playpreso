@@ -101,14 +101,14 @@ final class CalculateYearWrapped extends BaseService{
         return $returnData;
     }
 
-    private function getExtremeTeamsData(int $userId, int $year, bool $bestWorseFlag = true){
-        $data = $this->statsRepository->getUserExtremeAverageTeams($userId, $year, $bestWorseFlag);
+    private function getExtremeTeamsData(int $userId, int $year, bool $bestWorstFlag = true){
+        $data = $this->statsRepository->getUserExtremeAverageTeams($userId, $year, $bestWorstFlag);
         if(!is_array($data)|| count($data)==0){
             return [];
         }
         $data = $data[0];
 
-        $prefix = $bestWorseFlag ? 'high' : 'low';
+        $prefix = $bestWorstFlag ? 'high' : 'low';
         $returnData = array();
         $returnData[$prefix.'_team_id'] = $data['id'];
         $returnData[$prefix.'_team_name'] = $data['name'];

@@ -95,14 +95,16 @@ final class StatsRepository extends BaseRepository
     public function getCommonLock(
         ?int $ppRoundMatchId =null,
         ?int $userId = null,
-        ?int $year=null
+        ?string $from = null, 
+        ?string $to=null
     ){
         if($ppRoundMatchId)$this->db->where('ppRoundMatch_id', $ppRoundMatchId);
         if($userId)$this->db->where('user_id', $userId);
-        if($year)$this->db->where('YEAR(guessed_at)', $year);
+        if($from)$this->db->where('guessed_at', $from, '>=');
+        if($to)$this->db->where('guessed_at', $to, '<=');
         $this->db->orderBy('most_lock_combination_tot');
         $this->db->groupBy('most_lock_combination');
-        return $this->db->getOne('guesses',
+        return $this->db->get('guesses', 3,
             'concat_ws("-",home,away) as most_lock_combination, count(*) as most_lock_combination_tot'
         );
     }
@@ -118,27 +120,34 @@ final class StatsRepository extends BaseRepository
     //  COUNT(g.PRESO) as cnt_preso
     //This query will count the occurrences of each team as 
     //either home or away in the guesses of the specified user and then return the top 3 teams
-    public function getUserCommonTeams(int $userId, int $year){
+    public function getUserCommonTeams(int $userId, ?string $from = null, ?string $to = null){
+        // Set default broad date ranges if $from or $to is not provided
+        $from = $from ?? '1900-01-01 00:00:00';
+        $to = $to ?? '2100-12-31 23:59:59';
+    
         $sql = "
-            SELECT t.id, t.name, COUNT(*) as tot_locks, round(AVG(subquery.points),1) as avg_points, SUM(subquery.preso) as tot_preso
+            SELECT t.id, t.name, COUNT(*) as tot_locks, round(AVG(COALESCE(subquery.points, 0)),1) as avg_points, SUM(subquery.preso) as tot_preso
             FROM (
                 SELECT home_id as team_id, g.points, g.preso FROM guesses g
                 JOIN matches m ON g.match_id = m.id
-                WHERE g.user_id = ? AND YEAR(g.guessed_at) = ?
+                WHERE g.user_id = ? 
+                AND g.guessed_at BETWEEN ? AND ?
                 UNION ALL
                 SELECT away_id as team_id, g.points, g.preso FROM guesses g
                 JOIN matches m ON g.match_id = m.id
-                WHERE g.user_id = ? AND YEAR(g.guessed_at) = ?
+                WHERE g.user_id = ? 
+                AND g.guessed_at BETWEEN ? AND ?
             ) as subquery
             JOIN teams t ON subquery.team_id = t.id
             GROUP BY t.id, t.name
             ORDER BY tot_locks DESC
             LIMIT 3
         ";
-
-        $params = [$userId, $year, $userId, $year]; 
+    
+        $params = [$userId, $from, $to, $userId, $from, $to]; 
         return $this->db->rawQuery($sql, $params);
     }
+    
 
     // [0] => Array
     // (
@@ -147,30 +156,36 @@ final class StatsRepository extends BaseRepository
     //     [avg_points] => 9.8
     //     [occurrences] => 5
     // )
-    //true best, false worse
-    public function getUserExtremeAverageTeams(int $userId, int $year, bool $bestWorseFlag = true){
+    //true best, false worst
+    public function getUserExtremeAverageTeams(int $userId, ?string $from = null, ?string $to = null, bool $bestWorstFlag = true){
+        // Default values for $from and $to if not provided
+        $from = $from ?? '1900-01-01 00:00:00';
+        $to = $to ?? '2100-12-31 23:59:59';
+    
         $sql = "
-            SELECT t.id, t.name, round(AVG(subquery.points),1) as avg_points, COUNT(*) as tot_locks
+            SELECT t.id, t.name, t.country, round(AVG(COALESCE(subquery.points, 0)),1) as avg_points, COUNT(*) as tot_locks
             FROM (
                 SELECT home_id as team_id, g.points FROM guesses g
                 JOIN matches m ON g.match_id = m.id
-                WHERE g.user_id = ? AND YEAR(g.guessed_at) = ?
+                WHERE g.user_id = ? 
+                AND g.guessed_at BETWEEN ? AND ?
                 UNION ALL
                 SELECT away_id as team_id, g.points FROM guesses g
                 JOIN matches m ON g.match_id = m.id
-                WHERE g.user_id = ? AND YEAR(g.guessed_at) = ?
+                WHERE g.user_id = ? 
+                AND g.guessed_at BETWEEN ? AND ?
             ) as subquery
             JOIN teams t ON subquery.team_id = t.id
             GROUP BY t.id, t.name
             HAVING COUNT(*) >= ?
-            ORDER BY avg_points ".($bestWorseFlag ? "DESC" : "ASC")."
+            ORDER BY avg_points ".($bestWorstFlag ? "DESC" : "ASC")."
             LIMIT 3
         ";
-        
-        $limit = 5;
-        $params = [$userId, 2023, $userId, 2023, 5]; // Replace $userId with the actual user ID
+    
+        $params = [$userId, $from, $to, $userId, $from, $to, 5];
         return $this->db->rawQuery($sql, $params);
     }
+    
 
 
     //     Array
@@ -186,13 +201,14 @@ final class StatsRepository extends BaseRepository
         // )
 
     //stats only for locked guesses
-    public function getUserMainSummary(int $userId, int $year){
+    public function getUserMainSummary(int $userId, ?string $from = null, ?string $to=null){
         $this->db->where('user_id', $userId);
-        $this->db->where('YEAR(guessed_at)', $year, '=');
+        if($from)$this->db->where('verified_at', $from, '>=');
+        if($to)$this->db->where('verified_at', $to, '<=');
         $this->db->groupBy('user_id'); // Group by user_id if you want to aggregate over all records of the user
         $columns = [
             'COUNT(*) AS tot_locks',
-            'round(avg(points),1) as avg_points',
+            'round(AVG(COALESCE(points, 0)),1) as avg_points',
             'round(100 * SUM(UNOX2 = 1) / COUNT(*),1) AS perc_unox2',
             'round(100 * SUM(GGNG = 1) / COUNT(*),1) AS perc_ggng',
             'round(100 * SUM(UO25 = 1) / COUNT(*),1) AS perc_uo25',
@@ -203,9 +219,10 @@ final class StatsRepository extends BaseRepository
     }
 
 
-    public function getUserMissedCount(int $userId, int $year){
+    public function getUserMissedCount(int $userId, ?string $from = null, ?string $to=null){
         $this->db->where('user_id', $userId);
-        $this->db->where('YEAR(created_at)', $year, '=');
+        if($from)$this->db->where('verified_at', $from, '>=');
+        if($to)$this->db->where('verified_at', $to, '<=');
         $this->db->where('verified_at IS NOT NULL');
         $this->db->groupBy('user_id');
         $column = 'SUM(guessed_at IS NULL) AS tot_missed';
@@ -222,40 +239,42 @@ final class StatsRepository extends BaseRepository
     //     [avg_points] => 4.0952
     // )
     //commonBestFlag true returns common, false returns best avg
-    public function getUserLeagues(int $userId, int $year, int $commonHighLow){
+    
+    public function getUserLeagues(int $userId, ?string $from = null, ?string $to=null, int $commonHighLow){
         $this->db->join("matches m", "g.match_id = m.id", "INNER");
         $this->db->join("leagues l", "m.league_id = l.id", "INNER");
-
+        $this->db->join("leagues pl", "l.parent_id = pl.id", "LEFT");
+    
         $this->db->where("g.user_id", $userId);
-        $this->db->where("YEAR(g.guessed_at)", $year, '=');
-
+        if($from) $this->db->where('g.verified_at', $from, '>=');
+        if($to) $this->db->where('g.verified_at', $to, '<=');
+    
         $this->db->groupBy("COALESCE(l.parent_id, l.id)");
-
-        if($commonHighLow === 0) $this->db->orderBy("COUNT(*)", "DESC");
-        
-        else{
-            $this->db->having('tot_locks', 5, '>=');
-            $this->db->orderBy("AVG(g.points)", $commonHighLow === 1 ? "DESC" : 'ASC');
+    
+        if($commonHighLow === 0) {
+            $this->db->orderBy("COUNT(*)", "DESC");
+        } else {
+            $this->db->having('COUNT(*)', 5, '>=');
+            $this->db->orderBy("AVG(COALESCE(g.points, 0))", $commonHighLow === 1 ? "DESC" : 'ASC');
         }
-
+    
         $columns = [
-            "ANY_VALUE(l.id) as id", 
-            "ANY_VALUE(l.parent_id) as parent_id", 
-            "ANY_VALUE(country) as country", 
-            "ANY_VALUE(l.name) as name", 
-            "COUNT(*) as tot_locks", 
-            "round(AVG(g.points),1) as avg_points"
+            "COALESCE(ANY_VALUE(l.parent_id), ANY_VALUE(l.id)) as id",
+            "COALESCE(ANY_VALUE(pl.name), ANY_VALUE(l.name)) as name",
+            "ANY_VALUE(l.parent_id) as parent_id",
+            "ANY_VALUE(l.country) as country",
+            "COUNT(*) as tot_locks",
+            //TODO check if missed should have 0 points instead of null
+            // coalesce (hardfix) so if points is null it counts as 0 (i.e. missed)
+            "round(AVG(COALESCE(g.points, 0)),1) as avg_points"
         ];
-        // $columns = ["l.id, country ,l.name as name", "COUNT(*) as tot_locks", "AVG(g.points) as avg_points"];
-        
+    
         $result = $this->db->get("guesses g", 3 ,$columns);
-        if(isset($result[0]['parent_id'])){
-            $result[0]['id'] = $result[0]['parent_id'];
-            $this->db->where('id',$result[0]['parent_id']);
-            $result[0]['name'] = $this->db->getValue('leagues', 'name');
-        }
+    
         return $result;
-    }
+    }    
+
+
 
     function getExtremeMonth(int $userId, int $year, bool $isBest = true) {
     
@@ -271,7 +290,7 @@ final class StatsRepository extends BaseRepository
     
         $columns = ['YEAR(guessed_at) AS year, 
                     MONTH(guessed_at) AS month, 
-                    ROUND(AVG(points),1) AS avg_points',
+                    round(AVG(COALESCE(points, 0)),1) as avg_points',
                     'count(id) as tot_locks',
                     'sum(preso) as tot_preso'
                 ];

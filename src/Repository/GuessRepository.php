@@ -86,13 +86,13 @@ final class GuessRepository extends BaseRepository
         return $this->db->get('guesses');
     }
 
-    public function getForTeam(int $teamId, int $userId, ?string $before=null, ?string $after=null){
+    public function getForTeam(int $teamId, int $userId, ?string $from=null, ?string $to=null){
         $this->db->join("matches m", "m.id=guesses.match_id", "INNER");
 
         $this->db->where('user_id', $userId);
 
-        if($before) $this->db->where('m.verified_at', date("Y-m-d H:i:s", strtotime($before)), "<");
-        if($after) $this->db->where('m.verified_at', date("Y-m-d H:i:s", strtotime($after)), ">");
+        if($from) $this->db->where('m.verified_at', $from, ">=");
+        if($to) $this->db->where('m.verified_at',$to, "<=");
 
         $teamIdCondition = "(home_id = " . $this->db->escape($teamId) . " OR away_id = " . $this->db->escape($teamId) . ")";
         $this->db->where($teamIdCondition);
@@ -100,13 +100,13 @@ final class GuessRepository extends BaseRepository
         return $this->db->get('guesses', null, 'guesses.*');
     }
 
-    public function getForLeague(int $leagueId, int $userId, ?string $before=null, ?string $after=null){
+    public function getForLeague(int $leagueId, int $userId, ?string $from=null, ?string $to=null){
         $this->db->where('user_id', $userId);
         $this->db->join("matches m", "m.id=guesses.match_id", "INNER");
         $this->db->join("leagues l", "m.league_id = l.id", "INNER");
 
-        if($before) $this->db->where('m.verified_at', date("Y-m-d H:i:s", strtotime($before)), "<");
-        if($after) $this->db->where('m.verified_at', date("Y-m-d H:i:s", strtotime($after)), ">");
+        if($from) $this->db->where('m.verified_at', $from, ">=");
+        if($to) $this->db->where('m.verified_at', $to, "<=");
 
         $leagueIdCondition = "(m.league_id = " . $this->db->escape($leagueId) . " OR l.parent_id = " . $this->db->escape($leagueId) . ")";
         $this->db->where($leagueIdCondition);

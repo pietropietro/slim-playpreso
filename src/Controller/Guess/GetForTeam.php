@@ -21,11 +21,11 @@ final class GetForTeam extends Base
         $userId = $this->getAndValidateUserId($request);
         $teamId = (int) $args['id'];
 
-        $before = $request->getQueryParams()['before'] ?? null;
-        $after = $request->getQueryParams()['after'] ?? null;
+        $from = $request->getQueryParams()['from'] ?? null;
+        $to = $request->getQueryParams()['to'] ?? null;
 
         $guesses = $this->getGuessFindService()->getForTeam(
-            $teamId, $userId, $before, $after
+            $teamId, $userId, $from, $to
         );
                  
         return $this->jsonResponse($response, "success", $guesses, 200);

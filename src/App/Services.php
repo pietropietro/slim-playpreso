@@ -528,6 +528,14 @@ $container['stats_find_service'] = static fn (
     $container->get('pptournamenttype_find_service'),
 );
 
+$container['stats_user_service'] = static fn (
+    ContainerInterface $container
+):  Stats\User => new  Stats\User(
+    $container->get('stats_repository'),
+    $container->get('redis_service'),
+    $container->get('guess_find_service')
+);
+
 $container['stats_find_adjacent_ups_service'] = static fn (
     ContainerInterface $container
 ):  Stats\FindAdjacentUps => new  Stats\FindAdjacentUps(
