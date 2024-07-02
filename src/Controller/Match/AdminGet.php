@@ -18,7 +18,6 @@ final class AdminGet extends Base
         array $args
     ): Response {
 
-
         // Get query parameters
         $params = $request->getQueryParams();
 
@@ -35,6 +34,11 @@ final class AdminGet extends Base
 
         // Get matches from the service
         $matches = $this->getMatchFindService()->adminGet(null, $country, $leagueId, $from, $to);
+
+        foreach ($matches as &$m) {
+            $m['league'] = $this->getLeagueFindService()->getOne($m['league_id'], true);
+        }
+
         return $this->jsonResponse($response, 'success', $matches, 200);  
 
     }

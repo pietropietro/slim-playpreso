@@ -29,9 +29,8 @@ final class MatchRepository extends BaseRepository
             $this->db->where('m.league_id', $subLeagueIds, 'IN');
         }
 
-        if ($from && $to) {
-            $this->db->where('date_start', array($from, $to), 'BETWEEN');    
-        }
+        $this->db->where('m.date_start', $from, '>=');
+        $this->db->where('m.date_start', $to, '<=');
 
         // Add condition for ids if provided
         if ($ids) {
@@ -47,7 +46,7 @@ final class MatchRepository extends BaseRepository
         $columns = array(
             'm.id', 'm.ls_id', 'm.league_id', 
             'm.home_id', 'm.away_id', 'm.score_home','m.score_away', 
-            'm.round', 'm.date_start', 'm.created_at', 'm.verified_at', 'm.notes',
+            'm.round', 'm.date_start', 'm.created_at', 'm.verified_at', 'm.notes', 
             'count(distinct pprm.motd) as motd',
         );
 

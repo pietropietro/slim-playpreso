@@ -19,6 +19,10 @@ final class Verify extends BaseService{
     ) {}
     
     public function verify(int $matchId, int $homeScore, int $awayScore, ?string $notes=null){
+
+        if($homeScore < 0 || $awayScore < 0 ){
+            throw new \App\Exception\Match('score invalid', 500);
+        }
         $this->matchRepository->verify($matchId, $homeScore, $awayScore, $notes);
         $this->guessVerifyService->verify($matchId, $homeScore, $awayScore);
         $this->motdLeaderService->checkIfCalculate($matchId);

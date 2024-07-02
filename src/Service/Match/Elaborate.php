@@ -126,7 +126,12 @@ final class Elaborate extends BaseService{
 
             // NO EXTRATIME
             if(isset($eventObj->Tr1ET)){
-                $this->matchVerifyService->verify($match['id'], (int)$eventObj->Tr1OR, (int)$eventObj->Tr2OR, 'et');
+                $this->matchVerifyService->verify(
+                    $match['id'], 
+                    ((int)$eventObj->Tr1 - (int)$eventObj->Tr1ET), 
+                    ((int)$eventObj->Tr2 - (int)$eventObj->Tr2ET), 
+                    'et'
+                );
                 $verified_counter ++;
                 continue;
             }
