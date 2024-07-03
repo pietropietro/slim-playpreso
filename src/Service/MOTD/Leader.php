@@ -16,7 +16,7 @@ final class Leader  extends BaseService{
 
     public function checkIfCalculate(int $matchId){
         $motd = $this->motdRepository->getMotd();
-        if($motd['match_id'] == $matchId){
+        if($motd && $motd['match_id'] == $matchId){
             $this->calculateLeader();
         }
     }

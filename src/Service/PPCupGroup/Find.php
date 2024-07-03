@@ -66,12 +66,14 @@ final class Find  extends BaseService{
                 }
             }
         } else {
+            
             // Higher level handling: clean the tags before comparison
+            $fromTag = str_replace(['+', '-'], '', $fromTag);
             $previoustaglength = strlen($fromTag);
             foreach ($nextGroups as $group) {
                 $cleanTag = str_replace(['+', '-'], '', $group['tag']);
-                if(substr($cleanTag, 0, $previoustaglength) === $ppCupGroup['tag'])return $group;
-                if(substr($cleanTag, $previoustaglength, $previoustaglength) === $ppCupGroup['tag'])return $group;
+                if(substr($cleanTag, 0, $previoustaglength) === $fromTag)return $group;
+                if(substr($cleanTag, $previoustaglength, $previoustaglength) === $fromTag)return $group;
             }
         }
     }
