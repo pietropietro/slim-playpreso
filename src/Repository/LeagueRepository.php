@@ -59,11 +59,12 @@ final class LeagueRepository extends BaseRepository
         );
     }
 
-    public function getWithChildren(int $id){
-        $this->db->where('id', $id);
-        $this->db->orWhere('parent_id', $id);
+    public function getChildren(int $id, bool $onlyChildren = true){
+        $this->db->where('parent_id', $id);
+        if($onlyChildren)$this->db->where('parent_id != id');
         return $this->db->get('leagues',null, $this->columnsNoStandings);
     }
+
 
     public function getForArea(int $ppAreaId, ?int $level = null)
     {
@@ -196,7 +197,12 @@ final class LeagueRepository extends BaseRepository
         $this->db->where("matches.date_start", $current_date, ">");
         
         // Add the conditions for suspect team names
-        $this->db->where("(home_team.name LIKE '%group%' OR away_team.name LIKE '%group%')");
+        $this->db->where("(home_team.name LIKE '%group%' 
+                       OR away_team.name LIKE '%group%' 
+                       OR home_team.name LIKE '%winner%' 
+                       OR away_team.name LIKE '%winner%' 
+                       OR home_team.name LIKE '%/%' 
+                       OR away_team.name LIKE '%/%')");
         
         // Correcting the not like which was blocking the whole result
         // $this->db->where("home_team.name NOT LIKE '%group%_%'");

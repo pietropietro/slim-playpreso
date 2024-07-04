@@ -50,7 +50,7 @@ final class PPCupGroups extends Base{
             // Check if ppCup_id is not in the active array
             if (!in_array($id, $activeIds)) {
                 // Check if this item is later than the existing one
-                if (!isset($latestFinished[$id]) || isLaterDate($date, $latestFinished[$id]['joined_at'])) {
+                if (!isset($latestFinished[$id]) || $date > $latestFinished[$id]['joined_at']) {
                     $latestFinished[$id] = $item;
                 }
             }

@@ -47,10 +47,11 @@ final class Find extends BaseService{
         ?string $country = null,
         ?int $leagueId = null,
         ?string $from = null,
-        ?string $to = null
+        ?string $to = null,
+        ?int $level = null
     ):?array {
         // Check if at least one parameter is provided
-        if (is_null($ids) && is_null($country) && is_null($leagueId) && is_null($from) && is_null($to)) {
+        if (is_null($ids) && is_null($country) && is_null($leagueId) && is_null($from) && is_null($to) && is_null($level)) {
             return [];
         }
     
@@ -60,7 +61,8 @@ final class Find extends BaseService{
             country: $country,
             leagueId: $leagueId,
             from: $from,
-            to: $to
+            to: $to,
+            level: $level
         );
     
         return $this->enrichAll($matches, false);

@@ -23,17 +23,18 @@ final class AdminGet extends Base
 
         // Extract parameters
         $country = $params['country'] ?? null;
+        $level = isset($params['level']) ? (int) $params['level'] : null;
         $leagueId = isset($params['leagueId']) ? (int) $params['leagueId'] : null;
         $from = $params['from'] ?? null;
         $to = $params['to'] ?? null;
 
         // If no params are provided, return an empty result to avoid too big of a result
-        if (!$country && !$leagueId && !$from && !$to) {
+        if (!$country && !$leagueId && !$level &&  !$from && !$to) {
             return $this->jsonResponse($response, 'success', [], 200);
         }
 
         // Get matches from the service
-        $matches = $this->getMatchFindService()->adminGet(null, $country, $leagueId, $from, $to);
+        $matches = $this->getMatchFindService()->adminGet(null, $country, $leagueId, $from, $to, $level);
 
         foreach ($matches as &$m) {
             $m['league'] = $this->getLeagueFindService()->getOne($m['league_id'], true);

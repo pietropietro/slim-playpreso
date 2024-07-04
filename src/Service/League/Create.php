@@ -20,6 +20,12 @@ final class Create extends BaseService{
         ?int $parent_id = null,
         ?string $ls_suffix = null,
     ){
+        if($parent_id){
+            //get country and level from parent
+            $parentData = $this->leagueRepository->getOne($parent_id);
+            $level = $parentData['level'];
+            $country = $parentData['country'];
+        }
         return $this->leagueRepository->create(
             $name, 
             substr(strtoupper($tag),0,3),

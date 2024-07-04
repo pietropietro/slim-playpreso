@@ -8,50 +8,50 @@ final class MatchRepository extends BaseRepository
 {   
     private $whitelistColumns = array('id','league_id','home_id','away_id','score_home','score_away','round','date_start','verified_at');
 
-    //TODO REFACTOR
     public function adminGet(
         ?array $ids = null,
         ?string $country = null,
         ?int $leagueId = null,
         ?string $from = null,
-        ?string $to = null
+        ?string $to = null,
+        ?int $level = null
     ): array {
-
-        if ($country) {
-            $this->db->join('leagues l', 'm.league_id = l.id', 'INNER');
-            $this->db->where('l.country', $country);
-        }
-
-        // Handle leagueId and sub-leagues
+    
         if ($leagueId) {
             $subLeagueIds = $this->db->rawQuery("SELECT id FROM leagues WHERE parent_id = ? OR id = ?", [$leagueId, $leagueId]);
-            $subLeagueIds = array_column($subLeagueIds, 'id');
-            $this->db->where('m.league_id', $subLeagueIds, 'IN');
+            $leagueIds = array_column($subLeagueIds, 'id');
+            $this->db->where('m.league_id', $leagueIds, 'IN');
         }
 
+        if ($country || $level) {
+            $this->db->join('leagues l', 'm.league_id = l.id', 'INNER');
+            if($country) $this->db->where('l.country', $country);
+            if($level) $this->db->where('l.level', $level);
+        }
+            
         $this->db->where('m.date_start', $from, '>=');
         $this->db->where('m.date_start', $to, '<=');
-
+    
         // Add condition for ids if provided
         if ($ids) {
             $this->db->where('m.id', $ids, 'IN');
         }
-
-        // $this->db->join('guesses g', "g.match_id=m.id", "left");
+    
         $this->db->join('ppRoundMatches pprm', "pprm.match_id=m.id", "left");
-
         $this->db->groupBy('m.id');
         $this->db->orderBy('date_start', 'ASC');
-
-        $columns = array(
+    
+        $columns = [
             'm.id', 'm.ls_id', 'm.league_id', 
-            'm.home_id', 'm.away_id', 'm.score_home','m.score_away', 
+            'm.home_id', 'm.away_id', 'm.score_home', 'm.score_away', 
             'm.round', 'm.date_start', 'm.created_at', 'm.verified_at', 'm.notes', 
             'count(distinct pprm.motd) as motd',
-        );
-
-        return $this->db->get('matches m', null, $columns);
+        ];
+    
+        $matches = $this->db->get('matches m', null, $columns);
+        return $matches;
     }
+    
 
     // TODO admin if needed can get this extra data
     // 'count(distinct g.ppRoundMatch_id) as ppRMcount', 

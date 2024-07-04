@@ -66,6 +66,10 @@ final class Find  extends Base{
         return $mergedLeagues;
     }
 
+    public function getSuspectTeamNameLeagues(): array{
+        return $this->leagueRepository->getSuspectTeamNameLeagues() ?? [];
+    }
+
 
 
     //TODO move in PPTT

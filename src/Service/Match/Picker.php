@@ -51,6 +51,13 @@ final class Picker extends BaseService{
         
         $leagueIds = array_column($leagues, 'id');
         
+        //exclude leagues with suspect team names 
+        //(i.e. 'manchester/chelsea' or 'group a winner'  which still need data);
+        $suspectLeagues =  $this->leagueFindService->getSuspectTeamNameLeagues();
+        $suspectLeagueIds = array_column($suspectLeagues, 'id');
+        $leagueIds = array_diff($leagueIds, $suspectLeagueIds);
+
+        
         $matches = array();
         foreach ($leagueIds as $id) {
             if($retrieved = $this->nextRoundForLeague($id)){

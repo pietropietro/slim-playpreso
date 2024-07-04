@@ -20,6 +20,9 @@ final class ExtractSummary extends BaseService{
         foreach ($monthSummary as &$daySummary) {
             $dayLeagues = json_decode($daySummary['matches_from'], true);
     
+            // Extract levels from matches
+            $daySummary['levels_from'] = $this->extractLevelsFromMatches($dayLeagues);
+    
             // Count matches for each league
             $leagueMatchCount = $this->countMatches($dayLeagues);
     
@@ -37,6 +40,20 @@ final class ExtractSummary extends BaseService{
     
         return $monthSummary;
     }
+    
+
+    private function extractLevelsFromMatches(array $dayLeagues): array {
+        $levelsFrom = [];
+        foreach ($dayLeagues as $country => $league) {
+            if (!in_array($league['level'], $levelsFrom)) {
+                $levelsFrom[] = $league['level'];
+            }
+        }
+        sort($levelsFrom);
+        return $levelsFrom;
+    }
+    
+    
     
     private function countMatches(array $dayLeagues): array {
         $leagueMatchCount = [];
