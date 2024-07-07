@@ -260,8 +260,14 @@ final class MatchRepository extends BaseRepository
     private function getLastRoundNumber(int $league_id) : ?int{
         $this->db->where('league_id', $league_id);
         $this->db->where('date_start', date('Y-m-d H:i:s'), '<');
+        $maxInterval = date("Y-m-d H:i:s", strtotime('-30 days'));
+        $this->db->where('date_start', $maxInterval, '>');
+
         $this->db->orderBy('date_start', 'desc');
-        return $this->db->getValue('matches', 'round');
+        //get last 5 matches since league could have ended with some 'recuper' of earlier rounds
+        $rounds = $this->db->getValue('matches', 'round', 5);
+        if(!$rounds)return null;
+        return max($rounds);
     }
 
     public function getNextRoundForLeague(int $league_id, ?int $limit=null) : ?array{
