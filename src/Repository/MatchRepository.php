@@ -29,8 +29,8 @@ final class MatchRepository extends BaseRepository
             if($level) $this->db->where('l.level', $level);
         }
             
-        $this->db->where('m.date_start', $from, '>=');
-        $this->db->where('m.date_start', $to, '<=');
+        if($from)$this->db->where('m.date_start', $from, '>=');
+        if($to)$this->db->where('m.date_start', $to, '<=');
     
         // Add condition for ids if provided
         if ($ids) {
@@ -277,6 +277,16 @@ final class MatchRepository extends BaseRepository
         $this->db->where('date_start', $minTimeInterval, '>');
         $this->db->where('verified_at is null');
         $this->db->orderBy('date_start', 'asc');
+
+        $this->db->join("teams as home_team", "matches.home_id = home_team.id", "INNER");
+        $this->db->join("teams as away_team", "matches.away_id = away_team.id", "INNER");
+        $this->db->where("(home_team.name NOT LIKE '%group%' 
+            AND away_team.name NOT LIKE '%group%' 
+            AND home_team.name NOT LIKE '%winner%' 
+            AND away_team.name NOT LIKE '%winner%' 
+            AND home_team.name NOT LIKE '%/%' 
+            AND away_team.name NOT LIKE '%/%')");
+
         
         return $this->db->get('matches', $limit, 'matches.*, l.parent_id as league_parent_id');
     }
@@ -344,6 +354,18 @@ final class MatchRepository extends BaseRepository
 
         $this->db->where('date_start', $minTimeInterval, '>');
         $this->db->where('verified_at is null');
+
+        $this->db->join("teams as home_team", "matches.home_id = home_team.id", "INNER");
+        $this->db->join("teams as away_team", "matches.away_id = away_team.id", "INNER");
+        $this->db->where(
+            "(home_team.name NOT LIKE '%group%' 
+                AND away_team.name NOT LIKE '%group%' 
+                AND home_team.name NOT LIKE '%winner%' 
+                AND away_team.name NOT LIKE '%winner%' 
+                AND home_team.name NOT LIKE '%/%' 
+                AND away_team.name NOT LIKE '%/%')
+            "
+        );
 
         $this->db->orderBy('date_start', 'asc');
         

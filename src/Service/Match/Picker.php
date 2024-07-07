@@ -19,7 +19,7 @@ final class Picker extends BaseService{
     }
     
     public function pick(int $tournamentTypeId, int $howMany) : ?array{
-        $matches = $this->nextMatchesForPPTournamentType($tournamentTypeId);
+        $matches = $this->nextMatchesForPPTournamentType($tournamentTypeId, $howMany);
         $picked = array();
 
         for($i=0; $i<$howMany; $i++){
@@ -46,17 +46,10 @@ final class Picker extends BaseService{
     }
 
 
-    public function nextMatchesForPPTournamentType(int $tournamentTypeId){
+    public function nextMatchesForPPTournamentType(int $tournamentTypeId,int $minAmount = 3){
         if(!$leagues = $this->leagueFindService->getForPPTournamentType($tournamentTypeId)) return [];
         
         $leagueIds = array_column($leagues, 'id');
-        
-        //exclude leagues with suspect team names 
-        //(i.e. 'manchester/chelsea' or 'group a winner'  which still need data);
-        $suspectLeagues =  $this->leagueFindService->getSuspectTeamNameLeagues();
-        $suspectLeagueIds = array_column($suspectLeagues, 'id');
-        $leagueIds = array_diff($leagueIds, $suspectLeagueIds);
-
         
         $matches = array();
         foreach ($leagueIds as $id) {
@@ -64,7 +57,7 @@ final class Picker extends BaseService{
                 $matches = array_merge($matches, $retrieved);
             }
         }
-        if(!$matches || $matches < 3){
+        if(!$matches || $matches < $minAmount){
             $matches = array();
             foreach ($leagueIds as $id) {
                 if($retrieved = $this->nextMatchesForLeague($id)){
