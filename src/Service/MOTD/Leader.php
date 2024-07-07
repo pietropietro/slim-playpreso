@@ -22,7 +22,7 @@ final class Leader  extends BaseService{
     }
 
     private function calculateLeader(){
-        $topChart = $this->motdRepository->retrieveMotdChart();
+        $topChart = $this->motdRepository->retrieveMotdChart()['chart'];
         $this->motdRepository->insertLeader($topChart[0]['user_id'], (int) $topChart[0]['tot_points']);
     }
 
