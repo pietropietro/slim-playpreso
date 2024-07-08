@@ -294,7 +294,7 @@ final class MatchRepository extends BaseRepository
             AND away_team.name NOT LIKE '%/%')");
 
         
-        return $this->db->get('matches', $limit, 'matches.*, l.parent_id as league_parent_id');
+        return $this->db->get('matches', $limit, 'matches.*, COALESCE(l.parent_id, l.id) as league_parent_id, l.level as league_level');
     }
 
     public function isBeforeStartTime(int $id):bool{
@@ -375,7 +375,7 @@ final class MatchRepository extends BaseRepository
 
         $this->db->orderBy('date_start', 'asc');
         
-        return $this->db->get('matches', $limit, 'matches.*, l.parent_id as league_parent_id');
+        return $this->db->get('matches', $limit, 'matches.*, COALESCE(l.parent_id, l.id) as league_parent_id, l.level as league_level');
     }
 
     public function getLastForTeam(int $id, int $limit = 5){

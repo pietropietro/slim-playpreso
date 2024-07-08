@@ -73,20 +73,29 @@ final class Find  extends Base{
 
 
     //TODO move in PPTT
-    public function getForPPTournamentType(int $ppTTid){
+    public function getForPPTournamentType(int $ppTTid, ?bool $onlyParents=false){
         $ppTT =  $this->ppTournamentTypeRepository->getOne($ppTTid);
         
         if($ppTT['pick_league']){
-            return $this->leagueRepository->getChildren($ppTT['pick_league'], false);
+            $leagues = $this->leagueRepository->getChildren($ppTT['pick_league'], false);
         }
-        if($ppTT['pick_country']){
-            return $this->leagueRepository->getForCountry($ppTT['pick_country'], $ppTT['level']);
+        else if($ppTT['pick_country']){
+            $leagues = $this->leagueRepository->getForCountry($ppTT['pick_country'], $ppTT['level']);
         }
-        if($ppTT['pick_area']){
-            return $this->getForArea($ppTT['pick_area'], $ppTT['level']);
+        else if($ppTT['pick_area']){
+            $leagues = $this->getForArea($ppTT['pick_area'], $ppTT['level']);
+        }
+        else{
+            $leagues = $this->leagueRepository->get(maxLevel: $ppTT['level']); 
+        }
+        
+        if($onlyParents){
+            $leagues= array_filter($leagues, function ($league) {
+                return (!$league['parent_id'] || $league['id'] == $league['parent_id']);
+            });
         }
 
-        return $this->leagueRepository->get(maxLevel: $ppTT['level']);       
+        return $leagues;
     }
 
     //TODO check it returns both leagues for PPArea countries and extra tournaments

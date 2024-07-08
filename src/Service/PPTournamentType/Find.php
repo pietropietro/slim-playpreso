@@ -64,7 +64,7 @@ final class Find  extends BaseService{
     }
 
     private function enrich($ppTT){
-        $ppTT['leagues'] = $this->leagueFindService->getForPPTournamentType($ppTT['id']);
+        $ppTT['leagues'] = $this->leagueFindService->getForPPTournamentType($ppTT['id'], true);
         if(!$ppTT['cup_format']){
             // TODO pptt specific values for promotions / relegations
             $ppTT['promote'] = $ppTT['level'] > 2 ? 2 : 3;

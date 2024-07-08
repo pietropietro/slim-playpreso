@@ -423,6 +423,7 @@ $container['match_picker_service'] = static fn (
 ):  Match\Picker => new Match\Picker(
     $container->get('match_repository'),
     $container->get('league_find_service'),
+    $container->get('pptournamenttype_repository'),
 );
 
 $container['match_find_service'] = static fn (
