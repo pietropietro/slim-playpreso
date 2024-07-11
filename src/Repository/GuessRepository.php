@@ -96,7 +96,7 @@ final class GuessRepository extends BaseRepository
 
         $teamIdCondition = "(home_id = " . $this->db->escape($teamId) . " OR away_id = " . $this->db->escape($teamId) . ")";
         $this->db->where($teamIdCondition);
-
+        $this->db->orderBy('verified_at', 'desc');
         return $this->db->get('guesses', null, 'guesses.*');
     }
 
@@ -111,6 +111,7 @@ final class GuessRepository extends BaseRepository
         $leagueIdCondition = "(m.league_id = " . $this->db->escape($leagueId) . " OR l.parent_id = " . $this->db->escape($leagueId) . ")";
         $this->db->where($leagueIdCondition);
 
+        $this->db->orderBy('verified_at', 'desc');
         return $this->db->get('guesses', null, 'guesses.*');
     }
 
