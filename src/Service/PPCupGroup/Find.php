@@ -111,6 +111,9 @@ final class Find  extends BaseService{
     }
 
     private function enrichWithExtraPromotionFlags($group, $extraPromotionSlots, $cupFormat){
+        // final
+        if(count($cupFormat) == $group['level'])return $group;
+
         $levelConf = $cupFormat[$group['level']-1];
         if($extraPromotionSlots > 0){
             $upsInPosition = $this->userParticipationService->getForTournament(
