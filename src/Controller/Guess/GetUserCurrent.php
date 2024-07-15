@@ -37,7 +37,8 @@ final class GetUserCurrent extends Base
             includeMotd: true,
             locked: null,
             verified: true,
-            verified_after:  date("Y-m-d", strtotime('- 4 days'))
+            verified_after:  date("Y-m-d", strtotime('- 4 days')),
+            order: 'desc'
         );
 
         $data = [];
