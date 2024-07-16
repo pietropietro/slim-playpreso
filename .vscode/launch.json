@@ -64,7 +64,7 @@
             "request": "launch",
             "program": "${file}",
             "cwd": "${workspaceFolder}",
-            "port": 9003,
+            "port": 9004,
             "runtimeArgs": [
                 "-dxdebug.mode=debug",
                 "-dxdebug.start_with_request=yes"

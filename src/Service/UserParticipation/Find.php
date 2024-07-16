@@ -26,6 +26,16 @@ final class Find  extends BaseService {
         protected Match\Find $matchFindService,
     ){}
 
+    public function get(?array $ids=[], ?bool $withPPTT = false){
+        $ups = $this->userParticipationRepository->get($ids);
+        if($withPPTT){
+            foreach ($ups as &$up) {
+                $up['ppTournamentType'] = $this->ppTournamentTypeFindService->getOne($up['ppTournamentType_id'], false);
+            }
+        }
+        return $ups;
+    }
+
 
     public function getForTournament(
         string $tournamentColumn,

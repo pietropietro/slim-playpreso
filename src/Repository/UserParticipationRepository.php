@@ -41,6 +41,7 @@ final class UserParticipationRepository extends BaseRepository
         $this->db->where($this->tableName.'.id', $ids, 'IN');
         $this->db->join('ppLeagues ppl', 'ppl.id = userParticipations.ppLeague_id', "LEFT");
         $this->db->join('ppCupGroups ppcg', 'ppcg.id = userParticipations.ppCupGroup_id', "LEFT");
+        $this->db->orderBy('updated_at', 'desc');
         return $this->db->get($this->tableName, null, $this->columnsJoined3);
     }
 

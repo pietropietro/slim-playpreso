@@ -18,7 +18,7 @@ final class Calculate extends BaseService
 
     public function calculate(){
         $points_from_guesses = $this->ppRankingRepository->fetchPointsFromGuesses(); //tot_points
-        $points_from_ppl = $this->ppRankingRepository->fetchPointsFromPPLeagues(); //total_trophy_points
+        $points_from_ppl = $this->ppRankingRepository->fetchPointsFromPPLeagues(); //tot_points
         $points_from_ppc = $this->ppRankingRepository->fetchPointsFromPPCups(); //points
 
         // Array to hold the combined points for each user.
@@ -37,7 +37,7 @@ final class Calculate extends BaseService
         // Combine and sum points from PP Leagues.
         foreach ($points_from_ppl as $item) {
             $userId = $item['user_id'];
-            $points = $item['total_trophy_points'];
+            $points = $item['tot_points'];
             if (!isset($total_points[$userId])) {
                 $total_points[$userId] = 0;
             }
@@ -47,7 +47,7 @@ final class Calculate extends BaseService
         // Combine and sum points from PP Cups.
         foreach ($points_from_ppc as $item) {
             $userId = $item['user_id'];
-            $points = $item['points']; // Assuming this is already summed in the repository method.
+            $points = $item['ppRanking_points']; // Assuming this is already summed in the repository method.
             if (!isset($total_points[$userId])) {
                 $total_points[$userId] = 0;
             }
@@ -59,6 +59,30 @@ final class Calculate extends BaseService
         // Save the sorted rankings with position
         $this->ppRankingRepository->saveRankings($total_points, date('Y-m-d'));
         return $total_points;
+    }
+
+
+    public function getRankingPointsForPPCupPlacement(string $level_name, int $position, int $join_cost){
+        if($level_name == 'ROUND OF 16'){
+            return $join_cost / 4;
+        }
+        if($level_name == 'QUARTER FINALS'){
+            return $join_cost / 3;
+        }
+        if($level_name == 'SEMI FINALS'){
+            return $join_cost / 2;
+        }
+        if($level_name == 'FINAL'){
+            if($position == 1) return $join_cost * 4;
+            return $join_cost * 1.5;
+        }
+    }
+
+    public function getRankingPointsForPPLeaguePlacement($position, $level){
+        $base = 100 * $level;
+        if($position == 1) return $base * 2;
+        if($position == 2) return $base;
+        if($position == 3) return $base * 0.5;
     }
     
 }

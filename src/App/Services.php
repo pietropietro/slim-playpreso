@@ -627,4 +627,7 @@ $container['ppranking_find_service'] = static fn (
     ContainerInterface $container
 ):  PPRanking\Find => new  PPRanking\Find(
     $container->get('ppranking_repository'),
+    $container->get('pptournamenttype_repository'),
+    $container->get('userparticipation_find_service'),
+    $container->get('ppranking_calculate_service'),
 );
