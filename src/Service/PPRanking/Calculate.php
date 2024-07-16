@@ -47,7 +47,16 @@ final class Calculate extends BaseService
         // Combine and sum points from PP Cups.
         foreach ($points_from_ppc as $item) {
             $userId = $item['user_id'];
-            $points = $item['ppRanking_points']; // Assuming this is already summed in the repository method.
+            
+            $cup_format = json_decode($item['cup_format']);
+            $level_format = $cup_format[$item['level'] - 1];
+            
+            $points = $this->getRankingPointsForPPCupPlacement(
+                $level_format->name, 
+                $item['position'],
+                $item['cost']
+            );
+
             if (!isset($total_points[$userId])) {
                 $total_points[$userId] = 0;
             }
@@ -64,7 +73,7 @@ final class Calculate extends BaseService
 
     public function getRankingPointsForPPCupPlacement(string $level_name, int $position, int $join_cost){
         if($level_name == 'ROUND OF 16'){
-            return $join_cost / 4;
+            return $join_cost / 5;
         }
         if($level_name == 'QUARTER FINALS'){
             return $join_cost / 3;
@@ -73,8 +82,8 @@ final class Calculate extends BaseService
             return $join_cost / 2;
         }
         if($level_name == 'FINAL'){
-            if($position == 1) return $join_cost * 4;
-            return $join_cost * 1.5;
+            if($position == 1) return $join_cost * 2;
+            return $join_cost * 1;
         }
     }
 

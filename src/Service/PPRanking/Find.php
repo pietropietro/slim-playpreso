@@ -31,6 +31,7 @@ class Find
         $offset = ($page - 1) * $limit;
         $result = $this->ppRankingRepository->fetchRankingsByDate($date, $offset, $limit);
 
+        if(!$result['ppRankings'])return [];
 
         foreach ($result['ppRankings'] as &$rankingItem) {
             
@@ -73,10 +74,7 @@ class Find
         $rankingItem['from_ppCups']['userParticipations'] = $this->ppRankingRepository->fetchPointsFromPPCups(
             '-13weeks', $rankingItem['user_id']
         );
-        $totRankingPointsCups =  0;
         foreach ($rankingItem['from_ppCups']['userParticipations'] as &$ppCupItem) {
-            $totRankingPointsCups += $ppCupItem['ppRanking_points'] ;
-
             $ppCupItem['ppTournamentType'] = $this->ppTournamentTypeRepository->getOne(
                 $ppCupItem['ppTournamentType_id']
             );
@@ -88,7 +86,6 @@ class Find
                 $ppCupItem['ppTournamentType']['levelFormat']->name, $ppCupItem['position'], $ppCupItem['ppTournamentType']['cost']
             ));
         }
-        $rankingItem['from_ppCups']['tot_points'] = $totRankingPointsCups;
     }
 
 

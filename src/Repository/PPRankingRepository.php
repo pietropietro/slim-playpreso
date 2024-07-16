@@ -117,18 +117,7 @@ final class PPRankingRepository extends BaseRepository
                     pcg.level,
                     ups.position,
                     pptt.cost,
-                    FLOOR(CASE 
-                        WHEN pcg.level = 2 THEN pptt.cost / 4
-                        WHEN pcg.level = 3 THEN pptt.cost / 3
-                        WHEN pcg.level = 4 THEN pptt.cost / 2
-                        WHEN pcg.level = 5 THEN 
-                            CASE 
-                                WHEN ups.position = 1 THEN pptt.cost * 4
-                                WHEN ups.position = 2 THEN pptt.cost * 1.5
-                                ELSE 0
-                            END
-                        ELSE 0
-                    END) AS ppRanking_points
+                    pptt.cup_format
                 FROM 
                     userParticipations ups
                 INNER JOIN 
@@ -151,12 +140,13 @@ final class PPRankingRepository extends BaseRepository
                 hlr.ppTournamentType_id,
                 hlr.level,
                 hlr.position,
-                hlr.ppRanking_points
+                hlr.cup_format,
+                hlr.cost
             FROM 
                 HighestLevelRecords hlr
             INNER JOIN 
                 users u ON hlr.user_id = u.id
-            WHERE hlr.ppRanking_points > 0
+            WHERE hlr.level > 1
         ";
         
         // Dynamically add the user filter if userId is not null
