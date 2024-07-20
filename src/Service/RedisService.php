@@ -65,4 +65,22 @@ final class RedisService
     {
         $this->redis->del($keys);
     }
+
+    /**
+     * Scan and delete keys matching a specific pattern.
+     */
+    public function deleteKeysByPattern(string $pattern): void
+    {
+        $cursor = null;
+        do {
+            // SCAN for keys matching the pattern
+            $result = $this->redis->scan($cursor, 'MATCH', $pattern, 'COUNT', 100);
+            if ($result) {
+                [$cursor, $keys] = $result;
+                if ($keys) {
+                    $this->del($keys);  // Delete all keys found in this iteration
+                }
+            }
+        } while ($cursor);  // Continue until SCAN returns 0 as cursor
+    }
 }

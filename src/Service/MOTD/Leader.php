@@ -15,15 +15,22 @@ final class Leader  extends BaseService{
         protected Find $motdFindService,
     ){}
 
+    private const REDIS_KEY_MOTD_CHART = 'motd_chart_page';
+
     public function checkIfCalculate(int $matchId){
         $motd = $this->motdRepository->getMotd();
         if($motd && $motd['match_id'] == $matchId){
+
+            if (self::isRedisEnabled() === true ) {
+                $this->redisService->deleteKeysByPattern(self::REDIS_KEY_MOTD_CHART.'*');
+            }
             $this->calculateLeader();
         }
     }
 
     private function calculateLeader(){
         $topChart = $this->motdRepository->retrieveMotdChart()['chart'];
+
         $this->motdRepository->insertLeader($topChart[0]['user_id'], (int) $topChart[0]['tot_points']);
     }
 
@@ -32,11 +39,22 @@ final class Leader  extends BaseService{
        return $this->motdRepository->getMotdLeader();        
     }
 
+
     public function getChart(
         ?int $page = 1, 
         ?int $limit = 10, 
     ){
         $offset = ($page - 1) * $limit;
+
+        if (self::isRedisEnabled() === true ) {
+            $redisKey = sprintf(self::REDIS_KEY_MOTD_CHART.':%d:limit:%d', $page, $limit);
+            $cachedchart = $this->redisService->get($redisKey); // This returns null if not found or the user data if found
+            if ($cachedchart !== null) {
+                return $cachedchart;
+            }
+        } 
+
+
         $result = $this->motdRepository->retrieveMotdChart( $offset, $limit);
 
         foreach ($result['chart'] as &$chartItem) {
@@ -47,8 +65,16 @@ final class Leader  extends BaseService{
 
             $chartItem['guesses'] = $this->motdFindService->getLastForUser($chartItem['user_id']);
         }
+
+        if (self::isRedisEnabled() === true ) {
+            $expiration = 12 * 60 * 60; // 12 hours in seconds
+            $this->redisService->setex($redisKey, $result, $expiration);
+        }
         return $result;
     }
+
+
+
 
     private function fillSparklineData($userChart){
         $motds = explode(',', $userChart['concat_motd']);
