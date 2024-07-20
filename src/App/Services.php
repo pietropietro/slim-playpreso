@@ -175,7 +175,8 @@ $container['motd_find_service'] = static fn (
     $container->get('redis_service'),
     $container->get('motd_repository'),
     $container->get('pproundmatch_find_service'),
-    $container->get('match_find_service')
+    $container->get('match_find_service'),
+    $container->get('guess_find_service')
 );
 
 $container['motd_create_service'] = static fn (
@@ -189,6 +190,7 @@ $container['motd_leader_service'] = static fn (
 ):  MOTD\Leader => new  MOTD\Leader(
     $container->get('redis_service'),
     $container->get('motd_repository'),
+    $container->get('motd_find_service'),
 );
 
 $container['ppround_verify_service'] = static fn (

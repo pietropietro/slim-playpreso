@@ -17,7 +17,7 @@ final class Find extends BaseService{
         protected PPTournamentType\Find $ppTournamentTypeFindService,
     ){}
 
-    private function enrich(&$guess, ?bool $withMatchStats = true){
+    public function enrich(&$guess, ?bool $withMatchStats = true){
         $guess['match'] = $this->matchFindService->getOne(
             id: $guess['match_id'], 
             withStats: $withMatchStats

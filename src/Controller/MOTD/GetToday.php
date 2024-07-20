@@ -27,7 +27,8 @@ final class GetToday extends Base
         $motd['tot_locks'] = $this->getPPRoundMatchFindService()->countPPRMGuesses($motd['id']);
 
 
-        $motdChart = $this->getMotdLeaderService()->getChart(1,1);
+        $motdChart = $this->getMotdLeaderService()->getChart(1,3);
+        
         foreach ($motdChart['chart'] as &$motdStanding) {
             $motdStanding['user'] = $this->getUserFindService()->getOne($motdStanding['user_id']);
         }
@@ -37,6 +38,7 @@ final class GetToday extends Base
         //if motd.guess is null, insert a dummy one with verified_at being if user can or can't lock
         if(!$motd['guess']){
             $motd['guess'] = array(
+                'id' => 'dummy',
                 'home'=> null,
                 'away' => null,
                 'ppTournamentType' => $motdPPtt,

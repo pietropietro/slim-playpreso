@@ -95,7 +95,18 @@ final class MOTDRepository extends BaseRepository
         $this->db->where("pprm.motd", $dateAgo, ">=");
         $this->db->groupBy("guesses.user_id");
         $this->db->orderBy("tot_points", "desc");
-        $chart = $this->db->withTotalCount()->get("guesses", [$offset, $limit], "guesses.user_id, SUM(guesses.points) as tot_points");
+        $chart = $this->db->withTotalCount()->get(
+            "guesses", 
+            [$offset, $limit], 
+            "guesses.user_id, 
+            SUM(guesses.points) as tot_points,
+            count(guesses.id) as tot_locked,
+            sum(preso) as tot_preso, 
+            sum(UNOX2) as tot_unox2,
+            group_concat(motd) as concat_motd,
+            group_concat(COALESCE(points,0)) as concat_points
+            "
+        );
         
         return [
             'chart' => $chart,
@@ -103,6 +114,16 @@ final class MOTDRepository extends BaseRepository
         ];
     }
 
+    public function getLastForUser(int $userId, ?int $howMany=30){
+        $this->db->orderBy('motd', 'desc');
+        $ids = $this->db->getValue('ppRoundMatches', 'id', 30);
+
+        $this->db->where('ppRoundMatch_id', $ids, 'IN');
+        $this->db->where('user_id', $userId);
+        $this->db->orderBy('verified_at', 'desc');
+
+        return $this->db->get('guesses');
+    }
     
 
     // public function delete(int $id){

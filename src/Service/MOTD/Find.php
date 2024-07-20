@@ -9,13 +9,15 @@ use App\Service\RedisService;
 use App\Service\BaseService;
 use App\Service\PPRoundMatch;
 use App\Service\Match;
+use App\Service\Guess;
 
 final class Find  extends BaseService{
     public function __construct(
         protected RedisService $redisService,
         protected MOTDRepository $motdRepository,
         protected PPRoundMatch\Find $ppRoundMatchFindService,
-        protected Match\Find $matchFindService
+        protected Match\Find $matchFindService,
+        protected Guess\Find $guessFindService,
     ){}
 
     //returns last 7 motds
@@ -70,6 +72,14 @@ final class Find  extends BaseService{
             } 
         }
         return $returnArray;
+    }
+
+    public function getLastForUser(int $userId, ?int $howMany=30){
+        $motdGuesses =  $this->motdRepository->getLastForUser($userId, $howMany);
+        foreach ($motdGuesses as &$guess) {
+            $this->guessFindService->enrich($guess, false);
+        }
+        return $motdGuesses;
     }
 
 }

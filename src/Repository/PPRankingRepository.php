@@ -50,8 +50,10 @@ final class PPRankingRepository extends BaseRepository
         // Prepare the database query with conditions, joins and selections.
         $this->db->join("ppTournamentTypes pptt", "pptt.id = ups.ppTournamentType_id", "INNER");
         $this->db->join("users u", "u.id = ups.user_id", "INNER");
+        $this->db->join("ppLeagues ppl", "ups.ppLeague_id = ppl.id", "INNER");
         if($userId) $this->db->where('u.id', $userId);
         $this->db->where("ups.ppLeague_id IS NOT NULL");
+        $this->db->where("ppl.finished_at IS NOT NULL");
         $this->db->where("ups.position", [1, 2, 3], "IN");
         $this->db->where("ups.updated_at ", $dateFrom, '>=');
         $this->db->groupBy("ups.user_id");
