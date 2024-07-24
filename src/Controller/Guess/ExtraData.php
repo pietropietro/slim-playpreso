@@ -21,7 +21,8 @@ final class ExtraData extends Base
         $userId = $this->getAndValidateUserId($request);
 
         //handle motd case
-        $isMotd = $args['id'] == 'motd' ?? false;
+        $isMotd =  in_array($args['id'], ['motd', 'dummy']) ?? false;
+
         if($isMotd){
             // it's a workaround, not actually a guess
             $guess = $this->getMotdFindService()->getMotd(
