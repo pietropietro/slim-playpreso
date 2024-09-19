@@ -271,7 +271,7 @@ final class GuessRepository extends BaseRepository
             "g.verified_at" => $this->db->now()
         );
 
-        $minutesAllowed = getenv('ALLOW_LOCK_MINUTES_BEFORE_START') ?? 10;
+        $minutesAllowed = $_SERVER['ALLOW_LOCK_MINUTES_BEFORE_START'] ?? 10;
         $before = date("Y-m-d H:i:s", strtotime('+' . $minutesAllowed . ' minutes'));
 
         $this->db->join("matches m", "m.id=g.match_id", "INNER");
