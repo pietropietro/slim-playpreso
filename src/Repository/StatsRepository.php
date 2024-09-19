@@ -259,15 +259,16 @@ final class StatsRepository extends BaseRepository
         }
     
         $columns = [
-            "COALESCE(ANY_VALUE(l.parent_id), ANY_VALUE(l.id)) as id",
-            "COALESCE(ANY_VALUE(pl.name), ANY_VALUE(l.name)) as name",
-            "ANY_VALUE(l.parent_id) as parent_id",
-            "ANY_VALUE(l.country) as country",
+            "COALESCE(MIN(l.parent_id), MIN(l.id)) as id",
+            "COALESCE(MIN(pl.name), MIN(l.name)) as name",
+            "MIN(l.parent_id) as parent_id",
+            "MIN(l.country) as country",
             "COUNT(*) as tot_locks",
             //TODO check if missed should have 0 points instead of null
-            // coalesce (hardfix) so if points is null it counts as 0 (i.e. missed)
-            "round(AVG(COALESCE(g.points, 0)),1) as avg_points"
+            // Coalesce so null points are counted as 0
+            "round(AVG(COALESCE(g.points, 0)), 1) as avg_points"
         ];
+        
     
         $result = $this->db->get("guesses g", 3 ,$columns);
     
