@@ -301,8 +301,9 @@ final class MatchRepository extends BaseRepository
         $this->db->where('id', $id);
 
         $minutesAllowed = $_SERVER['ALLOW_LOCK_MINUTES_BEFORE_START'] ?? 10;
-        $offsetTime = '-' . $minutesAllowed . ' minutes';
+        $offsetTime = '+' . $minutesAllowed . ' minutes';
         $adjustedNow = date("Y-m-d H:i:s", strtotime($offsetTime));
+
         $this->db->where('date_start', $adjustedNow, '>');
     
         return $this->db->has('matches');
