@@ -218,6 +218,8 @@ final class PPRankingRepository extends BaseRepository
         $this->db->join("users u", "u.id = ppRankings.user_id", "INNER");
         // Fetch rankings for the specific or most recent date
         $this->db->where('ppRankings.calculated_at', $date);
+        $this->db->orderBy("ppRankings.position", "ASC");
+
         $rankings = $this->db->withTotalCount()->get('ppRankings', [$offset, $limit], $columns) ?: [];
         return [
             'ppRankings' => $rankings,
