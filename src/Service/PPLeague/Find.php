@@ -22,7 +22,7 @@ final class Find  extends BaseService{
         return $ppLeague;
     }
 
-    public function adminGetAll(?int $ppttLevel = null, ?string $ppttName, ?bool $finished=null, ?bool $started=null){
+    public function get(?int $ppttLevel = null, ?string $ppttName, ?bool $finished=null, ?bool $started=null){
         $ppLeagues = $this->ppLeagueRepository->get(
             null, 
             $ppttLevel, 

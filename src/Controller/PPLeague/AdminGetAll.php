@@ -39,7 +39,7 @@ final class AdminGetAll extends Base
             $startedBool = $started === 'all' ? null : ($started === 'started' ? true : false);
 
            
-            $ppLeagues = $this->getPPLeagueFindService()->adminGetAll(
+            $ppLeagues = $this->getPPLeagueFindService()->get(
                 $ppTournamentTypeLevel, 
                 $ppTournamentTypeName, 
                 $finishedBool, 
