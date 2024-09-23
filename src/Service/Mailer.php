@@ -22,8 +22,8 @@ final class Mailer extends BaseService{
             $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
             $mail->Username   = $_SERVER['EMAIL_USER'];                     //SMTP username
             $mail->Password   = $_SERVER['EMAIL_PASSWORD'];                            //SMTP password
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
-            $mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;           
+            $mail->Port       = 587;                                    //use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
             //Recipients
             $mail->setFrom('pietro@playpreso.com', 'PLAYPRESO'. ($_SERVER['DEBUG'] ? '-DEBUG' : ''));
