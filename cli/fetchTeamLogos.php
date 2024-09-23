@@ -16,10 +16,20 @@ $teamIds = getMissingIdsForMonth($saved, $db);
 $db->where('id', $teamIds, 'IN');
 $missing = $db->get('teams',null, ['id', 'ls_id']);
 
-foreach($missing as $team){
+echo('Missing ids for the month count:'.count($teamIds).PHP_EOL);
+
+
+foreach($missing as $key => $team){
+    echo('Trying team '.$key.', id: '.$team['id'].PHP_EOL);
+
     //GET TEAM external overview.json and find .png path
     $logoUrl = getLogoUrl($team['ls_id'], $container);
-    if(!$logoUrl) continue;
+    if(!$logoUrl){
+        echo('NO LOGO URL'.PHP_EOL);
+        continue;
+    }
+    echo('Logo URL is: '.$logoUrl.PHP_EOL);
+
     // Split the string by 'high/'
     $parts = explode('high/', $logoUrl);
     // Get the part after 'high/', which should be at index 1
