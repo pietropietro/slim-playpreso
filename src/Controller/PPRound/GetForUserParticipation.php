@@ -24,7 +24,23 @@ final class GetForUserParticipation extends Base
         $userParticipation = $this->getUserParticipationFindService()->getOne($userParticipationId, false);
         
         $column = $userParticipation['ppLeague_id'] ? 'ppLeague_id' : 'ppCupGroup_id';
-        $userCurrentRound = $this->getPPRoundFindService()->getUserCurrentRound($column, $userParticipation[$column], $userId);
+        $userCurrentRound = $this->getPPRoundFindService()->getUserCurrentRound(
+            $column, 
+            $userParticipation[$column], 
+            $userParticipation['user_id']
+        );
+
+
+        //if currentuser is not the user we are getting the round for
+        //clear sensitive data i.e. home away locks for unverified_matches
+        if($userParticipation['user_id'] != $userId){
+            foreach ($userCurrentRound as &$ppRound) {
+                if(!$ppRound['guess']['verified_at']){
+                    $ppRound['guess']['home'] = null;
+                    $ppRound['guess']['away'] = null;
+                }
+            }
+        }
 
 
         return $this->jsonResponse($response, 'success', $userCurrentRound, 200);

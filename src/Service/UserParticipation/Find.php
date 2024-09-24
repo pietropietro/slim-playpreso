@@ -121,7 +121,6 @@ final class Find  extends BaseService {
             $up['currentRound'] = $this->ppRoundFindService->getCurrentRoundValue($column, $up[$column], 'round');
             $up['playedInCurrentRound'] = $this->ppRoundFindService->verifiedInLatestRound($column, $up[$column]);
 
-            // $userCurrentRound = $this->ppRoundFindService->getUserCurrentRound($column, $up[$column], $userId);
             if(!$up['finished'])$up['nextMatch'] = $this->matchFindService->getNextMatchInPPTournament($column, $up[$column]);
             
             //set paused
