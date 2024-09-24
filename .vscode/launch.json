@@ -47,7 +47,11 @@
                 "-dxdebug.mode=debug",
                 "-dxdebug.start_with_request=yes",
                 "-S",
-                "localhost:8080"
+                "localhost:8080",
+                "-d",
+                "error_reporting=E_ALL & ~E_DEPRECATED & ~E_WARNING",
+                "-d",
+                "display_errors=Off"
             ],
             "program": "",
             "cwd": "${workspaceRoot}/public",
