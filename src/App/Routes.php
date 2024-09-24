@@ -89,7 +89,11 @@ return function ($app){
 
     $app->get('/p-cup-group/{id}', PPCupGroup\GetOne::class)->add(new Auth($pointsService));
 
-    $app->get('/p-round/{id}', PPRound\GetOne::class)->add(new Auth($pointsService));
+    $app->group('/p-round', function () use ($app): void {
+        $app->get('/{id}', PPRound\GetOne::class);
+        $app->get('/user-participation/{id}', PPRound\GetForUserParticipation::class);
+    })->add(new Auth($pointsService));
+
     
     $app->group('/motd', function () use ($app): void {
         $app->get('', MOTD\GetToday::class);

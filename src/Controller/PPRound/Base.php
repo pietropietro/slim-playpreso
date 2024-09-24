@@ -8,6 +8,7 @@ use App\Controller\BaseController;
 use App\Service\PPRound;
 use App\Service\PPLeague;
 use App\Service\PPCupGroup;
+use App\Service\UserParticipation;
 
 abstract class Base extends BaseController
 {
@@ -20,6 +21,11 @@ abstract class Base extends BaseController
     protected function getPPRoundCreateService(): PPRound\Create
     {
         return $this->container->get('ppround_create_service');
+    }
+
+    protected function getUserParticipationFindService(): UserParticipation\Find
+    {
+        return $this->container->get('userparticipation_find_service');
     }
 
 

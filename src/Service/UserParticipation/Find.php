@@ -37,6 +37,13 @@ final class Find  extends BaseService {
     }
 
 
+    public function getOne(int $id, ?bool $enrich = true){
+        $up = $this->userParticipationRepository->getOne($id);
+        if($enrich)$this->enrich($up);
+        return $up;
+    }
+
+
     public function getForTournament(
         string $tournamentColumn,
         int $tournamentId,
@@ -75,7 +82,7 @@ final class Find  extends BaseService {
             $updatedAfter
         );        
         foreach($ups as &$up){
-            $this->enrich($up, $userId, false);
+            $this->enrich($up, false);
         }
         return $ups;
     }
@@ -88,7 +95,7 @@ final class Find  extends BaseService {
         return $this->userParticipationRepository->isUserInTournamentType($userId, $ppTournamentType_id);
     }
 
-    protected function enrich(&$up, int $userId, ?bool $ppttEnriched = true){
+    protected function enrich(&$up, ?bool $ppttEnriched = true){
         if(!$up) return;
         // $up['ppTournamentType'] = $this->ppTournamentTypeRepository->getOne($up['ppTournamentType_id']);
         $up['ppTournamentType'] = $this->ppTournamentTypeFindService->getOne($up['ppTournamentType_id'], $ppttEnriched);
@@ -110,7 +117,8 @@ final class Find  extends BaseService {
         }
 
         if($up['started']){
-            $up['currentRound'] = $this->ppRoundFindService->getCurrentRoundNumber($column, $up[$column]);
+            $up['currentRound_id'] = $this->ppRoundFindService->getCurrentRoundValue($column, $up[$column], 'id');
+            $up['currentRound'] = $this->ppRoundFindService->getCurrentRoundValue($column, $up[$column], 'round');
             $up['playedInCurrentRound'] = $this->ppRoundFindService->verifiedInLatestRound($column, $up[$column]);
 
             // $userCurrentRound = $this->ppRoundFindService->getUserCurrentRound($column, $up[$column], $userId);
@@ -143,14 +151,15 @@ final class Find  extends BaseService {
         return ['active' => $active, 'paused' => $paused];
     }
 
-    public function getOne(int $userId,  string $tournamentColumn, int $tournamentId){
+    public function getOneByUserAndTournament(int $userId,  string $tournamentColumn, int $tournamentId, ?bool $enrich = true){
         $up = $this->userParticipationRepository->getOne(
             $userId, $tournamentColumn, $tournamentId
         );
-        $this->enrich($up, $userId);
+        if($enrich)$this->enrich($up);
         return $up;
     }
 
+   
 
     public function getUserPPDex(int $userId): array
     {

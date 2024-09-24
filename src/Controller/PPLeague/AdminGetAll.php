@@ -50,7 +50,7 @@ final class AdminGetAll extends Base
         foreach($ppLeagues as &$ppLeague){
             $ppLeague['user_count']= $this->getUserParticipationFindService()->countInTournament('ppLeague_id', $ppLeague['id']);
             if($ppLeague['started_at']){
-                $ppLeague['currentRound'] = $this->getPPRoundFindService()->getCurrentRoundNumber('ppLeague_id', $ppLeague['id']);
+                $ppLeague['currentRound'] = $this->getPPRoundFindService()->getCurrentRoundValue('ppLeague_id', $ppLeague['id'], 'round');
                 $ppLeague['playedInCurrentRound'] = $this->getPPRoundFindService()->verifiedInLatestRound('ppLeague_id', $ppLeague['id']);
                 $ppLeague['nextMatch'] = $this->getMatchFindService()->getNextMatchInPPTournament('ppLeague_id', $ppLeague['id']);
                 $ppLeague['lastMatch'] = $this->getMatchFindService()->getLastMatchInPPTournament('ppLeague_id', $ppLeague['id']);

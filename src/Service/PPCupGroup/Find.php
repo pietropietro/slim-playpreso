@@ -178,7 +178,7 @@ final class Find  extends BaseService{
 
             if(!$group['finished_at']){
                 $group['isLive'] = $this->ppRoundFindService->hasLiveMatch('ppCupGroup_id', $group['id']);
-                $group['currentRound'] = $this->ppRoundFindService->getCurrentRoundNumber('ppCupGroup_id', $group['id']);
+                $group['currentRound'] = $this->ppRoundFindService->getCurrentRoundValue('ppCupGroup_id', $group['id'], 'round');
                 $group['playedInCurrentRound'] = $this->ppRoundFindService->verifiedInLatestRound('ppCupGroup_id', $group['id']);    
             }
         }

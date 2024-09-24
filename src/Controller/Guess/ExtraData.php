@@ -49,7 +49,7 @@ final class ExtraData extends Base
             $tournamentColumn = isset($ppTournamentType['is_cup']) && $ppTournamentType['is_cup'] ? 'ppCupGroup_id' : 'ppLeague_id' ;
             $ppRound = $this->getPPRoundFindService()->getFromPPRM($guess['ppRoundMatch_id']);
             $tournamentId = $ppRound[$tournamentColumn];
-            $userParticipation = $this->getUserParticipationFindService()->getOne(
+            $userParticipation = $this->getUserParticipationFindService()->getOneByUserAndTournament(
                 $userId, $tournamentColumn, $tournamentId
             );
         }
