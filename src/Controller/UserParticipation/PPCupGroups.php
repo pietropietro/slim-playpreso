@@ -21,7 +21,8 @@ final class PPCupGroups extends Base{
 
         $ups = array();
 
-        $active = $this->getParticipationService()->getForUser($userId, 'ppCupGroup',  started: null, finished: false);
+        $active = $this->getParticipationService()->getForUser($userId, 'ppCupGroup',  started: true, finished: false);
+        $waiting = $this->getParticipationService()->getForUser($userId, 'ppCupGroup',  started: false, finished: false);
         $finished = $this->getParticipationService()->getForUser(
             $userId, 
             'ppCupGroup', 
@@ -61,6 +62,7 @@ final class PPCupGroups extends Base{
 
         if($active) $ups['active'] = $active;
         if($latestFinished) $ups['finished'] = $latestFinished;
+        if($waiting) $ups['waiting'] = $waiting;
 
         return $this->jsonResponse($response, 'success', $ups, 200);
     }
