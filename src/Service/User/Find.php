@@ -86,7 +86,7 @@ final class Find extends Base
     protected function saveUserInCache(int $userId, array $user): void
     {
         $redisKey = $this->redisService->generateKey(sprintf(self::REDIS_KEY_USER, $userId));
-        $expiration = 3 * 60 * 60; 
+        $expiration = 2 * 60 * 60; 
         $this->redisService->setex($redisKey, $user, $expiration); 
     }
 

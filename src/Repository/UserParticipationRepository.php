@@ -54,24 +54,27 @@ final class UserParticipationRepository extends BaseRepository
     }
 
     //TODO change type to ENUM 'ppLeague_id', 'ppCupGroup_id'
+    //if userid is nullable then function should change name
     public function getForUser(
-        int $userId, 
+        ?int $userId=null, 
         ?string $type = null, 
         ?bool $started = null, 
         ?bool $finished = null, 
         ?int $minPosition = null,
         ?string $updatedAfter = null,
-        ?string $updatedBefore = null
+        ?string $updatedBefore = null,
+        ?int $limit = null,
+        ?bool $sorted = false
     ){
-        $this->db->where('user_id', $userId);
+        if(isset($userId)){
+            $this->db->where('user_id', $userId);
+        }
 
         if(isset($started)){
             $this->db->having('started', $started);
-            // $this->db->orderBy('started','desc');
         }
         if(isset($finished)){
             $this->db->having('finished', $finished);
-            // $this->db->orderBy('finished','desc');
         }
         if($minPosition){
             $this->db->where('position', $minPosition, '<=');
@@ -88,12 +91,16 @@ final class UserParticipationRepository extends BaseRepository
             $dateBefore = date("Y-m-d H:i:s", strtotime($updatedBefore));
             $this->db->where('updated_at', $dateBefore, '<');
         }
-        // $this->db->orderBy('joined_at','desc');
+
+        if($sorted){
+            $this->db->orderBy('ppl.finished_at','desc');
+            $this->db->orderBy('ppcg.finished_at','desc');
+        }
 
         $this->db->join('ppLeagues ppl', 'ppl.id = userParticipations.ppLeague_id', "LEFT");
         $this->db->join('ppCupGroups ppcg', 'ppcg.id = userParticipations.ppCupGroup_id', "LEFT");
         
-        return $this->db->get($this->tableName, null, $this->columnsJoined3);
+        return $this->db->get($this->tableName, $limit, $this->columnsJoined3);
     }
 
     function getForTournament(
@@ -114,18 +121,31 @@ final class UserParticipationRepository extends BaseRepository
         return $this->db->get('userParticipations', $limit, $this->columnsJoined3);
     }
 
-    public function getCupWins(int $userId){
-        if(!$userId)return;
-        return $this->db->query('
+    public function getCupWins(?int $userId = null, ?int $limit = null){
+        // Start building the query
+        $query = '
             SELECT up.* 
             FROM userParticipations up 
             JOIN ppCupGroups pcg ON up.ppCupGroup_id = pcg.id 
             JOIN ppCups pc ON pcg.ppCup_id = pc.id 
-            WHERE up.user_id = '.$userId.'
-            AND up.position = 1 
+            WHERE up.position = 1 
             AND pcg.level = (SELECT MAX(level) FROM ppCupGroups WHERE ppCup_id = pc.id)
-        ');
+        ';
+    
+        // Add the user ID condition if it's provided
+        if ($userId !== null) {
+            $query .= ' AND up.user_id = ' . $userId;
+        }
+    
+        // Add the limit if it's provided
+        if ($limit !== null) {
+            $query .= ' LIMIT ' . $limit;
+        }
+    
+        // Execute the query
+        return $this->db->query($query);
     }
+    
     
 
 

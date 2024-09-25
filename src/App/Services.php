@@ -28,6 +28,7 @@ use App\Service\PushNotifications;
 use App\Service\UserNotification;
 use App\Service\PPDex;
 use App\Service\PPRanking;
+use App\Service\Highlight;
 use Psr\Container\ContainerInterface;
 
 
@@ -632,4 +633,12 @@ $container['ppranking_find_service'] = static fn (
     $container->get('pptournamenttype_repository'),
     $container->get('userparticipation_find_service'),
     $container->get('ppranking_calculate_service'),
+);
+
+$container['highlight_find_service'] = static fn (
+    ContainerInterface $container
+):  Highlight\Find => new  Highlight\Find(
+    $container->get('redis_service'),
+    $container->get('trophy_find_service'),
+    $container->get('highlight_repository')
 );

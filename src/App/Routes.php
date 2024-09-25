@@ -21,6 +21,7 @@ use App\Controller\Stats;
 use App\Controller\MOTD;
 use App\Controller\StaticFiles;
 use App\Controller\UserNotification;
+use App\Controller\Highlight;
 use App\Controller\PPRanking;
 use App\Middleware\Auth;
 use App\Middleware\Cors;
@@ -107,6 +108,8 @@ return function ($app){
     $app->post('/email-preferences', EmailPreferences\Update::class)->add(new Auth($pointsService));
 
     $app->get('/p-ranking', PPRanking\Get::class)->add(new Auth($pointsService));
+    
+    $app->get('/highlights', Highlight\Get::class)->add(new Auth($pointsService));
 
     $app->group('/stats', function () use ($app): void {
         $app->get('/best-users', Stats\BestUsers::class);
