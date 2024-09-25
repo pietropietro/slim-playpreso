@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Stats;
 
 use App\Service\BaseService;
-use App\Service\Trophy;
+use App\Service\User;
 use App\Service\Match;
 use App\Service\PPTournamentType;
 use App\Repository\StatsRepository;
@@ -13,7 +13,7 @@ use App\Repository\StatsRepository;
 final class Find extends BaseService{
     public function __construct(
         protected StatsRepository $statsRepository,
-        protected Trophy\Find $trophyFindService,
+        protected User\Find $userFindService,
         protected Match\Find $matchFindService,
         protected PPTournamentType\Find $ppTournamentTypeFindService,
     ) {}
@@ -71,29 +71,31 @@ final class Find extends BaseService{
         return $returnArray;
     }
 
-    public function lastPreso() {
-        $guesses = $this->statsRepository->lastPreso();
-        foreach ($guesses as &$guess) {
+    public function lastPreso(?int $limit=1) {
+        $presos = $this->statsRepository->lastPreso($limit);
+        foreach ($presos as &$guess) {
             $this->addUser($guess);
             $this->addTournament($guess);
+            $match = $this->matchFindService->getOne($presos[0]['match_id']);
+            $guess['match'] = $match;
         }
         
-        $match = $this->matchFindService->getOne($guesses[0]['match_id']);
-        return array(
-            'match' => $match,
-            'guesses' => $guesses
-        );
+        return $presos;
     }
 
 
     public function getPPRMStats(int $ppRoundMatchId){
         $aggregates = $this->statsRepository->getPPRMAggregates($ppRoundMatchId);
+        
         $stats = array(
             "preso_count" => isset($aggregates['preso_count']) ? $aggregates['preso_count'] : null,
             "points_avg" => isset($aggregates['points_avg']) ? $aggregates['points_avg'] : null,
         );
+        $stats = array_merge(
+            $stats, 
+            $this->statsRepository->getCommonLock($ppRoundMatchId)
+        );
 
-        $stats = array_merge($stats, $this->statsRepository->getCommonLock($ppRoundMatchId));
         return $stats;
     }
 
@@ -104,11 +106,7 @@ final class Find extends BaseService{
 
 
     private function addUser(&$userStat){
-        $userStat['user'] = array(
-            "username" => $userStat['username'],
-            "id" => $userStat['user_id'],
-            "trophies" => $this->trophyFindService->getTrophies($userStat['user_id'])
-        );
+        $userStat['user'] = $this->userFindService->getOne($userStat['user_id']);
     }
 
     public function getWrapped(int $userId){

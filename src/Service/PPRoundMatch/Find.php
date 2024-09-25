@@ -9,7 +9,6 @@ use App\Repository\GuessRepository;
 use App\Service\RedisService;
 use App\Service\BaseService;
 use App\Service\Match;
-use App\Service\Stats;
 
 final class Find  extends BaseService{
     public function __construct(
@@ -17,7 +16,6 @@ final class Find  extends BaseService{
         protected PPRoundMatchRepository $ppRoundMatchRepository,
         protected guessRepository $guessRepository,
         protected Match\Find $matchFindService,
-        protected Stats\Find $statsFindService
     ){}
     
     public function getForRound(
@@ -63,7 +61,8 @@ final class Find  extends BaseService{
         }
 
         if($ppRoundMatch['match']['verified_at'] && $withPPRMStats){
-            $ppRoundMatch['stats'] = $this->statsFindService->getPPRMStats($ppRoundMatch['id']);
+            //TODO – i have removed it because of circular dependency on stats/find
+            // $ppRoundMatch['stats'] = $this->ppRoundMatchRepository->getPPRMStats($ppRoundMatch['id']);
         }
     }
 

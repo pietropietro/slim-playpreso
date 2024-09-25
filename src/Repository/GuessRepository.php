@@ -13,6 +13,11 @@ final class GuessRepository extends BaseRepository
         return $this->db->getOne('guesses');
     }
 
+    public function get(array $ids){
+        $this->db->where('id', $ids, 'IN');
+        return $this->db->get('guesses');
+    }
+
     public function getForUser(
         int $userId, 
         ?bool $includeMotd = true, 

@@ -8,6 +8,7 @@ use App\Controller\BaseController;
 use App\Service\Highlight;
 use App\Service\Trophy;
 use App\Service\User;
+use App\Service\Guess;
 
 
 abstract class Base extends BaseController
@@ -26,6 +27,12 @@ abstract class Base extends BaseController
     protected function getUserFindService(): User\Find
     {
         return $this->container->get('user_find_service');
+    }
+
+
+    protected function getGuessFindService(): Guess\Find
+    {
+        return $this->container->get('guess_find_service');
     }
 
 

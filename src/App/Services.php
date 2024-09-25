@@ -166,8 +166,7 @@ $container['pproundmatch_find_service'] = static fn (
     $container->get('redis_service'),
     $container->get('pproundmatch_repository'),
     $container->get('guess_repository'),
-    $container->get('match_find_service'),
-    $container->get('stats_find_service') 
+    $container->get('match_find_service')
 );
 
 $container['motd_find_service'] = static fn (
@@ -527,7 +526,7 @@ $container['stats_find_service'] = static fn (
     ContainerInterface $container
 ):  Stats\Find => new  Stats\Find(
     $container->get('stats_repository'),
-    $container->get('trophy_find_service'),
+    $container->get('user_find_service'),
     $container->get('match_find_service'),
     $container->get('pptournamenttype_find_service'),
 );
@@ -640,5 +639,6 @@ $container['highlight_find_service'] = static fn (
 ):  Highlight\Find => new  Highlight\Find(
     $container->get('redis_service'),
     $container->get('trophy_find_service'),
+    $container->get('stats_find_service'),
     $container->get('highlight_repository')
 );

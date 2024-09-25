@@ -31,6 +31,16 @@ final class Find extends BaseService{
         $this->enrich($guess);
         return $guess;
     }
+
+
+    public function get(array $ids){
+        $guesses = $this->guessRepository->get($ids);
+        if(!$guesses)return;
+        foreach ($guesses as &$guess) {
+            $this->enrich($guess);
+        }
+        return $guesses;
+    }
     
 
     public function lastLock(int $userId){
