@@ -76,7 +76,7 @@ final class Find extends BaseService{
         foreach ($presos as &$guess) {
             $this->addUser($guess);
             $this->addTournament($guess);
-            $match = $this->matchFindService->getOne($presos[0]['match_id']);
+            $match = $this->matchFindService->getOne($guess['match_id']);
             $guess['match'] = $match;
         }
         

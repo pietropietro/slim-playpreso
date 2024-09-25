@@ -30,7 +30,7 @@ final class Find  extends BaseService{
             if($cached !== null)return $cached;
         }
 
-        $presos = $this->statsFindService->lastPreso(10);
+        $presos = $this->statsFindService->lastPreso($limit);
 
         if (self::isRedisEnabled() === true ) {
             $redisKey = $this->redisService->generateKey(sprintf(self::REDIS_KEY_PRESO_HIGHLIGHTS, $limit));
@@ -41,7 +41,7 @@ final class Find  extends BaseService{
 
     }
 
-    public function getLatestFullPresoRound(int $limit){
+    public function getLatestFullPresoRound(?int $userId=null, ?int $limit=5){
         if (self::isRedisEnabled() === true ) {
             $redisKey = $this->redisService->generateKey(sprintf(self::REDIS_KEY_FULLPRESOROUND_HIGHLIGHTS, $limit));
             $cached = $this->redisService->get($redisKey); // This returns null if not found or the user data if found
