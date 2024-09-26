@@ -8,10 +8,12 @@ use App\Service\BaseService;
 use App\Service\RedisService;
 use App\Service\Guess;
 use App\Repository\StatsRepository;
+use App\Repository\HighlightRepository;
 
 final class User extends BaseService{
     public function __construct(
         protected StatsRepository $statsRepository,
+        protected HighlightRepository $highlightRepository,
         protected RedisService $redisService,
         protected Guess\Find $guessFindService,
     ) {}
@@ -54,8 +56,11 @@ final class User extends BaseService{
         //     $teamStat['guesses'] = $this->guessFindService->getForTeam($teamStat['id'], $userId, $from, $to);
         // }
 
+        $fullPresoRounds = $this->highlightRepository->getLatestFullPresoRound($userId,null, $from, $to);
+
         $stats = array(
             'mainStats' => $mainStats,
+            'fullPresoRounds' => $fullPresoRounds,
             'leagues' => array(
                 'common' => $this->statsRepository->getUserLeagues($userId, $from, $to, 0),
                 'best' => $bestLeagues,

@@ -535,6 +535,7 @@ $container['stats_user_service'] = static fn (
     ContainerInterface $container
 ):  Stats\User => new  Stats\User(
     $container->get('stats_repository'),
+    $container->get('highlight_repository'),
     $container->get('redis_service'),
     $container->get('guess_find_service')
 );
