@@ -24,26 +24,15 @@ final class Get extends Base
             $trophy['user'] = $this->getUserFindService()->getOne($trophy['user_id']);
         }
 
-        $presos = $this->getHighlightFindService()->getLatestPreso(9);
+        $presos = $this->getGuessFindService()->getLastPreso(9);
+        foreach ($presos as &$guess) {
+            $guess['user'] = $this->getUserFindService()->getOne($guess['user_id']);
+        }
         
-        $fullPresoRounds = $this->getHighlightFindService()->getLatestFullPresoRound(null, 3);
+
+        $fullPresoRounds = $this->getPPRoundFindService()->getFullPresoRound(null, 3);
         foreach ($fullPresoRounds as &$ppRound) {
             $ppRound['user'] = $this->getUserFindService()->getOne($ppRound['user_id']);
-           
-            $guesses = $this->getGuessFindService()->get(explode(',', $ppRound['guess_ids']));
-            
-            //create pprm.. not very clean solution
-            $ppRound['ppRoundMatches'] = [];
-            foreach ($guesses as $guess) {
-                array_push(
-                    $ppRound['ppRoundMatches'],
-                    array(
-                        'id' => $guess['ppRoundMatch_id'],
-                        'guess' => $guess,
-                        'match' => $guess['match']
-                    )
-                );
-            }
         }
 
         $returnArray = array(

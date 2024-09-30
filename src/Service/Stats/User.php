@@ -7,15 +7,15 @@ namespace App\Service\Stats;
 use App\Service\BaseService;
 use App\Service\RedisService;
 use App\Service\Guess;
+use App\Service\PPRound;
 use App\Repository\StatsRepository;
-use App\Repository\HighlightRepository;
 
 final class User extends BaseService{
     public function __construct(
         protected StatsRepository $statsRepository,
-        protected HighlightRepository $highlightRepository,
         protected RedisService $redisService,
         protected Guess\Find $guessFindService,
+        protected PPRound\Find $ppRoundFindService,
     ) {}
 
     private const REDIS_KEY_STATS = 'stats_user:%d:from:%s:to:%s';
@@ -42,7 +42,7 @@ final class User extends BaseService{
         foreach($bestLeagues as &$leagueStat){
             $leagueStat['guesses'] = $this->guessFindService->getForLeague($leagueStat['id'], $userId, $from, $to);
         }
-        $worstLeagues =  $this->statsRepository->getUserLeagues($userId, $from, $to, 2);
+        // $worstLeagues =  $this->statsRepository->getUserLeagues($userId, $from, $to, 2);
         // foreach($worstLeagues as &$leagueStat){
         //     $leagueStat['guesses'] = $this->guessFindService->getForLeague($leagueStat['id'], $userId, $from, $to);
         // }
@@ -51,12 +51,13 @@ final class User extends BaseService{
         foreach($bestTeams as &$teamStat){
             $teamStat['guesses'] = $this->guessFindService->getForTeam($teamStat['id'], $userId, $from, $to);
         }
-        $worstTeams =  $this->statsRepository->getUserExtremeAverageTeams($userId, $from, $to, false);
+
+        // $worstTeams =  $this->statsRepository->getUserExtremeAverageTeams($userId, $from, $to, false);
         // foreach($worstTeams as &$teamStat){
         //     $teamStat['guesses'] = $this->guessFindService->getForTeam($teamStat['id'], $userId, $from, $to);
         // }
 
-        $fullPresoRounds = $this->highlightRepository->getLatestFullPresoRound($userId,null, $from, $to);
+        $fullPresoRounds = $this->ppRoundFindService->getFullPresoRound($userId,null, $from, $to);
 
         $stats = array(
             'mainStats' => $mainStats,
@@ -64,12 +65,12 @@ final class User extends BaseService{
             'leagues' => array(
                 'common' => $this->statsRepository->getUserLeagues($userId, $from, $to, 0),
                 'best' => $bestLeagues,
-                'worst' => $worstLeagues
+                // 'worst' => $worstLeagues
             ),
             'teams' => array(
                 'common' => $this->statsRepository->getUserCommonTeams($userId, $from, $to),
                 'best' => $bestTeams,
-                'worst' => $worstLeagues
+                // 'worst' => $worstLeagues
             )
         );
 

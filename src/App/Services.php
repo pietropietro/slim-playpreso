@@ -28,7 +28,6 @@ use App\Service\PushNotifications;
 use App\Service\UserNotification;
 use App\Service\PPDex;
 use App\Service\PPRanking;
-use App\Service\Highlight;
 use Psr\Container\ContainerInterface;
 
 
@@ -157,7 +156,7 @@ $container['ppround_find_service'] = static fn (
     $container->get('pproundmatch_find_service'),
     $container->get('match_find_service'),
     $container->get('ppround_repository'),
-    $container->get('guess_repository'),
+    $container->get('pptournamenttype_repository'),    
 );
 
 $container['pproundmatch_find_service'] = static fn (
@@ -410,9 +409,10 @@ $container['guess_verify_service'] = static fn (
 $container['guess_find_service'] = static fn (
     ContainerInterface $container
 ):  Guess\Find => new  Guess\Find(
+    $container->get('redis_service'),
     $container->get('guess_repository'),
     $container->get('match_find_service'),
-    $container->get('pptournamenttype_find_service'),
+    $container->get('pptournamenttype_find_service')
 );
 
 
@@ -527,7 +527,6 @@ $container['stats_find_service'] = static fn (
 ):  Stats\Find => new  Stats\Find(
     $container->get('stats_repository'),
     $container->get('user_find_service'),
-    $container->get('match_find_service'),
     $container->get('pptournamenttype_find_service'),
 );
 
@@ -535,9 +534,9 @@ $container['stats_user_service'] = static fn (
     ContainerInterface $container
 ):  Stats\User => new  Stats\User(
     $container->get('stats_repository'),
-    $container->get('highlight_repository'),
     $container->get('redis_service'),
-    $container->get('guess_find_service')
+    $container->get('guess_find_service'),
+    $container->get('ppround_find_service')
 );
 
 $container['stats_find_adjacent_ups_service'] = static fn (
@@ -635,11 +634,3 @@ $container['ppranking_find_service'] = static fn (
     $container->get('ppranking_calculate_service'),
 );
 
-$container['highlight_find_service'] = static fn (
-    ContainerInterface $container
-):  Highlight\Find => new  Highlight\Find(
-    $container->get('redis_service'),
-    $container->get('trophy_find_service'),
-    $container->get('stats_find_service'),
-    $container->get('highlight_repository')
-);

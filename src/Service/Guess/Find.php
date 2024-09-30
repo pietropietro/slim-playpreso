@@ -8,13 +8,15 @@ use App\Service\BaseService;
 use App\Service\Match;
 use App\Service\PPTournamentType;
 use App\Repository\GuessRepository;
+use App\Service\RedisService;
 
 
 final class Find extends BaseService{
     public function __construct(
+        protected RedisService $redisService,
         protected GuessRepository $guessRepository,
         protected Match\Find $matchFindService,
-        protected PPTournamentType\Find $ppTournamentTypeFindService,
+        protected PPTournamentType\Find $ppTournamentTypeFindService
     ){}
 
     public function enrich(&$guess, ?bool $withMatchStats = true){
@@ -105,6 +107,34 @@ final class Find extends BaseService{
 
     public function getNeedReminder(){
         return $this->guessRepository->getNeedReminder();
+    }
+
+
+
+    private const REDIS_KEY_PRESO_HIGHLIGHTS = 'highlight_preso:%d';
+    public function getLastPreso(int $limit){
+        if (self::isRedisEnabled() === true ) {
+            $redisKey = $this->redisService->generateKey(sprintf(self::REDIS_KEY_PRESO_HIGHLIGHTS, $limit));
+            $cached = $this->redisService->get($redisKey); // This returns null if not found or the user data if found
+            if($cached !== null)return $cached;
+        }
+
+        $lastPreso = $this->calculateLastPreso($limit);
+
+        if (self::isRedisEnabled() === true ) {
+            $redisKey = $this->redisService->generateKey(sprintf(self::REDIS_KEY_PRESO_HIGHLIGHTS, $limit));
+            $expiration = 1 * 60 * 60; 
+            $this->redisService->setex($redisKey, $lastPreso, $expiration); 
+        }
+        return $lastPreso;
+
+    }
+    private function calculateLastPreso(?int $limit=1) {
+        $presos = $this->guessRepository->getLastPreso($limit);
+        foreach ($presos as &$guess) {
+           $this->enrich($guess);
+        }
+        return $presos;
     }
 
 }

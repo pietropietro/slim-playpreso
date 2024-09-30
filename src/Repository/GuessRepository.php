@@ -296,4 +296,11 @@ final class GuessRepository extends BaseRepository
         return $this->db->get('guesses', $limit, $columns);
     }
 
+
+    public function getLastPreso(int $limit = 1){
+        $this->db->where('PRESO',1);
+        $this->db->orderBy('verified_at','desc');
+        return $this->db->get('guesses', $limit);
+    }
+
 }

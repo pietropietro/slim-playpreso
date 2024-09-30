@@ -51,16 +51,6 @@ final class StatsRepository extends BaseRepository
         return $this->db->get('guesses g', $limit, $columns);
     }
 
-    public function lastPreso(int $limit = 1 ){
-            $sql = "SELECT *
-                    FROM guesses 
-                    WHERE PRESO = 1 
-                    ORDER BY verified_at DESC 
-                    LIMIT $limit";
-        return $this->db->query($sql);
-    }
-
-
     public function countCommonScore(){
         $this->db->where('verified_at IS NOT NULL');
         $sql = 'SELECT COUNT("score_home") as occurrances, score_home,

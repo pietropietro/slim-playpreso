@@ -9,7 +9,7 @@ use App\Service\BaseService;
 use App\Service\PPRoundMatch;
 use App\Service\Match;
 use App\Repository\PPRoundRepository;
-use App\Repository\GuessRepository;
+use App\Repository\PPTournamentTypeRepository;
 
 final class Find  extends BaseService{
     
@@ -18,7 +18,7 @@ final class Find  extends BaseService{
         protected PPRoundMatch\Find $ppRoundMatchService,
         protected Match\Find $findMatchService,
         protected PPRoundRepository $ppRoundRepository,
-        protected GuessRepository $guessRepository
+        protected PPTournamentTypeRepository $ppTournamentTypeRepository,
     ){}
 
     public function getOne(
@@ -29,7 +29,7 @@ final class Find  extends BaseService{
     ){
         $ppRound = $this->ppRoundRepository->getOne($id);
         $ppRound['ppRoundMatches'] = $this->ppRoundMatchService->getForRound(
-            $id, $userId, $withGuesses, $withMatchesStats
+            $id, $userId, $withGuesses, false, $withMatchesStats
         );
         return $ppRound;
     }
@@ -71,7 +71,7 @@ final class Find  extends BaseService{
         if(!$latestPPRound) return null;
         
         $ppRoundMatches = $this->ppRoundMatchService->getForRound(
-            $latestPPRound['id'], 
+            $latestPPRound['id']
         );
         $verifiedCount = 0;
 
@@ -97,14 +97,12 @@ final class Find  extends BaseService{
         foreach($ppRounds as $key => &$ppRound){
             $withMatchesStats = $key === array_key_last($ppRounds);
             $ppRound['ppRoundMatches'] = $this->ppRoundMatchService->getForRound(
-                $ppRound['id'], 
-                $userId,
-                true, 
-                $withMatchesStats
+                ppRoundId: $ppRound['id'], 
+                userId: $userId,
+                withGuesses: true, 
+                withUserGuess: false,
+                withMatchStats: $withMatchesStats
             );
-                // $ppRound['best'] = $this->guessRepository->bestUsersInRound(
-                //     ppRMids: array_column($ppRound['ppRoundMatches'], 'id'), 
-                // );
         }
         return $ppRounds;
     }
@@ -122,5 +120,41 @@ final class Find  extends BaseService{
             unset($next['league']['standings']);
         }
         return $next;
+    }
+
+    private const REDIS_KEY_FULLPRESOROUND_HIGHLIGHTS = 'highlight_fullpresoround_user:%d_limit:%d_from:%s_to:%s';
+
+    public function getFullPresoRound(?int $userId=null, ?int $limit=5, ?string $from = null, ?string $to = null){
+        if (self::isRedisEnabled() === true ) {
+            $redisKey = $this->redisService->generateKey(
+                sprintf(self::REDIS_KEY_FULLPRESOROUND_HIGHLIGHTS, $userId,$limit,$from, $to)
+            );
+            $cached = $this->redisService->get($redisKey); // This returns null if not found or the user data if found
+            if($cached !== null)return $cached;
+        }
+
+        $fullPresoRounds = $this->ppRoundRepository->getFullPresoRound($userId, $limit, $from, $to);
+        foreach ($fullPresoRounds as &$ppRound) {
+            $ppRound['ppRoundMatches'] = $this->ppRoundMatchService->getForRound(
+                ppRoundId: $ppRound['id'], 
+                userId: $ppRound['user_id'],
+                withGuesses: false, 
+                withUserGuess: true
+            );
+            //gotta remove it from all guesses eventually but... life is life
+            $ppTournamentType = $this->ppTournamentTypeRepository->getFromPPRound($ppRound['id']);
+            $ppRound['ppTournamentType'] = $ppTournamentType;
+            foreach ($ppRound['ppRoundMatches'] as $key => $value) {
+                $ppRound['ppRoundMatches'][$key]['guess']['ppTournamentType'] = $ppTournamentType;
+            }
+        }
+
+        if (self::isRedisEnabled() === true ) {
+            $redisKey = $this->redisService->generateKey(sprintf(self::REDIS_KEY_FULLPRESOROUND_HIGHLIGHTS, $userId,$limit,$from, $to));
+            $expiration = 5 * 60 * 60; 
+            $this->redisService->setex($redisKey, $fullPresoRounds, $expiration); 
+        }
+        return $fullPresoRounds;
+
     }
 }

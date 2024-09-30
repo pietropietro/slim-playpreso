@@ -160,6 +160,32 @@ final class PPTournamentTypeRepository extends BaseRepository
         $result = $this->db->query($sql);
         return $result[0] ?? null;
     }
+
+    public function getFromPPRound(int $ppRoundId) {
+        $sql = "
+            SELECT 
+                ppTournamentTypes.id,
+                ppTournamentTypes.name,
+                ppTournamentTypes.level,
+                ppTournamentTypes.emoji,
+                ppTournamentTypes.rgb,
+                CASE 
+                    WHEN ppTournamentTypes.cup_format IS NOT NULL THEN 1 
+                    ELSE 0 
+                END AS is_cup
+            FROM ppTournamentTypes 
+            LEFT JOIN ppLeagues ppl ON ppTournamentTypes.id = ppl.ppTournamentType_id
+            LEFT JOIN ppCupGroups ppcg ON ppTournamentTypes.id = ppcg.ppTournamentType_id
+            WHERE ppl.id = (SELECT ppLeague_id FROM ppRounds WHERE id = ?) 
+            OR ppcg.id = (SELECT ppCupGroup_id FROM ppRounds WHERE id = ?)
+        ";
+    
+        // Execute the query and pass the ppRoundId twice (for ppLeague and ppCupGroup)
+        $result = $this->db->rawQuery($sql, [$ppRoundId, $ppRoundId]);
+        
+        return $result[0] ?? null;
+    }
+    
     
     public function getMOTDType(){
         $this->db->where('name', 'MOTD');

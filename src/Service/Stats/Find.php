@@ -14,7 +14,6 @@ final class Find extends BaseService{
     public function __construct(
         protected StatsRepository $statsRepository,
         protected User\Find $userFindService,
-        protected Match\Find $matchFindService,
         protected PPTournamentType\Find $ppTournamentTypeFindService,
     ) {}
 
@@ -69,18 +68,6 @@ final class Find extends BaseService{
         }
 
         return $returnArray;
-    }
-
-    public function lastPreso(?int $limit=1) {
-        $presos = $this->statsRepository->lastPreso($limit);
-        foreach ($presos as &$guess) {
-            $this->addUser($guess);
-            $this->addTournament($guess);
-            $match = $this->matchFindService->getOne($guess['match_id']);
-            $guess['match'] = $match;
-        }
-        
-        return $presos;
     }
 
 

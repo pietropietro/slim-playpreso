@@ -9,6 +9,7 @@ use App\Service\Highlight;
 use App\Service\Trophy;
 use App\Service\User;
 use App\Service\Guess;
+use App\Service\PPRound;
 
 
 abstract class Base extends BaseController
@@ -34,6 +35,13 @@ abstract class Base extends BaseController
     {
         return $this->container->get('guess_find_service');
     }
+
+    protected function getPPRoundFindService(): PPRound\Find
+    {
+        return $this->container->get('ppround_find_service');
+    }
+
+    
 
 
 }

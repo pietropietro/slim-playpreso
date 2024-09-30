@@ -22,6 +22,7 @@ final class Find  extends BaseService{
         int $ppRoundId, 
         ?int $userId = null,
         ?bool $withGuesses = false, 
+        ?bool $withUserGuess = false, 
         ?bool $withMatchesStats = false,         
         ?bool $onlyIds = false, 
     ) : ?array {
@@ -29,7 +30,7 @@ final class Find  extends BaseService{
         if($onlyIds)return $ppRoundMatches;
 
         foreach($ppRoundMatches as &$ppRM){      
-            $this->enrich($ppRM, $withGuesses, $userId, false, $withMatchesStats);  
+            $this->enrich($ppRM, $withGuesses, $userId, $withUserGuess, $withMatchesStats);  
         }
         return $ppRoundMatches;
     }
