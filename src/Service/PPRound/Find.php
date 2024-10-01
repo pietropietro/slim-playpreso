@@ -101,7 +101,7 @@ final class Find  extends BaseService{
                 userId: $userId,
                 withGuesses: true, 
                 withUserGuess: false,
-                withMatchStats: $withMatchesStats
+                withMatchesStats: $withMatchesStats
             );
         }
         return $ppRounds;
