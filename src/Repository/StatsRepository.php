@@ -92,6 +92,7 @@ final class StatsRepository extends BaseRepository
         if($userId)$this->db->where('user_id', $userId);
         if($from)$this->db->where('guessed_at', $from, '>=');
         if($to)$this->db->where('guessed_at', $to, '<=');
+        $this->db->where('guessed_at IS NOT NULL');
         $this->db->orderBy('most_lock_combination_tot');
         $this->db->groupBy('most_lock_combination');
         return $this->db->get('guesses', 3,
@@ -121,12 +122,12 @@ final class StatsRepository extends BaseRepository
                 SELECT home_id as team_id, g.points, g.preso FROM guesses g
                 JOIN matches m ON g.match_id = m.id
                 WHERE g.user_id = ? 
-                AND g.guessed_at BETWEEN ? AND ?
+                AND g.verified_at BETWEEN ? AND ?
                 UNION ALL
                 SELECT away_id as team_id, g.points, g.preso FROM guesses g
                 JOIN matches m ON g.match_id = m.id
                 WHERE g.user_id = ? 
-                AND g.guessed_at BETWEEN ? AND ?
+                AND g.verified_at BETWEEN ? AND ?
             ) as subquery
             JOIN teams t ON subquery.team_id = t.id
             GROUP BY t.id, t.name
@@ -158,12 +159,12 @@ final class StatsRepository extends BaseRepository
                 SELECT home_id as team_id, g.points FROM guesses g
                 JOIN matches m ON g.match_id = m.id
                 WHERE g.user_id = ? 
-                AND g.guessed_at BETWEEN ? AND ?
+                AND g.verified_at BETWEEN ? AND ?
                 UNION ALL
                 SELECT away_id as team_id, g.points FROM guesses g
                 JOIN matches m ON g.match_id = m.id
                 WHERE g.user_id = ? 
-                AND g.guessed_at BETWEEN ? AND ?
+                AND g.verified_at BETWEEN ? AND ?
             ) as subquery
             JOIN teams t ON subquery.team_id = t.id
             GROUP BY t.id, t.name
