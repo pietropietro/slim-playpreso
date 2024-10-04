@@ -26,13 +26,13 @@ final class Picker extends BaseService{
 
 
         $ppTournamentType = $this->ppTournamentTypeRepository->getOne($ppttId);
-        $level = $ppTournamentType['level'] ?? 0;
+        $level = $ppTournamentType['level'] ?? 1;
         $diversity = $this->checkDiversity($ppttId, $matches, $level);
         if(!$diversity) return [];
 
         $daysDiff=8;
         $filtered=[];
-        while((!$diversity && count($filtered) < $howMany) || $daysDiff < 55){
+        while((!$diversity && count($filtered) < $howMany) || ($daysDiff < 55 && count($filtered) < $howMany)){
             $filtered = $this->filterDateAndRound($matches, $daysDiff);
             $daysDiff += 5;
             $diversity = $this->checkDiversity($ppttId, $filtered, $level);
@@ -68,7 +68,7 @@ final class Picker extends BaseService{
     }
 
     private function checkDiversity(int $ppTournamentTypeId, array $matches, ?int $level=0){
-        if(!in_array($level,array_column($matches,'league_level'))){
+        if($level && !in_array($level,array_column($matches,'league_level'))){
             return false;
         }
         return true;
