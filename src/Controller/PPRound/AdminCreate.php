@@ -47,6 +47,7 @@ final class AdminCreate extends Base
         );
         
         $status = $newId ? 'success' : 'error';
-        return $this->jsonResponse($response, $status , $newId, 201);
+        $statusCode = $newId ? 201 : 500;
+        return $this->jsonResponse($response, $status , $newId, $statusCode);
     }
 }
