@@ -22,8 +22,8 @@ final class Send extends BaseService{
     public function __construct(
         protected DeviceTokenRepository $deviceTokenRepository,
     ) {
-        //ANDROID TODO
-        // $this->firebaseMessaging = (new FcmFactory)->withServiceAccount($_SERVER['FCM_SERVICE_ACCOUNT'])->createMessaging();
+        $firebaseServiceAccount = $_SERVER['FCM_SERVICE_ACCOUNT'];
+        $this->firebaseMessaging = (new FcmFactory)->withServiceAccount($firebaseServiceAccount)->createMessaging();
     }
 
     public function hasToken(int $userId){
@@ -73,7 +73,8 @@ final class Send extends BaseService{
         $message = CloudMessage::withTarget('token', $deviceToken)
             ->withNotification(FcmNotification::create($title, $body));
 
-        $this->firebaseMessaging->send($message); // Handle response and errors as needed
+        $result = $this->firebaseMessaging->send($message); // Handle response and errors as needed
+        return;
     }
 
     

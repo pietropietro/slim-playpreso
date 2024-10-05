@@ -23,6 +23,7 @@ final class Create extends Base
     ){
         $allowed_events = ['guess_verified'];
         if(!in_array($eventType, $allowed_events)) return;
+        //if notification was already created, return;
         if($this->userNotificationRepository->has($userId, $eventType, $eventId)) return;
         
         //1. create internal notification row
@@ -37,6 +38,8 @@ final class Create extends Base
         $this->pushNotificationsService->send($userId, $push_text_data['title'], $push_text_data['body']);
     }
 
+
+    
     private function getGuessVerifiedPushData(int $guessId){
         //REDIS THIS
         $guess = $this->guessFindService->getOne($guessId);
