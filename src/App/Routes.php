@@ -103,7 +103,10 @@ return function ($app){
         $app->post('/lock', MOTD\Lock::class);
     })->add(new Auth($pointsService));
 
-    $app->post('/save-device-token', DeviceToken\Save::class)->add(new Auth($pointsService));
+    $app->group('/device-token', function () use ($app): void {
+        $app->post('/save', DeviceToken\Save::class);
+        $app->post('/remove', DeviceToken\Remove::class);
+    })->add(new Auth($pointsService));
 
     $app->post('/email-preferences', EmailPreferences\Update::class)->add(new Auth($pointsService));
 

@@ -15,20 +15,16 @@ final class DeviceTokenRepository extends BaseRepository
             ->where('platform', $platform)
             ->getOne('deviceTokens');
 
-        if ($existingToken) {
-            // Update existing record
-            $data = ['updated_at' => date('Y-m-d H:i:s')];
-            $this->db->where('id', $existingToken['id']);
-            return $this->db->update('deviceTokens', $data);
-        } else {
-            $data = [
-                'user_id' => $userId,
-                'token' => $token,
-                'platform' => $platform
-            ];
-            return $this->db->insert('deviceTokens', $data);
-        }
+        if ($existingToken) return;
+
+        $data = [
+            'user_id' => $userId,
+            'token' => $token,
+            'platform' => $platform
+        ];
+        return $this->db->insert('deviceTokens', $data);
     }
+    
 
     public function hasToken(int $userId){
         $this->db->where('user_id', $userId);
@@ -40,5 +36,12 @@ final class DeviceTokenRepository extends BaseRepository
         $this->db->where('user_id', $userId);
         return $this->db->get('deviceTokens');
     }
+
+    public function remove(int $userId, string $deviceToken){
+        $this->db->where('user_id', $userId);
+        $this->db->where('token', $deviceToken);
+        $this->db->delete('deviceTokens',1);
+    }
+
     
 }

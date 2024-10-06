@@ -17,7 +17,7 @@ final class Recover extends Base
         array $args
     ): Response {    
         if(!$user = $this->getFindUserService()->getOneFromUsername((string) $args['username'], true)){
-            throw new \App\Exception\User('Invalid user.', 400);
+            throw new \App\Exception\User('Invalid username', 400);
         }        
 
         //CREATE AND SAVE TOKEN
