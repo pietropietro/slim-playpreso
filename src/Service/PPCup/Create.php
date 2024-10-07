@@ -34,7 +34,7 @@ final class Create extends BaseService{
         }
     }
 
-    private function createLevelGroups(int $ppCupId, int $ppTournamentType_id, int $level, int $rounds, array $tags, int $participants){
+    private function createLevelGroups(int $ppCupId, int $ppTournamentType_id, int $level, int $rounds, array $tags, ?int $participants = null){
         foreach ($tags as $key => $tag) {
             $this->ppCupGroupRepository->create($ppCupId, $ppTournamentType_id, $level, $rounds, $tag, $participants);
         }
