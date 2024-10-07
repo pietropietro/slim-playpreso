@@ -47,7 +47,8 @@ final class Join  extends BaseService{
         }
 
         if(!$insert = $this->createUpService->create($userId, $ppTypeId, $ppTournament['id'], isset($ppTournamentGroup) ? $ppTournamentGroup['id'] : null)){
-            throw new \App\Exception\User("something went wrong", 500);
+            error_log('could not create up for user '.$userId.' and Type '.$ppTypeId);
+            return false;
         };
         
         return $ppTournament['id'];

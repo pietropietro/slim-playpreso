@@ -31,4 +31,11 @@ final class UserNotificationRepository extends BaseRepository
         $this->db->where('user_id', $userId);
         return $this->db->get('userNotifications', 30);
     }
+
+    public function getUnread(int $userId){
+        $this->db->where('user_id', $userId);
+        $this->db->where('updated_at IS NULL');
+        $this->db->orderBy('created_at','desc');
+        return $this->db->get('userNotifications', 30);
+    }
 }

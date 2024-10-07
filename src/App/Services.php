@@ -103,6 +103,7 @@ $container['ppleague_update_service'] = static fn (
     $container->get('pptournamenttype_find_service'),
     $container->get('pptournamenttype_join_service'),
     $container->get('points_update_service'),
+    $container->get('usernotification_create_service')
 );
 
 $container['pptournamenttype_join_service'] = static fn (
@@ -608,7 +609,8 @@ $container['usernotification_find_service'] = static fn (
     ContainerInterface $container
 ):  UserNotification\Find => new  UserNotification\Find(
     $container->get('usernotification_repository'),
-    $container->get('guess_find_service')
+    $container->get('guess_find_service'),
+    $container->get('userparticipation_find_service')
 );
 
 $container['ppdex_find_service'] = static fn (

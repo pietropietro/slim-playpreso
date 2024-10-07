@@ -20,8 +20,9 @@ final class Create extends Base
         int $userId, 
         string $eventType, 
         int $eventId, 
+        ?array $push_text_data = null
     ){
-        $allowed_events = ['guess_verified'];
+        $allowed_events = ['guess_verified', 'ppleague_finished'];
         if(!in_array($eventType, $allowed_events)) return;
         //if notification was already created, return;
         if($this->userNotificationRepository->has($userId, $eventType, $eventId)) return;
@@ -31,9 +32,11 @@ final class Create extends Base
         
         //2. send out push notification (if registered)
         if(!$this->pushNotificationsService->hasToken($userId)) return;
-        $push_text_data = null;
-        if($eventType == 'guess_verified'){
-            $push_text_data = $this->getGuessVerifiedPushData($eventId);
+        
+        if ($push_text_data == null){
+            if($eventType == 'guess_verified'){
+                $push_text_data = $this->getGuessVerifiedPushData($eventId);
+            }    
         }
         $this->pushNotificationsService->send($userId, $push_text_data['title'], $push_text_data['body']);
     }

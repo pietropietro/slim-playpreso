@@ -9,6 +9,8 @@ use App\Service\UserParticipation;
 use App\Service\PPTournamentType;
 use App\Service\Points;
 use App\Service\BaseService;
+use App\Service\UserNotification;
+
 
 final class Update  extends BaseService{
     public function __construct(
@@ -18,6 +20,7 @@ final class Update  extends BaseService{
         protected PPTournamentType\Find $ppTournamentTypeFindService,
         protected PPTournamentType\Join $ppTournamentTypeJoinService,
         protected Points\Update $pointsUpdateService,
+        protected UserNotification\Create $userNotificationCreateService
     ) {}
 
     public function setStarted(int $id){
@@ -43,6 +46,35 @@ final class Update  extends BaseService{
         ){
             $this->relegate($ups, $ppTournamentType['relegate'], $id, $previousPTT['id']);
         }
+
+        $this->sendNotifications($ups, $ppTournamentType);
+    }
+
+    private function sendNotifications(array $ups, array $ppTournamentType){
+        foreach ($ups as $up) {
+            $title = $ppTournamentType['emoji'].' '.$ppTournamentType['name'].' '.$ppTournamentType['level'].' is over';
+            if($up['position']==1){
+                $body = "YOU ARE THE WINNER!";
+            }else if(in_array($up['position'], [2,22,32,42,52,62,72,82,92])){
+                $body = "You arrived ".$up['position']."nd";
+            }else if(in_array($up['position'], [3,23,33,43,53,63,73,83,93])){
+                $body = "You arrived ".$up['position']."rd";
+            }else{
+                $body = "You arrived ".$up['position']."th";
+            }
+
+            $notificationText = array(
+                'title' => $title,
+                'body' => $body
+            );
+            
+            $this->userNotificationCreateService->create(
+                $up['user_id'],
+                'ppleague_finished',
+                $up['id'], 
+                $notificationText
+            );
+        }        
     }
 
 
