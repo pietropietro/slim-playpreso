@@ -61,7 +61,7 @@ final class Send extends BaseService{
         $client = new ApnsClient($authProvider, $environment);
 
         $alert = ApnsAlert::create()->setTitle($title)->setBody($body);
-        $payload = ApnsPayload::create()->setAlert($alert);
+        $payload = ApnsPayload::create()->setAlert($alert)->setBadge(1)->setCustomValue('route', '/notification');
 
         $notification = new ApnsNotification($payload, $deviceToken);
         $client->addNotification($notification);
@@ -71,8 +71,10 @@ final class Send extends BaseService{
     private function sendFcmNotification(string $deviceToken, string $title, string $body)
     {
         $message = CloudMessage::withTarget('token', $deviceToken)
-            ->withNotification(FcmNotification::create($title, $body));
-
+            ->withNotification(FcmNotification::create($title, $body))
+            ->withData([
+                'route' => '/notification',  // Add the route/path or some identifier
+            ]);
         $result = $this->firebaseMessaging->send($message); // Handle response and errors as needed
         return;
     }

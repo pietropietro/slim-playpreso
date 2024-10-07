@@ -23,7 +23,8 @@ final class GetUnread extends Base{
          : false;
 
         $notifications = $this->getUserNotificationFindService()->getUnread($userId, $enriched);
-    
+        if($enriched)$this->getUserNotificationReadService()->setRead($userId);
+
         return $this->jsonResponse($response, 'success', $notifications, 200);
     }
 }

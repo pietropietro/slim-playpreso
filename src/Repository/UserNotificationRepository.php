@@ -38,4 +38,12 @@ final class UserNotificationRepository extends BaseRepository
         $this->db->orderBy('created_at','desc');
         return $this->db->get('userNotifications', 30);
     }
+
+    public function setRead(int $userId){
+        $this->db->where('user_id', $userId);
+        $data = array(
+            "updated_at" => $this->db->now()
+        );
+        return $this->db->update('userNotifications', $data);
+    }
 }

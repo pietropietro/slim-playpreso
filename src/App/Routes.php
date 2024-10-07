@@ -123,7 +123,6 @@ return function ($app){
 
     $app->group('/user-notification', function () use ($app): void {
         $app->get('', UserNotification\GetUnread::class);
-        $app->put('/read', UserNotification\Read::class);
     })->add(new Auth($pointsService));
 
     $app->group('/admin', function () use ($app): void {

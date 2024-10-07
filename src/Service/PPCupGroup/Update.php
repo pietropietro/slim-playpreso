@@ -11,6 +11,7 @@ use App\Service\PPCup;
 use App\Service\PPCupGroup;
 use App\Service\UserParticipation;
 use App\Service\PPTournamentType;
+use App\Service\UserNotification;
 
 
 final class Update  extends BaseService{
@@ -21,6 +22,7 @@ final class Update  extends BaseService{
         protected UserParticipation\Find $findUpService,
         protected UserParticipation\Create $createUpService,
         protected PPTournamentType\Find $findPPTournamentTypeService,
+        protected UserNotification\Create $userNotificationCreateService
     ) {}
 
     public function setFinished(int $id){
@@ -28,21 +30,61 @@ final class Update  extends BaseService{
             throw new \App\Exception\NotFound('cant finish', 500);
         }
         $ppCupGroup = $this->ppCupGroupRepository->getOne($id);
+        $ppTournamentType = $this->findPPTournamentTypeService->getOne($ppCupGroup['ppTournamentType_id']);
 
         //check if cup is finished
         $unfinishedCupGroups = $this->ppCupGroupRepository->getForCup($ppCupGroup['ppCup_id'],level: null, finished: false);
         if(count($unfinishedCupGroups) === 0){
-            $this->ppCupRepository->setFinished($ppCupGroup['ppCup_id']);
+            $this->ppCupRepository->setFinished($ppCupGroup['ppCup_id'], $ppTournamentType);
+            $this->sendNotifications($id, $ppTournamentType, true);
             return;
         }
         
         $this->handlePromotions($id);
     }
 
-    private function handlePromotions(int $ppCupGroupId){
+    private function sendNotifications(int $ppCupGroupid, array $ppTournamentType, bool $isFinal){
+        $ups = $this->findUpService->getForTournament('ppCupGroup_id',$ppCupGroupId);
+        foreach ($ups as $up) {
+            if($isFinal){
+                $title = $ppTournamentType['emoji'].' '.$ppTournamentType['name'].' is over';
+                if($up['position']==1){
+                    $body = "YOU ARE THE WINNER!";
+                }else{
+                    $body = "You lost the final";
+                }
+            }else{
+                $title = $ppTournamentType['emoji'].' '.$ppTournamentType['name'].'. The group is over';
+
+                if(in_array($up['position'], [1,21,31,41,51,61,71,81,91])){
+                    $body = "You arrived ".$up['position']."st";
+                }else if(in_array($up['position'], [2,22,32,42,52,62,72,82,92])){
+                    $body = "You arrived ".$up['position']."nd";
+                }else if(in_array($up['position'], [3,23,33,43,53,63,73,83,93])){
+                    $body = "You arrived ".$up['position']."rd";
+                }else{
+                    $body = "You arrived ".$up['position']."th";
+                }
+            }
+            
+            $notificationText = array(
+                'title' => $title,
+                'body' => $body
+            );
+            
+            $this->userNotificationCreateService->create(
+                $up['user_id'],
+                'ppcupgroup_finished',
+                $up['id'], 
+                $notificationText
+            );
+        }        
+    }
+
+
+    private function handlePromotions(int $ppCupGroupId, array $ppTournamentType){
         $ppCupGroup = $this->ppCupGroupRepository->getOne($ppCupGroupId);
 
-        $ppTournamentType = $this->findPPTournamentTypeService->getOne($ppCupGroup['ppTournamentType_id']);
         $promotionsPerGroup = $ppTournamentType['cup_format'][$ppCupGroup['level'] - 1]->promotions ?? null;
         $randomDraw = $ppTournamentType['cup_format'][$ppCupGroup['level']]->random_draw ?? null;
         

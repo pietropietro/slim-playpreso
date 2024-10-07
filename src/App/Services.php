@@ -318,6 +318,7 @@ $container['ppcupgroup_update_service'] = static fn (
     $container->get('userparticipation_find_service'),
     $container->get('userparticipation_create_service'),
     $container->get('pptournamenttype_find_service'),
+    $container->get('usernotification_create_service'),
 );
 
 $container['ppcupgroup_find_service'] = static fn (
@@ -611,6 +612,12 @@ $container['usernotification_find_service'] = static fn (
     $container->get('usernotification_repository'),
     $container->get('guess_find_service'),
     $container->get('userparticipation_find_service')
+);
+
+$container['usernotification_read_service'] = static fn (
+    ContainerInterface $container
+):  UserNotification\Read => new  UserNotification\Read(
+    $container->get('usernotification_repository'),
 );
 
 $container['ppdex_find_service'] = static fn (
