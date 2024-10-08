@@ -22,7 +22,7 @@ final class Create extends Base
         int $eventId, 
         ?array $push_text_data = null
     ){
-        $allowed_events = ['guess_verified', 'ppleague_finished'];
+        $allowed_events = ['guess_verified', 'ppleague_finished', 'guess_unlocked_starting'];
         if(!in_array($eventType, $allowed_events)) return;
         //if notification was already created, return;
         if($this->userNotificationRepository->has($userId, $eventType, $eventId)) return;
@@ -36,7 +36,10 @@ final class Create extends Base
         if ($push_text_data == null){
             if($eventType == 'guess_verified'){
                 $push_text_data = $this->getGuessVerifiedPushData($eventId);
-            }    
+            }
+            else if($eventType == 'guess_unlocked_starting'){
+                $push_text_data = $this->getGuessUnlockedStartingPushData($eventId);
+            }
         }
         $this->pushNotificationsService->send($userId, $push_text_data['title'], $push_text_data['body']);
     }
@@ -59,6 +62,18 @@ final class Create extends Base
         return array(
             'title' => $title,
             'body' => $body
+        );
+    }
+
+    private function getGuessUnlockedStartingPushData(int $guessId){
+        $guess = $this->guessFindService->getOne($guessId);
+        $teamNames = $guess['match']['homeTeam']['name']. ' - ' . $guess['match']['awayTeam']['name'];
+
+        $body = $teamNames . ' is starting soon';
+        
+        return array(
+            'title' => 'LOCK REMINDER',
+            'body' =>  $body
         );
     }
 }

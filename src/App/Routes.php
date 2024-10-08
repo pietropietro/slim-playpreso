@@ -200,7 +200,7 @@ return function ($app){
 
     $app->group('/cron', function () use ($app): void {
         $app->get('/fetch-football', Cron\FootballImportController::class);
-        $app->get('/send-lock-reminders', Cron\ReminderLock::class);
+        $app->get('/send-lock-reminders', Cron\EmailReminderLock::class);
         $app->get('/pick-motd', Cron\PickMotd::class);
     })->add(new InternalRequest());
 

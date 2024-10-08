@@ -30,7 +30,10 @@ final class Find extends BaseService{
 
     private function enrich(&$notifications){
         foreach ($notifications as &$n) {
-            if($n['event_type'] == 'guess_verified'){
+            if(in_array(
+                $n['event_type'], 
+                ['guess_verified', 'guess_unlocked_starting'])
+            ){
                 $n['guess'] = $this->guessFindService->getOne($n['event_id']);
             } 
             else if($n['event_type'] == 'ppleague_finished'){

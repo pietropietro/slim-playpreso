@@ -8,7 +8,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use App\Service\Mailer;
 
-final class ReminderLock extends Base
+final class EmailReminderLock extends Base
 {
     /**
      * @param array<string> $args

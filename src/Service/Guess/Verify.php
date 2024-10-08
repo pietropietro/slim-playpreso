@@ -26,17 +26,12 @@ final class Verify extends BaseService{
             $this->guessRepository->verify($guess['id'], $result['unox2'], $result['uo25'], $result['ggng'], $result['preso'], $result['points']);
             $this->pointsUpdateService->plus($guess['user_id'], $result['points']);
 
-            try {
-                // if($guess['guessed_at']){
-                    $this->userNotificationCreateService->create(
-                        $guess['user_id'],
-                        'guess_verified',
-                        $guess['id'], 
-                    );
-                // }
-            } catch (\Throwable $th) {
-                throw $th;
-            }
+            $this->userNotificationCreateService->create(
+                $guess['user_id'],
+                'guess_verified',
+                $guess['id'], 
+            );
+          
         }
     }
 
@@ -44,4 +39,5 @@ final class Verify extends BaseService{
         $this->guessRepository->verifyMissed();
     }
 
+  
 }

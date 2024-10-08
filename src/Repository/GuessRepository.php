@@ -303,4 +303,24 @@ final class GuessRepository extends BaseRepository
         return $this->db->get('guesses', $limit);
     }
 
+
+    public function getUnlockedGuessesStarting(?string $interval = '+6 hours', ?bool $withoutUserNotification = true ){
+        $this->db->where('guesses.guessed_at IS NULL');
+        $this->db->where('guesses.verified_at IS NULL');
+        
+
+        $this->db->join('matches m', "m.id=guesses.match_id", "INNER");
+        $dateInterval = date("Y-m-d H:i:s", strtotime($interval));
+        $this->db->where('m.date_start', $dateInterval, '<');
+        $this->db->where('m.date_start > now()');
+
+        if($withoutUserNotification){
+            $this->db->join('userNotifications un', 'un.event_id = guesses.id AND un.event_type = "guess_unlocked_starting"', 'LEFT');
+            $this->db->where('un.id IS NULL');  // This ensures we get rows where there is no match in userNotifications            
+        }
+
+        $result = $this->db->get('guesses',null, ['guesses.id, guesses.user_id', 'm.date_start']);
+        return $result;
+    }
+
 }
