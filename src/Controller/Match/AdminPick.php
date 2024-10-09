@@ -19,9 +19,17 @@ final class AdminPick extends Base
     ): Response {
 
         $ppTournamentTypeId = (int) $args['id'];
+        $ppTournamentType = $this->getPPTournamentTypeFindService()->getOne($ppTournamentTypeId);
+        if($ppTournamentType['name']=='MOTD'){
+            $all_matches_raw = $this->getPickMatchService()->pickForToday(null);
+            $pickedMatchesRaw = array($all_matches_raw[0]);
+            $leagues = array();
+        }else{
+            $pickedMatchesRaw = $this->getPickMatchService()->pick($ppTournamentTypeId, 3);
+            $all_matches_raw = $this->getPickMatchService()->nextMatchesForPPTournamentType($ppTournamentTypeId, 10); 
+            $leagues =  $this->getLeagueFindService()->getForPPTournamentType($ppTournamentTypeId, true);
+        }
 
-        $pickedMatchesRaw = $this->getPickMatchService()->pick($ppTournamentTypeId, 3);
-        $all_matches_raw = $this->getPickMatchService()->nextMatchesForPPTournamentType($ppTournamentTypeId, 10);
         $ids = array_column($pickedMatchesRaw, 'id');
         $all_ids = array_column($all_matches_raw, 'id');
 
@@ -31,7 +39,7 @@ final class AdminPick extends Base
         $returnObj = array(
             'all_matches' =>  $allMatches,
             'picked_matches' =>  $pickedMatches,
-            'leagues' =>  $this->getLeagueFindService()->getForPPTournamentType($ppTournamentTypeId, true)
+            'leagues' =>  $leagues
         );
 
         return $this->jsonResponse($response, 'success', $returnObj, 200);

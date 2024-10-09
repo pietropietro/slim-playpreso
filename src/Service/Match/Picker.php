@@ -16,8 +16,8 @@ final class Picker extends BaseService{
         protected PPTournamentTypeRepository $ppTournamentTypeRepository,
     ) {}
 
-    public function pickForToday(){
-        return $this->matchRepository->pickForToday();
+    public function pickForToday(?int $limit=null){
+        return $this->matchRepository->pickForToday(null);
     }
     
     public function pick(int $ppttId, int $howMany) : ?array{

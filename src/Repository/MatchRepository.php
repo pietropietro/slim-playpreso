@@ -344,12 +344,15 @@ final class MatchRepository extends BaseRepository
         return $this->db->delete('matches',1);
     }
 
-    public function pickForToday(){
+    public function pickForToday(?int $limit=1){
         $this->db->where('date(date_start) = CURDATE()');
-        $this->db->where('time(date_start) > "11.30"');
+        $this->db->where('time(date_start) > "11:30:00"');
         $this->db->where("verified_at IS NULL");
         $this->db->orderBy("rand()");
-        return $this->db->getOne('matches', $this->whitelistColumns);
+        if($limit == 1){
+            return $this->db->getOne('matches', $this->whitelistColumns);
+        }
+        return $this->db->get('matches', $limit, $this->whitelistColumns);
     }
 
     public function nextMatches(int $league_id, int $limit = 20){
