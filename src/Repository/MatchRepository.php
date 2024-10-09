@@ -344,17 +344,30 @@ final class MatchRepository extends BaseRepository
         return $this->db->delete('matches',1);
     }
 
-    public function pickForToday(?int $limit=1){
+    public function adminPickForToday(?int $limit = 1)
+    {
+        // Filter by today's date and time after 11:30
         $this->db->where('date(date_start) = CURDATE()');
         $this->db->where('time(date_start) > "11:30:00"');
         $this->db->where("verified_at IS NULL");
-        $this->db->orderBy("rand()");
-        if($limit == 1){
-            return $this->db->getOne('matches', $this->whitelistColumns);
+    
+        // Join leagues and countryWeights tables
+        $this->db->join('leagues l', 'l.id=matches.league_id', 'inner');
+        $this->db->join('countryWeights cw', 'cw.country=l.country', 'inner');
+    
+        // // Order first by the sum of l.level + cw.weight
+        $this->db->orderBy("(l.level + cw.weight)", 'ASC');
+    
+        // Then order by random if multiple rows have the same sum
+        $this->db->orderBy("RAND()");
+    
+        // Get the result based on the limit
+        if ($limit == 1) {
+            return $this->db->getOne('matches', 'matches.*');
         }
-        return $this->db->get('matches', $limit, $this->whitelistColumns);
+        return $this->db->get('matches', $limit, 'matches.*');
     }
-
+    
     public function nextMatches(int $league_id, int $limit = 20){
         $this->db->where('league_id', $league_id);
 

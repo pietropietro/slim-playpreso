@@ -16,8 +16,8 @@ final class Picker extends BaseService{
         protected PPTournamentTypeRepository $ppTournamentTypeRepository,
     ) {}
 
-    public function pickForToday(?int $limit=null){
-        return $this->matchRepository->pickForToday(null);
+    public function adminPickForToday(?int $limit=null){
+        return $this->matchRepository->adminPickForToday(null);
     }
     
     public function pick(int $ppttId, int $howMany) : ?array{
@@ -52,6 +52,8 @@ final class Picker extends BaseService{
             shuffle($groupedByLevel);
             shuffle($groupedByLevel[0]);
             $level = $groupedByLevel[0];
+
+            //TODO check here why it breaks
             shuffle($level[0]);
             array_push($picked, array_pop($level[0]));    
             $remaining = $howMany - count($picked);

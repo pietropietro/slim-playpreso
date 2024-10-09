@@ -21,7 +21,7 @@ final class AdminPick extends Base
         $ppTournamentTypeId = (int) $args['id'];
         $ppTournamentType = $this->getPPTournamentTypeFindService()->getOne($ppTournamentTypeId);
         if($ppTournamentType['name']=='MOTD'){
-            $all_matches_raw = $this->getPickMatchService()->pickForToday(null);
+            $all_matches_raw = $this->getPickMatchService()->adminPickForToday(null);
             $pickedMatchesRaw = array($all_matches_raw[0]);
             $leagues = array();
         }else{

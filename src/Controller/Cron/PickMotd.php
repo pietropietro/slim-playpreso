@@ -21,7 +21,7 @@ final class PickMotd extends Base
             return $this->jsonResponse($response, 'fail', 'already picked motd', 403);
         }
 
-        $match = $this->getMatchPickerService()->pickForToday();
+        $match = $this->getMatchPickerService()->adminPickForToday();
 
         if(!$match){
             return $this->jsonResponse($response, 'fail', 'no match', 404);
