@@ -20,6 +20,15 @@ final class Picker extends BaseService{
         return $this->matchRepository->adminPickForToday(null);
     }
     
+
+    /**
+     * Picks a certain number of matches for a given tournament type, 
+     * ensuring certain criteria like diversity and proximity to the current date.
+     * 
+     * @param int $ppttId The ID of the tournament type.
+     * @param int $howMany The number of matches to pick.
+     * @return array|null An array of selected matches or null if no matches are suitable.
+     */
     public function pick(int $ppttId, int $howMany) : ?array{
         $matches = $this->nextMatchesForPPTournamentType($ppttId, $howMany);
         if(!$matches) return [];
@@ -43,31 +52,48 @@ final class Picker extends BaseService{
         $picked = array();
 
         $groupedByLevel = $this->groupByLevelParent($filtered);
+        
+        //sets array to index 0 instead of league_id
         shuffle($groupedByLevel[$level]);
+        //shuffles matches inside league sub array
         shuffle($groupedByLevel[$level][0]);
         array_push($picked, array_pop($groupedByLevel[$level][0]));
-        if(!$groupedByLevel[$level][0]) unset($groupedByLevel[$level][0]);
+
+        if(!$groupedByLevel[$level][0]){
+            unset($groupedByLevel[$level][0]);
+            if(!$groupedByLevel[$level]){
+                unset($groupedByLevel[$level]);
+            }
+        }
 
         for($i=1; $i<$howMany; $i++){
+            //removes level-index so we have 0-index subarray
             shuffle($groupedByLevel);
+            //randomizes matches of random level at index 0
             shuffle($groupedByLevel[0]);
-            $level = $groupedByLevel[0];
+            $levelArray = $groupedByLevel[0];
 
             //TODO check here why it breaks
-            shuffle($level[0]);
-            array_push($picked, array_pop($level[0]));    
+            shuffle($levelArray[0]);
+            array_push($picked, array_pop($levelArray[0]));    
             $remaining = $howMany - count($picked);
 
+            //if there are more remaingin levels than remaining matches to pick
+            //let's remove the levelArray we have just picked from
             if(count($groupedByLevel) > $remaining){
                 unset($groupedByLevel[0][0]);
-                if(!$groupedByLevel[0]) unset($groupedByLevel[0]);
+                if(!$groupedByLevel[0]){
+                    unset($groupedByLevel[0]);
+                }
             }else{
-                $groupedByLevel[0] = $level;
+                $groupedByLevel[0] = $levelArray;
             }
         }
         
         return $picked;
     }
+
+
 
     private function checkDiversity(int $ppTournamentTypeId, array $matches, ?int $level=0){
         if($level && !in_array($level,array_column($matches,'league_level'))){
