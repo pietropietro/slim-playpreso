@@ -25,6 +25,7 @@ use App\Repository\UserNotificationRepository;
 use App\Repository\PPDexRepository;
 use App\Repository\PPRankingRepository;
 use App\Repository\HighlightRepository;
+use App\Repository\PushNotificationPreferencesRepository;
 use Psr\Container\ContainerInterface;
 
 $container['user_repository'] = static fn (ContainerInterface $container): UserRepository => new UserRepository($container->get('db'));
@@ -70,3 +71,5 @@ $container['usernotification_repository'] = static fn (ContainerInterface $conta
 $container['ppdexrepository_repository'] = static fn (ContainerInterface $container): PPDexRepository => new PPDexRepository($container->get('db'));
 
 $container['ppranking_repository'] = static fn (ContainerInterface $container): PPRankingRepository => new PPRankingRepository($container->get('db'));
+
+$container['pushnotificationpreferences_repository'] = static fn (ContainerInterface $container): PushNotificationPreferencesRepository => new PushNotificationPreferencesRepository($container->get('db'));

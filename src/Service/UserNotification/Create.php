@@ -7,11 +7,13 @@ namespace App\Service\UserNotification;
 use App\Service\Guess;
 use App\Service\PushNotifications;
 use App\Repository\UserNotificationRepository;
+use App\Repository\PushNotificationPreferencesRepository;
 
 final class Create extends Base
 {
     public function __construct(
         protected UserNotificationRepository $userNotificationRepository,   
+        protected PushNotificationPreferencesRepository $pushNotificationPreferencesRepository,   
         protected Guess\Find $guessFindService,       
         protected PushNotifications\Send $pushNotificationsService, 
     ) {}
@@ -22,17 +24,23 @@ final class Create extends Base
         int $eventId, 
         ?array $push_text_data = null
     ){
-        $allowed_events = ['guess_verified', 'ppleague_finished', 'guess_unlocked_starting'];
+        $allowed_events = $this->getAllowedEvents();
         if(!in_array($eventType, $allowed_events)) return;
         //if notification was already created, return;
         if($this->userNotificationRepository->has($userId, $eventType, $eventId)) return;
         
+        //INTERNAL USER NOTIFICATION
         //1. create internal notification row
         $this->userNotificationRepository->create($userId, $eventType, $eventId);
         
-        //2. send out push notification (if registered)
+        //PUSH NOTIFICATION
+        //check if user has token
         if(!$this->pushNotificationsService->hasToken($userId)) return;
-        
+        //check if user has disabled this notification
+        if($this->pushNotificationPreferencesRepository->hasRejected($userId, $eventType)) return;
+
+
+        //send out push notification 
         if ($push_text_data == null){
             if($eventType == 'guess_verified'){
                 $push_text_data = $this->getGuessVerifiedPushData($eventId);
@@ -42,6 +50,10 @@ final class Create extends Base
             }
         }
         $this->pushNotificationsService->send($userId, $push_text_data['title'], $push_text_data['body']);
+    }
+
+    public function getAllowedEvents(){
+        return ['guess_verified', 'ppleague_finished', 'guess_unlocked_starting'];
     }
 
 
@@ -76,4 +88,5 @@ final class Create extends Base
             'body' =>  $body
         );
     }
+    
 }

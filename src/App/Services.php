@@ -602,6 +602,7 @@ $container['usernotification_create_service'] = static fn (
     ContainerInterface $container
 ):  UserNotification\Create => new  UserNotification\Create(
     $container->get('usernotification_repository'),
+    $container->get('pushnotificationpreferences_repository'),
     $container->get('guess_find_service'),
     $container->get('pushnotifications_send_service'),
 );

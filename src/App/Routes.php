@@ -15,6 +15,7 @@ use App\Controller\PPRound;
 use App\Controller\PPRoundMatch;
 use App\Controller\PPArea;
 use App\Controller\EmailPreferences;
+use App\Controller\PushNotificationPreferences;
 use App\Controller\Cron;
 use App\Controller\DeviceToken;
 use App\Controller\Stats;
@@ -109,6 +110,12 @@ return function ($app){
     })->add(new Auth($pointsService));
 
     $app->post('/email-preferences', EmailPreferences\Update::class)->add(new Auth($pointsService));
+
+    $app->group('/push-notification-preferences', function () use ($app): void {
+        $app->get('', PushNotificationPreferences\Get::class);
+        $app->post('/toggle', PushNotificationPreferences\Toggle::class);
+    })->add(new Auth($pointsService));
+
 
     $app->get('/p-ranking', PPRanking\Get::class)->add(new Auth($pointsService));
     
