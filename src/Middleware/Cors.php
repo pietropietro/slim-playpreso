@@ -17,7 +17,7 @@ final class Cors extends Base
 
         return $response
             ->withHeader('Access-Control-Allow-Origin', $this->getAllowedOrigin($request))
-            ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+            ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Accept, Origin, Authorization, X-Frontend-Version')
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
             ->withHeader('Access-Control-Allow-Credentials', 'true')
             ->withHeader('Access-Control-Expose-Headers', 'Authorization');

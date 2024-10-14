@@ -27,17 +27,21 @@ use App\Controller\PPRanking;
 use App\Middleware\Auth;
 use App\Middleware\Cors;
 use App\Middleware\InternalRequest;
+use App\Middleware\VersionCheck;
 
 
 return function ($app){
+
     
     $app->add(function($req, $res, $next) {
-        $before = time();
         $res = (new Cors())($req, $res); // before
         $res = $next($req, $res); // route handler
-        $res = $res->withHeader('X-Before', $before)->withHeader('X-After', time());
         return $res;
     });
+
+    //middleware check on frontend version
+    $app->add(new VersionCheck());
+
 
     $container = $app->getContainer();
     $pointsService = $container->get('points_find_service');

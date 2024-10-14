@@ -9,7 +9,7 @@ abstract class Base extends \Exception
     {
         parent::__construct($message, $code);
         header('Access-Control-Allow-Origin: ' . $_ENV['ALLOW_URL_REQUEST']);
-        header('Access-Control-Allow-Headers: X-Requested-With, Content-Type, Accept, Origin, Authorization');
+        header('Access-Control-Allow-Headers: Content-Type, Accept, Origin, Authorization, X-Frontend-Version');
         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS');
     }
 }
