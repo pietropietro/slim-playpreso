@@ -25,9 +25,9 @@ final class Maintenance {
             return $next($request, $response);
         }
 
-        $maintenanceMode = isset($_SERVER['MAINTENANCE_MODE']) ? $_SERVER['MAINTENANCE_MODE'] : null;
+        $maintenanceMode = isset($_SERVER['MAINTENANCE_MODE']) ? (bool)$_SERVER['MAINTENANCE_MODE'] : null;
 
-        if ($maintenanceMode) {
+        if ($maintenanceMode === true) {
             throw new \App\Exception\Auth('Maintenance.', 503);
         }
 
