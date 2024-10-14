@@ -31,7 +31,7 @@ final class Cors extends Base
             return $origin;
         }
         else{
-            $allowedOrigins = ['https://playpreso.com', ];
+            $allowedOrigins = ['https://playpreso.com', 'capacitor://localhost' ];
             $origin = $request->getHeaderLine('Origin');
         
             if (in_array($origin, $allowedOrigins)) {
