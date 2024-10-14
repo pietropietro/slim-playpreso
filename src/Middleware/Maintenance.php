@@ -10,7 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 
 use Slim\Route;
 
-final class VersionCheck {
+final class Maintenance {
 
     public function __construct(){}
 
@@ -25,16 +25,10 @@ final class VersionCheck {
             return $next($request, $response);
         }
 
-        // Get the X-Frontend-Version header
-        $frontendVersion = $request->getHeaderLine('X-Frontend-Version');
-        $minFrontendVersion = isset($_SERVER['MINIMUM_FE_VERSION']) ? $_SERVER['MINIMUM_FE_VERSION'] : null;
+        $maintenanceMode = isset($_SERVER['MAINTENANCE_MODE']) ? $_SERVER['MAINTENANCE_MODE'] : null;
 
-        // Check if the app version is valid and higher than the minimum required version
-        if ($minFrontendVersion && version_compare($frontendVersion, $minFrontendVersion, '<')) {
-            //throw exception instead of returning a reponse because
-            //exception has the required headers added to the resp back.
-            //otherwise would get CORS error
-            throw new \App\Exception\Auth('Update app required', 426);
+        if ($maintenanceMode) {
+            throw new \App\Exception\Auth('Maintenance.', 503);
         }
 
         // If the version is valid, proceed to the next middleware/route

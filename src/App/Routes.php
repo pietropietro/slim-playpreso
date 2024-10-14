@@ -28,6 +28,7 @@ use App\Middleware\Auth;
 use App\Middleware\Cors;
 use App\Middleware\InternalRequest;
 use App\Middleware\VersionCheck;
+use App\Middleware\Maintenance;
 
 
 return function ($app){
@@ -41,6 +42,7 @@ return function ($app){
 
     //middleware check on frontend version
     $app->add(new VersionCheck());
+    $app->add(new Maintenance());
 
 
     $container = $app->getContainer();
