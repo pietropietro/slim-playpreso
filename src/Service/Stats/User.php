@@ -31,6 +31,7 @@ final class User extends BaseService{
         } 
 
         $mainStats = $this->statsRepository->getUserMainSummary($userId, $from, $to);
+        if(!$mainStats)return null;
         $missedStats = $this->statsRepository->getUserMissedCount($userId, $from, $to);
         $commonLock = $this->statsRepository->getCommonLock(null, $userId, $from, $to);
 
