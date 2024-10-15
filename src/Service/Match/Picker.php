@@ -17,7 +17,7 @@ final class Picker extends BaseService{
     ) {}
 
     public function adminPickForToday(?int $limit=null){
-        return $this->matchRepository->adminPickForToday(null);
+        return $this->matchRepository->adminPickForToday($limit);
     }
     
 

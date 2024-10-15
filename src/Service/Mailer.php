@@ -46,10 +46,10 @@ final class Mailer extends BaseService{
             $newPassword = substr(md5((string)rand()), 0, 7);
             $mail->Body = $body;
             // $mail->AltBody = 'please find your new password: '.$newPassword;
-            $mail->send();
-            
+            return $mail->send();
         } catch (Exception $e) {
             $error = "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            return false;
         }
     }
 }

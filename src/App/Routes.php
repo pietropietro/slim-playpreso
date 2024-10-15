@@ -16,7 +16,6 @@ use App\Controller\PPRoundMatch;
 use App\Controller\PPArea;
 use App\Controller\EmailPreferences;
 use App\Controller\PushNotificationPreferences;
-use App\Controller\Cron;
 use App\Controller\DeviceToken;
 use App\Controller\Stats;
 use App\Controller\MOTD;
@@ -26,7 +25,6 @@ use App\Controller\Highlight;
 use App\Controller\PPRanking;
 use App\Middleware\Auth;
 use App\Middleware\Cors;
-use App\Middleware\InternalRequest;
 use App\Middleware\VersionCheck;
 use App\Middleware\Maintenance;
 
@@ -210,13 +208,6 @@ return function ($app){
         });
         
     })->add(new Auth($pointsService, $admin));
-
-    $app->group('/cron', function () use ($app): void {
-        $app->get('/fetch-football', Cron\FootballImportController::class);
-        $app->get('/send-lock-reminders', Cron\EmailReminderLock::class);
-        $app->get('/pick-motd', Cron\PickMotd::class);
-    })->add(new InternalRequest());
-
 
     // Catch-all route to serve a 404 Not Found page if none of the routes match
     // NOTE: make sure this route is defined last
