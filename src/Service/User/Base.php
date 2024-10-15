@@ -26,6 +26,11 @@ abstract class Base extends BaseService
             throw new \App\Exception\User('Invalid username.', 400);
         }
 
+        // Check if the username starts with 'deleted'
+        if (strpos($username, 'deleted') === 0) {
+            throw new \App\Exception\User('Invalid username.', 403);
+        }
+        
         return $username;
     }
 

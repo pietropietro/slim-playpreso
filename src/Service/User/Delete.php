@@ -16,13 +16,17 @@ final class Delete extends Base
     }
 
 
-    public function delete(int $userId): void
+    public function anonymize(int $userId)
     {
-        $this->getUserFromDb($userId);
-        $this->userRepository->deleteUserTasks($userId);
-        $this->userRepository->delete($userId);
+        $user = $this->getUserFromDb($userId);
+        if(!$user)return;
+
+        $res = $this->userRepository->anonymizeUser($userId);
+        
         if (self::isRedisEnabled() === true) {
             $this->deleteFromCache($userId);
         }
+
+        return $res;
     }
 }

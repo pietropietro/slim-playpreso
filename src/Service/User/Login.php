@@ -31,6 +31,10 @@ final class Login extends Base
         if (! isset($data->password)) {
             throw new User('The field "password" is required.', 400);
         }
+         // Check if the username starts with 'deleted'
+        if (strpos($data->username, 'deleted') === 0) {
+            throw new \App\Exception\User('Unauthorized.', 403);
+        }
 
         $user = $this->userRepository->loginUser($data->username, $data->password);
         $user['emailPreferences'] = $this->emailPreferencesRepository->getOne($user['id']);

@@ -17,11 +17,10 @@ final class Delete extends Base
         Response $response,
         array $args
     ): Response {
-        $userIdLogged = $this->getAndValidateUserId($request);
-        $id = (int) $args['id'];
-        $this->checkUserPermissions($id, $userIdLogged);
-        $this->getDeleteUserService()->delete($id);
 
-        return $this->jsonResponse($response, 'success', null, 204);
+        $userId = $this->getAndValidateUserId($request);
+        $result = $this->getDeleteUserService()->anonymize($userId);
+
+        return $this->jsonResponse($response, 'success', $result, 204);
     }
 }

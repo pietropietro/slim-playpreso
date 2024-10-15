@@ -49,6 +49,10 @@ final class Find extends Base
     }
     
     public function getOneFromUsername(string $username, ?bool $sensitiveColumns=false){
+        if (strpos($username, 'deleted') === 0) {
+            return null;
+        }
+        
         if(!$id = $this->idFromUsername($username)) return null;
         return $this->getOne($id, $sensitiveColumns);
     }

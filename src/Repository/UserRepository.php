@@ -21,6 +21,24 @@ final class UserRepository extends BaseRepository
         return $userId;
     }
 
+    public function anonymizeUser(int $userId): bool
+    {
+        $anonymizedData = [
+            'username' => 'deleted' . $userId,  // Set a unique username
+            'email' => 'deleted',  // Replace email with a placeholder
+            'password' => 'deleted',  // Replace password with a placeholder
+        ];
+
+        $this->db->where('id', $userId);
+        $result = $this->db->update('users', $anonymizedData, 1);
+
+        if (!$result) {
+            throw new \App\Exception\User('User could not be anonymized.', 500);
+        }
+
+        return true;
+    }
+
     public function adminGet(
         ?int $offset = null, 
         ?int $limit = 200
