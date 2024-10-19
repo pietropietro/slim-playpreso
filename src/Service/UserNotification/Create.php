@@ -65,11 +65,11 @@ final class Create extends Base
         $realScore = $guess['match']['score_home'] . '-' . $guess['match']['score_away'];
         $guessedScore = $guess['home'] . '-' . $guess['away'];
 
-        $title = $teamNames . ' ' . $realScore;
+        $title = '🏁 '. $teamNames . ' ' . $realScore;
         
         if($guess['PRESO']){$body = 'PRESO!';}
         else if(!$guess['guessed_at']){$body = '❌';}
-        else{$body = 'your lock: ' . $guessedScore . ' +' . $guess['points'];}
+        else{$body = '🔒: ' . $guessedScore . ' +' . $guess['points'];}
         
         return array(
             'title' => $title,
