@@ -69,7 +69,7 @@ final class Create extends Base
         
         if($guess['PRESO']){$body = 'PRESO!';}
         else if(!$guess['guessed_at']){$body = '❌';}
-        else{$body = '🔒: ' . $guessedScore . ' +' . $guess['points'];}
+        else{$body = '🔒 ' . $guessedScore . '   🅿️+' . $guess['points'];}
         
         return array(
             'title' => $title,
