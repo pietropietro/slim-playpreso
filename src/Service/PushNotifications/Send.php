@@ -35,10 +35,19 @@ final class Send extends BaseService{
         $tokens = $this->deviceTokenRepository->getTokensByUserId($userId);
 
         foreach ($tokens as $token) {
-            if ($token['platform'] === 'ios') {
-                $this->sendApnsNotification($token['token'], $title, $body);
-            } elseif ($token['platform'] === 'android') {
-                $this->sendFcmNotification($token['token'], $title, $body);
+            try {
+                if ($token['platform'] === 'ios') {
+                    $this->sendApnsNotification($token['token'], $title, $body);
+                } elseif ($token['platform'] === 'android') {
+                    $this->sendFcmNotification($token['token'], $title, $body);
+                }
+            } catch (\Kreait\Firebase\Exception\Messaging\InvalidMessage $e) {
+                // Log the error and handle invalid token, e.g., remove it from the database
+                error_log("Invalid FCM registration token for user $userId: {$e->getMessage()}");
+                $this->deviceTokenRepository->remove($userId, $token['token']); // If you have such a function
+            } catch (\Exception $e) {
+                // Log unexpected errors
+                error_log("Error sending notification to user $userId: {$e->getMessage()}");
             }
         }
     }
