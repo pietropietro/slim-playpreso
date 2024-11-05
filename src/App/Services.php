@@ -403,6 +403,7 @@ $container['match_verify_service'] = static fn (
 $container['guess_verify_service'] = static fn (
     ContainerInterface $container
 ):  Guess\Verify => new  Guess\Verify(
+    $container->get('redis_service'),
     $container->get('guess_repository'),
     $container->get('points_calculate_service'),
     $container->get('points_update_service'),

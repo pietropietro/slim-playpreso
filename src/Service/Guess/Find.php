@@ -111,7 +111,7 @@ final class Find extends BaseService{
 
 
 
-    private const REDIS_KEY_PRESO_HIGHLIGHTS = 'highlight_preso:%d';
+    private const REDIS_KEY_PRESO_HIGHLIGHTS = 'highlights-preso-limit:%d';
     public function getLastPreso(int $limit){
         if (self::isRedisEnabled() === true ) {
             $redisKey = $this->redisService->generateKey(sprintf(self::REDIS_KEY_PRESO_HIGHLIGHTS, $limit));

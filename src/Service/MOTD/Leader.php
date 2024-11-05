@@ -15,14 +15,15 @@ final class Leader  extends BaseService{
         protected Find $motdFindService,
     ){}
 
-    private const REDIS_KEY_MOTD_CHART = 'motd_chart_page';
+    private const REDIS_KEY_PREFIX = 'motd-chart-page:';
+    private const REDIS_KEY_MOTD_CHART = self::REDIS_KEY_PREFIX.'%d-limit:%d';
 
     public function checkIfCalculate(int $matchId){
         $motd = $this->motdRepository->getMotd();
         if($motd && $motd['match_id'] == $matchId){
 
             if (self::isRedisEnabled() === true ) {
-                $this->redisService->deleteKeysByPattern(self::REDIS_KEY_MOTD_CHART.'*');
+                $this->redisService->deleteKeysByPattern(self::REDIS_KEY_PREFIX.'*');
             }
             $this->calculateLeader();
         }
@@ -47,7 +48,9 @@ final class Leader  extends BaseService{
         $offset = ($page - 1) * $limit;
 
         if (self::isRedisEnabled() === true ) {
-            $redisKey = sprintf(self::REDIS_KEY_MOTD_CHART.':%d:limit:%d', $page, $limit);
+            $redisKey = $this->redisService->generateKey(
+                sprintf(self::REDIS_KEY_MOTD_CHART, $page, $limit)
+            );
             $cachedchart = $this->redisService->get($redisKey); // This returns null if not found or the user data if found
             if ($cachedchart !== null) {
                 return $cachedchart;

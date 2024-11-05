@@ -10,7 +10,7 @@ use App\Service\BaseService;
 
 abstract class Base extends BaseService
 {
-    private const REDIS_KEY_HASMATCHES = 'leagueHasMatches:%s-w:%s';
+    private const REDIS_KEY_HASMATCHES = 'league:%s-has-matches-in-week:%s';
 
     public function __construct(
         protected RedisService $redisService

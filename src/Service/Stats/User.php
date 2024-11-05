@@ -18,7 +18,7 @@ final class User extends BaseService{
         protected PPRound\Find $ppRoundFindService,
     ) {}
 
-    private const REDIS_KEY_STATS = 'stats_user:%d:from:%s:to:%s';
+    private const REDIS_KEY_STATS = 'stats-user:%d-from:%s-to:%s';
 
     public function getForUser(int $userId, ?string $from = null, ?string $to=null){
 

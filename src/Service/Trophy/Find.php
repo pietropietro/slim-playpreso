@@ -37,7 +37,7 @@ final class Find extends BaseService{
         return $trophiesUP;
     }
     
-    private const REDIS_KEY_LATEST_TROPHIES = 'latest_trophies_limit:%d';
+    private const REDIS_KEY_LATEST_TROPHIES = 'highlights-trophies-limit:%d';
 
     public function getLatestTrophies(int $limit = 5){
 

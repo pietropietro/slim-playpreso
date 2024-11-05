@@ -34,8 +34,8 @@ final class Find extends BaseService{
         ?bool $is_external_id=false, 
         ?bool $withTeams=true, 
         ?bool $withStats=true,
-        ?bool $admin=false,
-    ) : ?array {
+        ?bool $admin=false
+    ) {
         $match = $this->matchRepository->getOne($id, $is_external_id, $admin);
         return $withTeams ? $this->enrich($match, $withStats) : $match;
     }

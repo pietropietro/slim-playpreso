@@ -122,7 +122,7 @@ final class Find  extends BaseService{
         return $next;
     }
 
-    private const REDIS_KEY_FULLPRESOROUND_HIGHLIGHTS = 'highlight_fullpresoround_user:%d_limit:%d_from:%s_to:%s';
+    private const REDIS_KEY_FULLPRESOROUND_HIGHLIGHTS = 'highlights-full-presoround-user:%d-limit:%d-from:%s-to:%s';
 
     public function getFullPresoRound(?int $userId=null, ?int $limit=5, ?string $from = null, ?string $to = null){
         if (self::isRedisEnabled() === true ) {
