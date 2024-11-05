@@ -228,6 +228,7 @@ final class GuessRepository extends BaseRepository
     public function changePPRMMatch(int $ppRoundMatch_id, int $newMatchId){
         $data = array(
             "guessed_at" => null,
+            "verified_at" => null,
             "home" => null,
             "away" => null,
             "match_id" => $newMatchId
