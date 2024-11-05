@@ -233,7 +233,6 @@ final class GuessRepository extends BaseRepository
             "match_id" => $newMatchId
         );
         $this->db->where('ppRoundMatch_id', $ppRoundMatch_id);
-        $this->db->where('verified_at IS NULL');
         $this->db->update('guesses', $data);     
     }
 

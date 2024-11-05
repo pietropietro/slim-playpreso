@@ -18,7 +18,7 @@ final class Update extends BaseService
         $this->leagueRepository->update($id, $data);
 
         //update all children leagues
-        if($data['parent_id'] && $data['parent_id'] == $id){
+        if(isset($data['parent_id']) && $data['parent_id'] == $id){
             $children = $this->leagueRepository->getChildren($id, true);
             foreach($children as $child){
                 $childData = array(

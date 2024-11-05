@@ -113,9 +113,14 @@ final class MatchRepository extends BaseRepository
         return $this->db->get('matches');
     }
 
-    public function getOne(int $matchId, bool $is_external_id = false) : ?array {
+    public function getOne(int $matchId, bool $is_external_id = false, bool $admin = false) : ?array {
         $column = !!$is_external_id ? 'ls_id' : 'id';
         $this->db->where($column, $matchId);
+
+        if($admin){
+            return $this->db->getOne('matches');
+        }
+        
         return $this->db->getOne('matches', $this->whitelistColumns);
     }
 
@@ -204,7 +209,7 @@ final class MatchRepository extends BaseRepository
         $this->db->update('matches', $data, 1);
     }
 
-    public function updateNotes(int $id, string $notes){
+    public function updateNotes(int $id, ?string $notes=null){
         $data = array(
 			"notes" => $notes,
 	    );

@@ -356,6 +356,7 @@ $container['match_elaborate_service'] = static fn (
     $container->get('match_find_service'),
     $container->get('team_find_service'),
     $container->get('team_create_service'),
+    $container->get('ppround_update_service'),
 );
 
 $container['match_update_service'] = static fn (
@@ -643,4 +644,14 @@ $container['ppranking_find_service'] = static fn (
     $container->get('userparticipation_find_service'),
     $container->get('ppranking_calculate_service'),
 );
+
+
+$container['ppround_update_service'] = static fn (
+    ContainerInterface $container
+):  PPRound\Update => new  PPRound\Update(
+    $container->get('pproundmatch_update_service'),
+    $container->get('match_picker_service'),
+    $container->get('ppround_repository'),
+);
+
 

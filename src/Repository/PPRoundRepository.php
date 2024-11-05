@@ -95,6 +95,19 @@ final class PPRoundRepository extends BaseRepository
         return $result;
     }
 
+    public function getPPRoundMatchesForMatchId(int $matchId){
 
+        $this->db->join('ppRoundMatches pprm', 'pprm.ppRound_id = ppRounds.id', 'INNER');
+        $this->db->where('pprm.match_id', $matchId);
+
+        $this->db->join('ppLeagues ppl', 'ppl.id = ppRounds.ppLeague_id', 'LEFT');
+        $this->db->join('ppCupGroups ppcg', 'ppcg.id = ppRounds.ppCupGroup_id', 'LEFT');
+
+        $columns= [
+            'COALESCE(ppl.ppTournamentType_id, ppcg.ppTournamentType_id) as ppTournamentType_id',
+            'pprm.id as ppRoundMatch_id'
+        ];
+        return $this->db->get('ppRounds', null, $columns);
+    }
 
 }

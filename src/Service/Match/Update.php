@@ -30,10 +30,11 @@ final class Update extends BaseService
     }
 
     public function updateDateStart(int $id, string $date_start){
-        return $this->matchRepository->updateDateStart($id, $date_start);
+        $this->matchRepository->updateDateStart($id, $date_start);
+        return $this->matchRepository->updateNotes($id, null);
     }
 
-    public function updateNotes(int $id, string $notes){
+    public function updateNotes(int $id, ?string $notes = null){
         return $this->matchRepository->updateNotes($id, $notes);
     }
 }

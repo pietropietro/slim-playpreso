@@ -153,7 +153,6 @@ final class LeagueRepository extends BaseRepository
         $this->db->join("matches m", "m.league_id=l.id", "INNER");
         if($havingGuesses)$this->db->join("guesses g", "g.match_id=m.id", "INNER");
         $this->db->where('m.verified_at IS NULL');
-        $this->db->where('m.notes IS NULL');
         $start = date("Y-m-d H:i:s", strtotime($fromTime ?? '-2 days'));
         $finish = date("Y-m-d H:i:s", strtotime('-110 minutes'));
         $this->db->where('m.date_start', array($start, $finish), 'BETWEEN');
