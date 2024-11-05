@@ -16,23 +16,23 @@ final class Create extends BaseService{
         protected MatchRepository $matchRepository,
     ) {}
     
-    public function createForParticipants(int $ppRoundMatchId, int $matchId, string $tournamentColumn, int $tournamentId){
+    public function createForParticipants(int $ppRoundMatchId, string $tournamentColumn, int $tournamentId){
         $ups = $this->upRepository->getForTournament($tournamentColumn, $tournamentId);
         foreach ($ups as $key => $up) {
             if($_SERVER['DEBUG']){
-                $this->guessRepository->createdebug($up['user_id'], $matchId, $ppRoundMatchId);
+                $this->guessRepository->createdebug($up['user_id'], $ppRoundMatchId);
                 continue;
             }
-            $this->create($up['user_id'], $matchId, $ppRoundMatchId);
+            $this->create($up['user_id'], $ppRoundMatchId);
         }
         return true;
     }
 
-    public function create(int $userId, int $matchId, int $ppRoundMatchId){
+    public function create(int $userId, int $ppRoundMatchId){
         if(!$this->matchRepository->isBeforeStartTime($matchId)){
             return false;
         }
-        return $this->guessRepository->create($userId, $matchId, $ppRoundMatchId);
+        return $this->guessRepository->create($userId, $ppRoundMatchId);
     }
 
 }

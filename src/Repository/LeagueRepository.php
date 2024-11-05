@@ -151,7 +151,10 @@ final class LeagueRepository extends BaseRepository
     //retrieves leagues with unverified matches in the PAST
     public function getNeedPastData(bool $havingGuesses = false, ?string $fromTime = null){
         $this->db->join("matches m", "m.league_id=l.id", "INNER");
-        if($havingGuesses)$this->db->join("guesses g", "g.match_id=m.id", "INNER");
+        if($havingGuesses){
+            $this->db->join('ppRoundMatches pprm', 'pprm.match_id=m.id', 'INNER');
+            $this->db->join("guesses g", "g.ppRoundMatch_id=pprm.id", "INNER");
+        }
         $this->db->where('m.verified_at IS NULL');
         $start = date("Y-m-d H:i:s", strtotime($fromTime ?? '-2 days'));
         $finish = date("Y-m-d H:i:s", strtotime('-110 minutes'));
@@ -181,7 +184,8 @@ final class LeagueRepository extends BaseRepository
 
     public function getStandingsFromGuess(int $guessId){
         $this->db->join("matches m", "m.league_id=leagues.id", "INNER");
-        $this->db->join("guesses g", "g.match_id=m.id", "INNER");
+        $this->db->join('ppRoundMatches pprm', 'pprm.match_id=m.id', 'INNER');
+        $this->db->join("guesses g", "g.ppRoundMatch_id=pprm.id", "INNER");
         $this->db->where('g.id', $guessId);
         return $this->db->getValue('leagues', 'standings');
     }

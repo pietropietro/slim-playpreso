@@ -52,28 +52,6 @@ final class MOTDRepository extends BaseRepository
         return $this->db->getInsertId();
     }
 
-    // public function getWeeklyStandings(?int $userId, int $limit=6){
-    //     $sql = 
-    //         "SELECT user_id, username, sum(g.points) as tot_points, count(g.id) as tot_locked
-    //         FROM guesses g
-    //         JOIN (
-    //             SELECT pprm.id 
-    //             FROM ppRoundMatches pprm 
-    //             INNER JOIN matches m 
-    //             ON pprm.match_id = m.id 
-    //             WHERE motd IS NOT NULL 
-    //             AND m.verified_at IS NOT NULL 
-    //             ORDER BY motd DESC
-    //             LIMIT 7
-    //         ) pprm 
-    //         ON g.ppRoundMatch_id = pprm.id
-    //         INNER JOIN users u on g.user_id = u.id".
-    //         ($userId ? ' WHERE user_id='.$userId.' ' : ' ')
-    //         ." group by user_id
-    //         order by tot_points desc limit ".$limit;
-    //     return $this->db->query($sql);
-    // }
-
     public function insertLeader(int $userId, int $points){
         $data = array(
             'user_id' => $userId,
@@ -118,18 +96,14 @@ final class MOTDRepository extends BaseRepository
         $this->db->orderBy('motd', 'desc');
         $ids = $this->db->getValue('ppRoundMatches', 'id', 30);
 
+        $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
         $this->db->where('ppRoundMatch_id', $ids, 'IN');
         $this->db->where('user_id', $userId);
         $this->db->orderBy('verified_at', 'desc');
 
-        return $this->db->get('guesses');
+        return $this->db->get('guesses',null,'guesses.*, match_id');
     }
     
 
-    // public function delete(int $id){
-    //     if(!$id) return;
-    //     $this->db->where('id', $id);
-    //     return $this->db->delete('ppRoundMatches',1);
-    // }
 
 }

@@ -16,7 +16,7 @@ final class Delete extends BaseService{
     ){}
 
     public function delete(int $id){
-        $this->guessRepository->deletePPRMMatch($id);
+        $this->guessRepository->deleteForPPRMatch($id);
         $this->ppRoundMatchRepository->delete($id);
     }
 

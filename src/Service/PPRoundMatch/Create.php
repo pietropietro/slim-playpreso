@@ -29,7 +29,6 @@ final class Create  extends BaseService{
         }
         $this->guessCreateService->createForParticipants(
             $id, 
-            $matchId, 
             $tournamentColumn, 
             $tournamentId
         );

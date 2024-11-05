@@ -465,7 +465,6 @@ $container['pproundmatch_update_service'] = static fn (
     ContainerInterface $container
 ):  PPRoundMatch\Update => new  PPRoundMatch\Update(
     $container->get('pproundmatch_repository'),
-    $container->get('guess_repository'),
 );
 
 $container['pproundmatch_delete_service'] = static fn (

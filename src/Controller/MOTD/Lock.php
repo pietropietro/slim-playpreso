@@ -33,7 +33,7 @@ final class Lock extends Base
             throw new \App\Exception\NotFound("can't lock", 400);
         }
 
-        $newGuessId = $this->getGuessCreateService()->create($userId, $motdPPRM['match_id'], $motdPPRM['id']);
+        $newGuessId = $this->getGuessCreateService()->create($userId, $motdPPRM['id']);
         if(!$newGuessId){
             throw new \App\Exception\NotFound("can't lock", 400);
         }

@@ -20,7 +20,8 @@ final class EmailPreferencesRepository extends BaseRepository
     // returns ( 264 | 1483,1553 | 2321,323  | pietro@playpreso.com )
     public function getNeedLockReminder(){
         $this->db->join("users u", "u.id=g.user_id", "INNER");
-        $this->db->join("matches m", "m.id=g.match_id", "INNER");
+        $this->db->join('ppRoundMatches pprm', 'pprm.id=g.ppRoundMatch_id', 'INNER');
+        $this->db->join("matches m", "m.id=pprm.match_id", "INNER");
         $this->db->join("emailPreferences ep", "ep.user_id=g.user_id", "INNER");
        
         $this->db->where('g.guessed_at is null');

@@ -120,12 +120,14 @@ final class StatsRepository extends BaseRepository
             SELECT t.id, t.name, COUNT(*) as tot_locks, round(AVG(COALESCE(subquery.points, 0)),1) as avg_points, SUM(subquery.preso) as tot_preso
             FROM (
                 SELECT home_id as team_id, g.points, g.preso FROM guesses g
-                JOIN matches m ON g.match_id = m.id
+                inner join ppRoundMatches pprm on g.ppRoundMatch_id = pprm.id
+                JOIN matches m ON pprm.match_id = m.id
                 WHERE g.user_id = ? 
                 AND g.verified_at BETWEEN ? AND ?
                 UNION ALL
                 SELECT away_id as team_id, g.points, g.preso FROM guesses g
-                JOIN matches m ON g.match_id = m.id
+                inner join ppRoundMatches pprm on g.ppRoundMatch_id = pprm.id
+                JOIN matches m ON pprm.match_id = m.id
                 WHERE g.user_id = ? 
                 AND g.verified_at BETWEEN ? AND ?
             ) as subquery
@@ -157,12 +159,14 @@ final class StatsRepository extends BaseRepository
             SELECT t.id, t.name, t.country, round(AVG(COALESCE(subquery.points, 0)),1) as avg_points, COUNT(*) as tot_locks
             FROM (
                 SELECT home_id as team_id, g.points FROM guesses g
-                JOIN matches m ON g.match_id = m.id
+                inner join ppRoundMatches pprm on g.ppRoundMatch_id = pprm.id
+                JOIN matches m ON pprm.match_id = m.id
                 WHERE g.user_id = ? 
                 AND g.verified_at BETWEEN ? AND ?
                 UNION ALL
                 SELECT away_id as team_id, g.points FROM guesses g
-                JOIN matches m ON g.match_id = m.id
+                inner join ppRoundMatches pprm on g.ppRoundMatch_id = pprm.id
+                JOIN matches m ON pprm.match_id = m.id
                 WHERE g.user_id = ? 
                 AND g.verified_at BETWEEN ? AND ?
             ) as subquery
@@ -232,7 +236,8 @@ final class StatsRepository extends BaseRepository
     //commonBestFlag true returns common, false returns best avg
     
     public function getUserLeagues(int $userId, ?string $from = null, ?string $to=null, int $commonHighLow){
-        $this->db->join("matches m", "g.match_id = m.id", "INNER");
+        $this->db->join('ppRoundMatches pprm', 'pprm.id=g.ppRoundMatch_id', 'INNER');
+        $this->db->join("matches m", "pprm.match_id = m.id", "INNER");
         $this->db->join("leagues l", "m.league_id = l.id", "INNER");
         $this->db->join("leagues pl", "l.parent_id = pl.id", "LEFT");
     

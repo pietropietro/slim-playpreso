@@ -8,14 +8,19 @@ use App\Entity\Guess;
 
 final class GuessRepository extends BaseRepository
 {
+
+    private $columns = 'guesses.*,match_id';
+
     public function getOne(int $id){
-        $this->db->where('id', $id);
-        return $this->db->getOne('guesses');
+        $this->db->where('guesses.id', $id);
+        $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
+        return $this->db->getOne('guesses', $this->columns);
     }
 
     public function get(array $ids){
-        $this->db->where('id', $ids, 'IN');
-        return $this->db->get('guesses');
+        $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
+        $this->db->where('guesses.id', $ids, 'IN');
+        return $this->db->get('guesses', null, $this->columns);
     }
 
     public function getForUser(
@@ -28,10 +33,11 @@ final class GuessRepository extends BaseRepository
         ?int $offset = null, 
         ?int $limit = 200
     ) {
-        $this->db->join('matches m', 'm.id=guesses.match_id', 'INNER');
+
+        $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
+        $this->db->join('matches m', 'm.id=pprm.match_id', 'INNER');
     
         if (!$includeMotd) {
-            $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
             $this->db->where('pprm.motd IS NULL');
         }
     
@@ -50,7 +56,7 @@ final class GuessRepository extends BaseRepository
         $this->db->where('user_id', $userId);
         $this->db->orderBy('m.date_start', $order);
     
-        return $this->db->get('guesses',[$offset, $limit], 'guesses.*');
+        return $this->db->get('guesses',[$offset, $limit], $this->columns);
     }
     
 
@@ -59,23 +65,27 @@ final class GuessRepository extends BaseRepository
         $this->db->where('guesses.verified_at IS NOT NULL');
         $this->db->orderBy('guesses.verified_at');
 
+        $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
+
         //i.e. "-3 months"
         if($afterString){
             $this->db->where('verified_at', date("Y-m-d H:i:s", strtotime($afterString)), ">");
         }
-        return $this->db->get('guesses', $limit);
+        return $this->db->get('guesses', $limit, $this->columns);
     }
 
     public function getForPPRoundMatch(int $ppRoundMatchId, ?int $userId=null){
         $this->db->where('ppRoundMatch_id', $ppRoundMatchId);
+        $this->db->join('ppRoundMatches pprm', 'pprm.id=g.ppRoundMatch_id', 'INNER');
+
         if($userId){
             $this->db->where('user_id', $userId);
-            return $this->db->getOne('guesses');
+            return $this->db->getOne('guesses g', 'g.*,match_id');
         }
         $this->db->join("users u", "u.id=g.user_id", "INNER");
         $this->db->orderBy('g.points','desc');
         $this->db->orderBy('g.guessed_at','desc');
-        return $this->db->get('guesses g', null, array('g.*, u.username'));
+        return $this->db->get('guesses g', null, 'g.*, pprm.match_id, u.username');
     }
 
     public function countForPPRoundMatch(int $ppRoundMatchId){
@@ -84,15 +94,17 @@ final class GuessRepository extends BaseRepository
     }
 
     public function getForMatch(int $matchId, bool $not_verified){
+        $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
         $this->db->where('match_id', $matchId);
         if($not_verified){
             $this->db->where('verified_at IS NULL');
         }
-        return $this->db->get('guesses');
+        return $this->db->get('guesses', null, $this->columns);
     }
 
     public function getForTeam(int $teamId, int $userId, ?string $from=null, ?string $to=null){
-        $this->db->join("matches m", "m.id=guesses.match_id", "INNER");
+        $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
+        $this->db->join("matches m", "m.id=pprm.match_id", "INNER");
 
         $this->db->where('user_id', $userId);
 
@@ -102,12 +114,13 @@ final class GuessRepository extends BaseRepository
         $teamIdCondition = "(home_id = " . $this->db->escape($teamId) . " OR away_id = " . $this->db->escape($teamId) . ")";
         $this->db->where($teamIdCondition);
         $this->db->orderBy('verified_at', 'desc');
-        return $this->db->get('guesses', null, 'guesses.*');
+        return $this->db->get('guesses', null, $this->columns);
     }
 
     public function getForLeague(int $leagueId, int $userId, ?string $from=null, ?string $to=null){
         $this->db->where('user_id', $userId);
-        $this->db->join("matches m", "m.id=guesses.match_id", "INNER");
+        $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
+        $this->db->join("matches m", "m.id=pprm.match_id", "INNER");
         $this->db->join("leagues l", "m.league_id = l.id", "INNER");
 
         if($from) $this->db->where('m.verified_at', $from, ">=");
@@ -117,7 +130,7 @@ final class GuessRepository extends BaseRepository
         $this->db->where($leagueIdCondition);
 
         $this->db->orderBy('verified_at', 'desc');
-        return $this->db->get('guesses', null, 'guesses.*');
+        return $this->db->get('guesses', null, $this->columns);
     }
 
     public function lock(int $id, int $home, int $away){
@@ -144,22 +157,20 @@ final class GuessRepository extends BaseRepository
         $this->db->update('guesses', $data, 1);        
     }
 
-    public function create($userId, $matchId, $ppRoundMatchId) : int {
+    public function create($userId, $ppRoundMatchId) : int {
         $data = array(
-            "user_id" => $userId,
-            "match_id" => $matchId,
+            "user_id" => $userId,           
             "ppRoundMatch_id" => $ppRoundMatchId,
             "created_at" => $this->db->now()
         );
         return $this->db->insert('guesses', $data);
     }
 
-    public function createdebug($userId, $matchId, $ppRoundMatchId) {
+    public function createdebug($userId, $ppRoundMatchId) {
         //MISS SOME
         $missed = rand(0,6) === 6;
         $data = array(
             "user_id" => $userId,
-            "match_id" => $matchId,
             "ppRoundMatch_id" => $ppRoundMatchId,
             "guessed_at" => $missed ? null : $this->db->now(),
             "home" => $missed ? null : rand(0,3),
@@ -209,8 +220,8 @@ final class GuessRepository extends BaseRepository
                         IF(matches.score_away <= 3, matches.score_away, 3) AS realAway, 
                         matches.verified_at 
                     FROM guesses  
-                    INNER JOIN matches ON matches.id=guesses.match_id 
                     INNER JOIN ppRoundMatches pprm ON pprm.id=guesses.ppRoundMatch_id 
+                    INNER JOIN matches ON matches.id=pprm.match_id 
                     INNER JOIN ppRounds ppr ON ppr.id=pprm.ppRound_id
                     WHERE guesses.user_id = ?
                     AND matches.verified_at IS NOT NULL 
@@ -225,46 +236,13 @@ final class GuessRepository extends BaseRepository
             if($result) return $result[0];
     }
 
-    public function changePPRMMatch(int $ppRoundMatch_id, int $newMatchId){
-        $data = array(
-            "guessed_at" => null,
-            "verified_at" => null,
-            "home" => null,
-            "away" => null,
-            "match_id" => $newMatchId
-        );
-        $this->db->where('ppRoundMatch_id', $ppRoundMatch_id);
-        $this->db->update('guesses', $data);     
-    }
 
-    public function deletePPRMMatch(int $ppRoundMatch_id){
+    public function deleteForPPRMatch(int $ppRoundMatch_id){
         if(!$ppRoundMatch_id)return;
         $this->db->where('ppRoundMatch_id', $ppRoundMatch_id);
-        $this->db->where('verified_at is null');
         return $this->db->delete('guesses');
     }
-
-    //TODO MOVE TO SERVICE
-    //TODO CHANGE COLUMN TO ENUM ['cup_id', 'league_id',]
-    //possible duplicate
-    public function hasUnlockedGuesses(int $userId, string $column, int $valueId){
-        $ppRoundIds = $this->db->subQuery();
-        $ppRoundIds->where($column, $valueId);
-        $ppRoundIds->get('ppRounds',null,'id');
-        
-        $ppRoundMatchIds = $this->db->subQuery();
-        $ppRoundMatchIds->where('ppRound_id', $ppRoundIds, 'IN');
-        $ppRoundMatchIds->get('ppRoundMatches',null,'id');
-
-        $this->db->where('ppRoundMatch_id', $ppRoundMatchIds, 'IN');
-        $this->db->where('guessed_at IS NULL');
-        $this->db->where('verified_at IS NULL');
-        
-        $result = $this->db->getOne('guesses');
-        return !!$result;
-
-    }
-
+   
     public function lastLock(int $userId){
         $this->db->where('user_id', $userId);
         $this->db->orderBy('guessed_at');
@@ -279,7 +257,8 @@ final class GuessRepository extends BaseRepository
         $minutesAllowed = $_SERVER['ALLOW_LOCK_MINUTES_BEFORE_START'] ?? 10;
         $before = date("Y-m-d H:i:s", strtotime('+' . $minutesAllowed . ' minutes'));
 
-        $this->db->join("matches m", "m.id=g.match_id", "INNER");
+        $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
+        $this->db->join("matches m", "m.id=pprm.match_id", "INNER");
         $this->db->where('m.date_start', $before, '<');
         $this->db->where('g.guessed_at IS NULL');
         $this->db->where('g.verified_at IS NULL');
@@ -298,9 +277,10 @@ final class GuessRepository extends BaseRepository
 
 
     public function getLastPreso(int $limit = 1){
+        $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
         $this->db->where('PRESO',1);
         $this->db->orderBy('verified_at','desc');
-        return $this->db->get('guesses', $limit);
+        return $this->db->get('guesses', $limit,$this->columns);
     }
 
 
@@ -308,9 +288,10 @@ final class GuessRepository extends BaseRepository
         $this->db->where('guesses.guessed_at IS NULL');
         $this->db->where('guesses.verified_at IS NULL');
         
-
-        $this->db->join('matches m', "m.id=guesses.match_id", "INNER");
+        $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
+        $this->db->join('matches m', "m.id=pprm.match_id", "INNER");
         $dateInterval = date("Y-m-d H:i:s", strtotime($interval));
+        
         $this->db->where('m.date_start', $dateInterval, '<');
         $this->db->where('m.date_start > now()');
 
