@@ -12,9 +12,15 @@ final class PPRoundMatchRepository extends BaseRepository
         return $this->db->get('ppRoundMatches');
     }
 
+
     public function getMatchIdsForRound(int $ppRoundId){
         $this->db->where('ppRound_id', $ppRoundId);
         return $this->db->getValue('ppRoundMatches', 'match_id', null);
+    }
+
+    public function getMatchId(int $id){
+        $this->db->where('id', $id);
+        return $this->db->getValue('ppRoundMatches','match_id');
     }
 
     public function getRoundIdsForMatches(array $matchIds) {

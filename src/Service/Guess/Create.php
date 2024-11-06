@@ -6,17 +6,19 @@ namespace App\Service\Guess;
 
 use App\Service\BaseService;
 use App\Repository\GuessRepository;
-use App\Repository\MatchRepository;
+use App\Repository\PPRoundMatchRepository;
 use App\Repository\UserParticipationRepository;
+use App\Repository\MatchRepository;
 
 final class Create extends BaseService{
     public function __construct(
         protected GuessRepository $guessRepository,
         protected UserParticipationRepository $upRepository,
-        protected MatchRepository $matchRepository,
+        protected PPRoundMatchRepository $ppRoundMatchRepository,
+        protected MatchRepository $matchRepository
     ) {}
     
-    public function createForParticipants(int $ppRoundMatchId, string $tournamentColumn, int $tournamentId){
+    public function createForParticipants(int $ppRoundMatchId, int $matchId, string $tournamentColumn, int $tournamentId){
         $ups = $this->upRepository->getForTournament($tournamentColumn, $tournamentId);
         foreach ($ups as $key => $up) {
             if($_SERVER['DEBUG']){
@@ -29,6 +31,9 @@ final class Create extends BaseService{
     }
 
     public function create(int $userId, int $ppRoundMatchId){
+        $matchId = $this->ppRoundMatchRepository->getMatchId($ppRoundMatchId);
+        if(!$matchId)return false;
+
         if(!$this->matchRepository->isBeforeStartTime($matchId)){
             return false;
         }
