@@ -21,26 +21,28 @@ final class LastPresos  extends Base{
         protected User\Find $userFindService,
     ){}
 
-    private const REDIS_KEY_PRESO_HIGHLIGHTS = 'highlights-preso-limit:%d';
-    public function getLastPresos(int $limit){
+    private const REDIS_KEY_PRESO_HIGHLIGHTS = 'highlights-preso-limit:%d-page:%d';
+
+    public function getLastPresos(int $page, int $limit){
         if (self::isRedisEnabled() === true ) {
-            $redisKey = $this->redisService->generateKey(sprintf(self::REDIS_KEY_PRESO_HIGHLIGHTS, $limit));
+            $redisKey = $this->redisService->generateKey(sprintf(self::REDIS_KEY_PRESO_HIGHLIGHTS, $limit, $page));
             $cached = $this->redisService->get($redisKey); // This returns null if not found or the user data if found
             if($cached !== null)return $cached;
         }
 
-        $lastPresos = $this->calculateLastPresos($limit);
+        $lastPresos = $this->calculateLastPresos($page, $limit);
 
         if (self::isRedisEnabled() === true ) {
-            $redisKey = $this->redisService->generateKey(sprintf(self::REDIS_KEY_PRESO_HIGHLIGHTS, $limit));
+            $redisKey = $this->redisService->generateKey(sprintf(self::REDIS_KEY_PRESO_HIGHLIGHTS, $limit, $page));
             $expiration = 1 * 60 * 60; 
             $this->redisService->setex($redisKey, $lastPreso, $expiration); 
         }
         return $lastPresos;
     }
 
-    private function calculateLastPresos(?int $limit=1) {
-        $presosSummary = $this->highlightsRepository->getLastPresos($limit);
+    private function calculateLastPresos(?int $page=1, ?int $limit=1) {
+        $offset = ($page - 1) * $limit;
+        $presosSummary = $this->highlightsRepository->getLastPresos($offset, $limit);
         
         foreach ($presosSummary as $key => $value) {
             $presosSummary[$key] = $this->buildMatchGuessesPair($value);

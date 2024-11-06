@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Highlight;
+namespace App\Controller\Highlights;
 
 use App\Controller\BaseController;
 use App\Service\Highlights;
@@ -14,7 +14,7 @@ use App\Service\PPRound;
 
 abstract class Base extends BaseController
 {
-    protected function getHighlightFindService(): Highlight\Find
+    protected function getHighlightFindService(): Highlights\Find
     {
         return $this->container->get('highlight_find_service');
     }

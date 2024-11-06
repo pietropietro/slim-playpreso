@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Highlight;
+namespace App\Controller\Highlights;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -25,7 +25,7 @@ final class Get extends Base
         }
 
        
-        $presosSummaries = $this->getHighlightsPresosService()->getLastPresos(8);
+        $presosSummaries = $this->getHighlightsPresosService()->getLastPresos(1,8);
 
 
         $fullPresoRounds = $this->getPPRoundFindService()->getFullPresoRound(null, 3);
