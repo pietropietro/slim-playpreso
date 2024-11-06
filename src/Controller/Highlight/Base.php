@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Highlight;
 
 use App\Controller\BaseController;
-use App\Service\Highlight;
+use App\Service\Highlights;
 use App\Service\Trophy;
 use App\Service\User;
 use App\Service\Guess;
@@ -41,6 +41,11 @@ abstract class Base extends BaseController
         return $this->container->get('ppround_find_service');
     }
 
+
+    protected function getHighlightsPresosService(): Highlights\LastPresos
+    {
+        return $this->container->get('highlights_lastpresos_service');
+    }
     
 
 

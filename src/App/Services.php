@@ -28,6 +28,7 @@ use App\Service\PushNotifications;
 use App\Service\UserNotification;
 use App\Service\PPDex;
 use App\Service\PPRanking;
+use App\Service\Highlights;
 use Psr\Container\ContainerInterface;
 
 
@@ -653,6 +654,18 @@ $container['ppround_update_service'] = static fn (
     $container->get('pproundmatch_update_service'),
     $container->get('match_picker_service'),
     $container->get('ppround_repository'),
+);
+
+
+$container['highlights_lastpresos_service'] = static fn (
+    ContainerInterface $container
+):  Highlights\LastPresos => new  Highlights\LastPresos(
+    $container->get('redis_service'),
+    $container->get('highlights_repository'),
+    $container->get('guess_repository'),
+    $container->get('pptournamenttype_find_service'),
+    $container->get('match_find_service'),
+    $container->get('user_find_service')
 );
 
 

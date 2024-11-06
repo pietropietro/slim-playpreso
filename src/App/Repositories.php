@@ -24,7 +24,7 @@ use App\Repository\DeviceTokenRepository;
 use App\Repository\UserNotificationRepository;
 use App\Repository\PPDexRepository;
 use App\Repository\PPRankingRepository;
-use App\Repository\HighlightRepository;
+use App\Repository\HighlightsRepository;
 use App\Repository\PushNotificationPreferencesRepository;
 use Psr\Container\ContainerInterface;
 
@@ -73,3 +73,5 @@ $container['ppdexrepository_repository'] = static fn (ContainerInterface $contai
 $container['ppranking_repository'] = static fn (ContainerInterface $container): PPRankingRepository => new PPRankingRepository($container->get('db'));
 
 $container['pushnotificationpreferences_repository'] = static fn (ContainerInterface $container): PushNotificationPreferencesRepository => new PushNotificationPreferencesRepository($container->get('db'));
+
+$container['highlights_repository'] = static fn (ContainerInterface $container): HighlightsRepository => new HighlightsRepository($container->get('db'));

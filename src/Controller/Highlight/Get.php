@@ -24,11 +24,9 @@ final class Get extends Base
             $trophy['user'] = $this->getUserFindService()->getOne($trophy['user_id']);
         }
 
-        $presos = $this->getGuessFindService()->getLastPreso(9);
-        foreach ($presos as &$guess) {
-            $guess['user'] = $this->getUserFindService()->getOne($guess['user_id']);
-        }
-        
+       
+        $presosSummaries = $this->getHighlightsPresosService()->getLastPresos(8);
+
 
         $fullPresoRounds = $this->getPPRoundFindService()->getFullPresoRound(null, 3);
         foreach ($fullPresoRounds as &$ppRound) {
@@ -37,7 +35,7 @@ final class Get extends Base
 
         $returnArray = array(
             "trophies" => $trophies, 
-            "preso" => $presos,
+            "preso" => $presosSummaries,
             "fullPresoRounds" => $fullPresoRounds
         );
 

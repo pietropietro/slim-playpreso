@@ -111,30 +111,6 @@ final class Find extends BaseService{
 
 
 
-    private const REDIS_KEY_PRESO_HIGHLIGHTS = 'highlights-preso-limit:%d';
-    public function getLastPreso(int $limit){
-        if (self::isRedisEnabled() === true ) {
-            $redisKey = $this->redisService->generateKey(sprintf(self::REDIS_KEY_PRESO_HIGHLIGHTS, $limit));
-            $cached = $this->redisService->get($redisKey); // This returns null if not found or the user data if found
-            if($cached !== null)return $cached;
-        }
-
-        $lastPreso = $this->calculateLastPreso($limit);
-
-        if (self::isRedisEnabled() === true ) {
-            $redisKey = $this->redisService->generateKey(sprintf(self::REDIS_KEY_PRESO_HIGHLIGHTS, $limit));
-            $expiration = 1 * 60 * 60; 
-            $this->redisService->setex($redisKey, $lastPreso, $expiration); 
-        }
-        return $lastPreso;
-
-    }
-    private function calculateLastPreso(?int $limit=1) {
-        $presos = $this->guessRepository->getLastPreso($limit);
-        foreach ($presos as &$guess) {
-           $this->enrich($guess);
-        }
-        return $presos;
-    }
+    
 
 }

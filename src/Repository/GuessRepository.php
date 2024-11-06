@@ -93,6 +93,12 @@ final class GuessRepository extends BaseRepository
         return $this->db->getValue('guesses', 'count(id)');
     }
 
+    public function countForMatch(int $match_id){
+        $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
+        $this->db->where('match_id', $match_id);
+        return $this->db->getValue('guesses', 'count(guesses.id)');
+    }
+
     public function getForMatch(int $matchId, bool $not_verified){
         $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
         $this->db->where('match_id', $matchId);
@@ -274,15 +280,6 @@ final class GuessRepository extends BaseRepository
         $columns = ['sum(guesses.points) as sum_points', 'u.username'];
         return $this->db->get('guesses', $limit, $columns);
     }
-
-
-    public function getLastPreso(int $limit = 1){
-        $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
-        $this->db->where('PRESO',1);
-        $this->db->orderBy('verified_at','desc');
-        return $this->db->get('guesses', $limit,$this->columns);
-    }
-
 
     public function getUnlockedGuessesStarting(?string $interval = '+6 hours', ?bool $withoutUserNotification = true ){
         $this->db->where('guesses.guessed_at IS NULL');
