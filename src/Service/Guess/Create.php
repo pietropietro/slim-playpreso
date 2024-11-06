@@ -18,7 +18,7 @@ final class Create extends BaseService{
         protected MatchRepository $matchRepository
     ) {}
     
-    public function createForParticipants(int $ppRoundMatchId, int $matchId, string $tournamentColumn, int $tournamentId){
+    public function createForParticipants(int $ppRoundMatchId, string $tournamentColumn, int $tournamentId){
         $ups = $this->upRepository->getForTournament($tournamentColumn, $tournamentId);
         foreach ($ups as $key => $up) {
             if($_SERVER['DEBUG']){
