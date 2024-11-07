@@ -628,7 +628,7 @@ $container['ppdex_find_service'] = static fn (
     ContainerInterface $container
 ):  PPDex\Find => new  PPDex\Find(
     $container->get('redis_service'),
-    $container->get('userparticipation_repository'),
+    $container->get('ppdex_repository'),
     $container->get('pptournamenttype_find_service')
 );
 

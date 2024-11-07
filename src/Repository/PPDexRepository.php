@@ -14,7 +14,7 @@ final class PPDexRepository extends BaseRepository
                 up.*,
                 pl.started_at AS up_started_at,
                 pl.finished_at AS up_finished_at,
-                ROW_NUMBER() OVER (PARTITION BY up.ppTournamentType_id ORDER BY up.tot_points DESC, up.position ASC) AS rn
+                ROW_NUMBER() OVER (PARTITION BY up.ppTournamentType_id ORDER BY up.position ASC, up.tot_points DESC) AS rn
             FROM 
                 userParticipations up
             JOIN 
@@ -22,6 +22,7 @@ final class PPDexRepository extends BaseRepository
             WHERE 
                 up.user_id = $userId
                 AND up.ppLeague_id IS NOT NULL
+                AND (pl.started_at IS NOT NULL OR pl.finished_at IS NOT NULL)
         ";
 
         // Main query

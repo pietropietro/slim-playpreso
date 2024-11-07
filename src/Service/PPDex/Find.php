@@ -5,18 +5,16 @@ declare(strict_types=1);
 namespace App\Service\PPDex;
 use App\Service\BaseService;
 use App\Service\RedisService;
-use App\Repository\UserParticipationRepository;
+use App\Repository\PPDexRepository;
 use App\Service\PPTournamentType;
 
 final class Find  extends BaseService {
 
     public function __construct(
         protected RedisService $redisService,
-        protected UserParticipationRepository $userParticipationRepository,
+        protected PPDexRepository $ppDexRepository,
         protected PPTournamentType\Find $ppTournamentTypeFindService,
     ){}
-
-
 
     public function getUserPPDex(int $userId): array
     {
@@ -53,7 +51,7 @@ final class Find  extends BaseService {
         $fetchAndPopulateTypes(false); // For Leagues
 
         // Fetch user participations for leagues
-        $leagueParticipations = $this->userParticipationRepository->getUserSchemaPPLeagues($userId);
+        $leagueParticipations = $this->ppDexRepository->getUserSchemaPPLeagues($userId);
         foreach ($leagueParticipations as $participation) {
             $name = $participation['pptt_name'];
             foreach ($ppDex['ppLeagues'][$name] as &$tournament) {
@@ -74,7 +72,7 @@ final class Find  extends BaseService {
         }
 
         // Fetch user participations for cups
-        $cupParticipations = $this->userParticipationRepository->getUserSchemaPPCups($userId);
+        $cupParticipations = $this->ppDexRepository->getUserSchemaPPCups($userId);
         foreach ($cupParticipations as $participation) {
             $name = $participation['pptt_name'];
             foreach ($ppDex['ppCups'][$name] as &$tournament) {
