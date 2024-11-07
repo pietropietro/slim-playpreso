@@ -593,7 +593,8 @@ $container['pparea_update_service'] = static fn (
 
 $container['http_client_service'] = static fn (
     ContainerInterface $container
-):  HttpClientService => new  HttpClientService();
+): HttpClientService => new HttpClientService($container->get('guzzle_client'));
+
 
 $container['pushnotifications_send_service'] = static fn (
     ContainerInterface $container

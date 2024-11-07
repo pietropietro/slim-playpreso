@@ -8,18 +8,14 @@ use GuzzleHttp;
 
 final class HttpClientService{
 
-    public function __construct(){}
+    public function __construct(
+        protected GuzzleHttp\Client $client
+    ){}
 
     public function get(string $url, array $options = []): GuzzleHttp\Psr7\Response
     {
-        $client = new GuzzleHttp\Client([
-            'base_uri' => $options['base_uri'] ?? '',
-            'timeout'  => $options['timeout'] ?? 10.0,
-            'proxy' => $_SERVER['PROXY_URL']
-        ]);
-
         try {
-            $response = $client->get($url);
+            $response = $this->client->get($url);
             return $response;
         } catch (GuzzleHttp\Exception\ClientException $e) {
             error_log($e->getMessage());

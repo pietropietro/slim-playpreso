@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Handler\ApiError;
 use App\Service\RedisService;
 use Psr\Container\ContainerInterface;
+use GuzzleHttp;
 
 $database = $container->get('settings')['db'];
 $container['db'] = new MysqliDb(
@@ -14,6 +15,14 @@ $container['db'] = new MysqliDb(
     $database['name'],
     $database['port']
 );
+
+
+$container['guzzle_client'] = static fn(ContainerInterface $container): GuzzleHttp\Client => new GuzzleHttp\Client([
+    'base_uri' => $_SERVER['EXTERNAL_API_BASE_URI'], 
+    'timeout'  => 10.0,
+    'proxy'    => $_SERVER['PROXY_URL'] ?? null,
+]);
+
 
 $container['errorHandler'] = $container['phpErrorHandler'] = static fn (): ApiError => new ApiError();
 
