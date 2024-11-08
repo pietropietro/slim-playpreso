@@ -11,6 +11,7 @@ use Pushok\Notification as ApnsNotification;
 use Pushok\Payload as ApnsPayload;
 use Pushok\Payload\Alert as ApnsAlert;
 use Kreait\Firebase\Factory as FcmFactory;
+use Kreait\Firebase\Messaging as FcmMessaging;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification as FcmNotification;
 
@@ -20,7 +21,7 @@ final class Send extends BaseService{
     public function __construct(
         protected DeviceTokenRepository $deviceTokenRepository,
         protected ApnsClient $apnsClient,
-        protected FcmFactory $firebaseMessaging
+        protected FcmMessaging $firebaseMessaging
     ) {}
 
     public function hasToken(int $userId){
