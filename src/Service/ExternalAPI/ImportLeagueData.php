@@ -20,17 +20,13 @@ final class ImportLeagueData extends BaseService{
         protected HttpClientService $httpClientService
     ){}
 
-    public function fetch(string $ls_suffix, int $leagueId){
+    public function fetchOne(string $ls_suffix, int $leagueId){
 
-        $utc_plus = $this->isDaylightSavingTime() ? 2 : 1;
-        $req_url = $ls_suffix.'/'.$utc_plus;
-        
         try {
-            $response = $this->httpClientService->get(
-                $req_url, 
-                ['base_uri' => $_SERVER['EXTERNAL_API_BASE_URI']]
-            );
+            $req_url = $this->buildUrl($ls_suffix);           
+            $response = $this->httpClientService->getSync($req_url);
             $statusCode = $response->getStatusCode();
+
             if ($statusCode  >= 200 && $statusCode  < 300) {
                 $decoded = json_decode((string)$response->getBody());
             } else if($statusCode == 410){
@@ -44,7 +40,15 @@ final class ImportLeagueData extends BaseService{
         return $this->elaborateResponse($decoded, $leagueId);
     }
 
-    private function elaborateResponse($decodedResponse, $leagueId){
+
+    public function buildUrl(string $ls_suffix){
+        $utc_plus = $this->isDaylightSavingTime() ? 2 : 1;
+        $req_url = $_SERVER['EXTERNAL_API_BASE_URI'].$ls_suffix.'/'.$utc_plus;
+        return $req_url;
+    }
+
+
+    public function elaborateResponse($decodedResponse, $leagueId){
         $this->leagueElaborateService->setFetched($leagueId);
 
         $ls_league_data = $decodedResponse->Stages[0];

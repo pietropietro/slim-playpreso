@@ -12,7 +12,7 @@ final class HttpClientService{
         protected GuzzleHttp\Client $client
     ){}
 
-    public function get(string $url, array $options = []): GuzzleHttp\Psr7\Response
+    public function getSync(string $url): GuzzleHttp\Psr7\Response
     {
         try {
             $response = $this->client->get($url);

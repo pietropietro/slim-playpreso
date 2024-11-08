@@ -5,7 +5,7 @@
         "composer/composer": "^2.0",
         "edamov/pushok": "^0.14.3",
         "firebase/php-jwt": "^5.0",
-        "guzzlehttp/guzzle": "^7.4",
+        "guzzlehttp/guzzle": "^7.9",
         "kreait/firebase-php": "^6.9",
         "palanik/corsslim": "dev-slim3",
         "phpmailer/phpmailer": "^6.7",

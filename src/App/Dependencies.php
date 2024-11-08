@@ -18,7 +18,6 @@ $container['db'] = new MysqliDb(
 
 
 $container['guzzle_client'] = static fn(ContainerInterface $container): GuzzleHttp\Client => new GuzzleHttp\Client([
-    'base_uri' => $_SERVER['EXTERNAL_API_BASE_URI'], 
     'timeout'  => 10.0,
     'proxy'    => $_SERVER['PROXY_URL'] ?? null,
 ]);

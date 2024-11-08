@@ -339,13 +339,13 @@ $container['external_api_importleaguedata_service'] = static fn (
     $container->get('league_elaborate_service'),
     $container->get('league_update_service'),
     $container->get('team_create_service'),
-    $container->get('http_client_service'),
+    $container->get('httpclient_service'),
 );
 
 $container['external_api_importteamlogo_service'] = static fn (
     ContainerInterface $container
 ):  ExternalAPI\ImportTeamLogo => new  ExternalAPI\ImportTeamLogo(
-    $container->get('http_client_service')
+    $container->get('httpclient_service')
 );
 
 $container['match_elaborate_service'] = static fn (
@@ -591,7 +591,7 @@ $container['pparea_update_service'] = static fn (
     $container->get('pparea_repository')
 );
 
-$container['http_client_service'] = static fn (
+$container['httpclient_service'] = static fn (
     ContainerInterface $container
 ): HttpClientService => new HttpClientService($container->get('guzzle_client'));
 

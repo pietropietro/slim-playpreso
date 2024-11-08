@@ -23,7 +23,7 @@ final class Fetch extends Base
         $leagueId = (int) $args['id'];
         $league = $this->getLeagueFindService()->getOne($leagueId, admin: true);
        
-        $result = $this->getImportLeagueDataService()->fetch($league['ls_suffix'], $league['id']);
+        $result = $this->getImportLeagueDataService()->fetchOne($league['ls_suffix'], $league['id']);
         
         //check for exceptions
         $code = isset($result->code) ? $result->code : 200;

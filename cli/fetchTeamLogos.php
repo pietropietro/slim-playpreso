@@ -8,72 +8,148 @@ require __DIR__ . '/../src/App/App.php'; // Bootstrap the Slim app
 $container = $app->getContainer();
 
 $importLogoService = $container->get('external_api_importteamlogo_service'); 
-$db = $container['db'];
+$httpClientService = $container->get('httpclient_service'); 
+$externalApiSessionRepository = $container->get('externalapisession_repository'); 
+$guzzleClient = $container->get('guzzle_client');
 
+$db = $container['db'];
 $saved = getSavedTeamLogos();
 $teamIds = getMissingIdsForMonth($saved, $db);
 
-$db->where('id', $teamIds, 'IN');
-$missing = $db->get('teams',null, ['id', 'ls_id']);
-
-echo('Missing ids for the month count:'.count($teamIds).PHP_EOL);
-
-
-foreach($missing as $key => $team){
-    echo('Trying team '.$key.', id: '.$team['id'].PHP_EOL);
-
-    //GET TEAM external overview.json and find .png path
-    $logoUrl = getLogoUrl($team['ls_id'], $container);
-    if(!$logoUrl){
-        echo('NO LOGO URL'.PHP_EOL);
-        continue;
-    }
-    echo('Logo URL is: '.$logoUrl.PHP_EOL);
-
-    // Split the string by 'high/'
-    $parts = explode('high/', $logoUrl);
-    // Get the part after 'high/', which should be at index 1
-    $logoSuffix = $parts[1] ?? null;
-    if(!$logoSuffix)return;
-    //use logo import service to retrieve and store logo
-    $importLogoService->fetchAndSave($logoSuffix, $team['id']);
+if($_SERVER['DEBUG']){
+    // Limit the array to the first x items for testing
+    $teamIds = array_slice($teamIds, 0, 10);
 }
 
-function getLogoUrl(int $teamId, $container){
-    $externalApiSessionRepository = $container->get('externalapisession_repository'); 
-    $httpClientService = $container->get('http_client_service'); 
+$db->where('id', $teamIds, 'IN');
+$missing = $db->get('teams',null, ['id', 'ls_id']);
+echo('Teams for the month count: '.count($teamIds).PHP_EOL);
 
-    $session = $externalApiSessionRepository->getSession() ?? 'cicciozzo';
-    $url = $session.$_SERVER['EXTERNAL_API_TEAM_URI_BODY'].$teamId.$_SERVER['EXTERNAL_API_TEAM_URI_SUFFIX'];
-    
-    $response = $httpClientService->get(
-        $url, 
-        ['base_uri' => $_SERVER['EXTERNAL_API_TEAM_URI_BASE']]
-    );
+if(count($teamIds)==0)return;
 
+$externalSessionString = getUpdatedSessionString($httpClientService, $externalApiSessionRepository, $missing[0]['ls_id']);
+if(!$externalSessionString)return;
+
+$pool2Urls = [];
+
+// Pool 1: Fetch logo URLs
+$requestsForLogoUrl = function ($teams) use ($guzzleClient, $externalSessionString) {
+    foreach ($teams as $team) {
+        $teamUrl = getTeamUrl($externalSessionString, $team['ls_id']);
+        if(!$teamUrl)continue;
+        yield function () use ($guzzleClient, $teamUrl) {
+            return $guzzleClient->getAsync($teamUrl);
+        };
+    }
+};
+
+// Pool 2: Fetch actual logo data
+$requestsForLogoData = function ($pool2Urls) use ($guzzleClient) {
+    foreach ($pool2Urls as $teamId => $logoUrl) {
+        yield function () use ($guzzleClient, $logoUrl, $teamId) {
+            return $guzzleClient->getAsync($logoUrl)->then(
+                function (GuzzleHttp\Psr7\Response $response) use ($teamId) {
+                    handleLogoDataResponse($response, $teamId);
+                },
+                'handleRequestError'
+            );
+        };
+    }
+};
+
+// Function to handle logo URL response
+function handleTeamUrlResponse(GuzzleHttp\Psr7\Response $response, $team)
+{
+
+    global $pool2Urls; // Access the logo data requests pool
+
+    $decoded = json_decode((string)$response->getBody());
+    $logoUrl = $decoded->pageProps->initialData->basicInfo->badge->high;
+    if(!$logoUrl)return;
+    $parts = explode('high/', $logoUrl);
+    $logoSuffix = $parts[1] ?? null;
+
+    if ($logoSuffix) {
+        $pool2Urls[$team['id']] = $_SERVER['EXTERNAL_STATIC_BASE_URI'].$logoSuffix;
+    } else {
+        error_log("Invalid logo URL structure for team ID {$team['id']}.\n");
+    }
+}
+
+
+
+// Function to handle logo data response
+function handleLogoDataResponse(GuzzleHttp\Psr7\Response $response, $teamId)
+{
+    global $importLogoService; // Ensure access to your logo service
+    $imageData = $response->getBody()->getContents();
+    $importLogoService->saveTeamLogo($imageData, $teamId);
+    echo "--Logo saved for team ID {$teamId}\n";
+}
+
+
+// Error handler
+function handleRequestError(RequestException $e)
+{
+    error_log("Request failed: " . $e->getMessage());
+}
+
+echo "Starting pool 1\n";
+// Execute Pool 1 - Get Logo URLs
+$pool1 = new GuzzleHttp\Pool($guzzleClient, $requestsForLogoUrl($missing), [
+    'concurrency' => 5,
+    'fulfilled' => function (GuzzleHttp\Psr7\Response $response, $index) use ($missing) {
+        $team = $missing[$index];  // Access the team based on the index
+        handleTeamUrlResponse($response, $team);
+    },
+    'rejected' => function (RequestException $reason, $index) use ($missing) {
+        $team = $missing[$index];
+        handleRequestError($reason, $team);
+    }
+]);
+
+$pool1->promise()->wait();
+
+echo "*************All logo URL requests completed.\n";
+echo "Starting pool 2\n";
+// Execute Pool 2 - Get Logo Data
+if(count($pool2Urls)==0) return;
+$pool2 = new GuzzleHttp\Pool($guzzleClient, $requestsForLogoData($pool2Urls), [
+    'concurrency' => 5,
+]);
+$pool2->promise()->wait();
+
+echo "All logo data fetched and saved.\n";
+
+
+
+function getUpdatedSessionString($httpClientService, $externalApiSessionRepository, int $external_test_team_id){
+    echo("--Getting updated session string.\n");
+    $oldSessionString = $externalApiSessionRepository->getSession() ?? 'cicciozzo';
+    $testTeamUrl = getTeamUrl($oldSessionString, $external_test_team_id);   
+    $response = $httpClientService->getSync($testTeamUrl);
     if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 302) {  
         $decoded = json_decode((string)$response->getBody());
-
         //CHECK IF TOKEN EXPIRED
         if(isset($decoded->pageProps->__N_REDIRECT)){
             // Extract the new URL from the 301 json response
             $url = $decoded->pageProps->__N_REDIRECT;
-
             // Use a regular expression to extract the 'buildid' value
             preg_match('/buildid=([\w]+)/', $url, $matches);
             $newSession = $matches[1] ?? null;
-            if(!$newSession) return;
-
+            if(!$newSession) exit(1);
             $externalApiSessionRepository->updateSession($newSession);
-            getLogoUrl($teamId, $container);
-        }else{
-            $logoUrl = $decoded->pageProps->initialData->basicInfo->badge->high;
-            return $logoUrl;
         }
-    }else if($response->getStatusCode() == 404){
-        //TODO save team ls_404
-        return null;
     }
+    $session = $externalApiSessionRepository->getSession();
+    echo("--Return session string: $session \n");
+    return $session;
+}
+
+
+function getTeamUrl($session, $external_team_id){
+    $teamUrl = $_SERVER['EXTERNAL_API_TEAM_URI_BASE'].$session.$_SERVER['EXTERNAL_API_TEAM_URI_BODY'].$external_team_id.$_SERVER['EXTERNAL_API_TEAM_URI_SUFFIX'];
+    return $teamUrl;
 }
 
 
