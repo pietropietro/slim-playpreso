@@ -97,8 +97,8 @@ final class Find extends BaseService{
         return $guesses;
     }
 
-    public function getLast(int $userId, ?string $afterString = null,?int $limit=null){
-        $guesses = $this->guessRepository->getLast($userId, $afterString, $limit);
+    public function getLastVerified(int $userId, ?string $afterString = null,?int $limit=null){
+        $guesses = $this->guessRepository->getLastVerified($userId, $afterString, $limit);
         foreach($guesses as &$guess){
             $this->enrich($guess);
         }

@@ -49,6 +49,7 @@ final class Create extends Base
                 $push_text_data = $this->getGuessUnlockedStartingPushData($eventId);
             }
         }
+        
         $this->pushNotificationsService->send($userId, $push_text_data['title'], $push_text_data['body']);
     }
 

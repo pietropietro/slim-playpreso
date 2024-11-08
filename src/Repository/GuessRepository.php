@@ -60,8 +60,24 @@ final class GuessRepository extends BaseRepository
     }
     
 
-    public function getLast(int $userId, ?string $afterString = null, ?int $limit = null) : array {
-        $this->db->where('user_id', $userId);
+    public function getLastVerified(?int $userId=null, ?string $afterString = null, ?int $limit = null, ?bool $notified=null) : array {
+        if($userId){
+            $this->db->where('user_id', $userId);
+        }
+
+        // Check the notified parameter and adjust the JOIN conditionally
+        if ($notified !== null) {
+            if ($notified) {
+                // If notified is true, join with userNotifications to find existing notifications
+                $this->db->join('userNotifications un', 'un.event_id = guesses.id AND un.event_type = "guess_verified"', 'INNER');
+            } else {
+                // If notified is false, ensure there's no match in userNotifications for guess_verified
+                $this->db->join('userNotifications un', 'un.event_id = guesses.id AND un.event_type = "guess_verified"', 'LEFT');
+                $this->db->where('un.event_id IS NULL');
+            }
+        }
+        
+
         $this->db->where('guesses.verified_at IS NOT NULL');
         $this->db->orderBy('guesses.verified_at');
 
