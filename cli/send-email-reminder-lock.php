@@ -21,7 +21,7 @@ foreach ($needReminder as $value) {
     $prepared =$emailBuilderLockService->prepare($value['username'], $matchesIds);
     
     // Try sending the email
-    $emailSent = Mailer::send([$value['email']], $prepared['subject'], $prepared['contentHtml'], $emailerror);    
+    $emailSent = App\Service\Mailer::send([$value['email']], $prepared['subject'], $prepared['contentHtml'], $emailerror);    
     if ($emailSent) {
         $successCount++;
     } else {
