@@ -279,7 +279,7 @@ final class GuessRepository extends BaseRepository
         $minutesAllowed = $_SERVER['ALLOW_LOCK_MINUTES_BEFORE_START'] ?? 10;
         $before = date("Y-m-d H:i:s", strtotime('+' . $minutesAllowed . ' minutes'));
 
-        $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
+        $this->db->join('ppRoundMatches pprm', 'pprm.id=g.ppRoundMatch_id', 'INNER');
         $this->db->join("matches m", "m.id=pprm.match_id", "INNER");
         $this->db->where('m.date_start', $before, '<');
         $this->db->where('g.guessed_at IS NULL');
