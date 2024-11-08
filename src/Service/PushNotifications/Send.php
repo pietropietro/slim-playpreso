@@ -6,7 +6,6 @@ namespace App\Service\PushNotifications;
 
 use App\Service\BaseService;
 use App\Repository\DeviceTokenRepository;
-use Pushok\AuthProvider\Token as ApnsToken;
 use Pushok\Client as ApnsClient;
 use Pushok\Notification as ApnsNotification;
 use Pushok\Payload as ApnsPayload;
@@ -17,14 +16,12 @@ use Kreait\Firebase\Messaging\Notification as FcmNotification;
 
 
 final class Send extends BaseService{
-    private $firebaseMessaging;
 
     public function __construct(
         protected DeviceTokenRepository $deviceTokenRepository,
-    ) {
-        $firebaseServiceAccount = $_SERVER['FCM_SERVICE_ACCOUNT'];
-        $this->firebaseMessaging = (new FcmFactory)->withServiceAccount($firebaseServiceAccount)->createMessaging();
-    }
+        protected ApnsClient $apnsClient,
+        protected FcmFactory $firebaseMessaging
+    ) {}
 
     public function hasToken(int $userId){
         return $this->deviceTokenRepository->hasToken($userId);
@@ -44,37 +41,23 @@ final class Send extends BaseService{
             } catch (\Kreait\Firebase\Exception\Messaging\InvalidMessage $e) {
                 // Log the error and handle invalid token, e.g., remove it from the database
                 error_log("Invalid FCM registration token for user $userId: {$e->getMessage()}");
-                $this->deviceTokenRepository->remove($userId, $token['token']); // If you have such a function
+                $this->deviceTokenRepository->remove($userId, $token['token']); 
             } catch (\Exception $e) {
                 // Log unexpected errors
                 error_log("Error sending notification to user $userId: {$e->getMessage()}");
+                $this->deviceTokenRepository->remove($userId, $token['token']); 
             }
         }
     }
 
     private function sendApnsNotification(string $deviceToken, string $title, string $body)
     {
-        // Path to your .p8 APNs authentication file
-        // Your Apple Developer team ID
-        // Your app's bundle ID
-        // Your APNs key ID 
-
-        $authProvider = ApnsToken::create([
-            'key_id' => $_SERVER['APNS_KEY_ID'],
-            'team_id' => $_SERVER['APNS_TEAM_ID'],
-            'app_bundle_id' => $_SERVER['APNS_BUNDLE_ID'],
-            'private_key_path' => $_SERVER['APNS_KEY_FILE'],
-        ]);
-
-        $environment = $_SERVER['DEBUG'] ? false : true; // false for sandbox, true for production
-        $client = new ApnsClient($authProvider, $environment);
-
         $alert = ApnsAlert::create()->setTitle($title)->setBody($body);
         $payload = ApnsPayload::create()->setAlert($alert)->setBadge(1)->setCustomValue('route', '/notification');
 
         $notification = new ApnsNotification($payload, $deviceToken);
-        $client->addNotification($notification);
-        $client->push(); // Handle response and errors as needed
+        $this->apnsClient->addNotification($notification);
+        $this->apnsClient->push(); // Handle response and errors as needed
     }
 
     private function sendFcmNotification(string $deviceToken, string $title, string $body)

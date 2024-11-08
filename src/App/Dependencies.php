@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Handler\ApiError;
 use App\Service\RedisService;
 use Psr\Container\ContainerInterface;
-use GuzzleHttp;
 
 $database = $container->get('settings')['db'];
 $container['db'] = new MysqliDb(
@@ -21,6 +20,27 @@ $container['guzzle_client'] = static fn(ContainerInterface $container): GuzzleHt
     'timeout'  => 10.0,
     'proxy'    => $_SERVER['PROXY_URL'] ?? null,
 ]);
+
+// Path to your .p8 APNs authentication file
+// Your Apple Developer team ID
+// Your app's bundle ID
+// Your APNs key ID 
+
+$authProvider = Pushok\AuthProvider\Token::create([
+    'key_id' => $_SERVER['APNS_KEY_ID'],
+    'team_id' => $_SERVER['APNS_TEAM_ID'],
+    'app_bundle_id' => $_SERVER['APNS_BUNDLE_ID'],
+    'private_key_path' => $_SERVER['APNS_KEY_FILE'],
+]);
+
+// Clients for push notifications
+$environment = $_SERVER['DEBUG'] ? false : true;
+$container['apns_client'] = new Pushok\Client($authProvider, $environment);
+$firebaseServiceAccount = $_SERVER['FCM_SERVICE_ACCOUNT'];
+$container['firebase_messaging'] = (new Kreait\Firebase\Factory)
+    ->withServiceAccount($firebaseServiceAccount)
+    ->createMessaging();
+
 
 
 $container['errorHandler'] = $container['phpErrorHandler'] = static fn (): ApiError => new ApiError();

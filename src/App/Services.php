@@ -593,13 +593,17 @@ $container['pparea_update_service'] = static fn (
 
 $container['httpclient_service'] = static fn (
     ContainerInterface $container
-): HttpClientService => new HttpClientService($container->get('guzzle_client'));
+): HttpClientService => new HttpClientService(
+    $container->get('guzzle_client')
+);
 
 
 $container['pushnotifications_send_service'] = static fn (
     ContainerInterface $container
 ):  PushNotifications\Send => new  PushNotifications\Send(
-    $container->get('devicetoken_repository')
+    $container->get('devicetoken_repository'),
+    $container->get('apns_client'),
+    $container->get('firebase_messaging')
 );
 
 $container['usernotification_create_service'] = static fn (
