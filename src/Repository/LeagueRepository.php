@@ -7,12 +7,14 @@ namespace App\Repository;
 final class LeagueRepository extends BaseRepository
 {
     private $columnsNoStandings = "id, name, tag, country, parent_id, level";
-    private $adimnColumnsNoStandings = "id, name, tag, country, ls_suffix, ls_410, parent_id, updated_at, level";
-    private $adimnColumnsL = "l.id, l.name, l.tag, l.country, l.ls_suffix, l.ls_410, l.parent_id, l.updated_at, l.level";
+    private $adimnColumnsNoStandings = "id, name, tag, country, ls_suffix, ls_410, parent_id, updated_at, level, weight_offset";
+    private $adimnColumnsL = "l.id, l.name, l.tag, l.country, l.ls_suffix, l.ls_410, l.parent_id, l.updated_at, l.level, l.weight_offset";
     private $columnsWithStandings = "id, name, tag, country, parent_id, standings, level";
 
     public function get(?int $maxLevel=null){
-        if($maxLevel) $this->db->where('level', $maxLevel, '<=');
+        if($maxLevel){
+            $this->db->where('level + weight_offset', $maxLevel, '<=');
+        }
         return $this->db->get('leagues', null, $this->columnsNoStandings);
     }
 
@@ -79,7 +81,9 @@ final class LeagueRepository extends BaseRepository
         $this->db->orWhere('parent_id', $leagueIds, 'IN');
         $this->db->orWhere('country', $leagueCountries, 'IN');
         
-        if($level)$this->db->where('level', $level, '<=');
+        if($level){
+            $this->db->where('level + weight_offset', $level, '<=');
+        }
         
         return $this->db->get('leagues', null, $this->columnsNoStandings);
     }
@@ -99,7 +103,7 @@ final class LeagueRepository extends BaseRepository
         if($country){
             $this->db->where('country',$country);
         }
-        $this->db->where('level', $level, '<=');
+        $this->db->where('level + weight_offset', $level, '<=');
         return $this->db->get('leagues', null, $this->columnsNoStandings);
     }
 
@@ -115,6 +119,7 @@ final class LeagueRepository extends BaseRepository
         ?int $level, 
         ?int $parentId = null,
         ?string $ls_suffix = null,
+        ?int $weight_offset = null,
     ) {
         $data = array(
             "name" => $name,
@@ -123,6 +128,7 @@ final class LeagueRepository extends BaseRepository
             "level" => $level,
             "parent_id" => $parentId,
             "ls_suffix" => $ls_suffix,
+            "weight_offset" => $weight_offset,
             "created_at" => $this->db->now()
         );
         return $this->db->insert('leagues', $data);

@@ -19,6 +19,7 @@ final class Create extends BaseService{
         ?int $level, 
         ?int $parent_id = null,
         ?string $ls_suffix = null,
+        ?int $weight_offset = null,
     ){
         if($parent_id){
             //get country and level from parent
@@ -32,7 +33,8 @@ final class Create extends BaseService{
             $country,
             $level,
             $parent_id,
-            $ls_suffix
+            $ls_suffix,
+            $weight_offset
         );
     }
 

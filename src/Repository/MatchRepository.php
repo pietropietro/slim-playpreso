@@ -7,6 +7,7 @@ namespace App\Repository;
 final class MatchRepository extends BaseRepository
 {   
     private $whitelistColumns = array('id','league_id','home_id','away_id','score_home','score_away','round','date_start','verified_at');
+    private $minTimeInterval = '+1 days';
 
     public function adminGet(
         ?array $ids = null,
@@ -284,8 +285,8 @@ final class MatchRepository extends BaseRepository
         $this->db->where('league_id', $league_id);
         $this->db->join('leagues l', 'l.id = matches.league_id', 'INNER');
 
-        $minTimeInterval = date("Y-m-d H:i:s", strtotime('+1 days'));
-        $this->db->where('date_start', $minTimeInterval, '>');
+        $dateInterval = date("Y-m-d H:i:s", strtotime($this->minTimeInterval));
+        $this->db->where('date_start', $dateInterval, '>');
         $this->db->where('verified_at is null');
         $this->db->orderBy('date_start', 'asc');
 
@@ -361,8 +362,8 @@ final class MatchRepository extends BaseRepository
         $this->db->join('countryWeights cw', 'cw.country=l.country', 'inner');
     
         // // Order first by the sum of l.level + cw.weight
-        $this->db->orderBy("(l.level + cw.weight)", 'ASC');
-    
+        $this->db->orderBy("l.level + cw.weight + l.weight_offset", 'ASC');
+
         // Then order by random if multiple rows have the same sum
         $this->db->orderBy("RAND()");
     
@@ -376,13 +377,11 @@ final class MatchRepository extends BaseRepository
     public function nextMatches(int $league_id, int $limit = 20){
         $this->db->where('league_id', $league_id);
 
-        $minTimeInterval = date("Y-m-d H:i:s", strtotime('+1 days'));
+        $dateInterval = date("Y-m-d H:i:s", strtotime($this->minTimeInterval));
+        $this->db->where('date_start', $dateInterval, '>');
+        $this->db->where('verified_at is null');
         
         $this->db->join('leagues l', 'l.id = matches.league_id', 'INNER');
-
-        $this->db->where('date_start', $minTimeInterval, '>');
-        $this->db->where('verified_at is null');
-
         $this->db->join("teams as home_team", "matches.home_id = home_team.id", "INNER");
         $this->db->join("teams as away_team", "matches.away_id = away_team.id", "INNER");
         $this->db->where(

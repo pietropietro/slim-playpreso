@@ -25,7 +25,8 @@ final class Create extends Base
             $data->country,
             (int) $data->level,
             isset($data->parent_id) ? (int) $data->parent_id : null,
-            $data->ls_suffix ?? null
+            $data->ls_suffix ?? null,
+            isset($data->weight_offset) ? (int) $data->weight_offset : null
         );
         
         $status = $newId ? 'success' : 'error';

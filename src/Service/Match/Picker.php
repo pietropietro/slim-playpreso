@@ -31,26 +31,30 @@ final class Picker extends BaseService{
      */
     public function pick(int $ppttId, int $howMany) : ?array{
         $matches = $this->nextMatchesForPPTournamentType($ppttId, $howMany);
-        if(!$matches) return [];
-
+        if(!$matches || count($matches) < $howMany) {
+            return [];
+        }
 
         $ppTournamentType = $this->ppTournamentTypeRepository->getOne($ppttId);
         $level = $ppTournamentType['level'] ?? 1;
-        $diversity = $this->checkDiversity($ppttId, $matches, $level);
-        if(!$diversity) return [];
+        $diversity = $this->checkLevelDiversity($matches, $level);
+        if(!$diversity){
+            return [];
+        }
 
         $daysDiff=8;
         $filtered=[];
         while((!$diversity && count($filtered) < $howMany) || ($daysDiff < 55 && count($filtered) < $howMany)){
             $filtered = $this->filterDateAndRound($matches, $daysDiff);
             $daysDiff += 5;
-            $diversity = $this->checkDiversity($ppttId, $filtered, $level);
+            $diversity = $this->checkLevelDiversity($filtered, $level);
         }
 
-        if(!$diversity) return [];
-
+        if(!$diversity){
+            return [];
+        }
+        
         $picked = array();
-
         $groupedByLevel = $this->groupByLevelParent($filtered);
         
         //sets array to index 0 instead of league_id
@@ -69,16 +73,28 @@ final class Picker extends BaseService{
         for($i=1; $i<$howMany; $i++){
             //removes level-index so we have 0-index subarray
             shuffle($groupedByLevel);
-            //randomizes matches of random level at index 0
+            //randomizes leagues of a random level at index 0
             shuffle($groupedByLevel[0]);
             $levelArray = $groupedByLevel[0];
 
-            //TODO check here why it breaks
             shuffle($levelArray[0]);
-            array_push($picked, array_pop($levelArray[0]));    
-            $remaining = $howMany - count($picked);
 
-            //if there are more remaingin levels than remaining matches to pick
+            $pickedMatch = array_pop($levelArray[0]);
+            array_push($picked, $pickedMatch);
+            
+            $remaining = $howMany - count($picked);
+            if($remaining == 0)continue;
+
+            //if matches-in-league have no more items
+            //unset 
+            if(!$levelArray[0]){
+                unset($levelArray[0]);
+                if(!$levelArray){
+                    unset($groupedByLevel[0]);                    
+                }
+            }
+            
+            //if there are more remaingin levels than remaining picks
             //let's remove the levelArray we have just picked from
             if(count($groupedByLevel) > $remaining){
                 unset($groupedByLevel[0][0]);
@@ -90,12 +106,13 @@ final class Picker extends BaseService{
             }
         }
         
+        
         return $picked;
     }
 
 
-
-    private function checkDiversity(int $ppTournamentTypeId, array $matches, ?int $level=0){
+    // actually just checks that the level provided is present as league_level for the matches.
+    private function checkLevelDiversity(array $matches, ?int $level=0){
         if($level && !in_array($level,array_column($matches,'league_level'))){
             return false;
         }
@@ -167,17 +184,10 @@ final class Picker extends BaseService{
         foreach ($leagueIds as $id) {
             if($retrieved = $this->nextRoundForLeague($id)){
                 $matches = array_merge($matches, $retrieved);
+            }else if($retrieved = $this->nextMatchesForLeague($id)){
+                $matches = array_merge($matches, $retrieved);
             }
         }
-        if(!$matches || $matches < $minAmount){
-            $matches = array();
-            foreach ($leagueIds as $id) {
-                if($retrieved = $this->nextMatchesForLeague($id)){
-                    $matches = array_merge($matches, $retrieved);
-                }
-            }
-        }
-
         return $matches;
     }
 
