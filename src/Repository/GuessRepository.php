@@ -124,14 +124,14 @@ final class GuessRepository extends BaseRepository
         return $this->db->get('guesses', null, $this->columns);
     }
 
-    public function getForTeam(int $teamId, int $userId, ?string $from=null, ?string $to=null){
+    public function getForTeam(int $teamId, int $userId, ?string $verified_from=null, ?string $verified_to=null){
         $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
         $this->db->join("matches m", "m.id=pprm.match_id", "INNER");
 
         $this->db->where('user_id', $userId);
 
-        if($from) $this->db->where('m.verified_at', $from, ">=");
-        if($to) $this->db->where('m.verified_at',$to, "<=");
+        if($verified_from) $this->db->where('m.verified_at', $verified_from, ">=");
+        if($verified_to) $this->db->where('m.verified_at',$verified_to, "<=");
 
         $teamIdCondition = "(home_id = " . $this->db->escape($teamId) . " OR away_id = " . $this->db->escape($teamId) . ")";
         $this->db->where($teamIdCondition);
@@ -139,14 +139,14 @@ final class GuessRepository extends BaseRepository
         return $this->db->get('guesses', null, $this->columns);
     }
 
-    public function getForLeague(int $leagueId, int $userId, ?string $from=null, ?string $to=null){
+    public function getForLeague(int $leagueId, int $userId, ?string $verified_from=null, ?string $verified_to=null){
         $this->db->where('user_id', $userId);
         $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
         $this->db->join("matches m", "m.id=pprm.match_id", "INNER");
         $this->db->join("leagues l", "m.league_id = l.id", "INNER");
 
-        if($from) $this->db->where('m.verified_at', $from, ">=");
-        if($to) $this->db->where('m.verified_at', $to, "<=");
+        if($verified_from) $this->db->where('m.verified_at', $verified_from, ">=");
+        if($verified_to) $this->db->where('m.verified_at', $verified_to, "<=");
 
         $leagueIdCondition = "(m.league_id = " . $this->db->escape($leagueId) . " OR l.parent_id = " . $this->db->escape($leagueId) . ")";
         $this->db->where($leagueIdCondition);

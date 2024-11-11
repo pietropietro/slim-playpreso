@@ -41,7 +41,12 @@ final class User extends BaseService{
   
         $bestLeagues =  $this->statsRepository->getUserLeagues($userId, $from, $to, 1);
         foreach($bestLeagues as &$leagueStat){
-            $leagueStat['guesses'] = $this->guessFindService->getForLeague($leagueStat['id'], $userId, $from, $to);
+            $leagueStat['guesses'] = $this->guessFindService->getForLeague(
+                leagueId: $leagueStat['id'], 
+                userId: $userId, 
+                verified_from: $from, 
+                verified_to: $to ? $to : date('Y-m-d H:i')
+            );
         }
         // $worstLeagues =  $this->statsRepository->getUserLeagues($userId, $from, $to, 2);
         // foreach($worstLeagues as &$leagueStat){
@@ -50,7 +55,12 @@ final class User extends BaseService{
 
         $bestTeams =  $this->statsRepository->getUserExtremeAverageTeams($userId, $from, $to, true);
         foreach($bestTeams as &$teamStat){
-            $teamStat['guesses'] = $this->guessFindService->getForTeam($teamStat['id'], $userId, $from, $to);
+            $teamStat['guesses'] = $this->guessFindService->getForTeam(
+                teamId: $teamStat['id'],
+                userId: $userId, 
+                verified_from: $from, 
+                verified_to: $to ? $to : date('Y-m-d H:i')
+            );
         }
 
         // $worstTeams =  $this->statsRepository->getUserExtremeAverageTeams($userId, $from, $to, false);

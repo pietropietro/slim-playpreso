@@ -81,16 +81,16 @@ final class Find extends BaseService{
         return $guesses;
     }
 
-    public function getForTeam(int $teamId, int $userId,  ?string $from=null, ?string $to=null){
-        $guesses = $this->guessRepository->getForTeam($teamId, $userId, $from, $to);
+    public function getForTeam(int $teamId, int $userId,  ?string $verified_from=null, ?string $verified_to=null){
+        $guesses = $this->guessRepository->getForTeam($teamId, $userId, $verified_from, $verified_to);
         foreach($guesses as &$guess){
             $this->enrich($guess);
         }
         return $guesses;
     }
 
-    public function getForLeague(int $leagueId, int $userId,  ?string $from=null, ?string $to=null){
-        $guesses = $this->guessRepository->getForLeague($leagueId, $userId, $from, $to);
+    public function getForLeague(int $leagueId, int $userId,  ?string $verified_from=null, ?string $verified_to=null){
+        $guesses = $this->guessRepository->getForLeague($leagueId, $userId, $verified_from, $verified_to);
         foreach($guesses as &$guess){
             $this->enrich($guess);
         }
