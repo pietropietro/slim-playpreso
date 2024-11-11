@@ -22,3 +22,5 @@
 
 public/images
 secrets/
+
+cron-playpreso.sh

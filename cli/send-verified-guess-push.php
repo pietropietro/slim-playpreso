@@ -37,6 +37,8 @@ $endTime = microtime(true);
 $executionTime = $endTime - $startTime;
 $endMemory = memory_get_usage();
 $memoryUsage = $endMemory - $startMemory;
+// Convert memory usage to MB
+$memoryUsageInMB = $memoryUsage / (1024 * 1024);
 
 if ($executionTime > 30) { // Alert if script takes more than 30 seconds
     error_log("ALERT: Push verified_guesses send script took more than 30 seconds to complete.");
