@@ -19,11 +19,11 @@ final class LatestPreso extends Base
     ): Response {
 
         $page = (int) $request->getQueryParam('page', 1); // Default to page 1
-        $limit = 11; 
+        $limit = 26; 
        
         $presosSummaries = $this->getHighlightsPresosService()->getLastPresos($page, $limit);
 
-        $arr=array("preso" => $presosSummaries,);
+        $arr=array("preso" => $presosSummaries);
 
         return $this->jsonResponse($response, 'success', $arr, 200);
     }
