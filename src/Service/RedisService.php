@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use Predis\Client;
+use InvalidArgumentException;
 
 final class RedisService
 {

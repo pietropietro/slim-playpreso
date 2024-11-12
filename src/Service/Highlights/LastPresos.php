@@ -35,7 +35,7 @@ final class LastPresos  extends Base{
         if (self::isRedisEnabled() === true ) {
             $redisKey = $this->redisService->generateKey(sprintf(self::REDIS_KEY_PRESO_HIGHLIGHTS, $limit, $page));
             $expiration = 1 * 60 * 60; 
-            $this->redisService->setex($redisKey, $lastPreso, $expiration); 
+            $this->redisService->setex($redisKey, $lastPresos, $expiration); 
         }
         return $lastPresos;
     }
