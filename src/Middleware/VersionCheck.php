@@ -25,6 +25,12 @@ final class VersionCheck {
             return $next($request, $response);
         }
 
+        // Skip version check for team image route. //TODO delete when FE will pass version
+        $uriPath = $request->getUri()->getPath();
+        if (preg_match('#^/static/teams/[^/]+$#', $uriPath)) {
+            return $next($request, $response);
+        }
+
         // Get the X-Frontend-Version header
         $frontendVersion = $request->getHeaderLine('X-Frontend-Version');
         $minFrontendVersion = isset($_SERVER['MINIMUM_FE_VERSION']) ? $_SERVER['MINIMUM_FE_VERSION'] : null;
