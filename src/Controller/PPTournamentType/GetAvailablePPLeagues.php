@@ -21,7 +21,7 @@ final class GetAvailablePPLeagues extends Base
         $userId = $this->getAndValidateUserId($request);
 
         if(!$this->getCheckPPTournamentService()->isBelowPPLeaguesConcurrentLimit($userId)){
-            return $this->jsonResponse($response, 'limit_reached', null, 200);
+            return $this->jsonResponse($response, 'limit_reached', [], 200);
         }
 
         $availablePPTournamentTypes = $this->getPPTournamentTypeFindService()->getAvailablePPLeaguesForUser($userId, ids_only: false);
