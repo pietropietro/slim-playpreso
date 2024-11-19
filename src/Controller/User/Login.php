@@ -15,9 +15,8 @@ final class Login extends Base
         $input = (array) $request->getParsedBody();
         
         $user = $this->getLoginUserService()->login($input);
-        $message = ['user' => $user];
-        $jwtHeader = Auth::createToken($user['username'], $user['id'], $user['points']);
+        $jwtHeader = Auth::createToken($user['username'], $user['id'], $user['points'], (bool) $user['admin'], $user['created_at']);
 
-        return $this->jsonResponse($response->withHeader('Authorization', $jwtHeader), 'success', $message, 200);
+        return $this->jsonResponse($response->withHeader('Authorization', $jwtHeader), 'success', null, 200);
     }
 }
