@@ -11,13 +11,9 @@ if (file_exists($envFile)) {
 }
 $dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS', 'DB_PORT']);
 
-//TODO keep?
-// error_reporting(E_ALL);
-// ini_set('display_errors', '1');
 
 $settings = require __DIR__ . '/Settings.php';
 $app = new \Slim\App($settings);
-// $app->add(new \CorsSlim\CorsSlim());
 $container = $app->getContainer();
 
 require __DIR__ . '/Dependencies.php';
