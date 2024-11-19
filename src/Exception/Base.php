@@ -11,5 +11,6 @@ abstract class Base extends \Exception
         header('Access-Control-Allow-Origin: ' . $_ENV['ALLOW_URL_REQUEST']);
         header('Access-Control-Allow-Headers: Content-Type, Accept, Origin, Authorization, X-Frontend-Version');
         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS');
+        http_response_code($code);
     }
 }
