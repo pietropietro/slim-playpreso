@@ -47,17 +47,21 @@ final class Auth extends Base
         $updatedJWT = Auth::createToken(
             $requestBody['JWT_decoded']->username, 
             $user_id,
-            $points
+            $points,
+            $requestBody['JWT_decoded']->admin,
+            $requestBody['JWT_decoded']->created_at
         );
 
         return $next($request->withParsedBody($requestBody), $response->withHeader('Authorization', $updatedJWT));
     }
 
-    public static function createToken(string $username, int $userId, int $points) : string {
+    public static function createToken(string $username, int $userId, int $points, bool $admin, string $created_at) : string {
         $token = [
             'username' => $username,
             'id' => $userId,
             'points' => $points,
+            'admin' => $admin,
+            'created_at' => $created_at,
             'iat' => time(),
             'exp' => time() + ($_SERVER['TOKEN_VALIDITY_DAYS'] * 24 * 60 * 60),
         ];
