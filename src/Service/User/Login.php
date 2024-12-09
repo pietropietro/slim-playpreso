@@ -6,7 +6,6 @@ namespace App\Service\User;
 
 use App\Exception\User;
 use App\Repository\UserRepository;
-use App\Repository\EmailPreferencesRepository;
 use App\Service\RedisService;
 
 
@@ -14,7 +13,6 @@ final class Login extends Base
 {
     public function __construct(
         protected UserRepository $userRepository,
-        protected EmailPreferencesRepository $emailPreferencesRepository,
         protected RedisService $redisService
     ) {
     }
@@ -37,7 +35,6 @@ final class Login extends Base
         }
 
         $user = $this->userRepository->loginUser($data->username, $data->password);
-        $user['emailPreferences'] = $this->emailPreferencesRepository->getOne($user['id']);
         return $user;
     }
 }

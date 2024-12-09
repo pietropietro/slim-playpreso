@@ -16,5 +16,9 @@ final class Find extends BaseService
     public function getNeedLockReminder(){
         return $this->emailPreferencesRepository->getNeedLockReminder();
     }
+
+    public function getForUser(int $userId){
+        return $this->emailPreferencesRepository->getForUser($userId);
+    }
 }
 

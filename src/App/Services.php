@@ -71,7 +71,6 @@ $container['login_user_service'] = static fn (
     ContainerInterface $container
 ): User\Login => new User\Login(
     $container->get('user_repository'),
-    $container->get('emailpreferences_repository'),
     $container->get('redis_service')
 );
 

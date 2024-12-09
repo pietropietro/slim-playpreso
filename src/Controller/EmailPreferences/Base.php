@@ -14,4 +14,9 @@ abstract class Base extends BaseController
         return $this->container->get('emailpreferences_update_service');
     }
 
+    protected function getEmailPreferencesFindService(): EmailPreferences\Find
+    {
+        return $this->container->get('emailpreferences_find_service');
+    }
+
 }

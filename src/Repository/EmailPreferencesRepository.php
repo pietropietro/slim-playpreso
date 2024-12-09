@@ -7,11 +7,12 @@ namespace App\Repository;
 final class EmailPreferencesRepository extends BaseRepository
 {
 
-    public function getOne(int $userId){
+    public function getForUser(int $userId){
         $this->db->where('user_id', $userId);
         return $this->db->getOne('emailPreferences');
     }
 
+    //TODO add where clause for keys
     public function update(int $userId, array $data){
         $this->db->where('user_id', $userId);
         return $this->db->update('emailPreferences', $data, 1);

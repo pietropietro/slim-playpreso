@@ -114,7 +114,11 @@ return function ($app){
         $app->post('/remove', DeviceToken\Remove::class);
     })->add(new Auth($pointsService));
 
-    $app->post('/email-preferences', EmailPreferences\Update::class)->add(new Auth($pointsService));
+
+    $app->group('/email-preferences', function () use ($app): void {
+        $app->post('', EmailPreferences\Update::class);
+        $app->get('', EmailPreferences\Get::class);
+    })->add(new Auth($pointsService));
 
     $app->group('/push-notification-preferences', function () use ($app): void {
         $app->get('', PushNotificationPreferences\Get::class);
