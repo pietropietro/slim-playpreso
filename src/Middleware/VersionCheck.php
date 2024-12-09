@@ -31,6 +31,13 @@ final class VersionCheck {
             return $next($request, $response);
         }
 
+        // Identify and skip the version check if the request is coming from the admin frontend
+        $adminHost = 'admin.playpreso.com'; // Replace with your admin domain
+        $hostHeader = $request->getHeaderLine('Host');
+        if ($hostHeader === $adminHost || $_SERVER['DEBUG'] === 'true') {
+            return $next($request, $response); 
+        }
+
         // Get the X-Frontend-Version header
         $frontendVersion = $request->getHeaderLine('X-Frontend-Version');
         $minFrontendVersion = isset($_SERVER['MINIMUM_FE_VERSION']) ? $_SERVER['MINIMUM_FE_VERSION'] : null;

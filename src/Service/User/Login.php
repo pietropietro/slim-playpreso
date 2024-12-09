@@ -37,4 +37,27 @@ final class Login extends Base
         $user = $this->userRepository->loginUser($data->username, $data->password);
         return $user;
     }
+
+    /**
+     * @param array<string> $input
+     */
+    public function adminLogin(array $input)
+    {
+        $data = json_decode((string) json_encode($input), false);
+        if (! isset($data->username)) {
+            throw new User('The field "username" is required.', 400);
+        }
+        if (! isset($data->password)) {
+            throw new User('The field "password" is required.', 400);
+        }
+
+        // Check if the username starts with 'deleted'
+        if (strpos($data->username, 'deleted') === 0) {
+            throw new \App\Exception\User('Unauthorized.', 403);
+        }
+
+        $user = $this->userRepository->loginUser($data->username, $data->password);
+        if(!$user['admin']) return null;
+        return $user;
+    }
 }

@@ -57,6 +57,7 @@ return function ($app){
     $app->group('/user', function () use ($app, $pointsService): void {
         $app->post('/signup', User\Create::class);
         $app->post('/login', User\Login::class);
+        $app->post('/admin-login', User\AdminLogin::class);
         $app->delete('', User\Delete::class)->add(new Auth($pointsService));
         $app->get('/{username}', User\GetOne::class)->add(new Auth($pointsService));
         $app->post('/recover/{username}', User\Recover::class);
@@ -144,7 +145,9 @@ return function ($app){
         $app->get('', UserNotification\GetUnread::class);
     })->add(new Auth($pointsService));
 
+
     $app->group('/admin', function () use ($app): void {
+
 
         $app->group('/user',  function() use($app): void {
             $app->get('', User\AdminGetAll::class);
