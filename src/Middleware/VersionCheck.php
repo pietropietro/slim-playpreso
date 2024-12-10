@@ -31,12 +31,15 @@ final class VersionCheck {
             return $next($request, $response);
         }
 
-        // Identify and skip the version check if the request is coming from the admin frontend
-        $adminHost = 'admin.playpreso.com'; // Replace with your admin domain
-        $hostHeader = $request->getHeaderLine('Host');
-        if ($hostHeader === $adminHost || $_SERVER['DEBUG'] === 'true') {
-            return $next($request, $response); 
+        // Skip version check if the request is coming from the admin frontend
+        $adminOrigin = 'https://admin.playpreso.com'; // Adjust if necessary
+        $originHeader = $request->getHeaderLine('Origin');
+        $refererHeader = $request->getHeaderLine('Referer');
+
+        if ($originHeader === $adminOrigin || strpos($refererHeader, $adminOrigin) === 0 || getenv('DEBUG') === 'true') {
+            return $next($request, $response);
         }
+
 
         // Get the X-Frontend-Version header
         $frontendVersion = $request->getHeaderLine('X-Frontend-Version');
