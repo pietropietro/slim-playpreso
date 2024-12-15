@@ -7,6 +7,26 @@ namespace App\Repository;
 final class StatsRepository extends BaseRepository
 {   
 
+    public function getUsersWithGuessInYear(int $year, int $guess_min)
+    {
+        // Calculate the start and end of the year
+        $from = "{$year}-01-01 00:00:00";
+        $to = "{$year}-12-31 23:59:59";
+    
+        // Filter for guesses within the specified year
+        $this->db->where('guessed_at', $from, '>=');
+        $this->db->where('guessed_at', $to, '<=');
+    
+        // Group by user_id to count guesses per user
+        $this->db->groupBy('user_id');
+    
+        // Use HAVING to filter users with at least $guess_min verified guesses
+        $this->db->having('COUNT(*)', $guess_min, '>=');
+    
+        // Fetch the user_id values directly
+        return $this->db->getValue('guesses', 'user_id', null); // null to fetch all matching rows
+    }
+    
     public function bestAverage(?int $userId=null){
 
         if($userId){
@@ -86,7 +106,8 @@ final class StatsRepository extends BaseRepository
         ?int $ppRoundMatchId =null,
         ?int $userId = null,
         ?string $from = null, 
-        ?string $to=null
+        ?string $to=null,
+        ?int $limit=3
     ){
         if($ppRoundMatchId)$this->db->where('ppRoundMatch_id', $ppRoundMatchId);
         if($userId)$this->db->where('user_id', $userId);
@@ -95,7 +116,7 @@ final class StatsRepository extends BaseRepository
         $this->db->where('guessed_at IS NOT NULL');
         $this->db->orderBy('most_lock_combination_tot');
         $this->db->groupBy('most_lock_combination');
-        return $this->db->get('guesses', 3,
+        return $this->db->get('guesses', $limit,
             'concat_ws("-",home,away) as most_lock_combination, count(*) as most_lock_combination_tot'
         );
     }
@@ -282,7 +303,7 @@ final class StatsRepository extends BaseRepository
         $this->db->where('guessed_at IS NOT NULL');
         $this->db->where("YEAR(guessed_at)", $year, '=');
         $this->db->groupBy('YEAR(guessed_at), MONTH(guessed_at)');
-        $this->db->having('COUNT(id)', 10, '>=');
+        $this->db->having('COUNT(id)', 9, '>=');
         $this->db->orderBy('AVG(points)', $orderByDirection);
     
         $columns = ['YEAR(guessed_at) AS year, 
@@ -359,13 +380,21 @@ final class StatsRepository extends BaseRepository
     }
 
     public function saveWrapped(array $data){
-        if(!$result= $this->db->insert('statsWrapped', $data)){
+        if(!$result= $this->db->insert('stats_wrapped', $data)){
             print_r($this->db->getLastError());
         }
         return $result;
     }
 
-    public function getWrapped(int $userId, int $year = 2023){
+    public function deleteWrapped(int $year){
+        $this->db->where('stats_year', $year);
+        return $this->db->delete('stats_wrapped');
+    }
+
+    public function getWrapped(int $userId, ?int $year = null){
+        // Default to the current year if no year is provided
+        $year = $year ?? (int)date('Y');
+
         $query = "SELECT 
                 * 
               FROM (
@@ -380,10 +409,10 @@ final class StatsRepository extends BaseRepository
                     RANK() OVER (ORDER BY perc_ggng DESC) as perc_ggng_rank,
                     RANK() OVER (ORDER BY perc_uo25 DESC) as perc_uo25_rank
                 FROM 
-                    statsWrapped where stats_year =".$year."
+                    stats_wrapped where stats_year =".$year."
               ) as ranked_users
               CROSS JOIN (
-                SELECT COUNT(DISTINCT user_id) as ranked_users FROM statsWrapped
+                SELECT COUNT(DISTINCT user_id) as ranked_users FROM stats_wrapped
               ) as count_users_ranked
               WHERE 
                 user_id = ?";

@@ -96,8 +96,8 @@ final class Find extends BaseService{
         $userStat['user'] = $this->userFindService->getOne($userStat['user_id']);
     }
 
-    public function getWrapped(int $userId){
-        $wrapped= $this->statsRepository->getWrapped($userId);
+    public function getWrapped(int $userId, $year){
+        $wrapped= $this->statsRepository->getWrapped($userId, $year);
         $wrapped['most_adjacent_ups'] = json_decode($wrapped['most_adjacent_ups']);
         $wrapped['ppl_most_kind_ups'] = json_decode($wrapped['ppl_most_kind_ups']);
         $wrapped['trophy_list'] = json_decode($wrapped['trophy_list']);

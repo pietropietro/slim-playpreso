@@ -8,7 +8,6 @@ use App\Service\BaseService;
 use App\Service\Trophy;
 use App\Service\Stats;
 use App\Repository\UserParticipationRepository;
-use App\Repository\UserRepository;
 use App\Repository\StatsRepository;
 use App\Repository\PPTournamentTypeRepository;
 
@@ -16,14 +15,13 @@ final class CalculateYearWrapped extends BaseService{
     public function __construct(
         protected StatsRepository $statsRepository,
         protected UserParticipationRepository $userParticipationRepository,
-        protected UserRepository $userRepository,
         protected PPTournamentTypeRepository $ppTournamentTypeRepository,
         protected Trophy\Find $trophyFindService,
         protected Stats\FindAdjacentUps $statsFindAdjacentUpsService,
     ) {}
 
     public function start(int $year){
-        $ids = $this->userRepository->getValue('id');
+        $ids = $this->statsRepository->getUsersWithGuessInYear($year, 30);
         foreach ($ids as $id) {
             $this->getData($id, $year);
         }
@@ -34,7 +32,11 @@ final class CalculateYearWrapped extends BaseService{
         $dataArray['user_id'] = $userId;
         $dataArray['stats_year'] = $year;
 
-        $mainSummary = $this->statsRepository->getUserMainSummary($userId, $year);
+        // Define the start and end dates for the year
+        $from = "{$year}-01-01"; // First day of the year
+        $to = "{$year}-12-31";   // Last day of the year
+
+        $mainSummary = $this->statsRepository->getUserMainSummary($userId, $from, $to);
         if(!isset($mainSummary['tot_locks']) || $mainSummary['tot_locks'] < 50) return;
         $dataArray = array_merge($dataArray, $mainSummary);
 
@@ -42,19 +44,29 @@ final class CalculateYearWrapped extends BaseService{
         if(!$pplStats ) return;
         $dataArray = array_merge($dataArray, $pplStats);
 
-        $dataArray = array_merge($dataArray, $this->statsRepository->getCommonLock(null, $userId, $year));
-        $dataArray = array_merge($dataArray, $this->statsRepository->getUserMissedCount($userId,$year));
+        $commonLock= $this->statsRepository->getCommonLock(null, $userId, $from, $to, 1);
+        if($commonLock){
+            $dataArray = array_merge($dataArray, $commonLock[0]);
+        }
+        $dataArray = array_merge($dataArray, $this->statsRepository->getUserMissedCount($userId,$from, $to));
         
-        $dataArray = array_merge($dataArray, $this->getCommonTeamsData($userId, $year));
-        $dataArray = array_merge($dataArray, $this->getExtremeTeamsData($userId, $year, true));
-        $dataArray = array_merge($dataArray, $this->getExtremeTeamsData($userId, $year, false));
+        $dataArray = array_merge($dataArray, $this->getCommonTeamsData($userId, $from, $to));
+        $dataArray = array_merge($dataArray, $this->getExtremeTeamsData($userId, $from, $to, true));
+        $dataArray = array_merge($dataArray, $this->getExtremeTeamsData($userId, $from, $to, false));
         
-        $dataArray = array_merge($dataArray, $this->getExtremeLeagueData($userId,$year, 0));
-        $dataArray = array_merge($dataArray, $this->getExtremeLeagueData($userId,$year, 1));
-        $dataArray = array_merge($dataArray, $this->getExtremeLeagueData($userId,$year, 2));
+        $dataArray = array_merge($dataArray, $this->getExtremeLeagueData($userId, $from, $to, 0));
+        $dataArray = array_merge($dataArray, $this->getExtremeLeagueData($userId, $from, $to, 1));
+        $dataArray = array_merge($dataArray, $this->getExtremeLeagueData($userId, $from, $to, 2));
 
-        $dataArray = array_merge($dataArray, $this->getBestMonthData($userId,$year));
-        $dataArray = array_merge($dataArray, $this->getWorstMonthData($userId,$year));
+        $bestMonth= $this->getBestMonthData($userId,$year);
+        if($bestMonth){
+            $dataArray = array_merge($dataArray, $bestMonth);
+        }
+
+        $worstMonth = $this->getWorstMonthData($userId,$year);
+        if($worstMonth){
+            $dataArray = array_merge($dataArray, $worstMonth);
+        }
 
         $trophies = $this->trophyFindService->getTrophies($userId, $year.'-01-01');  
         $dataArray['trophy_tot'] = count($trophies);
@@ -68,6 +80,7 @@ final class CalculateYearWrapped extends BaseService{
 
     private function getBestMonthData(int $userId, int $year){
         $data = $this->statsRepository->getExtremeMonth($userId, $year);
+        if(!$data) return;
         $returnData = array();
         $returnData['best_month'] = $data['month'];
         $returnData['best_month_tot_preso'] = $data['tot_preso'];
@@ -78,6 +91,7 @@ final class CalculateYearWrapped extends BaseService{
     
     private function getWorstMonthData(int $userId, int $year){
         $data = $this->statsRepository->getExtremeMonth($userId, $year, false);
+        if(!$data) return;
         $returnData = array();
         $returnData['worst_month'] = $data['month'];
         $returnData['worst_month_tot_preso'] = $data['tot_preso'];
@@ -86,8 +100,8 @@ final class CalculateYearWrapped extends BaseService{
         return $returnData;
     }
 
-    private function getCommonTeamsData(int $userId, int $year){
-        $data = $this->statsRepository->getUserCommonTeams($userId, $year);
+    private function getCommonTeamsData(int $userId, string $from, string $to){
+        $data = $this->statsRepository->getUserCommonTeams($userId, $from, $to);
         if(!is_array($data)|| count($data) == 0){
             return [];
         }
@@ -101,8 +115,8 @@ final class CalculateYearWrapped extends BaseService{
         return $returnData;
     }
 
-    private function getExtremeTeamsData(int $userId, int $year, bool $bestWorstFlag = true){
-        $data = $this->statsRepository->getUserExtremeAverageTeams($userId, $year, $bestWorstFlag);
+    private function getExtremeTeamsData(int $userId, string $from, string $to, bool $bestWorstFlag = true){
+        $data = $this->statsRepository->getUserExtremeAverageTeams($userId, $from, $to, $bestWorstFlag);
         if(!is_array($data)|| count($data)==0){
             return [];
         }
@@ -119,8 +133,8 @@ final class CalculateYearWrapped extends BaseService{
     }
 
     //0 is common, 1 is highest, 2 is lowest
-    private function getExtremeLeagueData(int $userId, int $year, int $commonHighLow){
-        $data = $this->statsRepository->getUserLeagues($userId, $year, $commonHighLow)[0];
+    private function getExtremeLeagueData(int $userId, string $from, string $to, int $commonHighLow){
+        $data = $this->statsRepository->getUserLeagues($userId, $from, $to, $commonHighLow)[0];
         $prefix = $commonHighLow === 0 ? 'most' : ($commonHighLow === 1 ? 'high' : 'low');
         $returnData = array();
         $returnData[$prefix.'_league_id'] = $data['id'];

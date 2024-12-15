@@ -19,7 +19,7 @@ final class GetWrapped extends Base
     ): Response {
         $userId = $this->getAndValidateUserId($request);
 
-        $wrapped = $this->getFindStatsService()->getWrapped($userId);
+        $wrapped = $this->getFindStatsService()->getWrapped($userId, 2024);
         
         return $this->jsonResponse($response, 'success', $wrapped, 200);
     }
