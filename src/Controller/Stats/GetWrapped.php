@@ -20,7 +20,14 @@ final class GetWrapped extends Base
         $userId = $this->getAndValidateUserId($request);
 
         $wrapped = $this->getFindStatsService()->getWrapped($userId, 2024);
+        $previous_year_wrapped = $this->getFindStatsService()->getWrapped($userId, 2023);
         
-        return $this->jsonResponse($response, 'success', $wrapped, 200);
+        return $this->jsonResponse($response, 'success', 
+            array(
+                'current'=>$wrapped, 
+                'last'=>$previous_year_wrapped
+            ),
+            200
+        );
     }
 }
