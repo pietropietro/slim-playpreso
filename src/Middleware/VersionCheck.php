@@ -36,7 +36,7 @@ final class VersionCheck {
         $originHeader = $request->getHeaderLine('Origin');
         $refererHeader = $request->getHeaderLine('Referer');
 
-        if ($originHeader === $adminOrigin || strpos($refererHeader, $adminOrigin) === 0 || getenv('DEBUG') === 'true') {
+        if ($originHeader === $adminOrigin || strpos($refererHeader, $adminOrigin) === 0 || $_SERVER['DEBUG'] === 'true') {
             return $next($request, $response);
         }
 
