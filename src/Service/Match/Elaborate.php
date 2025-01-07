@@ -49,7 +49,7 @@ final class Elaborate extends BaseService{
                 admin: true
             );
             if(!$match){
-                $match = $this->checkLegacyMatch($eventObj->Eps, $ls_id, $leagueId, $round, $homeId, $awayId, $modified_flag);
+                $match = $this->checkLegacyMatchId($eventObj->Eps, $ls_id, $leagueId, $round, $homeId, $awayId, $modified_flag);
             }
             if(!$match){
                 $match = $this->matchCreateService->create($ls_id, $leagueId, $homeId, $awayId, $round, $externalDateStart);
@@ -58,8 +58,13 @@ final class Elaborate extends BaseService{
             }
             if(!$match || $match['verified_at']) continue;
 
+            //sometimes the 3rd party data service would add matches with wrong league id (ls_id)
+            //need to update it when the mistake has been fixed.
+            $this->checkUpdateLeague($match, $leagueId, $modified_flag);
+
             $this->checkUpdateTeams($match, $homeId, $awayId, $modified_flag);
             $this->checkUpdateTime($match, $externalDateStart, $modified_flag);
+            
             if ($this->checkVerifyMatch($match['id'], $eventObj)){
                 $verified_counter ++;
                 continue;
@@ -103,7 +108,7 @@ final class Elaborate extends BaseService{
         return [$homeId, $awayId];
     }
 
-    private function checkLegacyMatch(
+    private function checkLegacyMatchId(
         string $ls_eps,
         int $ls_id,
         int $leagueId,
@@ -145,6 +150,13 @@ final class Elaborate extends BaseService{
             }
         }
         return null;
+    }
+
+    private function checkUpdateLeague(array $match, int $importedLeague_id, bool &$modified_flag){
+        if($match['league_id'] != $importedLeague_id){
+            $this->matchUpdateService->updateLeague($match['id'], $importedLeague_id);
+            $modified_flag = true;
+        }
     }
 
 

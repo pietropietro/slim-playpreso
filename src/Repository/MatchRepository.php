@@ -228,6 +228,14 @@ final class MatchRepository extends BaseRepository
         $this->db->where('id', $id);
         $this->db->update('matches', $data, 1);
     }
+
+    public function updateLeague(int $id, int $league_id){
+        $data = array(
+			"league_id" => $league_id,
+	    );
+        $this->db->where('id', $id);
+        $this->db->update('matches', $data, 1);
+    }
     
     public function updateExternalId(int $id, int $newLs_id){
         $data = array(

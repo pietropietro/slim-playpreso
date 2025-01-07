@@ -37,5 +37,9 @@ final class Update extends BaseService
     public function updateNotes(int $id, ?string $notes = null){
         return $this->matchRepository->updateNotes($id, $notes);
     }
+
+    public function updateLeague(int $id, int $league_id){
+        return $this->matchRepository->updateLeague($id, $league_id);
+    }
 }
 
