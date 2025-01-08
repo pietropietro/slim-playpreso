@@ -3,6 +3,8 @@
 declare(strict_types=1);
 require __DIR__ . '/../src/App/App.php';
 
+use GuzzleHttp\RequestOptions;
+
 // Access the container and services
 $container = $app->getContainer();
 $leagueFindService = $container->get('league_find_service');
@@ -12,66 +14,85 @@ $guzzleClient = $container->get('guzzle_client');
 $leagues = getLeaguesForParams($leagueFindService, $argc, $argv[1], $argv[2], $argv[3]);
 
 if(count($leagues)==0)return;
+$startTime = microtime(true); // Start time for total execution
 
 foreach ($leagues as $league) {
     if(!$league['ls_suffix'])continue;
-    $requests = function ($leagues) use ($importService) {
-        foreach ($leagues as $league) {
-            if (!$league['ls_suffix']) continue;
-            $url = $importService->buildUrl($league['ls_suffix']);    
-            // Yield each request as a new Guzzle request instance
-            yield new GuzzleHttp\Psr7\Request('GET', $url);
-        }
-    };
+    $url = $importService->buildUrl($league['ls_suffix']);
+    echo "[DEBUG] Fetching data for league: {$league['name']}, country:  {$league['country']}, ID: {$league['id']}...\n";
+
+    try {
+        // Perform HTTP request
+        $response = $guzzleClient->request('GET', $url, [
+            'timeout' => 30,
+            'on_stats' => function (GuzzleHttp\TransferStats $stats) {
+                $requestTime = $stats->getTransferTime(); // Get request time in seconds
+                echo "[Request to {$stats->getEffectiveUri()}] completed in " . number_format($requestTime, 3) . " seconds.\n";
+            }
+        ]);
+
+        echo "[DEBUG] Processing: {$league['id']}.\n";
+        $decodedData = json_decode((string) $response->getBody());
+
+        // Process the fetched data
+        $startProcessingTime = microtime(true);
+        $import_result = $importService->elaborateResponse($decodedData, $league['id']);
+        $endProcessingTime = microtime(true);
+
+        $processingTime = $endProcessingTime - $startProcessingTime;
+        echo "[League ID: {$league['id']} - {$league['country']}] {$league['name']} - Import result: " .
+             "created={$import_result['created']}, modified={$import_result['modified']}, verified={$import_result['verified']} " .
+             "- Processing completed in " . number_format($processingTime, 3) . " seconds.\n";
+
+    } catch (Throwable $e) {
+        echo "[ERROR] Failed to fetch or process data for League ID: {$league['id']} - {$e->getMessage()}\n";
+    }
 }
 
-$pool = new GuzzleHttp\Pool($guzzleClient, $requests($leagues), [
-    'concurrency' => 5,
-    'fulfilled' => function ($response, $index) use ($leagues, $importService) {
-        // Handle successful response
-        $league = $leagues[$index];
-        $decodedData = json_decode((string) $response->getBody());
-        
-        $import_result = $importService->elaborateResponse($decodedData, $league['id']);
-        echo  $league['id'].", .".$league['name'].", import result: \n";
-        print_r($import_result);
-    },
-    'rejected' => function ($reason, $index) use ($leagues) {
-        // Handle failed request
-        $league = $leagues[$index];
-        error_log("Failed to fetch data for league: {$league['name']} (ID: {$league['id']}) - {$reason}\n");
-    },
-]);
+$endTime = microtime(true); // End time for total execution
+$totalTime = $endTime - $startTime;
+
+echo "All requests and processing completed in " . number_format($totalTime, 3) . " seconds.\n";
 
 
-// Initiate the pool and wait for all requests to complete
-$promise = $pool->promise();
-$promise->wait();
-echo "All requests completed.\n";
 
-
-function getLeaguesForParams($leagueFindService, $argc, $arg1, $arg2, $arg3){
+function getLeaguesForParams($leagueFindService, $argc, $arg1, $arg2, $arg3)
+{
     // Check if the required parameters are passed
     if ($argc < 1) {
-        error_log("Usage: php importFootball.php <future> <havingGuesses> <fromTime>");
+        error_log("Usage: php importFootball.php <leagueIds|future> <havingGuesses> <fromTime>");
         exit(1);
     }
 
-    // Assigning parameters from command line arguments
-    $future = (bool) $arg1;
-    $havingGuesses = (bool) $arg2;
+    // Check if the first argument is a JSON array of IDs
+    $leagueIds = json_decode($arg1, true);
+    if (is_array($leagueIds) && allIntegers($leagueIds)) {
+        // Fetch leagues by IDs
+        $leagues = $leagueFindService->adminGet($leagueIds)['leagues'];
+        echo(count($leagues) . ' leagues fetched by IDs.' . PHP_EOL);
+        return $leagues;
+    }
+
+    // If not IDs, proceed with the existing logic
+    $future = filter_var($arg1, FILTER_VALIDATE_BOOLEAN);
+    $havingGuesses = filter_var($arg2, FILTER_VALIDATE_BOOLEAN);
     $fromTime = isset($arg3) ? (string) $arg3 : null;
 
-    if($future){
+    if ($future) {
         $leagues = $leagueFindService->getNeedFutureData();
     } else {
-        // Check if the required parameters are passed
         if ($argc < 2) {
             error_log("Usage: php importFootball.php <future> <havingGuesses> <fromTime>");
             exit(1);
         }
         $leagues = $leagueFindService->getNeedPastData($havingGuesses, $fromTime);
     }
-    echo(count($leagues).' leagues to fetch.'.PHP_EOL); 
+
+    echo(count($leagues) . ' leagues to fetch.' . PHP_EOL);
     return $leagues;
+}
+
+function allIntegers(array $array)
+{
+    return array_reduce($array, fn($carry, $item) => $carry && is_int($item), true);
 }

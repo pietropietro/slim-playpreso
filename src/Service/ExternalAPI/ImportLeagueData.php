@@ -42,6 +42,7 @@ final class ImportLeagueData extends BaseService{
 
 
     public function buildUrl(string $ls_suffix){
+        if(!$ls_suffix)return;
         $utc_plus = $this->isDaylightSavingTime() ? 2 : 1;
         $req_url = $_SERVER['EXTERNAL_API_BASE_URI'].$ls_suffix.'/'.$utc_plus;
         return $req_url;
