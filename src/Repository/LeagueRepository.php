@@ -22,7 +22,8 @@ final class LeagueRepository extends BaseRepository
         ?string $country = null, 
         ?int $offset = null, 
         ?int $limit = 200,
-        ?bool $parentOnly = null
+        ?bool $parentOnly = null,
+        ?array $ids=null
     ){
         if ($country && $country != 'ALL') {
             $this->db->where('l.country', $country);
@@ -33,6 +34,11 @@ final class LeagueRepository extends BaseRepository
             $limit = 100;
             $this->db->where('id = parent_id');
         }
+
+        if($ids){
+            $this->db->where('id', $ids, 'IN');
+        }
+
     
         $leagues = $this->db->withTotalCount()->get(
             'leagues l', 

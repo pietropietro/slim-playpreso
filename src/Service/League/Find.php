@@ -32,6 +32,11 @@ final class Find  extends Base{
         return $result;
     }
 
+    public function adminGet(array $ids){
+        if(!$ids)return;
+        return $this->leagueRepository->adminGet(null, null, 200, null, $ids);
+    }
+
     public function adminGetCountries(): array{
         return $this->leagueRepository->adminGetCountries();
     }
