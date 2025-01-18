@@ -55,7 +55,8 @@ final class Auth extends Base
         return $next($request->withParsedBody($requestBody), $response->withHeader('Authorization', $updatedJWT));
     }
 
-    public static function createToken(string $username, int $userId, int $points, bool $admin, string $created_at) : string {
+    //TODO REMOVE THE NULLABLE ? for the last 2 parameters. it was an hardfix for client version mismatch.
+    public static function createToken(string $username, int $userId, int $points, ?bool $admin=null, ?string $created_at=null) : string {
         $token = [
             'username' => $username,
             'id' => $userId,
