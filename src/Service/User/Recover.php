@@ -19,6 +19,10 @@ final class Recover extends Base
         }        
         $hash = StoPasswordReset::calculateTokenHash($plainToken);
         $userRecover = $this->userRecoverRepository->getFromToken($hash);
+
+        if(!$userRecover){
+            throw new \App\Exception\User('Invalid token.', 401);
+        }
         
         if (StoPasswordReset::isTokenExpired(new \DateTime($userRecover['created_at']))){
             throw new \App\Exception\User('Token expired.', 401);

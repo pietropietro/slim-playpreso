@@ -19,12 +19,12 @@ final class GetToday extends Base
     ): Response {
         $userId = $this->getAndValidateUserId($request);
         
-        $motd = $this->getMotdFindService()->getMotd(null,$userId);
-        if(!$motd){
+        $motdPPRM = $this->getMotdFindService()->getMotd(null,$userId);
+        if(!$motdPPRM){
             throw new \App\Exception\NotFound('MOTD Not Found.', 404);
         }
 
-        $motd['tot_locks'] = $this->getPPRoundMatchFindService()->countPPRMGuesses($motd['id']);
+        $motdPPRM['tot_locks'] = $this->getPPRoundMatchFindService()->countPPRMGuesses($motdPPRM['id']);
 
 
         $motdChart = $this->getMotdLeaderService()->getChart(1,3);
@@ -36,20 +36,14 @@ final class GetToday extends Base
         $motdPPtt = $this->getPPTournamentTypeFindService()->getMOTDType();
 
         //if motd.guess is null, insert a dummy one with verified_at being if user can or can't lock
-        if(!$motd['guess']){
-            $motd['guess'] = array(
-                'id' => 'dummy',
-                'home'=> null,
-                'away' => null,
-                'ppTournamentType' => $motdPPtt,
-                'verified_at' => $this->getMatchFindService()->isBeforeStartTime($motd['match']['id']) ? null : 'cantlock'
-            );
+        if(!$motdPPRM['guess']){
+            $motdPPRM['guess'] = $this->getGuessCreateService()->buildDummyGuess($userId, $motdPPRM['id']);
         }
 
-        $motd['guess']['ppTournamentType'] = $motdPPtt;
+        $motdPPRM['guess']['ppTournamentType'] = $motdPPtt;
 
         $returnArray = array(
-            "motd" => $motd, 
+            "motd" => $motdPPRM, 
             "motdChart" => $motdChart,
             "ppTournamentType" => $motdPPtt
         );

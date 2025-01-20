@@ -29,10 +29,11 @@ final class PPRoundMatchRepository extends BaseRepository
         return $this->db->getValue('ppRoundMatches', 'ppRound_id', null);
     }
 
-    public function create(int $matchId, int $ppRoundId){
+    public function create(int $matchId, int $ppRoundId, ?int $lock_cost=null){
         $data = array(
 			"ppRound_id" => $ppRoundId,
-            "match_id" => $matchId
+            "match_id" => $matchId,
+            "lock_cost" => $lock_cost
 	    );
 
         if(!$this->db->insert('ppRoundMatches',$data)){

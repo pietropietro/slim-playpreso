@@ -34,7 +34,6 @@ final class Find extends BaseService{
         return $guess;
     }
 
-
     public function get(array $ids){
         $guesses = $this->guessRepository->get($ids);
         if(!$guesses)return;
@@ -42,6 +41,13 @@ final class Find extends BaseService{
             $this->enrich($guess);
         }
         return $guesses;
+    }
+
+    public function getOneForUserAndPPRM(int $userId, int $ppRoundMatchId){
+        $guess = $this->guessRepository->getOneForUserAndPPRM($userId, $ppRoundMatchId);
+        if(!$guess)return;
+        $this->enrich($guess);
+        return $guess;
     }
     
 

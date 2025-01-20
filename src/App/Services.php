@@ -29,6 +29,7 @@ use App\Service\UserNotification;
 use App\Service\PPDex;
 use App\Service\PPRanking;
 use App\Service\Highlights;
+use App\Service\Flash;
 use Psr\Container\ContainerInterface;
 
 
@@ -482,6 +483,7 @@ $container['guess_create_service'] = static fn (
     $container->get('userparticipation_repository'),
     $container->get('pproundmatch_repository'),
     $container->get('match_repository'),
+    $container->get('user_repository')
 );
 
 $container['guess_lock_service'] = static fn (
@@ -670,5 +672,20 @@ $container['highlights_lastpresos_service'] = static fn (
     $container->get('match_find_service'),
     $container->get('user_find_service')
 );
+
+
+$container['flash_create_service'] = static fn (
+    ContainerInterface $container
+):  Flash\Create => new  Flash\Create(
+    $container->get('flash_repository'),
+    $container->get('match_repository')
+);
+
+$container['flash_find_service'] = static fn (
+    ContainerInterface $container
+):  Flash\Find => new  Flash\Find(
+    $container->get('flash_repository'),
+);
+
 
 

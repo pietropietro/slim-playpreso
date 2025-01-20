@@ -23,6 +23,7 @@ use App\Controller\StaticFiles;
 use App\Controller\UserNotification;
 use App\Controller\Highlights;
 use App\Controller\PPRanking;
+use App\Controller\Flash;
 use App\Middleware\Auth;
 use App\Middleware\Cors;
 use App\Middleware\VersionCheck;
@@ -109,6 +110,12 @@ return function ($app){
         // $app->get('', MOTD\GetLatest::class);
         $app->post('/lock', MOTD\Lock::class);
     })->add(new Auth($pointsService));
+
+    $app->group('/flash', function () use ($app): void {
+        $app->get('', Flash\GetNow::class);
+        $app->post('/lock', Flash\Lock::class);
+    })->add(new Auth($pointsService));
+
 
     $app->group('/device-token', function () use ($app): void {
         $app->post('/save', DeviceToken\Save::class);
