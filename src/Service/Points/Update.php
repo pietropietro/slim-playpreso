@@ -14,6 +14,9 @@ final class Update extends BaseService
     ) {}
 
     public function minus(int $userId, int $points){
+        if($this->userRepository->getPoints($userId) < $points){
+            throw new \App\Exception\NotFound("can't afford", 400);
+        }
         return $this->userRepository->minus($userId, $points);
     }
 

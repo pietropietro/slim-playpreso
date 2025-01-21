@@ -43,8 +43,8 @@ final class Find extends BaseService{
         return $guesses;
     }
 
-    public function getOneForUserAndPPRM(int $userId, int $ppRoundMatchId){
-        $guess = $this->guessRepository->getOneForUserAndPPRM($userId, $ppRoundMatchId);
+    public function getForPPRoundMatch( int $ppRoundMatchId, int $userId){
+        $guess = $this->guessRepository->getForPPRoundMatch( $ppRoundMatchId, $userId);
         if(!$guess)return;
         $this->enrich($guess);
         return $guess;

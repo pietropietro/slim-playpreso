@@ -90,6 +90,7 @@ $container['pptournamenttype_find_service'] = static fn (
     $container->get('redis_service'),
     $container->get('pptournamenttype_repository'),
     $container->get('userparticipation_repository'),
+    $container->get('pproundmatch_repository'),
     $container->get('points_find_service'),
     $container->get('league_find_service'),
     $container->get('trophy_find_service'),
@@ -399,6 +400,7 @@ $container['match_verify_service'] = static fn (
     $container->get('guess_verify_service'),
     $container->get('ppround_verify_service'),
     $container->get('motd_leader_service'),
+    $container->get('flash_verify_service')
 );
 
 $container['guess_verify_service'] = static fn (
@@ -686,6 +688,14 @@ $container['flash_find_service'] = static fn (
 ):  Flash\Find => new  Flash\Find(
     $container->get('flash_repository'),
     $container->get('pproundmatch_find_service')
+);
+
+$container['flash_verify_service'] = static fn (
+    ContainerInterface $container
+):  Flash\Verify => new  Flash\Verify(
+    $container->get('flash_repository'),
+    $container->get('guess_repository'),
+    $container->get('points_update_service')
 );
 
 

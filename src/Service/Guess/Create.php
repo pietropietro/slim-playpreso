@@ -48,7 +48,7 @@ final class Create extends BaseService{
      * 
      * @return array<string, mixed>
      */
-    public function buildDummyGuess(int $userId, int $ppRoundMatchId): array
+    public function buildDummyGuess(int $userId, int $ppRoundMatchId, string $id_placeholder): array
     {   
         $userPoints = $this->userRepository->getPoints($userId);
         $pprm = $this->ppRoundMatchRepository->getOne($ppRoundMatchId);
@@ -71,7 +71,7 @@ final class Create extends BaseService{
         }
 
         return [
-            'id'          => 'dummy',
+            'id'          => $id_placeholder,
             'home'        => null,
             'away'        => null,
             'verified_at' => $canLock,

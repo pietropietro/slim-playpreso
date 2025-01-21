@@ -69,7 +69,7 @@ final class FlashRepository extends BaseRepository
         $this->db->where('now() > m.date_start');
 
         // Possibly we want the one that started most recently
-        $this->db->orderBy('m.date_start', 'asc');
+        $this->db->orderBy('m.date_start', 'desc');
         $row = $this->db->getOne('ppRoundMatches pprm', 'pprm.*');
 
         return $row ?: null;
@@ -133,6 +133,12 @@ final class FlashRepository extends BaseRepository
         // Filter by date; might need rawWhere or from/to if strict
         $this->db->where('DATE(m.date_start)', $dateString);
         return $this->db->get('ppRoundMatches pprm', null, 'pprm.*');
+    }
+
+    public function getWithMatch(int $matchId){
+        $this->db->where('flash', 1);
+        $this->db->where('match_id', $matchId);
+        return $this->db->getOne('ppRoundMatches');
     }
 
 }

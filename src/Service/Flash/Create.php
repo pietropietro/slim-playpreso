@@ -189,7 +189,7 @@ final class Create extends BaseService
             $matchId = (int) $match['id'];
             
             // 1) Decide the lock_cost. Let's pick randomly from [10, 20, 50, 100].
-            $possibleCosts = [10, 20, 50, 100];
+            $possibleCosts = [20, 50, 100];
             $cost = $possibleCosts[array_rand($possibleCosts)];
 
             $this->flashRepository->addFlashMatch($matchId, $cost);

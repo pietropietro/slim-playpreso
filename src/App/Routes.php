@@ -68,12 +68,16 @@ return function ($app){
 
     $app->group('/guess', function () use ($app): void {
         $app->get('', Guess\GetUserCurrent::class);
-        $app->get('/extra-data/{id}', Guess\ExtraData::class);
         $app->get('/team/{id}', Guess\GetForTeam::class);
         $app->get('/league/{id}', Guess\GetForLeague::class);
         $app->get('/user/{id}', Guess\GetForUser::class);
         $app->post('/lock/{id}', Guess\Lock::class);
     })->add(new Auth($pointsService));
+
+    $app->group('/match', function () use ($app): void {
+        $app->get('/extra-data/{id}', Match\ExtraData::class);
+    })->add(new Auth($pointsService));
+
     
     $app->group('/p-tournament-type', function () use ($app): void {
         $app->post('/join/{id}', PPTournamentType\Join::class);

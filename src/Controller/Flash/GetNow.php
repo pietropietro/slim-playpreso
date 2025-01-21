@@ -63,11 +63,11 @@ final class GetNow extends Base
 
         // e.g. $pprmFlash might have: ['id' => 123, 'match_id' => 999, 'flash' => 1, 'lock_cost' => 50, ...]
         // Check if the user already placed a guess:
-        $guess = $this->getGuessFindService()->getOneForUserAndPPRM($userId, $pprmFlash['id']);
+        $guess = $this->getGuessFindService()->getForPPRoundMatch($pprmFlash['id'], $userId);
 
         if (!$guess) {
             // Build a "dummy" guess object, it is locakble depending on time left and user points
-            $pprmFlash['guess'] = $this->getGuessCreateService()->buildDummyGuess($userId, $pprmFlash['id']);
+            $pprmFlash['guess'] = $this->getGuessCreateService()->buildDummyGuess($userId, $pprmFlash['id'], 'flash');
         } else {
             $pprmFlash['guess'] = $guess;
         }

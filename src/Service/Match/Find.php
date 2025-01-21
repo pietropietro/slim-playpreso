@@ -17,6 +17,10 @@ final class Find extends BaseService{
     ) {}
 
     private function enrich(array $match, ?bool $withStats=true){
+        //TODO here add the check
+        //iif conditions live
+        //$match['live'] = 1
+        
         $match['homeTeam'] = $match['home_id'] ? $this->teamFindService->getOne($match['home_id'], false, $withStats) : null;
         $match['awayTeam'] = $match['away_id'] ? $this->teamFindService->getOne($match['away_id'], false, $withStats) : null;
         $match['league'] = $this->leagueFindService->getOne($match['league_id'], false,$withStats);

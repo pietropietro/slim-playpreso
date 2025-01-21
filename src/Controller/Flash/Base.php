@@ -9,6 +9,7 @@ use App\Service\Flash;
 use App\Service\Guess;
 use App\Service\Match;
 use App\Service\User;
+use App\Service\Points;
 use App\Service\PPTournamentType;
 
 /**
@@ -52,5 +53,14 @@ abstract class Base extends BaseController
         return $this->container->get('pptournamenttype_find_service');
     }
 
+    protected function getGuessLockService(): Guess\Lock
+    {
+        return $this->container->get('guess_lock_service');
+    }
+
+    protected function getPointsUpdateService(): Points\Update
+    {
+        return $this->container->get('points_update_service');
+    }
     
 }

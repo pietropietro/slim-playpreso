@@ -7,6 +7,7 @@ namespace App\Service\PPTournamentType;
 use App\Service\RedisService;
 use App\Repository\PPTournamentTypeRepository;
 use App\Repository\UserParticipationRepository;
+use App\Repository\PPRoundMatchRepository;
 use App\Service\Points;
 use App\Service\League;
 use App\Service\Trophy;
@@ -17,6 +18,7 @@ final class Find  extends BaseService{
         protected RedisService $redisService,
         protected PPTournamentTypeRepository $ppTournamentTypeRepository,
         protected UserParticipationRepository $userParticipationRepository,
+        protected PPRoundMatchRepository $ppRoundMatchRepository,
         protected Points\Find $pointsService,
         protected League\Find $leagueFindService,
         protected Trophy\Find $trophiesFindService,
@@ -101,9 +103,17 @@ final class Find  extends BaseService{
     }
 
     public function getFromPPRoundMatch(int $ppRoundMatchId){
-        $pptt = $this->ppTournamentTypeRepository->getFromPPRoundMatch($ppRoundMatchId);
-        if($pptt)return $pptt;
-        return $this->ppTournamentTypeRepository->getMOTDType();
+
+        $pptt = $this->ppRoundMatchRepository->getOne($ppRoundMatchId);
+        if($pptt['flash']==1){
+            return $this->getFlashPPTType();
+        }
+        if($pptt['motd'] != null){
+            return $this->getMOTDType();
+        }
+        if($pptt){
+            return $this->ppTournamentTypeRepository->getFromPPRoundMatch($ppRoundMatchId);
+        }
     }
 
     public function getMOTDType(){

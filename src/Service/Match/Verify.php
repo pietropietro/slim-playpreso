@@ -8,6 +8,7 @@ use App\Service\BaseService;
 use App\Service\Guess;
 use App\Service\PPRound;
 use App\Service\MOTD;
+use App\Service\Flash;
 use App\Repository\MatchRepository;
 
 final class Verify extends BaseService{
@@ -16,6 +17,7 @@ final class Verify extends BaseService{
         protected Guess\Verify $guessVerifyService,
         protected PPRound\Verify $ppRoundVerifyService,
         protected MOTD\Leader $motdLeaderService,
+        protected Flash\Verify $flashVerifyService,
     ) {}
     
     public function verify(int $matchId, int $homeScore, int $awayScore, ?string $notes=null){
@@ -26,6 +28,7 @@ final class Verify extends BaseService{
         $this->matchRepository->verify($matchId, $homeScore, $awayScore, $notes);
         $this->guessVerifyService->verify($matchId, $homeScore, $awayScore);
         $this->motdLeaderService->checkIfCalculate($matchId);
+        $this->flashVerifyService->checkIfVerify($matchId);
         $this->ppRoundVerifyService->verifyAfterMatch($matchId);
     }
 

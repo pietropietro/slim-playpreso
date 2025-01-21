@@ -37,7 +37,7 @@ final class GetToday extends Base
 
         //if motd.guess is null, insert a dummy one with verified_at being if user can or can't lock
         if(!$motdPPRM['guess']){
-            $motdPPRM['guess'] = $this->getGuessCreateService()->buildDummyGuess($userId, $motdPPRM['id']);
+            $motdPPRM['guess'] = $this->getGuessCreateService()->buildDummyGuess($userId, $motdPPRM['id'], 'motd');
         }
 
         $motdPPRM['guess']['ppTournamentType'] = $motdPPtt;

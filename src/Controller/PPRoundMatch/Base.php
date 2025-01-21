@@ -16,6 +16,11 @@ abstract class Base extends BaseController
         return $this->container->get('pproundmatch_update_service');
     }
 
+    protected function getPPRoundMatchFindService(): PPRoundMatch\Update
+    {
+        return $this->container->get('pproundmatch_update_service');
+    }
+
     protected function getPPRoundMatchCreateService(): PPRoundMatch\Create
     {
         return $this->container->get('pproundmatch_create_service');

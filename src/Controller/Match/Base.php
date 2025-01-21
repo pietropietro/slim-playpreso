@@ -7,6 +7,7 @@ namespace App\Controller\Match;
 use App\Controller\BaseController;
 use App\Service\Match;
 use App\Service\League;
+use App\Service\Team;
 use App\Service\PPTournamentType;
 
 
@@ -43,6 +44,12 @@ abstract class Base extends BaseController
     {
         return $this->container->get('league_find_service');
     }
+
+    protected function getTeamFindService(): Team\Find
+    {
+        return $this->container->get('team_find_service');
+    }
+
 
     protected function getPPTournamentTypeFindService(): PPTournamentType\Find
     {

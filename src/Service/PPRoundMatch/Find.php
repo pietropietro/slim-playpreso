@@ -17,6 +17,11 @@ final class Find  extends BaseService{
         protected guessRepository $guessRepository,
         protected Match\Find $matchFindService,
     ){}
+
+    public function getOne(int $id){
+        $pprm =  $this->ppRoundMatchRepository->getOne($id);
+        return $this->enrich($pprm, withMatchesStats: true);
+    }
     
     public function getForRound(
         int $ppRoundId, 

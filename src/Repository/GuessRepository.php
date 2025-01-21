@@ -23,14 +23,6 @@ final class GuessRepository extends BaseRepository
         return $this->db->get('guesses', null, $this->columns);
     }
 
-    public function getOneForUserAndPPRM(int $userId, int $ppRoundMatchId){
-        $this->db->where('guesses.user_id', $userId);
-        $this->db->where('guesses.ppRoundMatch_id', $ppRoundMatchId);
-        $this->db->join('ppRoundMatches pprm', 'pprm.id=guesses.ppRoundMatch_id', 'INNER');
-        return $this->db->getOne('guesses', $this->columns);
-    }
-
-
     public function getForUser(
         int $userId, 
         ?bool $includeMotd = true, 
@@ -324,5 +316,16 @@ final class GuessRepository extends BaseRepository
         $result = $this->db->get('guesses',null, ['guesses.id, guesses.user_id', 'm.date_start']);
         return $result;
     }
+
+    public function markWinner(int $guessId, int $prize): void
+    {
+        $data = [
+            'winner' => 1,
+            'winner_prize'  => $prize
+        ];
+        $this->db->where('id', $guessId);
+        $this->db->update('guesses', $data);
+    }
+
 
 }

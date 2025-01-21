@@ -25,9 +25,10 @@ final class GetUserCurrent extends Base
             locked: false,
             verified: false
         );
+
         $locked = $this->getGuessFindService()->getForUser(
             userId: $userId, 
-            includeMotd: false,
+            includeMotd: true,
             locked: true,
             verified: false
         );
