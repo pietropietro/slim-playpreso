@@ -6,6 +6,11 @@ namespace App\Repository;
 
 final class PPRoundMatchRepository extends BaseRepository
 {
+    public function getOne(int $id){
+        $this->db->where('id', $id);
+        return $this->db->getOne('ppRoundMatches');
+    }
+
     public function getForRound(int $ppRoundId, ?bool $onlyIds = false) : array {
         $this->db->where('ppRound_id', $ppRoundId);
         if($onlyIds)return $this->db->getValue('ppRoundMatches', 'id', null);

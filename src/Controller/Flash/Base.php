@@ -9,6 +9,7 @@ use App\Service\Flash;
 use App\Service\Guess;
 use App\Service\Match;
 use App\Service\User;
+use App\Service\PPTournamentType;
 
 /**
  * Abstract base controller for Flash endpoints,
@@ -45,4 +46,11 @@ abstract class Base extends BaseController
     {
         return $this->container->get('user_find_service');
     }
+
+    protected function getPPTournamentTypeFindService(): PPTournamentType\Find
+    {
+        return $this->container->get('pptournamenttype_find_service');
+    }
+
+    
 }

@@ -685,6 +685,7 @@ $container['flash_find_service'] = static fn (
     ContainerInterface $container
 ):  Flash\Find => new  Flash\Find(
     $container->get('flash_repository'),
+    $container->get('pproundmatch_find_service')
 );
 
 

@@ -110,6 +110,10 @@ final class Find  extends BaseService{
         return $this->ppTournamentTypeRepository->getMOTDType();
     }
 
+    public function getFlashPPTType(){
+        return $this->ppTournamentTypeRepository->getFlashType();
+    }
+
     public function getUps(int $id, ?int $user_id=null, ?int $limit=1){
         //redis logic here todo
         $stats = $this->ppTournamentTypeRepository->getUps($id, $user_id, $limit);

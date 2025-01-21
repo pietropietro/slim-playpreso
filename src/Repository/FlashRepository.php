@@ -35,7 +35,7 @@ final class FlashRepository extends BaseRepository
         }
     
         $this->db->orderBy('m.date_start', 'DESC');
-        $row = $this->db->getOne('ppRoundMatches pprm', null, 'm.*, pprm.id AS ppRoundMatchId');
+        $row = $this->db->getOne('ppRoundMatches pprm', 'pprm.*');
     
         return $row ?: null;
     }
@@ -47,12 +47,11 @@ final class FlashRepository extends BaseRepository
     {
         $this->db->join('matches m', 'pprm.match_id = m.id', 'INNER');
         $this->db->where('pprm.flash', 1);
-        $this->db->where('m.verified_at', null);
+        $this->db->where('m.verified_at is null');
         $this->db->where('m.date_start > now()');
         $this->db->orderBy('m.date_start', 'ASC');
 
-        $cols = 'pprm.id AS ppRoundMatchId, m.*, pprm.lock_cost';
-        $row = $this->db->getOne('ppRoundMatches pprm', null, $cols);
+        $row = $this->db->getOne('ppRoundMatches pprm', 'pprm.*');
         return $row ?: null;
     }
 
@@ -64,14 +63,15 @@ final class FlashRepository extends BaseRepository
      */
     public function getCurrentFlash(): ?array
     {
-        $this->db->join('matches m', 'pm.match_id = m.id', 'INNER');
-        $this->db->where('pm.flash', 1);
-        $this->db->where('m.verified_at', null);
-        // Possibly we want the one that started most recently
-        $this->db->orderBy('m.date_start', 'DESC');
+        $this->db->join('matches m', 'pprm.match_id = m.id', 'INNER');
+        $this->db->where('pprm.flash', 1);
+        $this->db->where('m.verified_at is null');
+        $this->db->where('now() > m.date_start');
 
-        $cols = 'pm.id AS ppRoundMatchId, m.*, pm.lock_cost';
-        $row = $this->db->getOne('ppRoundMatches pm', null, $cols);
+        // Possibly we want the one that started most recently
+        $this->db->orderBy('m.date_start', 'asc');
+        $row = $this->db->getOne('ppRoundMatches pprm', 'pprm.*');
+
         return $row ?: null;
     }
 
@@ -128,11 +128,11 @@ final class FlashRepository extends BaseRepository
      */
     public function getFlashMatchesByDate(string $dateString): array
     {
-        $this->db->join('matches m', 'pm.match_id = m.id', 'INNER');
-        $this->db->where('pm.flash', 1);
+        $this->db->join('matches m', 'pprm.match_id = m.id', 'INNER');
+        $this->db->where('pprm.flash', 1);
         // Filter by date; might need rawWhere or from/to if strict
         $this->db->where('DATE(m.date_start)', $dateString);
-        return $this->db->get('ppRoundMatches pm', null, 'pm.id AS ppRoundMatchId, m.*');
+        return $this->db->get('ppRoundMatches pprm', null, 'pprm.*');
     }
 
 }

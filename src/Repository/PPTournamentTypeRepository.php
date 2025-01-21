@@ -192,6 +192,11 @@ final class PPTournamentTypeRepository extends BaseRepository
         return $this->db->getOne('ppTournamentTypes');
     }
 
+    public function getFlashType(){
+        $this->db->where('name', 'Flash');
+        return $this->db->getOne('ppTournamentTypes');
+    }
+
     public function getUps(int $id, ?int $userId, ?int $limit=1){
         $this->db->join('users u', 'up.user_id = u.id');
         $this->db->where('ppTournamentType_id', $id);
