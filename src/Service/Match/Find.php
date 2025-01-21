@@ -17,10 +17,9 @@ final class Find extends BaseService{
     ) {}
 
     private function enrich(array $match, ?bool $withStats=true){
-        //TODO here add the check
-        //iif conditions live
-        //$match['live'] = 1
-        
+       // check if match is "live"
+        $match['live'] = $this->isMatchLive($match) ? 1 : 0;
+
         $match['homeTeam'] = $match['home_id'] ? $this->teamFindService->getOne($match['home_id'], false, $withStats) : null;
         $match['awayTeam'] = $match['away_id'] ? $this->teamFindService->getOne($match['away_id'], false, $withStats) : null;
         $match['league'] = $this->leagueFindService->getOne($match['league_id'], false,$withStats);
@@ -121,6 +120,28 @@ final class Find extends BaseService{
     public function getLastForTeam(int $id, int $limit = 5){
         $matches = $this->matchRepository->getLastForTeam($id, $limit);
         return $this->enrichAll($matches, false);
+    }
+
+    /**
+     * Decide if a match is "live."
+     * Conditions (from your description):
+     *   1) match.verified_at is null
+     *   2) now >= date_start
+     *   3) now < date_start + 2 hours
+     */
+    private function isMatchLive(array $match): bool
+    {
+        // Check verified_at
+        if (!empty($match['verified_at'])) {
+            // Means it's actually verified, so not live
+            return false;
+        }
+
+        $start = new \DateTime($match['date_start']);
+        $now = new \DateTime();
+        $twoHoursAfter = (clone $start)->modify('+2 hours');
+
+        return ($now >= $start) && ($now < $twoHoursAfter);
     }
 
     
