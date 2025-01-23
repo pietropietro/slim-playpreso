@@ -61,16 +61,19 @@ final class GetNow extends Base
             return null; // No match found, return null
         }
 
-        // e.g. $pprmFlash might have: ['id' => 123, 'match_id' => 999, 'flash' => 1, 'lock_cost' => 50, ...]
-        // Check if the user already placed a guess:
-        $guess = $this->getGuessFindService()->getForPPRoundMatch($pprmFlash['id'], $userId);
+        // Filter guesses for the same userId from the provided `pprmFlash` array
+        $userGuess = array_filter($pprmFlash['guesses'] ?? [], function ($guess) use ($userId) {
+            return $guess['user_id'] === $userId;
+        });
 
-        if (!$guess) {
-            // Build a "dummy" guess object, it is locakble depending on time left and user points
+        // If no guess exists for the user, build a dummy guess object
+        if (empty($userGuess)) {
             $pprmFlash['guess'] = $this->getGuessCreateService()->buildDummyGuess($userId, $pprmFlash['id'], 'flash');
         } else {
-            $pprmFlash['guess'] = $guess;
+            $pprmFlash['guess'] = reset($userGuess); // Use the first match
         }
+
+        // Add the PPTournamentType to the guess
         $flashPPtt = $this->getPPTournamentTypeFindService()->getFlashPPTType();
         $pprmFlash['guess']['ppTournamentType'] = $flashPPtt;
 
