@@ -139,7 +139,7 @@ final class Find extends BaseService{
 
         $start = new \DateTime($match['date_start']);
         $now = new \DateTime();
-        $twoHoursAfter = (clone $start)->modify('+2 hours');
+        $twoHoursAfter = (clone $start)->modify('+130 minutes');
 
         return ($now >= $start) && ($now < $twoHoursAfter);
     }
