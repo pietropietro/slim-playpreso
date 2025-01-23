@@ -90,7 +90,8 @@ final class Create extends BaseService
 
         if ($lastFlashRow) {
             // lastFlashRow['date_start'] is e.g. "2025-01-18 23:00:00"
-            $prevMatchTime = new \DateTime($lastFlashRow['date_start']);
+            $match = $this->matchRepository->getOne($lastFlashRow['match_id']);
+            $prevMatchTime = new \DateTime($match['date_start']);
             $prevMatchTime->modify('+135 minutes'); // add 2h15m
 
             if ($prevMatchTime > $earliest) {

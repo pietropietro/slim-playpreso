@@ -27,6 +27,17 @@ final class Find extends BaseService
         return !empty($rows);
     }
 
+    public function getOne(int $ppRoundMatchId, int $userId){
+        $pprmFlash = $this->ppRoundMatchFindService->getOne(
+            $ppRoundMatchId,
+            true,
+            $userId,
+            true,
+            false
+        );
+        return $pprmFlash;
+    }
+
    
     public function getLastFlash(?string $dateString = null, ?bool $verified = null, ?int $userId = null): ?array
     {

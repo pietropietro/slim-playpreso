@@ -18,9 +18,22 @@ final class Find  extends BaseService{
         protected Match\Find $matchFindService,
     ){}
 
-    public function getOne(int $id){
+    public function getOne(
+        int $id, 
+        ?bool $withGuesses = false, 
+        ?int $userId=null,
+        ?bool $withUserGuess = false, 
+        ?bool $withMatchStats=false,
+    ){
         $pprm =  $this->ppRoundMatchRepository->getOne($id);
-        return $this->enrich($pprm, withMatchesStats: true);
+        $this->enrich(
+            $pprm,
+            withGuesses: $withGuesses,
+            userId: $userId,
+            withUserGuess: $withUserGuess,
+            withMatchStats: $withMatchStats
+        );
+        return $pprm;
     }
     
     public function getForRound(

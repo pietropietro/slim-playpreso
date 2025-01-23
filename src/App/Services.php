@@ -622,6 +622,7 @@ $container['usernotification_find_service'] = static fn (
 ):  UserNotification\Find => new  UserNotification\Find(
     $container->get('usernotification_repository'),
     $container->get('guess_find_service'),
+    $container->get('pproundmatch_repository'),
     $container->get('userparticipation_find_service')
 );
 

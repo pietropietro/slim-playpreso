@@ -46,7 +46,7 @@ final class MatchRepository extends BaseRepository
             'm.id', 'm.ls_id', 'm.league_id', 
             'm.home_id', 'm.away_id', 'm.score_home', 'm.score_away', 
             'm.round', 'm.date_start', 'm.created_at', 'm.verified_at', 'm.notes', 
-            'count(distinct pprm.motd) as motd',
+            'count(distinct pprm.motd) as motd', 'count(distinct pprm.flash) as flash'
         ];
     
         $matches = $this->db->get('matches m', null, $columns);

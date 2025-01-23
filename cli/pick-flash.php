@@ -33,7 +33,7 @@ if (!$dateArg) {
         // Otherwise, find the last flash overall and pick the next day after that
         $lastFlashRow = $flashFindService->getLastFlash();
         if ($lastFlashRow) {
-            $lastFlashDateTime = new DateTime($lastFlashRow['date_start']);
+            $lastFlashDateTime = new DateTime($lastFlashRow['match']['date_start']);
             // We'll produce the "next day" in d-m-Y format
             $lastFlashDateTime->modify('+1 day');
             $dateArg = $lastFlashDateTime->format('d-m-Y');

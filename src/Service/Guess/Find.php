@@ -20,10 +20,11 @@ final class Find extends BaseService{
     ){}
 
     public function enrich(&$guess, ?bool $withMatchStats = true){
-        $guess['match'] = $this->matchFindService->getOne(
+        $match = $this->matchFindService->getOne(
             id: $guess['match_id'], 
             withStats: $withMatchStats
         );
+        $guess['match'] = $match;
         $guess['ppTournamentType'] = $this->ppTournamentTypeFindService->getFromPPRoundMatch($guess['ppRoundMatch_id']);
     }
 
@@ -115,8 +116,5 @@ final class Find extends BaseService{
         return $this->guessRepository->getNeedReminder();
     }
 
-
-
-    
 
 }

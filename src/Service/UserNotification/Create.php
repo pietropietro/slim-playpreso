@@ -59,19 +59,28 @@ final class Create extends Base
 
 
     
-    private function getGuessVerifiedPushData(int $guessId){
-        //REDIS THIS
+    private function getGuessVerifiedPushData(int $guessId): array {
         $guess = $this->guessFindService->getOne($guessId);
-        $teamNames = $guess['match']['homeTeam']['name']. ' - ' . $guess['match']['awayTeam']['name'];
-        $realScore = $guess['match']['score_home'] . '-' . $guess['match']['score_away'];
-        $guessedScore = $guess['home'] . '-' . $guess['away'];
 
+        $teamNames = $guess['match']['homeTeam']['name']. ' - ' . $guess['match']['awayTeam']['name'];
         $title = $guess['ppTournamentType']['emoji']." ".$teamNames;
 
-        $body = '🏁 '. $realScore;
-        if($guess['PRESO']){$body .= ' PRESO!';}
-        else if(!$guess['guessed_at']){$body .= ' ❌';}
-        else{$body .= ' 🔒 ' . $guessedScore . '   🅿️ ' . $guess['points'];}
+        if($guess['ppTournamentType']['name'] == 'Flash'){
+            $body = "";
+            if($guess['winner']){
+                $body = "FLASH WINNER! 🅿️".$guess['winner_prize'];
+            }else{
+                $body = "You did not win this flash match.";
+            }
+        }else{
+            $realScore = $guess['match']['score_home'] . '-' . $guess['match']['score_away'];
+            $guessedScore = $guess['home'] . '-' . $guess['away'];
+
+            $body = '🏁 '. $realScore;
+            if($guess['PRESO']){$body .= ' PRESO!';}
+            else if(!$guess['guessed_at']){$body .= ' ❌';}
+            else{$body .= ' 🔒 ' . $guessedScore . '   🅿️ ' . $guess['points'];}
+        }
         
         return array(
             'title' => $title,
