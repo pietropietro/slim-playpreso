@@ -117,6 +117,7 @@ return function ($app){
 
     $app->group('/flash', function () use ($app): void {
         $app->get('', Flash\GetNow::class);
+        $app->get('/list', Flash\GetList::class);
         $app->post('/lock', Flash\Lock::class);
     })->add(new Auth($pointsService));
 
@@ -158,8 +159,6 @@ return function ($app){
 
 
     $app->group('/admin', function () use ($app): void {
-
-
         $app->group('/user',  function() use($app): void {
             $app->get('', User\AdminGetAll::class);
         });

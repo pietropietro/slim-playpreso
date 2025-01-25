@@ -38,6 +38,17 @@ final class Find extends BaseService
         return $pprmFlash;
     }
 
+    public function get(bool $verified = true, int $page=1, int $limit=10){
+        $offset = ($page - 1) * $limit;
+        $flashPPRMs = $this->flashRepository->get($verified, $offset, $limit);
+
+        foreach($flashPPRMs as &$flash){
+            $this->ppRoundMatchFindService->enrich($flash, withGuesses:true); 
+        }
+        return $flashPPRMs;
+
+    }
+
    
     public function getLastFlash(?string $dateString = null, ?bool $verified = null, ?int $userId = null): ?array
     {

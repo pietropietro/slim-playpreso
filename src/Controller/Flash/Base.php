@@ -62,5 +62,33 @@ abstract class Base extends BaseController
     {
         return $this->container->get('points_update_service');
     }
+
+    /**
+     * Helper method: If there's a Flash match row, attach a "dummy" guess,
+     */
+    protected function prepareUserFlashItem(?array $pprmFlash, int $userId): ?array
+    {
+        if (!$pprmFlash) {
+            return null; // No match found, return null
+        }
+
+        // Filter guesses for the same userId from the provided `pprmFlash` array
+        $userGuess = array_filter($pprmFlash['guesses'] ?? [], function ($guess) use ($userId) {
+            return $guess['user_id'] === $userId;
+        });
+
+        // If no guess exists for the user, build a dummy guess object
+        if (empty($userGuess)) {
+            $pprmFlash['guess'] = $this->getGuessCreateService()->buildDummyGuess($userId, $pprmFlash['id'], 'flash');
+        } else {
+            $pprmFlash['guess'] = reset($userGuess); // Use the first match
+        }
+
+        // Add the PPTournamentType to the guess
+        $flashPPtt = $this->getPPTournamentTypeFindService()->getFlashPPTType();
+        $pprmFlash['guess']['ppTournamentType'] = $flashPPtt;
+
+        return $pprmFlash;
+    }
     
 }

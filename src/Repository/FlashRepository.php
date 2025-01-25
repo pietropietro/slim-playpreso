@@ -9,6 +9,17 @@ use MysqliDb;
 final class FlashRepository extends BaseRepository
 {
    
+    public function get(bool $verified = true, int $offset = 0, int $limit = 10){
+        $this->db->where('flash', 1);
+        $this->db->join('matches m', 'm.id=pprm.match_id', 'inner');
+        $this->db->where('verified_at is not null');
+        //unnecessary but double condition
+        $this->db->where('date_start < now()');
+        $this->db->orderBy('date_start', 'desc');
+        return $this->db->get('ppRoundMatches pprm', [$offset, $limit], 'pprm.*');
+    }
+
+
     /**
      * Get the last (max date_start) flash match for a given date (YYYY-mm-dd).
      * or the last in general if none is provided
