@@ -152,6 +152,44 @@ final class FlashRepository extends BaseRepository
         return $this->db->getOne('ppRoundMatches');
     }
 
+    public function retrieveFlashChart(?int $offset = 0, ?int $limit = 10){
+        $dateAgo = date("Y-m-d", strtotime('-30 days'));
+        $this->db->join("ppRoundMatches pprm", "pprm.id = guesses.ppRoundMatch_id", "INNER");
+        $this->db->where("guesses.created_at", $dateAgo, ">=");
+        $this->db->where('flash',1);
+        $this->db->groupBy("guesses.user_id");
+        $this->db->orderBy("tot_points", "desc");
+
+        $chart = $this->db->withTotalCount()->get(
+            "guesses", 
+            [$offset, $limit], 
+            "   guesses.user_id, 
+                SUM(guesses.points) as tot_points,
+                COUNT(guesses.id) as tot_locked,
+                SUM(PRESO) as tot_preso, 
+                SUM(UNOX2) as tot_unox2"
+        );        
+        
+        return [
+            'chart' => $chart,
+            'total' => (int) $this->db->totalCount,
+        ];
+    }
+
+    public function insertLeader(int $userId, int $points, int $after_pprm_id){
+        $data = array(
+            'user_id' => $userId,
+            'tot_points' => $points,
+            'after_pprm_id' => $after_pprm_id,
+            'calculated_at' => $this->db->now()
+        );
+        return $this->db->insert('flashLeader', $data);
+    }
+
+    public function getFlashLeader(){
+        $this->db->orderBy('calculated_at', 'desc');
+        return $this->db->getOne('flashLeader');
+    }
 }
 
 

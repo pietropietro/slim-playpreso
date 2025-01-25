@@ -51,7 +51,16 @@ final class Verify extends BaseService{
                 $this->guessRepository->markWinner($winGuess['id'], $split);
             }
         }
-      
+
+        //calculate leader
+        $this->calculateFlashLeader($pprmFlash['id']);
+    }
+
+    private function calculateFlashLeader(int $after_pprm_id){
+        $chart = $this->flashRepository->retrieveFlashChart()['chart'];
+        if(!$chart[0])return;
+        $this->flashRepository->insertLeader($chart[0]['user_id'], (int) $chart[0]['tot_points'], $after_pprm_id);
+        return $chart[0]['user_id'];
     }
 
 }

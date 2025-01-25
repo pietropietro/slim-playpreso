@@ -44,7 +44,8 @@ $container['user_find_service'] = static fn (
     $container->get('guess_find_service'),
     $container->get('trophy_find_service'),
     $container->get('ppranking_find_service'),
-    $container->get('motd_leader_service')  
+    $container->get('motd_leader_service'),
+    $container->get('flash_find_service')  
 );
 
 $container['user_create_service'] = static fn (

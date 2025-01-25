@@ -10,6 +10,7 @@ abstract class BaseService
 
     protected static function isRedisEnabled(): bool
     {
+        if($_SERVER['DEBUG'] == 'true') return false;
         return filter_var($_SERVER['REDIS_ENABLED'], FILTER_VALIDATE_BOOLEAN);
     }
 }

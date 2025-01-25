@@ -11,6 +11,7 @@ use App\Service\Guess;
 use App\Service\Trophy;
 use App\Service\PPRanking;
 use App\Service\MOTD;
+use App\Service\Flash;
 
 final class Find extends Base
 {
@@ -21,7 +22,8 @@ final class Find extends Base
         protected Guess\Find $guessFindService,
         protected Trophy\Find $trophyFindService,
         protected PPRanking\Find $ppRankingFindService,
-        protected MOTD\Leader $ppMotdLeaderService
+        protected MOTD\Leader $ppMotdLeaderService,
+        protected Flash\Find $flashFindService
     ) {
     }
 
@@ -73,6 +75,7 @@ final class Find extends Base
         $user['ppRanking'] = $this->ppRankingFindService->getForUser($userId);
         $user['trophies_count'] = $this->trophyFindService->getTrophies($userId, null, true);
         $user['motdLeader'] = $this->ppMotdLeaderService->getMotdLeader()['user_id'] == $user['id'];
+        $user['flashLeader'] = $this->flashFindService->getFlashLeader()['user_id'] == $user['id'];
         
         if (!$sensitiveColumns && self::isRedisEnabled() === true){
             $this->saveUserInCache($userId, $user);

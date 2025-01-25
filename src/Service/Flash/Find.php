@@ -70,4 +70,8 @@ final class Find extends BaseService
         $this->ppRoundMatchFindService->enrich($pprmFlash, true, $userId);
         return $pprmFlash;
     }
+
+    public function getFlashLeader(){
+        return $this->flashRepository->getFlashLeader();
+    }
 }
