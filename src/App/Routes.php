@@ -118,6 +118,7 @@ return function ($app){
     $app->group('/flash', function () use ($app): void {
         $app->get('', Flash\GetNow::class);
         $app->get('/list', Flash\GetList::class);
+        $app->get('/chart', Flash\GetChart::class);
         $app->post('/lock', Flash\Lock::class);
     })->add(new Auth($pointsService));
 

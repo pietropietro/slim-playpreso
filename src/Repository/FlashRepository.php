@@ -152,18 +152,28 @@ final class FlashRepository extends BaseRepository
         return $this->db->getOne('ppRoundMatches');
     }
 
-    public function retrieveFlashChart(?int $offset = 0, ?int $limit = 10){
+    public function retrieveFlashChart(?int $offset = 0, ?int $limit = 10) {
         $dateAgo = date("Y-m-d", strtotime('-30 days'));
+        
         $this->db->join("ppRoundMatches pprm", "pprm.id = guesses.ppRoundMatch_id", "INNER");
         $this->db->where("guesses.created_at", $dateAgo, ">=");
-        $this->db->where('flash',1);
+        $this->db->where('flash', 1);
+        $this->db->where('verified_at is not null');
         $this->db->groupBy("guesses.user_id");
+        
+        // Order by tot_wins, net_prize, and tot_points
+        $this->db->orderBy("tot_wins", "desc");
+        $this->db->orderBy("net_prize", "desc");
         $this->db->orderBy("tot_points", "desc");
-
+    
         $chart = $this->db->withTotalCount()->get(
             "guesses", 
             [$offset, $limit], 
             "   guesses.user_id, 
+                SUM(pprm.lock_cost) as tot_lock_cost,
+                SUM(guesses.winner) as tot_wins,
+                COALESCE(SUM(guesses.winner_prize), 0) as tot_prize, 
+                (COALESCE(SUM(guesses.winner_prize), 0) - SUM(pprm.lock_cost)) as net_prize,
                 SUM(guesses.points) as tot_points,
                 COUNT(guesses.id) as tot_locked,
                 SUM(PRESO) as tot_preso, 
@@ -190,6 +200,7 @@ final class FlashRepository extends BaseRepository
         $this->db->orderBy('calculated_at', 'desc');
         return $this->db->getOne('flashLeader');
     }
+
 }
 
 

@@ -74,4 +74,9 @@ final class Find extends BaseService
     public function getFlashLeader(){
         return $this->flashRepository->getFlashLeader();
     }
+
+    public function getChart(int $page=1, int $limit=10){
+        $offset = ($page - 1) * $limit;
+        return $this->flashRepository->retrieveFlashChart($offset);
+    }
 }
