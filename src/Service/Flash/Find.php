@@ -50,24 +50,24 @@ final class Find extends BaseService
     }
 
    
-    public function getLastFlash(?string $dateString = null, ?bool $verified = null, ?int $userId = null): ?array
+    public function getLastFlash(?string $dateString = null, ?bool $verified = null): ?array
     {
         $pprmFlash = $this->flashRepository->getLastFlash($dateString, $verified);
-        $this->ppRoundMatchFindService->enrich($pprmFlash, true, $userId);
+        $this->ppRoundMatchFindService->enrich($pprmFlash, true);
         return $pprmFlash;
     }
 
-    public function getNextFlash(?int $userId = null): ?array
+    public function getNextFlash(): ?array
     {
         $pprmFlash = $this->flashRepository->getNextFlash();
-        $this->ppRoundMatchFindService->enrich($pprmFlash, true, $userId);
+        $this->ppRoundMatchFindService->enrich($pprmFlash, true);
         return $pprmFlash;
     }
 
-    public function getCurrentFlash(?int $userId = null): ?array
+    public function getCurrentFlash(): ?array
     {
         $pprmFlash = $this->flashRepository->getCurrentFlash();
-        $this->ppRoundMatchFindService->enrich($pprmFlash, true, $userId);
+        $this->ppRoundMatchFindService->enrich($pprmFlash, true);
         return $pprmFlash;
     }
 

@@ -65,6 +65,35 @@ abstract class Base extends BaseController
         return $this->container->get('user_find_service');
     }
 
+
+     /**
+     * Helper method: If there's a Flash match row, attach a "dummy" guess,
+     */
+    protected function prepareUserMotdItem(?array $pprmMotd, int $userId): ?array
+    {
+        if (!$pprmMotd) {
+            return null; // No match found, return null
+        }
+
+        // Filter guesses for the same userId from the provided `pprmMotd` array
+        $userGuess = array_filter($pprmMotd['guesses'] ?? [], function ($guess) use ($userId) {
+            return $guess['user_id'] === $userId;
+        });
+
+        // If no guess exists for the user, build a dummy guess object
+        if (empty($userGuess)) {
+            $pprmMotd['guess'] = $this->getGuessCreateService()->buildDummyGuess($userId, $pprmMotd['id'], 'motd');
+        } else {
+            $pprmMotd['guess'] = reset($userGuess); // Use the first match
+        }
+
+        // Add the PPTournamentType to the guess
+        $motdPPtt = $this->getPPTournamentTypeFindService()->getMOTDType();
+        $pprmMotd['guess']['ppTournamentType'] = $motdPPtt;
+
+        return $pprmMotd;
+    }
+
     
 
 }

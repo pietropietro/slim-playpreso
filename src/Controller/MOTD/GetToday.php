@@ -19,33 +19,17 @@ final class GetToday extends Base
     ): Response {
         $userId = $this->getAndValidateUserId($request);
         
-        $motdPPRM = $this->getMotdFindService()->getMotd(null,$userId);
-        if(!$motdPPRM){
-            throw new \App\Exception\NotFound('MOTD Not Found.', 404);
-        }
+        $yesterday = (new \DateTime('yesterday'))->format('Y-m-d');
+        $motdToday    = $this->getMotdFindService()->getMotd(null, withGuesses:true);
+        $motdYesterday = $this->getMotdFindService()->getMotd($yesterday, withGuesses:true);
 
-        $motdPPRM['tot_locks'] = $this->getPPRoundMatchFindService()->countPPRMGuesses($motdPPRM['id']);
-
-
-        $motdChart = $this->getMotdLeaderService()->getChart(1,3);
+        //For each match, prepare the "guess" data for the user
+        $motdToday    = $this->prepareUserMotdItem($motdToday, $userId);
+        $motdYesterday = $this->prepareUserMotdItem($motdYesterday, $userId);
         
-        foreach ($motdChart['chart'] as &$motdStanding) {
-            $motdStanding['user'] = $this->getUserFindService()->getOne($motdStanding['user_id']);
-        }
-
-        $motdPPtt = $this->getPPTournamentTypeFindService()->getMOTDType();
-
-        //if motd.guess is null, insert a dummy one with verified_at being if user can or can't lock
-        if(!$motdPPRM['guess']){
-            $motdPPRM['guess'] = $this->getGuessCreateService()->buildDummyGuess($userId, $motdPPRM['id'], 'motd');
-        }
-
-        $motdPPRM['guess']['ppTournamentType'] = $motdPPtt;
-
         $returnArray = array(
-            "motd" => $motdPPRM, 
-            "motdChart" => $motdChart,
-            "ppTournamentType" => $motdPPtt
+            "today" => $motdToday, 
+            "yesterday" => $motdYesterday, 
         );
 
         return $this->jsonResponse($response, 'success', $returnArray, 200);

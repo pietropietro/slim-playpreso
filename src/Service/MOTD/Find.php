@@ -42,14 +42,17 @@ final class Find  extends BaseService{
     //before 7am gmt+1 gives back yesterday's motd
     public function getMotd(
         ?string $dateString = null,
-        ?int $userId = null
+        ?int $userId = null,
+        ?bool $withGuesses = false,
+        ?bool $withMatchStats = true,
     ){
         $motdPPRM = $this->motdRepository->getMotd($dateString);
-        if($userId){
+        if($userId || $withGuesses){
             $this->ppRoundMatchFindService->enrich(
                 $motdPPRM,
+                withGuesses: $withGuesses,
                 userId: $userId, 
-                withUserGuess: true,
+                withUserGuess: isset($userId),
                 withMatchStats: true
             );
         }

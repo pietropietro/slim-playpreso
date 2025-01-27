@@ -32,9 +32,9 @@ final class GetNow extends Base
 
         // 2) Retrieve next/current/last flash matches
         //    (Implement these queries in your Flash\Find service)
-        $flashNext    = $this->getFlashFindService()->getNextFlash($userId);
-        $flashCurrent = $this->getFlashFindService()->getCurrentFlash($userId);
-        $flashLast    = $this->getFlashFindService()->getLastFlash(dateString: null, verified: true, userId: $userId);
+        $flashNext    = $this->getFlashFindService()->getNextFlash();
+        $flashCurrent = $this->getFlashFindService()->getCurrentFlash();
+        $flashLast    = $this->getFlashFindService()->getLastFlash(dateString: null, verified: true);
 
         // 3) For each match, prepare the "guess" data for the user
         $flashNext    = $this->prepareUserFlashItem($flashNext, $userId);
