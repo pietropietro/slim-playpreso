@@ -27,30 +27,8 @@ final class Verify extends BaseService{
         }
 
         $jackpot = $pprmFlash['lock_cost'] * count($guesses);
-        $maxPoints = $guesses[0]['points'] ?? 0;
 
-        // Collect all guesses that match $maxPoints
-        $winners = [];
-        foreach ($guesses as $g) {
-            if ($g['points'] === $maxPoints) {
-                $winners[] = $g;
-            } else {
-                // Since guesses are sorted desc, once we hit a guess with fewer points,
-                // no need to keep checking
-                break;
-            }
-        }
-
-        // If we have at least one winner, split the jackpot
-        $winnerCount = count($winners);
-        if ($winnerCount > 0) {
-            $split = (int) floor($jackpot / $winnerCount);
-
-            foreach ($winners as $winGuess) {
-                $this->pointsUpdateService->plus($winGuess['user_id'], $split);
-                $this->guessRepository->markWinner($winGuess['id'], $split);
-            }
-        }
+        $this->pointsUpdateService->payOutJackpot($guesses, $jackpot);
 
         //calculate leader
         $this->calculateFlashLeader($pprmFlash['id']);

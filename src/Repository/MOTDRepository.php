@@ -29,6 +29,13 @@ final class MOTDRepository extends BaseRepository
         $this->db->where('motd', $dateString);
         return $this->db->getOne('ppRoundMatches');
     }
+
+    public function getFromMatch(int $matchId){
+        $this->db->where('match_id', $matchId);
+        $this->db->where('motd is not null');
+        return $this->db->getOne('ppRoundMatches');
+    }
+
     
     public function hasMotd(?string $dateString = null){
         $dateString = $dateString ?? date('Y-m-d');

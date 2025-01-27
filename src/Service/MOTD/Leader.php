@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Service\MOTD;
 
 use App\Repository\MOTDRepository;
+use App\Repository\GuessRepository;
 use App\Service\RedisService;
+use App\Service\Points;
 use App\Service\BaseService;
 
 final class Leader  extends BaseService{
@@ -13,25 +15,35 @@ final class Leader  extends BaseService{
         protected RedisService $redisService,
         protected MOTDRepository $motdRepository,
         protected Find $motdFindService,
+        protected GuessRepository $guessRepository,
+        protected Points\Update $pointsUpdateService
     ){}
 
     private const REDIS_KEY_PREFIX = 'motd-chart-page:';
     private const REDIS_KEY_MOTD_CHART = self::REDIS_KEY_PREFIX.'%d-limit:%d';
 
     public function checkIfCalculate(int $matchId){
-        $motd = $this->motdRepository->getMotd();
-        if($motd && $motd['match_id'] == $matchId){
-
+        $motdPPRM = $this->motdRepository->getFromMatch($matchId);
+        if($motdPPRM){
             if (self::isRedisEnabled() === true ) {
                 $this->redisService->deleteKeysByPattern(self::REDIS_KEY_PREFIX.'*');
             }
-            $this->calculateLeader();
+            $this->verify($motdPPRM['id']);
         }
+    }
+
+    private function verify($ppRoundMatchId){
+        $this->calculateLeader();
+
+        $guesses = $this->guessRepository->getForPPRoundMatch($ppRoundMatchId);
+        if (empty($guesses)) return;
+
+        $jackpot = 10 * count($guesses);
+        $this->pointsUpdateService->payOutJackpot($guesses, $jackpot);
     }
 
     private function calculateLeader(){
         $topChart = $this->motdRepository->retrieveMotdChart()['chart'];
-
         $this->motdRepository->insertLeader($topChart[0]['user_id'], (int) $topChart[0]['tot_points']);
     }
 

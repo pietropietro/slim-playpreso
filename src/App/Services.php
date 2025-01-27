@@ -194,6 +194,8 @@ $container['motd_leader_service'] = static fn (
     $container->get('redis_service'),
     $container->get('motd_repository'),
     $container->get('motd_find_service'),
+    $container->get('guess_repository'),
+    $container->get('points_update_service')
 );
 
 $container['ppround_verify_service'] = static fn (
@@ -238,7 +240,8 @@ $container['userparticipation_update_service'] = static fn (
 $container['points_update_service'] = static fn (
     ContainerInterface $container
 ):  Points\Update => new  Points\Update(
-    $container->get('user_repository')
+    $container->get('user_repository'),
+    $container->get('guess_repository')
 );
 
 $container['points_find_service'] = static fn (
