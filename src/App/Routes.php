@@ -111,7 +111,7 @@ return function ($app){
     $app->group('/motd', function () use ($app): void {
         $app->get('', MOTD\GetToday::class);
         $app->get('/chart', MOTD\GetChart::class);
-        // $app->get('', MOTD\GetLatest::class);
+        $app->get('/list', MOTD\GetList::class);
         $app->post('/lock', MOTD\Lock::class);
     })->add(new Auth($pointsService));
 

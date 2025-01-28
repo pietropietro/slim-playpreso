@@ -6,20 +6,17 @@ namespace App\Repository;
 
 final class MOTDRepository extends BaseRepository
 {
-    public function getLatestMotds(?int $limit = 7){
-        $this->db->join('guesses g', 'pprm.id = g.ppRoundMatch_id', 'LEFT');
-        $this->db->groupBy('pprm.id');
-        $this->db->orderBy('motd');
-        
-        if(date('H',time())<7){
-            $this->db->where('motd', date('Y-m-d'), '<');
-        }else{
-            $this->db->where('motd', date('Y-m-d'), '<=');
-        }
 
-        $this->db->where('motd is not null');
-        return $this->db->get('ppRoundMatches pprm', $limit,'pprm.*, count(g.id) as aggr_count');
+    public function get(?bool $verified = null, int $offset = 0, int $limit = 10){
+        $this->db->join('matches m', 'm.id=pprm.match_id', 'inner');
+        if($verified){
+            $this->db->where('verified_at is not null');
+        }
+        $this->db->where('motd < now()');
+        $this->db->orderBy('motd', 'desc');
+        return $this->db->get('ppRoundMatches pprm', [$offset, $limit], 'pprm.*');
     }
+
 
     public function getMotd(?string $dateString = null){
         if(!$dateString){

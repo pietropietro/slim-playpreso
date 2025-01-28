@@ -20,24 +20,17 @@ final class Find  extends BaseService{
         protected Guess\Find $guessFindService,
     ){}
 
-    //returns last 7 motds
-    public function getLatestMotds(?int $userId = null){
-        $ppRMs = $this->motdRepository->getLatestMotds(7);
-        if(!$ppRMs) return null;
-        
-        foreach($ppRMs as &$ppRM){
-            $this->ppRoundMatchFindService->enrich(
-                $ppRM,
-                userId: $userId, 
-                withUserGuess: true,
-                withMatchStats: true,
-                withPPRMStats: true
-            );
-            $ppRM['can_lock'] = $this->matchFindService->isBeforeStartTime($ppRM['match_id']);
+
+    public function get(bool $verified = true, int $page=1, int $limit=10){
+        $offset = ($page - 1) * $limit;
+        $motdPPRMs = $this->motdRepository->get($verified, $offset, $limit);
+
+        foreach($motdPPRMs as &$motd){
+            $this->ppRoundMatchFindService->enrich($motd, withGuesses:true); 
         }
-        
-        return $ppRMs;
+        return $motdPPRMs;
     }
+
 
     //before 7am gmt+1 gives back yesterday's motd
     public function getMotd(
