@@ -72,14 +72,14 @@ final class Leader  extends BaseService{
 
         $result = $this->motdRepository->retrieveMotdChart( $offset, $limit);
 
-        foreach ($result['chart'] as &$chartItem) {
-            // do the magic (i.e. fill the period and add zeros on missing dates)
-            $chartItem['sparkline_data'] = $this->fillSparklineData($chartItem);
-            unset($chartItem['concat_points']);
-            unset($chartItem['concat_motd']);
+        // foreach ($result['chart'] as &$chartItem) {
+        //     // do the magic (i.e. fill the period and add zeros on missing dates)
+        //     $chartItem['sparkline_data'] = $this->fillSparklineData($chartItem);
+        //     unset($chartItem['concat_points']);
+        //     unset($chartItem['concat_motd']);
 
-            $chartItem['guesses'] = $this->motdFindService->getLastForUser($chartItem['user_id']);
-        }
+        //     $chartItem['guesses'] = $this->motdFindService->getLastForUser($chartItem['user_id']);
+        // }
 
         if (self::isRedisEnabled() === true ) {
             $expiration = 12 * 60 * 60; // 12 hours in seconds

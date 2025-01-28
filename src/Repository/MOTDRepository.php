@@ -73,24 +73,30 @@ final class MOTDRepository extends BaseRepository
         return $this->db->getOne('motdLeader');
     }
 
-    public function retrieveMotdChart($offset = 0, $limit = 10) {
-        $dateAgo = date("Y-m-d", strtotime('-1 month'));
+    public function retrieveMotdChart(?int $offset = 0, ?int $limit = 10) {
+        // Ensure offset is non-negative
+        $offset = max(0, $offset);
+
+        $dateAgo = date("Y-m-d", strtotime('-30 days'));
     
         $this->db->join("ppRoundMatches pprm", "pprm.id = guesses.ppRoundMatch_id", "INNER");
         $this->db->where("pprm.motd", $dateAgo, ">=");
         $this->db->groupBy("guesses.user_id");
+        // Order by tot_wins, net_prize, and tot_points
+        $this->db->orderBy("tot_wins", "desc");
+        $this->db->orderBy("tot_prize", "desc");
         $this->db->orderBy("tot_points", "desc");
+        
         $chart = $this->db->withTotalCount()->get(
             "guesses", 
             [$offset, $limit], 
-            "guesses.user_id, 
+            "   guesses.user_id, 
+            SUM(guesses.winner) as tot_wins,
+            COALESCE(SUM(guesses.winner_prize), 0) as tot_prize, 
             SUM(guesses.points) as tot_points,
-            count(guesses.id) as tot_locked,
-            sum(preso) as tot_preso, 
-            sum(UNOX2) as tot_unox2,
-            group_concat(motd) as concat_motd,
-            group_concat(COALESCE(points,0)) as concat_points
-            "
+            COUNT(guesses.id) as tot_locked,
+            SUM(PRESO) as tot_preso, 
+            SUM(UNOX2) as tot_unox2"
         );
         
         return [

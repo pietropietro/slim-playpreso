@@ -30,8 +30,6 @@ final class GetChart extends Base
             $item['user'] = $this->getUserFindService()->getOne($item['user_id']);
         }
 
-        $result['ppTournamentType'] = $this->getPPTournamentTypeFindService()->getMOTDType();
-
         return $this->jsonResponse($response, 'success', $result, 200);
     }
 }
