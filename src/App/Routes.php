@@ -149,6 +149,7 @@ return function ($app){
 
 
     $app->group('/stats', function () use ($app): void {
+        $app->get('/main-info', Stats\MainInfo::class);
         $app->get('/best-users', Stats\BestUsers::class);
         $app->get('/user/{id}', Stats\User::class);
         $app->get('/wrapped', Stats\GetWrapped::class);

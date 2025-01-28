@@ -6,6 +6,8 @@ namespace App\Controller\Stats;
 
 use App\Controller\BaseController;
 use App\Service\Stats;
+use App\Service\PPRanking;
+use App\Service\Trophy;
 
 abstract class Base extends BaseController
 {
@@ -18,6 +20,16 @@ abstract class Base extends BaseController
     protected function getStatsUserService(): Stats\User
     {
         return $this->container->get('stats_user_service');
+    }
+
+    protected function getPPRankingFindService(): PPRanking\Find
+    {
+        return $this->container->get('ppranking_find_service');
+    }
+
+    protected function getTrophyFindService(): Trophy\Find
+    {
+        return $this->container->get('trophy_find_service');
     }
 
 
