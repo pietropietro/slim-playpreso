@@ -20,6 +20,12 @@ final class UserNotificationRepository extends BaseRepository
         return $this->db->delete('userNotifications');
     }
 
+    public function deleteOld(){
+        $old = (new \DateTime('-30 days'))->format('Y-m-d');
+        $this->db->where('created_at', $old, '<');
+        return $this->db->delete('userNotifications');
+    }
+
     public function has(int $userId, string $eventType, ?int $eventId = null) : bool{
         $this->db->where('user_id', $userId);
         $this->db->where('event_type', $eventType);
