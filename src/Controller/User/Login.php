@@ -16,12 +16,7 @@ final class Login extends Base
         
         $user = $this->getLoginUserService()->login($input);
         $jwtHeader = Auth::createToken($user['username'], $user['id'], $user['points'], (bool) $user['admin'], $user['created_at']);
-        
-        // return $this->jsonResponse($response->withHeader('Authorization', $jwtHeader), 'success', null, 200);
 
-        //TODO DELETE – TEMPORARY FIX - to delete with next client app release
-        $message = ['user' => $user];
-        return $this->jsonResponse($response->withHeader('Authorization', $jwtHeader), 'success', $message, 200);
-
+        return $this->jsonResponse($response->withHeader('Authorization', $jwtHeader), 'success', null, 200);
     }
 }
