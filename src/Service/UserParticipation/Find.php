@@ -124,7 +124,11 @@ final class Find  extends BaseService {
             if(!$up['finished'])$up['nextMatch'] = $this->matchFindService->getNextMatchInPPTournament($column, $up[$column]);
             
             //set paused
-            if(!$up['finished'] && !$up['nextMatch']){
+            if(!$up['finished'] && 
+                (!$up['nextMatch'] || 
+                    strtotime($up['nextMatch']['date_start']) > strtotime('+10 days')
+                )
+            ){
                 $up['paused'] = true;
             }
         }       
