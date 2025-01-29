@@ -28,11 +28,13 @@ final class MainInfo extends Base
         $mainSummary = $this->getStatsUserService()->getUserMainSummary($userId, $from, $to);
         $ranking = $this->getPPRankingFindService()->getForUser($userId);
         $trophies = $this->getTrophyFindService()->getTrophies($userId);
-        
+        $inactive = $this->getUserRepository()->isInactive($userId);
+
         $returnArray = [
             'avg' => $mainSummary['avg_points'],
             'ppRanking' => $ranking['position'],
-            'trophies' => $trophies
+            'trophies' => $trophies,
+            'inactive' => $inactive
         ];
 
 

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Repository;
 
 final class UserRepository extends BaseRepository
-{
+{   
+    private string $inactivePeriod = '-10 days';
+
     public function create($user){
         $data = array(
             'username' => strtolower($user->username),
@@ -166,10 +168,21 @@ final class UserRepository extends BaseRepository
 
         //if 0 locked guesses in last 10 days --> inactive
         $this->db->where('user_id', $userId);
-        $from = (new \DateTime('-10 days'))->format('Y-m-d');
+        $from = (new \DateTime($this->inactivePeriod))->format('Y-m-d');
         $this->db->where('guessed_at', $from, '>');
         return !$this->db->has('guesses');
 
+    }
+
+    public function getInactive(){
+        $from = (new \DateTime($this->inactivePeriod))->format('Y-m-d');
+        $ids = $this->db->subQuery();
+
+        $ids->groupBy('user_id');
+        $ids->where('guessed_at', $from, '>');
+        $ids->get('guesses', null, 'user_id');
+        $this->db->where('id', $ids, 'NOT IN');
+        return $this->db->get('users');
     }
 
 

@@ -6,7 +6,7 @@ namespace App\Repository;
 
 final class UserNotificationRepository extends BaseRepository
 {
-    public function create(int $userId, string $eventType, int $eventId){
+    public function create(int $userId, string $eventType, ?int $eventId = null){
         $data = array(
             'user_id' => $userId,
             'event_type' => $eventType,     
@@ -20,10 +20,12 @@ final class UserNotificationRepository extends BaseRepository
         return $this->db->delete('userNotifications');
     }
 
-    public function has(int $userId, string $eventType, int $eventId) : bool{
+    public function has(int $userId, string $eventType, ?int $eventId = null) : bool{
         $this->db->where('user_id', $userId);
         $this->db->where('event_type', $eventType);
-        $this->db->where('event_id', $eventId);
+
+        if($eventId)$this->db->where('event_id', $eventId);
+        
         return $this->db->has('userNotifications');
     }
 

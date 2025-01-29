@@ -21,8 +21,8 @@ final class Create extends Base
     public function create(
         int $userId, 
         string $eventType, 
-        int $eventId, 
-        ?array $push_text_data = null
+        ?int $eventId = null, 
+        ?array $push_text_data = null,
     ){
         $allowed_events = $this->getAllowedEvents();
         if(!in_array($eventType, $allowed_events)) return;
@@ -54,7 +54,7 @@ final class Create extends Base
     }
 
     public function getAllowedEvents(){
-        return ['guess_verified', 'ppleague_finished', 'guess_unlocked_starting'];
+        return ['guess_verified', 'ppleague_finished', 'guess_unlocked_starting', 'inactive_user'];
     }
 
 

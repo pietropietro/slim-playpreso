@@ -8,6 +8,7 @@ use App\Controller\BaseController;
 use App\Service\Stats;
 use App\Service\PPRanking;
 use App\Service\Trophy;
+use App\Repository\UserRepository;
 
 abstract class Base extends BaseController
 {
@@ -30,6 +31,12 @@ abstract class Base extends BaseController
     protected function getTrophyFindService(): Trophy\Find
     {
         return $this->container->get('trophy_find_service');
+    }
+
+
+    protected function getUserRepository(): UserRepository
+    {
+        return $this->container->get('user_repository');
     }
 
 

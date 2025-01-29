@@ -38,7 +38,6 @@ final class GetUnread extends Base{
                 'user_id' => $userId,
                 'event_type' => 'year_wrapped',
                 'event_id' => null,
-                'is_read' => 0,
                 'created_at' => $currentDate->format('Y-m-d H:i:s'),
                 'updated_at' => $currentDate->format('Y-m-d H:i:s'),
             ];
