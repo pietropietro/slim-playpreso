@@ -162,6 +162,16 @@ final class UserRepository extends BaseRepository
         return $this->db->update('users', $data, 1);
     }
 
+    public function isInactive(int $userId){
+
+        //if 0 locked guesses in last 10 days --> inactive
+        $this->db->where('user_id', $userId);
+        $from = (new \DateTime('-10 days'))->format('Y-m-d');
+        $this->db->where('guessed_at', $from, '>');
+        return !$this->db->has('guesses');
+
+    }
+
 
    
 }

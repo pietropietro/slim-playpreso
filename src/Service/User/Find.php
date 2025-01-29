@@ -76,6 +76,7 @@ final class Find extends Base
         $user['trophies_count'] = $this->trophyFindService->getTrophies($userId, null, true);
         $user['motdLeader'] = $this->ppMotdLeaderService->getMotdLeader()['user_id'] == $user['id'];
         $user['flashLeader'] = $this->flashFindService->getFlashLeader()['user_id'] == $user['id'];
+        $user['inactive'] = $this->userRepository->isInactive($userId);
         
         if (!$sensitiveColumns && self::isRedisEnabled() === true){
             $this->saveUserInCache($userId, $user);

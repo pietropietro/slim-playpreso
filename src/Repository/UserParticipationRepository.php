@@ -292,5 +292,10 @@ final class UserParticipationRepository extends BaseRepository
     }
 
 
+    public function delete(int $id){
+        $this->db->where('id', $id);
+        $this->db->where('updated_at IS NULL');
+        return $this->db->delete('userParticipations',1);
+    }
 
 }

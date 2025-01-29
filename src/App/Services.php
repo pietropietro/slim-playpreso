@@ -126,6 +126,7 @@ $container['pptournament_verifyafterjoin_service'] = static fn (
     $container->get('ppleague_repository'),
     $container->get('userparticipation_find_service'),
     $container->get('userparticipation_update_service'),
+    $container->get('userparticipation_delete_service'),
     $container->get('pptournamenttype_find_service'),
     $container->get('ppcupgroup_find_service'),
     $container->get('ppround_create_service'),
@@ -236,6 +237,15 @@ $container['userparticipation_update_service'] = static fn (
     $container->get('userparticipation_repository'),
     $container->get('guess_repository'),
 );
+
+
+$container['userparticipation_delete_service'] = static fn (
+    ContainerInterface $container
+):  UserParticipation\Delete => new  UserParticipation\Delete(
+    $container->get('userparticipation_repository'),
+    $container->get('user_repository'),
+);
+
 
 $container['points_update_service'] = static fn (
     ContainerInterface $container

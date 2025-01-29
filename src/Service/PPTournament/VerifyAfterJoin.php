@@ -17,6 +17,7 @@ final class VerifyAfterJoin extends BaseService{
         protected PPLeagueRepository $ppLeagueRepository,
         protected UserParticipation\Find $findUpService,
         protected UserParticipation\Update $updateUpService,
+        protected UserParticipation\Delete $deleteUpService,
         protected PPTournamentType\Find $ppTournamentTypefindService,
         protected PPCupGroup\Find $ppCupGroupfindService,
         protected PPRound\Create $createPPRoundService,
@@ -34,8 +35,12 @@ final class VerifyAfterJoin extends BaseService{
             $this->updateUpService->update($tournamentColumn, $tournamentId);
             $maxParticipants = $this->ppCupGroupfindService->getOne($tournamentId)['participants'];
         }else{
-            $maxParticipants = $this->ppTournamentTypefindService->getOneFromPPTournament('ppLeagues', $tournamentId)['participants'];
+            $ppTournamentType =  $this->ppTournamentTypefindService->getOne($tournamentTypeId);
+            $maxParticipants = $ppTournamentType['participants'];
+            //right now just removeInactive it for ppleagues
+            $this->deleteUpService->removeInactive($tournamentId,  $tournamentColumn);
         }
+
         
 
         if($participantsCount && $participantsCount === $maxParticipants){

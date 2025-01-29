@@ -28,6 +28,7 @@ final class Join  extends BaseService{
         if(!$ppTournamentType['cup_format']){
             $ppTournament = $this->findPPleagueService->getJoinable($ppTypeId, $userId);
             $tournamentColumn = 'ppLeague_id';
+
         }else{
             $tournamentColumn = 'ppCupGroup_id';
             $ppTournament = $this->findPPCupService->getJoinable($ppTypeId, $userId);
