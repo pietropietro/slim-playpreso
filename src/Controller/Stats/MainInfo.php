@@ -30,11 +30,15 @@ final class MainInfo extends Base
         $trophies = $this->getTrophyFindService()->getTrophies($userId);
         $inactive = $this->getUserRepository()->isInactive($userId);
 
+        $unredNotificationCount = $this->getUserNotificationFindService()->countUnread($userId);
+
+
         $returnArray = [
             'avg' => $mainSummary['avg_points'],
             'ppRanking' => $ranking['position'],
             'trophies' => $trophies,
-            'inactive' => $inactive
+            'inactive' => $inactive,
+            'unreadNotificationCount' => $unredNotificationCount
         ];
 
 

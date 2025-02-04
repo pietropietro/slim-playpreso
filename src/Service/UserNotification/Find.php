@@ -18,12 +18,19 @@ final class Find extends BaseService{
         protected UserParticipation\Find $userParticipationFindService,       
     ) {}
 
-    public function getUnread(int $userId, ?bool $enriched=false){
-        $un = $this->userNotificationRepository->getUnread($userId);
-        if($enriched)$this->enrich($un);
-        return $un;
+    public function countUnread(int $userId, ?bool $enriched=false){
+        $count = $this->userNotificationRepository->countUnread($userId);
+        return $count;
     }
 
+    public function getUnread(int $userId,  int $page=1, int $limit=10){
+        $offset = ($page - 1) * $limit;
+        $uns = $this->userNotificationRepository->getUnread($userId, $offset, $limit);
+        $this->enrich($uns);
+        return $uns;
+    }
+
+    // probably not used 
     public function getForUser(int $userId){
         $notifications = $this->userNotificationRepository->getForUser($userId);
         $this->enrich($notifications);

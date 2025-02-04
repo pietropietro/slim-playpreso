@@ -8,6 +8,7 @@ use App\Controller\BaseController;
 use App\Service\Stats;
 use App\Service\PPRanking;
 use App\Service\Trophy;
+use App\Service\UserNotification;
 use App\Repository\UserRepository;
 
 abstract class Base extends BaseController
@@ -39,5 +40,9 @@ abstract class Base extends BaseController
         return $this->container->get('user_repository');
     }
 
+    protected function getUserNotificationFindService(): UserNotification\Find
+    {
+        return $this->container->get('usernotification_find_service');
+    }
 
 }
