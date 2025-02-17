@@ -12,9 +12,10 @@ final class Read extends BaseService{
         protected UserNotificationRepository $userNotificationRepository,
     ) {}
 
-    public function setRead(int $userId, ?bool $enriched=false){
-        return $this->userNotificationRepository->setRead($userId);
+    public function setRead(int $userId, int $limit = null){
+        return $this->userNotificationRepository->setRead($userId, $limit);
     }
+
 
 }
 

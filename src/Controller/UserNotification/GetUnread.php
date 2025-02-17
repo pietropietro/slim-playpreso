@@ -21,6 +21,10 @@ final class GetUnread extends Base{
        
         $page = (int) $request->getQueryParam('page', 1); // Default to page 1
         $limit = (int) $request->getQueryParam('limit', 10); // Default limit to 10
+
+        if($page > 1){
+            $this->getUserNotificationReadService()->setRead($userId, $limit);
+        }
         $notifications = $this->getUserNotificationFindService()->getUnread($userId, $page, $limit);
        
 

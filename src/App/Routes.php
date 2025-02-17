@@ -158,6 +158,7 @@ return function ($app){
     $app->group('/user-notification', function () use ($app): void {
         // $app->get('', UserNotification\CountUnread::class);
         $app->get('', UserNotification\GetUnread::class);
+        $app->post('/read', UserNotification\Read::class);
     })->add(new Auth($pointsService));
 
 

@@ -43,6 +43,7 @@ final class UserNotificationRepository extends BaseRepository
     public function getUnread(int $userId, int $page=1, int $limit=10){
         $this->db->where('user_id', $userId);
         $this->db->where('updated_at IS NULL');
+        $this->db->where('event_type', 'guess_unlocked_starting', '!=');
         $this->db->orderBy('created_at','desc');
         return $this->db->get('userNotifications', [$offset, $limit], '*');
     }
@@ -50,14 +51,18 @@ final class UserNotificationRepository extends BaseRepository
     public function countUnread(int $userId){
         $this->db->where('user_id', $userId);
         $this->db->where('updated_at IS NULL');
+        $this->db->where('event_type', 'guess_unlocked_starting', '!=');
         return $this->db->getValue ("userNotifications", "count(*)");
     }
 
-    public function setRead(int $userId){
+    public function setRead(int $userId, ?int $limit=null){
         $this->db->where('user_id', $userId);
+        $this->db->where('updated_at IS NULL');
+        $this->db->where('event_type', 'guess_unlocked_starting', '!=');
+        $this->db->orderBy('created_at','desc');
         $data = array(
             "updated_at" => $this->db->now()
         );
-        return $this->db->update('userNotifications', $data);
+        return $this->db->update('userNotifications', $data, $limit);
     }
 }
