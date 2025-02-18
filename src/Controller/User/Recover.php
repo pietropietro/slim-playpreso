@@ -26,9 +26,12 @@ final class Recover extends Base
 
         //SEND TOKEN
         $subject = "Your password reset link";
+        // recover link hostname is the same for dev and prod
+        //since the .well-known hosted on playpreso.com makes the app open
         $body = "Follow this link to reset your playpreso password <br><br>"
-        .$_ENV['APP_DOMAIN']."/recover/".$tokenForLink.
-        "<br><br>see you";
+        ."https://playpreso.com/recover/".$tokenForLink.
+        "<br><br><b>Note: This link will only work on mobile devices with the PlayPreso app installed.</b><br><br>xoxo,<br>pietro";
+        
         Mailer::send(array($user['email']), $subject, $body, $emailerror);
 
         if($emailerror){

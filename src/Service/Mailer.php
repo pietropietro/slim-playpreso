@@ -16,7 +16,8 @@ final class Mailer extends BaseService{
 
         try {
             //Server settings
-            $mail->SMTPDebug = $_SERVER['DEBUG'];                       //Enable verbose debug output
+            // $mail->SMTPDebug = $_SERVER['DEBUG'];                       //Enable verbose debug output
+            $mail->SMTPDebug = false;                       //Enable verbose debug output
             $mail->isSMTP();                                            //Send using SMTP
             $mail->Host       = $_SERVER['SMTP'];                     //Set the SMTP server to send through
             $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
