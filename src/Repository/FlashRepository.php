@@ -79,6 +79,9 @@ final class FlashRepository extends BaseRepository
         $this->db->where('m.verified_at is null');
         $this->db->where('now() > m.date_start');
 
+        $dateAgo = date("Y-m-d H:i:s", strtotime('-3 hours'));
+        $this->db->where('m.date_start', $dateAgo, '>');
+
         // Possibly we want the one that started most recently
         $this->db->orderBy('m.date_start', 'desc');
         $row = $this->db->getOne('ppRoundMatches pprm', 'pprm.*');
