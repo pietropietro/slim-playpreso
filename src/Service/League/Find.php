@@ -85,7 +85,9 @@ final class Find  extends Base{
             $leagues = $this->leagueRepository->getChildren($ppTT['pick_league'], false);
         }
         else if($ppTT['pick_country']){
-            $leagues = $this->leagueRepository->getForCountry($ppTT['pick_country'], $ppTT['level']);
+            $pickCountry = $ppTT['pick_country'];
+            if($pickCountry == 'US') $pickCountry = 'USA';
+            $leagues = $this->leagueRepository->getForCountry($pickCountry, $ppTT['level']);
         }
         else if($ppTT['pick_area']){
             $leagues = $this->getForArea($ppTT['pick_area'], $ppTT['level']);
